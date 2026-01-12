@@ -101,17 +101,26 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 	@$(call log_success,All spokes released)
 
 # Status overview: local vs published versions
-release-status: ## Show local and npm registry versions for core and pattern-detect
-	@$(call log_step,Reading local versions...)
-	@pd_local=$$(node -p "require('$(ROOT_DIR)/packages/pattern-detect/package.json').version"); \
-	core_local=$$(node -p "require('$(ROOT_DIR)/packages/core/package.json').version"); \
-	$(call log_info,@aiready/pattern-detect (local): $$pd_local); \
-	$(call log_info,@aiready/core (local): $$core_local); \
-	$(call log_step,Reading npm registry versions...); \
-	pd_remote=$$(npm view @aiready/pattern-detect version 2>/dev/null || echo "n/a"); \
-	core_remote=$$(npm view @aiready/core version 2>/dev/null || echo "n/a"); \
-	$(call log_info,@aiready/pattern-detect (npm): $$pd_remote); \
-	$(call log_info,@aiready/core (npm): $$core_remote); \
+release-status: ## Show local and npm registry versions for all spokes
+	@$(call log_step,Reading local and npm registry versions...)
+	@echo ""; \
+	printf "%-30s %-15s %-15s %-10s\n" "Package" "Local" "npm" "Status"; \
+	printf "%-30s %-15s %-15s %-10s\n" "-------" "-----" "---" "------"; \
+	for spoke in $(ALL_SPOKES); do \
+		if [ -f "$(ROOT_DIR)/packages/$$spoke/package.json" ]; then \
+			local_ver=$$(node -p "require('$(ROOT_DIR)/packages/$$spoke/package.json').version" 2>/dev/null || echo "n/a"); \
+			npm_ver=$$(npm view @aiready/$$spoke version 2>/dev/null || echo "n/a"); \
+			if [ "$$local_ver" = "$$npm_ver" ]; then \
+				status="$(GREEN)✓$(RESET_COLOR)"; \
+			elif [ "$$npm_ver" = "n/a" ]; then \
+				status="$(YELLOW)new$(RESET_COLOR)"; \
+			else \
+				status="$(CYAN)ahead$(RESET_COLOR)"; \
+			fi; \
+			printf "%-30s %-15s %-15s %-10b\n" "@aiready/$$spoke" "$$local_ver" "$$npm_ver" "$$status"; \
+		fi; \
+	done; \
+	echo ""; \
 	$(call log_success,Status collected)
 
 help: ## Show release help

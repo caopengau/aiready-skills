@@ -129,11 +129,17 @@ publish-core: ## Publish @aiready/core to GitHub (shortcut for: make publish SPO
 publish-pattern-detect: ## Publish @aiready/pattern-detect to GitHub (shortcut for: make publish SPOKE=pattern-detect)
 	@$(MAKE) publish SPOKE=pattern-detect OWNER=$(OWNER)
 
+publish-context-analyzer: ## Publish @aiready/context-analyzer to GitHub (shortcut for: make publish SPOKE=context-analyzer)
+	@$(MAKE) publish SPOKE=context-analyzer OWNER=$(OWNER)
+
 npm-publish-core: ## Publish @aiready/core to npm (shortcut for: make npm-publish SPOKE=core)
 	@$(MAKE) npm-publish SPOKE=core OTP=$(OTP)
 
 npm-publish-pattern-detect: ## Publish @aiready/pattern-detect to npm (shortcut for: make npm-publish SPOKE=pattern-detect)
 	@$(MAKE) npm-publish SPOKE=pattern-detect OTP=$(OTP)
+
+npm-publish-context-analyzer: ## Publish @aiready/context-analyzer to npm (shortcut for: make npm-publish SPOKE=context-analyzer)
+	@$(MAKE) npm-publish SPOKE=context-analyzer OTP=$(OTP)
 
 npm-publish-all: build npm-publish-core npm-publish
 
