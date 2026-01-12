@@ -47,19 +47,22 @@ npm-login: ## Login to npm registry
 version-patch: ## Bump spoke patch version (0.1.0 -> 0.1.1). Usage: make version-patch SPOKE=pattern-detect
 	$(call require_spoke)
 	@$(call log_step,Bumping @aiready/$(SPOKE) patch version...)
-	@cd packages/$(SPOKE) && pnpm version patch --no-git-tag-version
+# dangerous suppress errors because version does gets bumped
+	@cd packages/$(SPOKE) && pnpm version patch --no-git-tag-version 2>/dev/null || true
 	@$(call log_success,Version bumped to $$(cd packages/$(SPOKE) && node -p "require('./package.json').version"))
 
 version-minor: ## Bump spoke minor version (0.1.0 -> 0.2.0). Usage: make version-minor SPOKE=pattern-detect
 	$(call require_spoke)
 	@$(call log_step,Bumping @aiready/$(SPOKE) minor version...)
-	@cd packages/$(SPOKE) && pnpm version minor --no-git-tag-version
+# dangerous suppress errors because version does gets bumped
+	@cd packages/$(SPOKE) && pnpm version minor --no-git-tag-version 2>/dev/null || true
 	@$(call log_success,Version bumped to $$(cd packages/$(SPOKE) && node -p "require('./package.json').version"))
 
 version-major: ## Bump spoke major version (0.1.0 -> 1.0.0). Usage: make version-major SPOKE=pattern-detect
 	$(call require_spoke)
 	@$(call log_step,Bumping @aiready/$(SPOKE) major version...)
-	@cd packages/$(SPOKE) && pnpm version major --no-git-tag-version
+# dangerous suppress errors because version does gets bumped
+	@cd packages/$(SPOKE) && pnpm version major --no-git-tag-version 2>/dev/null || true
 	@$(call log_success,Version bumped to $$(cd packages/$(SPOKE) && node -p "require('./package.json').version"))
 
 # Generic npm publish (requires SPOKE parameter)

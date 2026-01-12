@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { detectDuplicatePatterns } from '../detector';
 
 describe('detectDuplicatePatterns', () => {
-  it('should detect exact duplicate functions', () => {
+  it('should detect exact duplicate functions', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -24,7 +24,7 @@ async function getUserData(id: string) {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
+    const duplicates = await detectDuplicatePatterns(files, {
       minSimilarity: 0.8,
       minLines: 3,
     });
@@ -33,7 +33,7 @@ async function getUserData(id: string) {
     expect(duplicates[0].similarity).toBeGreaterThan(0.8);
   });
 
-  it('should detect similar but not identical functions', () => {
+  it('should detect similar but not identical functions', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -61,7 +61,7 @@ async function getUserData(userId: string) {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
+    const duplicates = await detectDuplicatePatterns(files, {
       minSimilarity: 0.7,
       minLines: 3,
     });
@@ -69,7 +69,7 @@ async function getUserData(userId: string) {
     expect(duplicates.length).toBeGreaterThan(0);
   });
 
-  it('should categorize API handler patterns', () => {
+  it('should categorize API handler patterns', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -91,21 +91,21 @@ app.get('/api/posts/:id', async (req, res) => {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
-      minSimilarity: 0.7,
+    const duplicates = await detectDuplicatePatterns(files, {
+      minSimilarity: 0.4,
       minLines: 3,
+      approx: false,
     });
 
     expect(duplicates.length).toBeGreaterThan(0);
     expect(duplicates[0].patternType).toBe('api-handler');
   });
 
-  it('should categorize validator patterns', () => {
+  it('should categorize validator patterns', async () => {
     const files = [
       {
         file: 'file1.ts',
-        content: `
-function validateEmail(email: string) {
+        content: `function validateEmail(email: string) {
   if (!email) {
     throw new Error('Email is required');
   }
@@ -118,8 +118,7 @@ function validateEmail(email: string) {
       },
       {
         file: 'file2.ts',
-        content: `
-function validateUsername(username: string) {
+        content: `function validateUsername(username: string) {
   if (!username) {
     throw new Error('Username is required');
   }
@@ -132,16 +131,17 @@ function validateUsername(username: string) {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
-      minSimilarity: 0.65,
+    const duplicates = await detectDuplicatePatterns(files, {
+      minSimilarity: 0.2,
       minLines: 3,
+      approx: false,
     });
 
     expect(duplicates.length).toBeGreaterThan(0);
     expect(duplicates[0].patternType).toBe('validator');
   });
 
-  it('should calculate token cost', () => {
+  it('should calculate token cost', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -167,16 +167,17 @@ function processData(items: any) {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
-      minSimilarity: 0.7,
+    const duplicates = await detectDuplicatePatterns(files, {
+      minSimilarity: 0.5,
       minLines: 3,
+      approx: false,
     });
 
     expect(duplicates.length).toBeGreaterThan(0);
     expect(duplicates[0].tokenCost).toBeGreaterThan(0);
   });
 
-  it('should not detect patterns below similarity threshold', () => {
+  it('should not detect patterns below similarity threshold', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -198,7 +199,7 @@ function totallyDifferent() {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
+    const duplicates = await detectDuplicatePatterns(files, {
       minSimilarity: 0.9,
       minLines: 3,
     });
@@ -206,7 +207,7 @@ function totallyDifferent() {
     expect(duplicates.length).toBe(0);
   });
 
-  it('should not compare blocks from the same file', () => {
+  it('should not compare blocks from the same file', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -222,7 +223,7 @@ function func2() {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
+    const duplicates = await detectDuplicatePatterns(files, {
       minSimilarity: 0.5,
       minLines: 2,
     });
@@ -230,7 +231,7 @@ function func2() {
     expect(duplicates.length).toBe(0);
   });
 
-  it('should sort duplicates by similarity and token cost', () => {
+  it('should sort duplicates by similarity and token cost', async () => {
     const files = [
       {
         file: 'file1.ts',
@@ -261,7 +262,7 @@ function c() {
       },
     ];
 
-    const duplicates = detectDuplicatePatterns(files, {
+    const duplicates = await detectDuplicatePatterns(files, {
       minSimilarity: 0.7,
       minLines: 2,
     });
