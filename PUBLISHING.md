@@ -35,10 +35,15 @@ make npm-login
 # Ensure no uncommitted changes
 git status
 
-# Commit or stash changes before releasing
+# Commit changes before releasing
 git add .
 git commit -m "chore: prepare for release"
+
+# Sync everything to GitHub (recommended before release)
+make push  # or: make sync
 ```
+
+**💡 Best Practice**: Run `make push` regularly to keep all spoke repositories in sync with the monorepo. This ensures that any changes in `packages/*/` are automatically propagated to their respective GitHub repos.
 
 ## 🚀 Release Workflows
 
@@ -158,18 +163,40 @@ Legend:
 
 ## 🔧 Common Tasks
 
+### Syncing All Repositories
+
+**Recommended workflow**: Use this regularly to keep everything in sync
+
+```bash
+# After committing changes, sync monorepo + all spokes
+git add .
+git commit -m "feat: some changes"
+make push  # or: make sync
+
+# This does:
+# 1. Pushes monorepo to GitHub
+# 2. Syncs ALL spoke repos via git subtree split
+# 3. Skips spokes with no changes automatically
+```
+
+**Why use this?** 
+- Ensures spoke repos stay current with monorepo
+- External contributors see latest code
+- GitHub repos reflect actual state
+- No manual sync needed per spoke
+
 ### Publishing Core (Hub)
 
 ```bash
 # Core is a dependency, so publish it FIRST before spokes
-make -f makefiles/Makefile.release.mk release-one SPOKE=core TYPE=patch
+make release-one SPOKE=core TYPE=patch
 ```
 
 ### Publishing All Spokes
 
 ```bash
 # Bump and publish all spokes at once (use with caution)
-make -f makefiles/Makefile.release.mk release-all TYPE=patch
+make release-all TYPE=patch
 ```
 
 ### Syncing External Contributions
@@ -302,22 +329,24 @@ make test
 
 ## 🎓 Best Practices
 
-1. **Always use the release workflow** - `make -f makefiles/Makefile.release.mk release-one`
-2. **Publish core first** - If core changes, publish it before dependent spokes
-3. **Test before release** - Run `make test` to ensure quality
-4. **Check status regularly** - Use `make -f makefiles/Makefile.release.mk release-status`
-5. **Semantic versioning** - Use appropriate bump type (patch/minor/major)
-6. **Clean git state** - Commit changes before releasing
-7. **Document changes** - Update CHANGELOG or spoke README as needed
+1. **Sync regularly** - Run `make push` after commits to keep all spoke repos in sync
+2. **Use the release workflow** - `make release-one SPOKE=xxx TYPE=patch` (no -f flag needed)
+3. **Publish core first** - If core changes, publish it before dependent spokes
+4. **Test before release** - Run `make test` to ensure quality
+5. **Check status regularly** - Use `make release-status` to see what needs publishing
+6. **Semantic versioning** - Use appropriate bump type (patch/minor/major)
+7. **Clean git state** - Commit changes before releasing
+8. **Document changes** - Update CHANGELOG or spoke README as needed
 
 ## 🚦 Release Checklist
 
 - [ ] Run tests: `make test`
-- [ ] Check status: `make -f makefiles/Makefile.release.mk release-status`
+- [ ] Check status: `make release-status`
 - [ ] Ensure npm login: `make npm-check`
-- [ ] Clean working directory: `git status`
+- [ ] Commit all changes: `git add . && git commit -m "..."`
+- [ ] Sync repositories: `make push` (syncs monorepo + all spokes)
 - [ ] Determine version bump type (patch/minor/major)
-- [ ] Run release: `make -f makefiles/Makefile.release.mk release-one SPOKE=xxx TYPE=yyy`
+- [ ] Run release: `make release-one SPOKE=xxx TYPE=yyy`
 - [ ] Verify npm package: `npm view @aiready/xxx`
 - [ ] Verify GitHub repo: `https://github.com/caopengau/aiready-xxx`
 - [ ] Update main README if needed

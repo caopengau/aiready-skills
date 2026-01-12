@@ -161,17 +161,21 @@ pull: ## Alias for sync-from-spoke. Usage: make pull SPOKE=pattern-detect
 
 # alias for push-all
 push: push-all ## Alias for push-all
+sync: push-all ## Alias for push-all (sync monorepo + all spoke repos)
+
 # Push to monorepo and all spoke repos
 push-all: ## Push monorepo to origin and sync all spokes to their public repos
 	@$(call log_step,Pushing to monorepo...)
 	@git push origin $(TARGET_BRANCH)
 	@$(call log_success,Pushed to monorepo)
-	@$(call log_step,Publishing all spokes to GitHub...)
+	@$(call log_step,Syncing all spoke repositories...)
 	@for spoke in $(ALL_SPOKES); do \
-		$(call log_info,Publishing $$spoke...); \
-		$(MAKE) publish SPOKE=$$spoke OWNER=$(OWNER); \
+		if [ -f "$(REPO_ROOT)/packages/$$spoke/package.json" ]; then \
+			$(call log_info,Syncing $$spoke...); \
+			$(MAKE) publish SPOKE=$$spoke OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR)' || true; \
+		fi; \
 	done
-	@$(call log_success,All spokes published)
+	@$(call log_success,All spokes synced to GitHub)
 
 deploy: push-all ## Alias for push-all (push monorepo + publish all spokes)
 	@:-pattern-detect ## Build and publish all packages to npm
