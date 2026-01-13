@@ -85,6 +85,27 @@ aiready-context ./src --output html --output-file report.html
 aiready-context ./src --exclude "**/test/**,**/*.test.ts"
 ```
 
+### Configuration
+
+Create an `aiready.json` or `aiready.config.json` file in your project root:
+
+```json
+{
+  "scan": {
+    "include": ["**/*.{ts,tsx,js,jsx}"],
+    "exclude": ["**/test/**", "**/*.test.*"]
+  },
+  "tools": {
+    "context-analyzer": {
+      "maxDepth": 4,
+      "maxContextBudget": 8000,
+      "minCohesion": 0.7,
+      "includeNodeModules": false
+    }
+  }
+}
+```
+
 ### Sample Output
 
 ```bash
@@ -234,6 +255,32 @@ for (const result of results) {
 --exclude <patterns>           # File patterns to exclude (comma-separated)
 -o, --output <format>          # Output format: console|json|html (default: console)
 --output-file <path>           # Output file path (for json/html)
+```
+
+### Default Exclusions
+
+By default, these patterns are excluded (unless `--include-node-modules` is used):
+```bash
+# Dependencies (excluded by default, override with --include-node-modules)
+**/node_modules/**
+
+# Build outputs
+**/dist/**, **/build/**, **/out/**, **/output/**, **/target/**, **/bin/**, **/obj/**
+
+# Framework-specific build dirs
+**/.next/**, **/.nuxt/**, **/.vuepress/**, **/.cache/**, **/.turbo/**
+
+# Test and coverage
+**/coverage/**, **/.nyc_output/**, **/.jest/**
+
+# Version control and IDE
+**/.git/**, **/.svn/**, **/.hg/**, **/.vscode/**, **/.idea/**, **/*.swp, **/*.swo
+
+# Build artifacts and minified files
+**/*.min.js, **/*.min.css, **/*.bundle.js, **/*.tsbuildinfo
+
+# Logs and temporary files
+**/logs/**, **/*.log, **/.DS_Store
 ```
 
 ### API Options

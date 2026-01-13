@@ -13,7 +13,7 @@ include $(MAKEFILE_DIR)/Makefile.shared.mk
 REPO_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 
 .PHONY: publish npm-publish npm-login npm-check npm-publish-all \
-	version-patch version-minor version-major release-patch release-minor release-major \
+	version-patch version-minor version-major \
         publish-core publish-pattern-detect npm-publish-core npm-publish-pattern-detect \
         pull sync-from-spoke push-all deploy push
 
@@ -99,31 +99,6 @@ publish: ## Publish spoke to GitHub. Usage: make publish SPOKE=pattern-detect [O
 		git push "$$remote" "$$spoke_tag"; \
 		$(call log_success,Spoke tag pushed: $$spoke_tag); \
 	fi
-
-# Generic release targets (version bump + build + publish)
-release-patch: ## Release spoke patch version. Usage: make release-patch SPOKE=pattern-detect [OTP=123456]
-	$(call require_spoke)
-	@$(MAKE) version-patch SPOKE=$(SPOKE)
-	@$(MAKE) build
-	@$(MAKE) npm-publish SPOKE=$(SPOKE) OTP=$(OTP)
-	@$(MAKE) publish SPOKE=$(SPOKE) OWNER=$(OWNER)
-	@$(call log_success,Released new patch version of @aiready/$(SPOKE))
-
-release-minor: ## Release spoke minor version. Usage: make release-minor SPOKE=pattern-detect [OTP=123456]
-	$(call require_spoke)
-	@$(MAKE) version-minor SPOKE=$(SPOKE)
-	@$(MAKE) build
-	@$(MAKE) npm-publish SPOKE=$(SPOKE) OTP=$(OTP)
-	@$(MAKE) publish SPOKE=$(SPOKE) OWNER=$(OWNER)
-	@$(call log_success,Released new minor version of @aiready/$(SPOKE))
-
-release-major: ## Release spoke major version. Usage: make release-major SPOKE=pattern-detect [OTP=123456]
-	$(call require_spoke)
-	@$(MAKE) version-major SPOKE=$(SPOKE)
-	@$(MAKE) build
-	@$(MAKE) npm-publish SPOKE=$(SPOKE) OTP=$(OTP)
-	@$(MAKE) publish SPOKE=$(SPOKE) OWNER=$(OWNER)
-	@$(call log_success,Released new major version of @aiready/$(SPOKE))
 
 # Convenience aliases for specific spokes
 publish-core: ## Publish @aiready/core to GitHub (shortcut for: make publish SPOKE=core)

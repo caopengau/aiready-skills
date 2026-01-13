@@ -5,6 +5,7 @@ import { analyzeContext, generateSummary } from './index';
 import chalk from 'chalk';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { loadConfig, mergeConfigWithDefaults } from '@aiready/core';
 
 const program = new Command();
 
@@ -45,17 +46,38 @@ program
     const startTime = Date.now();
 
     try {
-      const results = await analyzeContext({
+      // Load config file if it exists
+      const config = loadConfig(directory);
+
+      // Define defaults
+      const defaults = {
+        maxDepth: 5,
+        maxContextBudget: 10000,
+        minCohesion: 0.6,
+        maxFragmentation: 0.5,
+        focus: 'all',
+        includeNodeModules: false,
+        include: undefined,
+        exclude: undefined,
+      };
+
+      // Merge config with defaults
+      const mergedConfig = mergeConfigWithDefaults(config, defaults);
+
+      // Override with CLI options (CLI takes precedence)
+      const finalOptions = {
         rootDir: directory,
-        maxDepth: parseInt(options.maxDepth),
-        maxContextBudget: parseInt(options.maxContext),
-        minCohesion: parseFloat(options.minCohesion),
-        maxFragmentation: parseFloat(options.maxFragmentation),
-        focus: options.focus as any,
-        includeNodeModules: options.includeNodeModules,
-        include: options.include?.split(','),
-        exclude: options.exclude?.split(','),
-      });
+        maxDepth: options.maxDepth ? parseInt(options.maxDepth) : mergedConfig.maxDepth,
+        maxContextBudget: options.maxContext ? parseInt(options.maxContext) : mergedConfig.maxContextBudget,
+        minCohesion: options.minCohesion ? parseFloat(options.minCohesion) : mergedConfig.minCohesion,
+        maxFragmentation: options.maxFragmentation ? parseFloat(options.maxFragmentation) : mergedConfig.maxFragmentation,
+        focus: (options.focus || mergedConfig.focus) as any,
+        includeNodeModules: options.includeNodeModules !== undefined ? options.includeNodeModules : mergedConfig.includeNodeModules,
+        include: options.include?.split(',') || mergedConfig.include,
+        exclude: options.exclude?.split(',') || mergedConfig.exclude,
+      };
+
+      const results = await analyzeContext(finalOptions);
 
       const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(2);
       const summary = generateSummary(results);
