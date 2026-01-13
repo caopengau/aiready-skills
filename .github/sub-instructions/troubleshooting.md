@@ -41,10 +41,10 @@ make test
 
 ### Wrong release order causes dependency issues
 
-If you released packages in the wrong order, you may get dependency resolution errors. The correct order is:
+**This should no longer happen** - the `release-all` command automatically follows the safe order:
 
-1. `@aiready/core` (always first)
-2. Spokes: `@aiready/pattern-detect`, `@aiready/context-analyzer` (any order)
-3. `@aiready/cli` (always last)
+1. `@aiready/core` (always first - no dependencies)
+2. Spokes in alphabetical order (context-analyzer, pattern-detect, etc.)
+3. `@aiready/cli` (always last - depends on core)
 
-Use `make release-all` for automatic correct ordering, or release manually in dependency order.
+Use `make release-all` for automatic correct ordering.

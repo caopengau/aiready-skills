@@ -69,11 +69,13 @@ Output legend:
 
 #### Release Order
 
-1. **Core first** - Always release `@aiready/core` before spokes if it changed
-2. **Spokes next** - Release individual spokes in any order
-3. **CLI last** - Release `@aiready/cli` after all spokes it depends on
+**Smart automatic ordering** - The `release-all` command automatically follows this dependency-safe order:
 
-> **⚠️ CRITICAL:** The `release-all` command automatically follows this order. Manual releases should respect dependencies to avoid version resolution issues.
+1. **Core first** - `@aiready/core` (no dependencies)
+2. **Spokes alphabetical** - packages depending on core (context-analyzer, pattern-detect, etc.)
+3. **CLI last** - `@aiready/cli` (depends on core)
+
+> **✅ SIMPLE:** Core always first, CLI always last, spokes in alphabetical order. No complex dependency graphs needed!
 
 #### Version Bump Guidelines
 

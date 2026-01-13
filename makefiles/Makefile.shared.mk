@@ -4,8 +4,8 @@
 
 # Dynamically discover all packages in packages/ directory
 ALL_SPOKES := $(notdir $(wildcard packages/*))
-# Dependency-ordered release sequence: core first, then spokes, cli last
-RELEASE_ORDER := core pattern-detect context-analyzer cli
+# Smart release order: core first, cli last, others alphabetical
+RELEASE_ORDER := core $(filter-out core cli, $(sort $(ALL_SPOKES))) cli
 # Legacy static list (deprecated - use ALL_SPOKES)
 PACKAGES := core pattern-detect
 .ONESHELL:
