@@ -91,12 +91,18 @@ aiready-consistency ./src --no-patterns
 # Show only major issues
 aiready-consistency ./src --min-severity major
 
-# Export to JSON
-aiready-consistency ./src --output json > report.json
+# Export to JSON (saved to .aiready/ by default)
+aiready-consistency ./src --output json
 
-# Export to Markdown
-aiready-consistency ./src --output markdown --output-file report.md
+# Export to Markdown (saved to .aiready/ by default)
+aiready-consistency ./src --output markdown
+
+# Or specify custom paths
+aiready-consistency ./src --output json --output-file custom-report.json
+aiready-consistency ./src --output markdown --output-file custom-report.md
 ```
+
+> **📁 Output Files:** By default, all output files are saved to the `.aiready/` directory in your project root with timestamped filenames. You can override this with `--output-file`.
 
 ## 🎛️ Options
 

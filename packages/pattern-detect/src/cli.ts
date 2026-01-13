@@ -4,9 +4,9 @@ import { Command } from 'commander';
 import { analyzePatterns, generateSummary, detectDuplicatePatterns } from './index';
 import type { PatternType, DuplicatePattern } from './detector';
 import chalk from 'chalk';
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-import { loadConfig, mergeConfigWithDefaults } from '@aiready/core';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { loadConfig, mergeConfigWithDefaults, resolveOutputPath } from '@aiready/core';
 
 const program = new Command();
 
@@ -108,18 +108,35 @@ program
         timestamp: new Date().toISOString(),
       };
 
-      if (options.outputFile) {
-        writeFileSync(options.outputFile, JSON.stringify(jsonOutput, null, 2));
-        console.log(chalk.green(`\n✓ JSON report saved to ${options.outputFile}`));
-      } else {
-        console.log(JSON.stringify(jsonOutput, null, 2));
+      const outputPath = resolveOutputPath(
+        options.outputFile,
+        `pattern-report-${new Date().toISOString().split('T')[0]}.json`,
+        directory
+      );
+      
+      const dir = dirname(outputPath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
       }
+      
+      writeFileSync(outputPath, JSON.stringify(jsonOutput, null, 2));
+      console.log(chalk.green(`\n✓ JSON report saved to ${outputPath}`));
       return;
     }
 
     if (options.output === 'html') {
       const html = generateHTMLReport(summary, results);
-      const outputPath = options.outputFile || join(process.cwd(), 'pattern-report.html');
+      const outputPath = resolveOutputPath(
+        options.outputFile,
+        `pattern-report-${new Date().toISOString().split('T')[0]}.html`,
+        directory
+      );
+      
+      const dir = dirname(outputPath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+      
       writeFileSync(outputPath, html);
       console.log(chalk.green(`\n✓ HTML report saved to ${outputPath}`));
       return;

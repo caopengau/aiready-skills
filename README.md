@@ -54,9 +54,14 @@ aiready scan .
 aiready patterns . --similarity 0.6
 aiready context . --max-depth 3
 
-# Get JSON output for CI/CD
-aiready scan . --output json --output-file results.json
+# Get JSON output (saved to .aiready/ by default)
+aiready scan . --output json
+
+# Specify custom output path
+aiready scan . --output json --output-file custom-path.json
 ```
+
+> **📁 Note:** All output files (JSON, HTML, Markdown) are saved to the `.aiready/` directory by default unless you specify a custom path with `--output-file`.
 
 ## ⚙️ Configuration
 

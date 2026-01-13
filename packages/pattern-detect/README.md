@@ -68,9 +68,14 @@ aiready patterns ./src --similarity 0.9
 # Include smaller patterns
 aiready patterns ./src --min-lines 3
 
-# Export results
-aiready patterns ./src --output json --output-file report.json
+# Export results (saved to .aiready/ by default)
+aiready patterns ./src --output json
+
+# Or specify custom path
+aiready patterns ./src --output json --output-file custom-report.json
 ```
+
+> **📁 Output Files:** By default, all output files are saved to the `.aiready/` directory in your project root. You can override this with `--output-file`.
 
 ## 🎛️ Tuning Guide
 

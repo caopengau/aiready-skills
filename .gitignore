@@ -19,3 +19,6 @@ coverage/
 
 # Build artifacts
 **/dist/
+
+# AIReady output
+.aiready/

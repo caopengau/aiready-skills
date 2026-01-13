@@ -4,9 +4,9 @@ import { Command } from 'commander';
 import { analyzeConsistency } from './analyzer';
 import type { ConsistencyOptions } from './types';
 import chalk from 'chalk';
-import { writeFileSync } from 'fs';
-import { join } from 'path';
-import { loadConfig, mergeConfigWithDefaults } from '@aiready/core';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { loadConfig, mergeConfigWithDefaults, resolveOutputPath } from '@aiready/core';
 
 const program = new Command();
 
@@ -80,20 +80,34 @@ EXAMPLES:
     // Output based on format
     if (options.output === 'json') {
       const output = JSON.stringify(report, null, 2);
-      if (options.outputFile) {
-        writeFileSync(options.outputFile, output);
-        console.log(chalk.green(`✓ Report saved to ${options.outputFile}`));
-      } else {
-        console.log(output);
+      const outputPath = resolveOutputPath(
+        options.outputFile,
+        `consistency-report-${new Date().toISOString().split('T')[0]}.json`,
+        directory
+      );
+      
+      const dir = dirname(outputPath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
       }
+      
+      writeFileSync(outputPath, output);
+      console.log(chalk.green(`✓ Report saved to ${outputPath}`));
     } else if (options.output === 'markdown') {
       const markdown = generateMarkdownReport(report, elapsedTime);
-      if (options.outputFile) {
-        writeFileSync(options.outputFile, markdown);
-        console.log(chalk.green(`✓ Report saved to ${options.outputFile}`));
-      } else {
-        console.log(markdown);
+      const outputPath = resolveOutputPath(
+        options.outputFile,
+        `consistency-report-${new Date().toISOString().split('T')[0]}.md`,
+        directory
+      );
+      
+      const dir = dirname(outputPath);
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
       }
+      
+      writeFileSync(outputPath, markdown);
+      console.log(chalk.green(`✓ Report saved to ${outputPath}`));
     } else {
       // Console output
       displayConsoleReport(report, elapsedTime);
