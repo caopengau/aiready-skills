@@ -32,11 +32,15 @@ Inconsistent code patterns confuse AI models and reduce their effectiveness. Thi
 - **Function naming** - Checks for action verbs while allowing factory patterns and descriptive names
 
 **Smart Detection:** The tool understands context and won't flag:
-- Common abbreviations (env, api, url, max, min, now, etc.)
+- Common abbreviations (env, api, url, max, min, now, etc.) - 100+ built-in
 - Boolean prefixes (is, has, can used as variables)
-- Loop iterators in appropriate contexts
+- Loop iterators (i, j, k) in appropriate contexts
+- Arrow function parameters in callbacks (`.map(s => ...)`)
+- Multi-line arrow functions (detects across 3-5 line context)
+- Short-lived comparison variables (used within 5 lines)
 - Factory/builder patterns
 - Long descriptive function names
+- Project-specific abbreviations via configuration
 
 ### 🔄 Pattern Consistency
 - **Error handling strategies** - Detects mixed approaches (try-catch vs returns vs throws)
@@ -127,7 +131,7 @@ aiready-consistency ./src --output markdown --output-file custom-report.md
 
 ## 📝 Configuration File
 
-Create `aiready.json` in your project root:
+Create `.airreadyrc.json`, `aiready.json`, or `aiready.config.json` in your project root:
 
 ```json
 {
@@ -139,7 +143,10 @@ Create `aiready.json` in your project root:
     "consistency": {
       "checkNaming": true,
       "checkPatterns": true,
-      "minSeverity": "minor"
+      "minSeverity": "minor",
+      "acceptedAbbreviations": ["ses", "gst", "cdk"],
+      "shortWords": ["oak", "elm"],
+      "disableChecks": []
     }
   },
   "output": {
@@ -155,17 +162,58 @@ Create `aiready.json` in your project root:
 | `checkNaming` | boolean | `true` | Check naming conventions |
 | `checkPatterns` | boolean | `true` | Check code pattern consistency |
 | `minSeverity` | string | `'info'` | Filter: `'info'`, `'minor'`, `'major'`, `'critical'` |
+| `acceptedAbbreviations` | string[] | `[]` | Custom abbreviations to accept (e.g., domain-specific terms) |
+| `shortWords` | string[] | `[]` | Additional full English words to accept |
+| `disableChecks` | string[] | `[]` | Disable specific checks: `'single-letter'`, `'abbreviation'`, `'convention-mix'`, `'unclear'`, `'poor-naming'` |
+
+### Project-Specific Configuration Examples
+
+**React/Next.js Projects:**
+```json
+{
+  "tools": {
+    "consistency": {
+      "acceptedAbbreviations": ["jsx", "tsx", "ref", "ctx", "req", "res"]
+    }
+  }
+}
+```
+
+**AWS/Cloud Projects:**
+```json
+{
+  "tools": {
+    "consistency": {
+      "acceptedAbbreviations": ["ses", "sns", "sqs", "ec2", "vpc", "iam"]
+    }
+  }
+}
+```
+
+**E-commerce Projects:**
+```json
+{
+  "tools": {
+    "consistency": {
+      "acceptedAbbreviations": ["gst", "vat", "sku", "upc"],
+      "shortWords": ["tax", "buy", "pay", "cart"]
+    }
+  }
+}
+```
 
 ### Acceptable Abbreviations
 
-The tool recognizes 60+ standard abbreviations and won't flag them:
+The tool recognizes 100+ standard abbreviations and won't flag them:
 
-**Web/Network:** url, uri, api, cdn, dns, ip, http, utm, seo, xhr  
+**Web/Network:** url, uri, api, cdn, dns, ip, http, utm, seo, xhr, cors, ws, wss  
 **Data:** json, xml, yaml, csv, html, css, svg, pdf, dto, dao  
 **System:** env, os, fs, cli, tmp, src, dst, bin, lib, pkg  
 **Request/Response:** req, res, ctx, err, msg  
 **Math:** max, min, avg, sum, abs, cos, sin, log, sqrt  
-**Time:** now, utc, ms, sec  
+**Time:** now, utc, ms, sec, hr, yr, mo  
+**Loop Counters:** i, j, k, n, m  
+**Cloud/Infrastructure:** s3, ec2, sqs, sns, vpc, ami, iam, aws  
 **Common:** id, uid, db, sql, orm, ui, ux, dom, ref, val, str, obj, arr, cfg, init
 
 See [naming.ts](src/analyzers/naming.ts) for the complete list.

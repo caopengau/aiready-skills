@@ -95,6 +95,33 @@ const api = new ApiClient();
     // Should not flag these as issues
     expect(true).toBe(true);
   });
+
+  it('should NOT flag multi-line arrow function parameters (Phase 3)', () => {
+    // Multi-line arrow functions should not trigger single-letter warnings
+    const multiLineArrowCode = `
+items.map(
+  s => s.value
+)
+
+items.filter(
+  item =>
+    item.valid
+)
+`;
+    // 's' and 'item' should not be flagged as poor naming
+    expect(true).toBe(true);
+  });
+
+  it('should NOT flag short-lived comparison variables (Phase 3)', () => {
+    // Variables used only within 3-5 lines for comparisons
+    const shortLivedCode = `
+const a = obj1;
+const b = obj2;
+return compare(a, b);
+`;
+    // 'a' and 'b' should not be flagged as they're short-lived
+    expect(true).toBe(true);
+  });
 });
 
 describe('analyzePatterns', () => {

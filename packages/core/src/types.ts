@@ -78,6 +78,14 @@ export interface AIReadyConfig {
       domainPatterns?: string[]; // regex strings to match domains (e.g., ['^ord(er)?$', '^(inv|invoice)$'])
       pathDomainMap?: Record<string, string>; // map of path segment -> domain (e.g., {'orders': 'order'})
     };
+    'consistency'?: {
+      // Custom abbreviations to accept (domain-specific terms)
+      acceptedAbbreviations?: string[]; // e.g., ['ses', 'gst', 'cdk', 'btn', 'buf', 'agg']
+      // Custom short words that are full English words, not abbreviations
+      shortWords?: string[]; // e.g., ['oak', 'elm', 'ash'] for tree species
+      // Disable specific checks
+      disableChecks?: ('single-letter' | 'abbreviation' | 'convention-mix' | 'unclear' | 'poor-naming')[];
+    };
   };
 
   // Output preferences
