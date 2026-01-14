@@ -15,9 +15,41 @@ import type {
   ContextAnalysisResult,
   ContextSummary,
   ModuleCluster,
+  DomainAssignment,
+  DomainSignals,
+  CoUsageData,
+  TypeDependency,
 } from './types';
+import {
+  buildCoUsageMatrix,
+  buildTypeGraph,
+  findSemanticClusters,
+  calculateDomainConfidence,
+  inferDomainFromSemantics,
+  getCoUsageData,
+  findConsolidationCandidates,
+} from './semantic-analysis';
 
-export type { ContextAnalyzerOptions, ContextAnalysisResult, ContextSummary, ModuleCluster };
+export type { 
+  ContextAnalyzerOptions, 
+  ContextAnalysisResult, 
+  ContextSummary, 
+  ModuleCluster,
+  DomainAssignment,
+  DomainSignals,
+  CoUsageData,
+  TypeDependency,
+};
+
+export {
+  buildCoUsageMatrix,
+  buildTypeGraph,
+  findSemanticClusters,
+  calculateDomainConfidence,
+  inferDomainFromSemantics,
+  getCoUsageData,
+  findConsolidationCandidates,
+};
 
 /**
  * Generate smart defaults for context analysis based on repository size

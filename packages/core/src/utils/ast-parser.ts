@@ -6,6 +6,7 @@ export interface ExportWithImports {
   type: 'function' | 'class' | 'const' | 'type' | 'interface' | 'default';
   imports: string[]; // Imports used within this export's scope
   dependencies: string[]; // Other exports from same file this depends on
+  typeReferences: string[]; // TypeScript types referenced in this export
   loc?: {
     start: { line: number; column: number };
     end: { line: number; column: number };
@@ -90,21 +91,25 @@ function extractExportsWithDependencies(
         const exportNodes = extractFromDeclaration(node.declaration);
         for (const exp of exportNodes) {
           const usedImports = findUsedImports(node.declaration, importedNames);
+          const typeReferences = extractTypeReferences(node.declaration);
           exports.push({
             ...exp,
             imports: usedImports,
             dependencies: [],
+            typeReferences,
             loc: node.loc,
           });
         }
       }
     } else if (node.type === 'ExportDefaultDeclaration') {
       const usedImports = findUsedImports(node.declaration, importedNames);
+      const typeReferences = extractTypeReferences(node.declaration);
       exports.push({
         name: 'default',
         type: 'default',
         imports: usedImports,
         dependencies: [],
+        typeReferences,
         loc: node.loc,
       });
     }
@@ -193,6 +198,57 @@ export function calculateImportSimilarity(
   const union = new Set([...set1, ...set2]);
 
   return intersection.size / union.size;
+}
+
+/**
+ * Extract TypeScript type references from a node
+ * Collects all type identifiers used in type annotations
+ */
+function extractTypeReferences(node: TSESTree.Node): string[] {
+  const types = new Set<string>();
+
+  function visit(n: any) {
+    if (!n || typeof n !== 'object') return;
+
+    // Type references
+    if (n.type === 'TSTypeReference' && n.typeName) {
+      if (n.typeName.type === 'Identifier') {
+        types.add(n.typeName.name);
+      } else if (n.typeName.type === 'TSQualifiedName') {
+        // Handle qualified names like A.B.C
+        let current = n.typeName;
+        while (current.type === 'TSQualifiedName') {
+          if (current.right?.type === 'Identifier') {
+            types.add(current.right.name);
+          }
+          current = current.left;
+        }
+        if (current.type === 'Identifier') {
+          types.add(current.name);
+        }
+      }
+    }
+
+    // Interface references
+    if (n.type === 'TSInterfaceHeritage' && n.expression) {
+      if (n.expression.type === 'Identifier') {
+        types.add(n.expression.name);
+      }
+    }
+
+    // Recursively visit children
+    for (const key of Object.keys(n)) {
+      const value = n[key];
+      if (Array.isArray(value)) {
+        value.forEach(visit);
+      } else if (value && typeof value === 'object') {
+        visit(value);
+      }
+    }
+  }
+
+  visit(node);
+  return Array.from(types);
 }
 
 // Legacy exports for backwards compatibility

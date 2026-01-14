@@ -6,6 +6,7 @@ import type {
   ExportInfo,
   ModuleCluster,
 } from './types';
+import { buildCoUsageMatrix, buildTypeGraph, inferDomainFromSemantics } from './semantic-analysis';
 
 interface FileContent {
   file: string;
@@ -91,7 +92,7 @@ export function buildDependencyGraph(
     ],
   };
 
-  // First pass: Create nodes
+  // First pass: Create nodes with folder-based domain inference
   for (const { file, content } of files) {
     const imports = extractImportsFromContent(content);
     
@@ -112,7 +113,39 @@ export function buildDependencyGraph(
     edges.set(file, new Set(imports));
   }
 
-  return { nodes, edges };
+  // Second pass: Build semantic analysis graphs
+  const graph: DependencyGraph = { nodes, edges };
+  const coUsageMatrix = buildCoUsageMatrix(graph);
+  const typeGraph = buildTypeGraph(graph);
+  
+  // Add semantic data to graph
+  graph.coUsageMatrix = coUsageMatrix;
+  graph.typeGraph = typeGraph;
+
+  // Third pass: Enhance domain assignments with semantic analysis
+  for (const [file, node] of nodes) {
+    for (const exp of node.exports) {
+      // Get semantic domain assignments
+      const semanticAssignments = inferDomainFromSemantics(
+        file,
+        exp.name,
+        graph,
+        coUsageMatrix,
+        typeGraph,
+        exp.typeReferences
+      );
+      
+      // Add multi-domain assignments with confidence scores
+      exp.domains = semanticAssignments;
+      
+      // Keep inferredDomain for backwards compatibility (use highest confidence)
+      if (semanticAssignments.length > 0) {
+        exp.inferredDomain = semanticAssignments[0].domain;
+      }
+    }
+  }
+
+  return graph;
 }
 
 /**

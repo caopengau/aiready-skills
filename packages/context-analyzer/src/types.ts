@@ -91,6 +91,8 @@ export interface ContextSummary {
 export interface DependencyGraph {
   nodes: Map<string, DependencyNode>;
   edges: Map<string, Set<string>>; // file -> dependencies
+  coUsageMatrix?: Map<string, Map<string, number>>; // file -> file -> co-usage count
+  typeGraph?: Map<string, Set<string>>; // type -> files that reference it
 }
 
 export interface DependencyNode {
@@ -99,13 +101,43 @@ export interface DependencyNode {
   exports: ExportInfo[];
   tokenCost: number;
   linesOfCode: number;
+  exportedBy?: string[]; // Files that import exports from this file
+  sharedTypes?: string[]; // Types shared with other files
 }
 
 export interface ExportInfo {
   name: string;
   type: 'function' | 'class' | 'const' | 'type' | 'interface' | 'default';
-  inferredDomain?: string; // Inferred from name/usage
+  inferredDomain?: string; // Inferred from name/usage (legacy single domain)
+  domains?: DomainAssignment[]; // Multi-domain support with confidence scores
   imports?: string[]; // Imports used by this export (for import-based cohesion)
   dependencies?: string[]; // Other exports from same file this depends on
+  typeReferences?: string[]; // TypeScript types referenced by this export
+}
+
+export interface DomainAssignment {
+  domain: string;
+  confidence: number; // 0-1, how confident are we in this assignment
+  signals: DomainSignals; // Which signals contributed to this assignment
+}
+
+export interface DomainSignals {
+  folderStructure: boolean; // Matched from folder name
+  importPath: boolean; // Matched from import paths
+  typeReference: boolean; // Matched from TypeScript type usage
+  coUsage: boolean; // Matched from co-usage patterns
+  exportName: boolean; // Matched from export identifier name
+}
+
+export interface CoUsageData {
+  file: string;
+  coImportedWith: Map<string, number>; // file -> count of times imported together
+  sharedImporters: string[]; // files that import both this and another file
+}
+
+export interface TypeDependency {
+  typeName: string;
+  definedIn: string; // file where type is defined
+  usedBy: string[]; // files that reference this type
 }
 
