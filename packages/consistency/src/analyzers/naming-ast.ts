@@ -289,14 +289,17 @@ function analyzeFileNamingAST(
           if (['main', 'init', 'setup', 'bootstrap'].includes(name)) return;
 
           // Check for action verbs and patterns
-          const hasActionVerb = name.match(/^(get|set|is|has|can|should|create|update|delete|fetch|load|save|process|handle|validate|check|find|search|filter|map|reduce|make|do|run|start|stop|build|parse|format|render|calculate|compute|generate|transform|convert|normalize|sanitize|encode|decode|compress|extract|merge|split|join|sort|compare|test|verify|ensure|apply|execute|invoke|call|emit|dispatch|trigger|listen|subscribe|unsubscribe|add|remove|clear|reset|toggle|enable|disable|open|close|connect|disconnect|send|receive|read|write|import|export|register|unregister|mount|unmount|track|store|persist|upsert|derive|classify|combine|discover|activate|require|assert|expect|mask|escape|sign|put|list|complete|page|safe|mock|pick|pluralize|text)/);
+          const hasActionVerb = name.match(/^(get|set|is|has|can|should|create|update|delete|fetch|load|save|process|handle|validate|check|find|search|filter|map|reduce|make|do|run|start|stop|build|parse|format|render|calculate|compute|generate|transform|convert|normalize|sanitize|encode|decode|compress|extract|merge|split|join|sort|compare|test|verify|ensure|apply|execute|invoke|call|emit|dispatch|trigger|listen|subscribe|unsubscribe|add|remove|clear|reset|toggle|enable|disable|open|close|connect|disconnect|send|receive|read|write|import|export|register|unregister|mount|unmount|track|store|persist|upsert|derive|classify|combine|discover|activate|require|assert|expect|mask|escape|sign|put|list|complete|page|safe|mock|pick|pluralize|text|count|detect|select)/);
           
           const isFactoryPattern = name.match(/(Factory|Builder|Creator|Generator|Provider|Adapter|Mock)$/);
           const isEventHandler = name.match(/^on[A-Z]/);
           const isDescriptiveLong = name.length > 15;
           const isReactHook = name.match(/^use[A-Z]/);
-          const isHelperPattern = name.match(/^(to|from|with|without|for|as|into)\w+/);
+          const isHelperPattern = name.match(/^(to|from|with|without|for|as|into)\w+/) || 
+                                  name.match(/^\w+(To|From|With|Without|For|As|Into)\w*$/); // xForY, xToY patterns
           const isUtilityName = ['cn', 'proxy', 'sitemap', 'robots', 'gtag'].includes(name);
+          const isLanguageKeyword = ['constructor', 'toString', 'valueOf', 'toJSON'].includes(name);
+          const isFrameworkPattern = name.match(/^(goto|fill|click|select|submit|wait|expect)\w*/); // Page Object Model, test framework patterns
           
           // Descriptive patterns: countX, totalX, etc.
           const isDescriptivePattern = name.match(/^(default|total|count|sum|avg|max|min|initial|current|previous|next)\w+/) ||
@@ -306,7 +309,7 @@ function analyzeFileNamingAST(
           const capitalCount = (name.match(/[A-Z]/g) || []).length;
           const isCompoundWord = capitalCount >= 3; // daysSinceLastCommit has 4 capitals
 
-          if (!hasActionVerb && !isFactoryPattern && !isEventHandler && !isDescriptiveLong && !isReactHook && !isHelperPattern && !isUtilityName && !isDescriptivePattern && !isCompoundWord) {
+          if (!hasActionVerb && !isFactoryPattern && !isEventHandler && !isDescriptiveLong && !isReactHook && !isHelperPattern && !isUtilityName && !isDescriptivePattern && !isCompoundWord && !isLanguageKeyword && !isFrameworkPattern) {
             issues.push({
               file,
               line,
