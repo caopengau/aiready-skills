@@ -1,4 +1,4 @@
-import { estimateTokens } from '@aiready/core';
+import { estimateTokens, parseFileExports, calculateImportSimilarity, type ExportWithImports } from '@aiready/core';
 import type {
   ContextAnalysisResult,
   DependencyGraph,
@@ -24,7 +24,10 @@ export function buildDependencyGraph(
   // First pass: Create nodes
   for (const { file, content } of files) {
     const imports = extractImportsFromContent(content);
-    const exports = extractExports(content);
+    
+    // Use AST-based extraction for better accuracy, fallback to regex
+    const exports = extractExportsWithAST(content, file);
+    
     const tokenCost = estimateTokens(content);
     const linesOfCode = content.split('\n').length;
 
@@ -199,41 +202,12 @@ export function detectCircularDependencies(
 
 /**
  * Calculate cohesion score (how related are exports in a file)
- * Uses entropy: low entropy = high cohesion
+ * Uses enhanced calculation combining domain-based and import-based analysis
  * @param exports - Array of export information
  * @param filePath - Optional file path for context-aware scoring
  */
 export function calculateCohesion(exports: ExportInfo[], filePath?: string): number {
-  if (exports.length === 0) return 1;
-  if (exports.length === 1) return 1; // Single export = perfect cohesion
-
-  // Special case: Test/mock/fixture files are expected to have multi-domain exports
-  // They serve a single purpose (testing) even if they mock different domains
-  if (filePath && isTestFile(filePath)) {
-    return 1; // Test utilities are inherently cohesive despite mixed domains
-  }
-
-  const domains = exports.map((e) => e.inferredDomain || 'unknown');
-  const domainCounts = new Map<string, number>();
-
-  for (const domain of domains) {
-    domainCounts.set(domain, (domainCounts.get(domain) || 0) + 1);
-  }
-
-  // Calculate Shannon entropy
-  const total = domains.length;
-  let entropy = 0;
-
-  for (const count of domainCounts.values()) {
-    const p = count / total;
-    if (p > 0) {
-      entropy -= p * Math.log2(p);
-    }
-  }
-
-  // Normalize to 0-1 (higher = better cohesion)
-  const maxEntropy = Math.log2(total);
-  return maxEntropy > 0 ? 1 - entropy / maxEntropy : 1;
+  return calculateEnhancedCohesion(exports, filePath);
 }
 
 /**
@@ -459,4 +433,132 @@ function generateConsolidationPlan(
   );
 
   return plan;
+}
+
+/**
+ * Extract exports using AST parsing (enhanced version)
+ * Falls back to regex if AST parsing fails
+ */
+export function extractExportsWithAST(content: string, filePath: string): ExportInfo[] {
+  try {
+    const { exports: astExports } = parseFileExports(content, filePath);
+    
+    return astExports.map(exp => ({
+      name: exp.name,
+      type: exp.type,
+      inferredDomain: inferDomain(exp.name),
+      imports: exp.imports,
+      dependencies: exp.dependencies,
+    }));
+  } catch (error) {
+    // Fallback to regex-based extraction
+    return extractExports(content);
+  }
+}
+
+/**
+ * Calculate enhanced cohesion score using both domain inference and import similarity
+ * 
+ * This combines:
+ * 1. Domain-based cohesion (entropy of inferred domains)
+ * 2. Import-based cohesion (Jaccard similarity of shared imports)
+ * 
+ * Weight: 60% import-based, 40% domain-based (import analysis is more reliable)
+ */
+export function calculateEnhancedCohesion(
+  exports: ExportInfo[],
+  filePath?: string
+): number {
+  if (exports.length === 0) return 1;
+  if (exports.length === 1) return 1;
+
+  // Special case for test files
+  if (filePath && isTestFile(filePath)) {
+    return 1;
+  }
+
+  // Calculate domain-based cohesion (existing method)
+  const domainCohesion = calculateDomainCohesion(exports);
+
+  // Calculate import-based cohesion if imports are available
+  const hasImportData = exports.some(e => e.imports && e.imports.length > 0);
+  
+  if (!hasImportData) {
+    // No import data available, use domain-based only
+    return domainCohesion;
+  }
+
+  const importCohesion = calculateImportBasedCohesion(exports);
+
+  // Weighted combination: 60% import-based, 40% domain-based
+  return importCohesion * 0.6 + domainCohesion * 0.4;
+}
+
+/**
+ * Calculate cohesion based on shared imports (Jaccard similarity)
+ */
+function calculateImportBasedCohesion(exports: ExportInfo[]): number {
+  const exportsWithImports = exports.filter(e => e.imports && e.imports.length > 0);
+  
+  if (exportsWithImports.length < 2) {
+    return 1; // Not enough data
+  }
+
+  // Calculate pairwise import similarity
+  let totalSimilarity = 0;
+  let comparisons = 0;
+
+  for (let i = 0; i < exportsWithImports.length; i++) {
+    for (let j = i + 1; j < exportsWithImports.length; j++) {
+      const exp1 = exportsWithImports[i] as ExportInfo & { imports: string[] };
+      const exp2 = exportsWithImports[j] as ExportInfo & { imports: string[] };
+      
+      const similarity = calculateJaccardSimilarity(exp1.imports, exp2.imports);
+      totalSimilarity += similarity;
+      comparisons++;
+    }
+  }
+
+  return comparisons > 0 ? totalSimilarity / comparisons : 1;
+}
+
+/**
+ * Calculate Jaccard similarity between two arrays
+ */
+function calculateJaccardSimilarity(arr1: string[], arr2: string[]): number {
+  if (arr1.length === 0 && arr2.length === 0) return 1;
+  if (arr1.length === 0 || arr2.length === 0) return 0;
+
+  const set1 = new Set(arr1);
+  const set2 = new Set(arr2);
+  
+  const intersection = new Set([...set1].filter(x => set2.has(x)));
+  const union = new Set([...set1, ...set2]);
+  
+  return intersection.size / union.size;
+}
+
+/**
+ * Calculate domain-based cohesion (existing entropy method)
+ */
+function calculateDomainCohesion(exports: ExportInfo[]): number {
+  const domains = exports.map((e) => e.inferredDomain || 'unknown');
+  const domainCounts = new Map<string, number>();
+
+  for (const domain of domains) {
+    domainCounts.set(domain, (domainCounts.get(domain) || 0) + 1);
+  }
+
+  const total = domains.length;
+  let entropy = 0;
+
+  for (const count of domainCounts.values()) {
+    const p = count / total;
+    if (p > 0) {
+      entropy -= p * Math.log2(p);
+    }
+  }
+
+  const maxEntropy = Math.log2(total);
+  return maxEntropy > 0 ? 1 - entropy / maxEntropy : 1;
 }

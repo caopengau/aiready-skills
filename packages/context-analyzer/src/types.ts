@@ -101,4 +101,7 @@ export interface ExportInfo {
   name: string;
   type: 'function' | 'class' | 'const' | 'type' | 'interface' | 'default';
   inferredDomain?: string; // Inferred from name/usage
+  imports?: string[]; // Imports used by this export (for import-based cohesion)
+  dependencies?: string[]; // Other exports from same file this depends on
 }
+
