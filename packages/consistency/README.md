@@ -246,8 +246,10 @@ AI models work best with consistent codebases because:
 
 This tool is part of the [AIReady](https://github.com/caopengau/aiready) ecosystem:
 
-- **@aiready/cli** - Unified interface for all analysis tools
-- **@aiready/pattern-detect** - Semantic duplicate detection
+**Related packages:**
+- [**@aiready/cli**](https://www.npmjs.com/package/@aiready/cli) - Unified interface for all analysis tools
+- [**@aiready/pattern-detect**](https://www.npmjs.com/package/@aiready/pattern-detect) - Semantic duplicate detection
+- [**@aiready/context-analyzer**](https://www.npmjs.com/package/@aiready/context-analyzer) - Context window cost analysis
 - **@aiready/context-analyzer** - Context window cost analysis
 - **@aiready/consistency** - Consistency analysis (this tool)
 

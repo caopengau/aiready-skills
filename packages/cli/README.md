@@ -192,5 +192,6 @@ The CLI is designed to integrate with:
 - Automated workflows
 
 For programmatic usage, see the individual packages:
-- [@aiready/pattern-detect](../pattern-detect)
-- [@aiready/context-analyzer](../context-analyzer)
+- [@aiready/pattern-detect](https://www.npmjs.com/package/@aiready/pattern-detect)
+- [@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)
+- [@aiready/consistency](https://www.npmjs.com/package/@aiready/consistency)

@@ -55,6 +55,11 @@ Result: AI sees everything, gives complete answers ✅
 - Use **@aiready/context-analyzer** to optimize for AI tools (advisory)
 - Track improvements over time with SaaS tier
 
+**Related AIReady Tools:**
+- [**@aiready/cli**](https://www.npmjs.com/package/@aiready/cli) - Unified CLI with all analysis tools
+- [**@aiready/pattern-detect**](https://www.npmjs.com/package/@aiready/pattern-detect) - Semantic duplicate detection
+- [**@aiready/consistency**](https://www.npmjs.com/package/@aiready/consistency) - Consistency checking
+
 ## 🧠 Understanding the Metrics
 
 This tool measures four key dimensions that affect how much context AI tools need to load:

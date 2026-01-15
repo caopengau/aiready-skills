@@ -16,15 +16,15 @@ AIReady helps teams **assess, visualize, and prepare** repositories for better A
 
 ### Core Tools (Free)
 
-- **[@aiready/pattern-detect](./packages/pattern-detect)** [![npm](https://img.shields.io/npm/v/@aiready/pattern-detect)](https://www.npmjs.com/package/@aiready/pattern-detect) - Semantic duplicate detection for AI-generated patterns
-- **[@aiready/context-analyzer](./packages/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Context window cost & dependency fragmentation analysis ✨ **NEW**
-- **[@aiready/doc-drift](./packages/doc-drift)** - Documentation freshness vs code churn tracking _(Coming Soon)_
-- **[@aiready/consistency](./packages/consistency)** - Naming & pattern consistency scoring _(Coming Soon)_
-- **[@aiready/cli](./packages/cli)** - Unified CLI for all analysis tools ✨ **NEW**
+- **[@aiready/cli](https://www.npmjs.com/package/@aiready/cli)** [![npm](https://img.shields.io/npm/v/@aiready/cli)](https://www.npmjs.com/package/@aiready/cli) - Unified CLI interface for running all analysis tools together or individually
+- **[@aiready/pattern-detect](https://www.npmjs.com/package/@aiready/pattern-detect)** [![npm](https://img.shields.io/npm/v/@aiready/pattern-detect)](https://www.npmjs.com/package/@aiready/pattern-detect) - Detect semantic duplicate patterns that waste AI context window tokens
+- **[@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Analyze context window costs, import depth, cohesion, and fragmentation
+- **[@aiready/consistency](https://www.npmjs.com/package/@aiready/consistency)** [![npm](https://img.shields.io/npm/v/@aiready/consistency)](https://www.npmjs.com/package/@aiready/consistency) - Check naming conventions and pattern consistency across your codebase
 
-### Convenience Wrappers
+### Coming Soon
 
-- **[@aiready/deps](./packages/deps)** - Dependency health (wraps madge + depcheck)
+- **[@aiready/doc-drift](./packages/doc-drift)** - Track documentation freshness vs code churn to identify outdated docs
+- **[@aiready/deps](./packages/deps)** - Analyze dependency health and detect circular dependencies
 
 ## 🚀 Quick Start
 
