@@ -82,7 +82,7 @@ AIReady supports configuration files for persistent settings. Create one of thes
 {
   "scan": {
     "include": ["**/*.{ts,tsx,js,jsx}"],
-    "exclude": ["**/node_modules/**", "**/dist/**", "**/*.test.*"]
+    "exclude": ["**/node_modules/**", "**/dist/**"]
   },
   "tools": {
     "pattern-detect": {
@@ -107,6 +107,8 @@ AIReady supports configuration files for persistent settings. Create one of thes
 ```
 
 CLI options override config file settings.
+
+**Default Exclusions:** By default, test files are excluded from all analyses (patterns: `**/*.test.*`, `**/*.spec.*`, `**/__tests__/**`, `**/test/**`, `**/tests/**`). Use `--include-tests` flag or `"includeTests": true` in config to include them.
 
 **Note:** Console output is limited by default to prevent overwhelming displays. Use `--max-results` to control how many items are shown, or `--output json` for complete results.
 

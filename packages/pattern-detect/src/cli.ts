@@ -85,19 +85,19 @@ program
       maxResults: options.maxResults ? parseInt(options.maxResults) : mergedConfig.maxResults,
     };
 
-    // Handle test file exclusion by default
-    if (!finalOptions.includeTests) {
+    // Test files are excluded by default in core's DEFAULT_EXCLUDE
+    // If user explicitly wants to include tests, we need to remove test patterns from exclude
+    if (finalOptions.includeTests && finalOptions.exclude) {
       const testPatterns = [
         '**/*.test.*',
         '**/*.spec.*',
         '**/__tests__/**',
         '**/test/**',
-        '**/*.test',
-        '**/*.spec',
+        '**/tests/**',
       ];
-      finalOptions.exclude = finalOptions.exclude
-        ? [...finalOptions.exclude, ...testPatterns]
-        : testPatterns;
+      finalOptions.exclude = finalOptions.exclude.filter(
+        (pattern: string) => !testPatterns.includes(pattern)
+      );
     }
 
     const { results, duplicates: rawDuplicates, files } = await analyzePatterns(finalOptions);
