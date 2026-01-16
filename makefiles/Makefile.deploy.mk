@@ -3,7 +3,7 @@
 
 include makefiles/Makefile.shared.mk
 
-.PHONY: deploy-landing deploy-landing-prod deploy-landing-remove landing-logs
+.PHONY: deploy-landing deploy-landing-prod deploy-landing-remove landing-logs landing-verify landing-cleanup
 
 ##@ Deployment
 
@@ -13,8 +13,10 @@ deploy-landing: ## Deploy landing page to AWS (dev environment)
 	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
 	@cd landing && \
 		set -a && [ -f .env ] && . ./.env || true && set +a && \
-		AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} \
-		CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN:-$(CLOUDFLARE_API_TOKEN)}" CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID:-$(CLOUDFLARE_ACCOUNT_ID)}" CLOUDFLARE_ZONE_ID="$${CLOUDFLARE_ZONE_ID:-$(CLOUDFLARE_ZONE_ID)}" \
+		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
+		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
+		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
+		export CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID}" && \
 		sst deploy
 	@$(call log_success,Landing page deployed to dev)
 
@@ -25,10 +27,61 @@ deploy-landing-prod: ## Deploy landing page to AWS (production)
 	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
 	@cd landing && \
 		set -a && [ -f .env ] && . ./.env || true && set +a && \
-		AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} \
-		CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN:-$(CLOUDFLARE_API_TOKEN)}" CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID:-$(CLOUDFLARE_ACCOUNT_ID)}" CLOUDFLARE_ZONE_ID="$${CLOUDFLARE_ZONE_ID:-$(CLOUDFLARE_ZONE_ID)}" \
+		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
+		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
+		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
+		export CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID}" && \
 		sst deploy --stage production
 	@$(call log_success,Landing page deployed to production)
+	@echo ""
+	@$(MAKE) landing-verify VERIFY_RETRIES=3 VERIFY_WAIT=10
+
+landing-verify: ## Check CloudFront distribution propagation status
+	@$(call log_step,Checking CloudFront distribution status)
+	@RETRIES=$${VERIFY_RETRIES:-1}; \
+	WAIT=$${VERIFY_WAIT:-0}; \
+	for i in $$(seq 1 $$RETRIES); do \
+		DIST_ID=$$(aws cloudfront list-distributions --profile $(AWS_PROFILE) --output json 2>/dev/null | \
+			jq -r '.DistributionList.Items[] | select(.Aliases.Items // [] | any(. == "getaiready.dev")) | .Id' | head -1); \
+		if [ -z "$$DIST_ID" ]; then \
+			if [ $$RETRIES -gt 1 ]; then \
+				echo "$(YELLOW)⚠️  Attempt $$i/$$RETRIES: Could not find CloudFront distribution with alias$(NC)"; \
+			else \
+				echo "$(YELLOW)⚠️  Could not find CloudFront distribution with alias getaiready.dev$(NC)"; \
+			fi; \
+			if [ $$i -eq $$RETRIES ]; then \
+				echo "$(RED)✗ Distribution not found$(NC)"; \
+				echo "$(YELLOW)💡 First deploy? Run 'make deploy-landing-prod' again to apply aliases$(NC)"; \
+				exit 1; \
+			fi; \
+			[ $$WAIT -gt 0 ] && sleep $$WAIT; \
+		else \
+			STATUS=$$(aws cloudfront get-distribution --id $$DIST_ID --profile $(AWS_PROFILE) 2>/dev/null | jq -r '.Distribution.Status'); \
+			echo "$(CYAN)Distribution ID: $$DIST_ID$(NC)"; \
+			if [ "$$STATUS" = "Deployed" ]; then \
+				echo "$(GREEN)✓ Status: Deployed - Site is live!$(NC)"; \
+				echo "$(CYAN)🌐 URL: https://getaiready.dev$(NC)"; \
+				break; \
+			elif [ "$$STATUS" = "InProgress" ]; then \
+				if [ $$RETRIES -gt 1 ]; then \
+					echo "$(YELLOW)⏳ Attempt $$i/$$RETRIES: Status is InProgress$(NC)"; \
+				else \
+					echo "$(YELLOW)⏳ Status: InProgress - CloudFront is deploying changes$(NC)"; \
+				fi; \
+				if [ $$i -eq $$RETRIES ]; then \
+					echo "$(YELLOW)CloudFront is still deploying (takes 5-15 minutes)$(NC)"; \
+					echo "$(CYAN)💡 Monitor: make landing-verify$(NC)"; \
+					echo "$(CYAN)💡 Or redeploy: make deploy-landing-prod$(NC)"; \
+				else \
+					[ $$WAIT -gt 0 ] && sleep $$WAIT; \
+				fi; \
+			else \
+				echo "$(YELLOW)Status: $$STATUS$(NC)"; \
+				break; \
+			fi; \
+		fi; \
+	done
+	@echo ""
 
 deploy-landing-remove: ## Remove landing page deployment (dev)
 	@$(call log_warning,Removing landing page deployment from AWS (dev))
@@ -96,3 +149,42 @@ leads-export: ## Export submissions from S3 to local CSV
 
 leads-open: ## Open leads folder
 	@open .aiready/leads 2>/dev/null || xdg-open .aiready/leads 2>/dev/null || echo "Path: .aiready/leads"
+
+landing-cleanup: ## Clean up stale AWS resources from old deployments
+	@$(call log_warning,Scanning for stale AWS resources)
+	@echo "$(CYAN)Checking CloudFront distributions...$(NC)"
+	@OLD_DISTS=$$(aws cloudfront list-distributions --profile $(AWS_PROFILE) 2>/dev/null | \
+		jq -r '.DistributionList.Items[] | select(.Aliases.Quantity == 0 and (.Comment | contains("aiready") or contains("landing"))) | .Id'); \
+	if [ -n "$$OLD_DISTS" ]; then \
+		echo "$(YELLOW)Found CloudFront distributions without aliases:$(NC)"; \
+		for dist in $$OLD_DISTS; do \
+			DOMAIN=$$(aws cloudfront get-distribution --id $$dist --profile $(AWS_PROFILE) 2>/dev/null | jq -r '.Distribution.DomainName'); \
+			echo "  - $$dist ($$DOMAIN)"; \
+		done; \
+		echo "$(YELLOW)💡 To disable: aws cloudfront get-distribution-config --id <ID> > /tmp/dist.json$(NC)"; \
+		echo "$(YELLOW)   Then: aws cloudfront update-distribution --id <ID> --if-match <ETag> --distribution-config <config-with-Enabled=false>$(NC)"; \
+		echo "$(YELLOW)   Finally: aws cloudfront delete-distribution --id <ID> --if-match <ETag>$(NC)"; \
+	else \
+		echo "$(GREEN)✓ No stale CloudFront distributions$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(CYAN)Checking Lambda functions...$(NC)"
+	@OLD_LAMBDAS=$$(aws lambda list-functions --region $(AWS_REGION) --profile $(AWS_PROFILE) 2>/dev/null | \
+		jq -r '.Functions[] | select(.FunctionName | contains("pengcao") or contains("dev")) | .FunctionName'); \
+	if [ -n "$$OLD_LAMBDAS" ]; then \
+		echo "$(YELLOW)Found dev/test Lambda functions:$(NC)"; \
+		for func in $$OLD_LAMBDAS; do \
+			echo "  - $$func"; \
+		done; \
+		echo "$(YELLOW)💡 To delete: aws lambda delete-function --function-name <NAME> --region $(AWS_REGION)$(NC)"; \
+	else \
+		echo "$(GREEN)✓ No stale Lambda functions$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(CYAN)Checking ACM certificates...$(NC)"
+	@aws acm list-certificates --region us-east-1 --profile $(AWS_PROFILE) 2>/dev/null | \
+		jq -r '.CertificateSummaryList[] | select(.DomainName == "getaiready.dev") | "\(.CertificateArn) - InUse: \(.InUse)"' | \
+		while read -r cert; do echo "  $$cert"; done
+	@echo "$(CYAN)💡 Certificates are auto-deleted when CloudFront distributions are removed$(NC)"
+	@echo ""
+	@$(call log_success,Cleanup scan complete)
