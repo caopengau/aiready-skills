@@ -23,6 +23,37 @@ AIReady is a monorepo with tools for assessing AI-readiness and visualizing tech
 - Spokes: Import only from core, focus on one problem, comply with CLI specs
 - All spokes must integrate with CLI (--output, --include, --exclude, unified format)
 
+## 🚨 CRITICAL: AWS Credentials & Deployment
+
+**MANDATORY CHECK BEFORE ANY AWS OPERATIONS:**
+
+**AWS Profile:** `AWS_PROFILE=aiready` (defined in makefiles/Makefile.shared.mk)
+
+**⚠️ BEFORE deploying, SST operations, or any AWS commands:**
+1. ✅ **ALWAYS verify AWS account first:**
+   ```bash
+   aws sts get-caller-identity
+   # Must show the CORRECT account ID for aiready project
+   ```
+2. ✅ **ALWAYS check active AWS profile:**
+   ```bash
+   echo $AWS_PROFILE  # Should be: aiready
+   aws configure list
+   ```
+3. ❌ **NEVER deploy without explicit user confirmation of AWS account**
+4. ❌ **NEVER assume AWS credentials are correct**
+
+**If wrong account detected:**
+```bash
+# Immediately remove deployment:
+cd landing && pnpm sst remove --stage production
+
+# Set correct profile:
+export AWS_PROFILE=aiready
+# OR configure:
+aws configure --profile aiready
+```
+
 ## ⚠️ COMPULSORY: Git Workflow Practices
 
 **CRITICAL:** Before any git operations, **always load and follow** the git workflow sub-instructions:
@@ -58,6 +89,9 @@ make push-all  # ← This syncs ALL repos automatically
 - Can I test on a real repo?
 - Does it comply with CLI specs?
 - Am I updating CLI for new spokes?
+- **AWS:** Have I verified AWS account identity with `aws sts get-caller-identity`?
+- **AWS:** Is AWS_PROFILE=aiready set correctly?
+- **AWS:** Did I get explicit user confirmation before deploying?
 - **GIT:** Am I following hub-and-spoke git practices? (Always load git-workflow first!)
 - **GIT:** Should I use `make push-all` or direct git commands?
 - **GIT:** Is this change in the monorepo or a spoke repo?

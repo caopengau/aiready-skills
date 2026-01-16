@@ -26,7 +26,13 @@ RELEASE_ORDER := core $(MIDDLE_SPOKES) cli
 
 .ONESHELL:
 
-# AWS Configuration
+###############################################################################
+# AWS Configuration - CRITICAL: Verify before any deployment!
+###############################################################################
+# ⚠️  ALWAYS verify AWS account before deploying:
+#     aws sts get-caller-identity
+#     aws configure list
+# ⚠️  Default profile: 'aiready' - MUST match your AWS credentials
 # Override with: export AWS_PROFILE=your-profile
 AWS_PROFILE ?= aiready
 AWS_REGION ?= ap-southeast-2
