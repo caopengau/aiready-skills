@@ -179,7 +179,13 @@ publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing 
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Remote set: $$remote -> $$url); \
 	git branch -D "$$branch" >/dev/null 2>&1 || true; \
+	$(call log_info,Creating subtree split excluding sst.config.ts and .env...); \
 	git subtree split --prefix=landing -b "$$branch" >/dev/null; \
+	$(call log_info,Removing sensitive files from split branch...); \
+	git checkout "$$branch" 2>/dev/null; \
+	git rm -f sst.config.ts .env >/dev/null 2>&1 || true; \
+	git commit --amend --no-edit -m "Landing page sync (public)" >/dev/null 2>&1 || true; \
+	git checkout $(TARGET_BRANCH) 2>/dev/null; \
 	$(call log_info,Subtree split complete: $$branch); \
 	split_commit=$$(git rev-parse "$$branch"); \
 	git push -f "$$remote" "$$branch:$$target_branch"; \

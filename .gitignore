@@ -30,12 +30,14 @@ landing/.next/
 landing/out/
 landing/.vercel
 landing/.sst/
+landing/.env
 
 # SST (AWS deployment)
 .sst/
 .open-next/
 *.sst
 sst-env.d.ts
+# Keep sst.config.ts in monorepo for landing/
 
 # AWS credentials (paranoid)
 .aws/credentials
