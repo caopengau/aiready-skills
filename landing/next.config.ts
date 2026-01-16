@@ -1,13 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // For static export (AWS S3/CloudFront)
-  output: "export",
+  // Removed output: "export" to enable proper client-side hydration
+  // for Framer Motion animations and Recharts
   
-  // Optional: Add trailing slashes for S3 compatibility
-  trailingSlash: true,
-  
-  // Disable image optimization for static export
+  // Keep image optimization disabled for now
   images: {
     unoptimized: true,
   },

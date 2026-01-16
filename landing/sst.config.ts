@@ -25,13 +25,9 @@ export default $config({
       },
     });
 
-    // Deploy the Next.js static site to S3 + CloudFront
-    const site = new sst.aws.StaticSite("AireadyLanding", {
+    // Deploy the Next.js site with SSR support (for Framer Motion & Recharts)
+    const site = new sst.aws.Nextjs("AireadyLanding", {
       path: "./",
-      build: {
-        command: "pnpm build",
-        output: "out",
-      },
       environment: {
         NEXT_PUBLIC_REQUEST_URL: requestApi.url,
       },
