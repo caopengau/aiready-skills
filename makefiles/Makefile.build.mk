@@ -3,7 +3,7 @@
 ###############################################################################
 include makefiles/Makefile.shared.mk
 
-.PHONY: build build-core build-pattern-detect dev dev-core dev-pattern-detect
+.PHONY: build build-core build-pattern-detect dev dev-core dev-pattern-detect dev-landing
 
 build: ## Build all packages
 	@$(call log_step,Building all packages...)
@@ -39,3 +39,8 @@ dev-core: ## Start development mode (watch) for core package
 dev-pattern-detect: ## Start development mode (watch) for pattern-detect package
 	@$(call log_info,Starting development mode for @aiready/pattern-detect...)
 	@$(PNPM) --filter @aiready/pattern-detect dev
+
+dev-landing: ## Start landing page dev server at http://localhost:3000
+	@$(call log_step,Starting landing page dev server...)
+	@echo "$(CYAN)Landing page will be available at: $(GREEN)http://localhost:3000$(NC)"
+	@$(PNPM) --filter @aiready/landing dev
