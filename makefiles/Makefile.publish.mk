@@ -162,11 +162,12 @@ sync-landing: ## Sync changes from aiready-landing repo back to monorepo
 	@$(call log_step,Syncing changes from aiready-landing back to monorepo...)
 	@url="https://github.com/$(OWNER)/aiready-landing.git"; \
 	remote="aiready-landing"; \
+	branch="master"; \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Fetching latest from $$remote...); \
-	git fetch "$$remote" $(TARGET_BRANCH); \
+	git fetch "$$remote" "$$branch"; \
 	$(call log_info,Pulling changes into landing/ directory...); \
-	git subtree pull --prefix=landing "$$remote" $(TARGET_BRANCH) --squash -m "chore: sync landing page from public repo"; \
+	git subtree pull --prefix=landing "$$remote" "$$branch" --squash -m "chore: sync landing page from public repo"; \
 	$(call log_success,Synced changes from aiready-landing)
 
 publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing [OWNER=username]
@@ -174,14 +175,15 @@ publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing 
 	@url="https://github.com/$(OWNER)/aiready-landing.git"; \
 	remote="aiready-landing"; \
 	branch="publish-landing"; \
+	target_branch="master"; \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Remote set: $$remote -> $$url); \
 	git branch -D "$$branch" >/dev/null 2>&1 || true; \
 	git subtree split --prefix=landing -b "$$branch" >/dev/null; \
 	$(call log_info,Subtree split complete: $$branch); \
 	split_commit=$$(git rev-parse "$$branch"); \
-	git push -f "$$remote" "$$branch":$(TARGET_BRANCH); \
-	$(call log_success,Synced landing page to GitHub repo ($(TARGET_BRANCH))); \
+	git push -f "$$remote" "$$branch:$$target_branch"; \
+	$(call log_success,Synced landing page to GitHub repo ($$target_branch)); \
 	$(call log_step,Tagging landing repo commit $$split_commit...); \
 	landing_tag="landing-$$(date +%Y%m%d-%H%M%S)"; \
 	git tag -a "$$landing_tag" "$$split_commit" -m "Landing page sync $$landing_tag"; \
