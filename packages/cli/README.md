@@ -1,28 +1,74 @@
 # @aiready/cli
 
-Unified CLI for AIReady analysis tools. Provides both unified analysis and individual tool access.
+> **Unified CLI for AIReady analysis tools - Run all AI-readiness checks from a single command**
 
-## Installation
+The CLI provides both unified analysis (scan multiple tools at once) and individual tool access for pattern detection, context analysis, and consistency checking.
+
+## 🚀 Quick Start
+
+**Zero config, works out of the box:**
 
 ```bash
+# Run without installation (recommended)
+npx @aiready/cli scan ./src
+
+# Or install globally for simpler command and faster runs
 npm install -g @aiready/cli
-# or
-pnpm add -g @aiready/cli
-# or
-yarn global add @aiready/cli
+aiready scan ./src
 ```
 
-## Usage
+### 🎯 Input & Output
 
-### Unified Analysis
+**Input:** Path to your source code directory
+```bash
+aiready scan ./src
+```
 
-Run both pattern detection and context analysis:
+**Output:** Terminal report + optional JSON file (saved to `.aiready/` directory)
+```
+📊 AIReady Scan Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 Pattern Detection
+   📁 Files analyzed: 47
+   ⚠️  Duplicate patterns: 12 files with 23 issues
+   💰 Wasted tokens: 8,450
+
+📦 Context Analysis
+   📁 Files analyzed: 47
+   ⚠️  High context cost: 8 files
+   🔗 Deep import chains: 5 files
+```
+
+### ✨ Smart Defaults (Zero Config)
+
+- ✅ **Auto-excludes** test files (`**/*.test.*`, `**/*.spec.*`, `**/__tests__/**`)
+- ✅ **Auto-excludes** build outputs (`dist/`, `build/`, `.next/`, `cdk.out/`)
+- ✅ **Auto-excludes** dependencies (`node_modules/`)
+- ✅ **Adaptive thresholds**: Adjusts issue detection based on codebase size
+- ✅ **Unified reporting**: Combines results from all tools into one view
+
+> Override defaults with `--include` or `--exclude` options as needed
+
+## 📦 Commands
+
+### Unified Scan
+
+Run multiple analysis tools in one command:
 
 ```bash
 aiready scan <directory>
 ```
 
+**Options:**
+- `-t, --tools <tools>`: Tools to run (comma-separated: patterns,context,consistency) (default: patterns,context)
+- `--include <patterns>`: File patterns to include (comma-separated)
+- `--exclude <patterns>`: File patterns to exclude (comma-separated)
+- `-o, --output <format>`: Output format: console, json (default: console)
+- `--output-file <path>`: Output file path (defaults to `.aiready/aiready-scan-YYYY-MM-DD.json`)
+
 ### Individual Tools
+
+Access each tool directly for focused analysis:
 
 #### Pattern Detection
 
@@ -30,7 +76,7 @@ aiready scan <directory>
 aiready patterns <directory> [options]
 ```
 
-Options:
+**Options:**
 - `-s, --similarity <number>`: Minimum similarity score (0-1) (default: 0.40)
 - `-l, --min-lines <number>`: Minimum lines to consider (default: 5)
 - `--include <patterns>`: File patterns to include (comma-separated)
@@ -44,7 +90,7 @@ Options:
 aiready context <directory> [options]
 ```
 
-Options:
+**Options:**
 - `--max-depth <number>`: Maximum acceptable import depth (default: 5)
 - `--max-context <number>`: Maximum acceptable context budget (tokens) (default: 10000)
 - `--include <patterns>`: File patterns to include (comma-separated)
@@ -52,34 +98,39 @@ Options:
 - `-o, --output <format>`: Output format: console, json (default: console)
 - `--output-file <path>`: Output file path (defaults to `.aiready/context-report-YYYY-MM-DD.json`)
 
-### Unified Scan Options
+#### Consistency Analysis
 
 ```bash
-aiready scan <directory> [options]
+aiready consistency <directory> [options]
 ```
 
-Options:
-- `-t, --tools <tools>`: Tools to run (comma-separated: patterns,context) (default: patterns,context)
+**Options:**
 - `--include <patterns>`: File patterns to include (comma-separated)
 - `--exclude <patterns>`: File patterns to exclude (comma-separated)
 - `-o, --output <format>`: Output format: console, json (default: console)
-- `--output-file <path>`: Output file path (defaults to `.aiready/aiready-scan-YYYY-MM-DD.json`)
+- `--output-file <path>`: Output file path (defaults to `.aiready/consistency-report-YYYY-MM-DD.json`)
 
 > **📁 Output Files:** By default, all output files are saved to the `.aiready/` directory in your project root with timestamped filenames. You can override this with `--output-file`.
 
-## Examples
+## 💡 Examples
 
-### Quick Analysis
+### Basic Usage
 
 ```bash
-# Analyze current directory with both tools
+# Analyze current directory with all tools
 aiready scan .
+
+# Run specific tools only
+aiready scan . --tools patterns,context
 
 # Analyze only patterns
 aiready patterns .
 
 # Analyze only context costs
 aiready context .
+
+# Analyze only consistency
+aiready consistency .
 ```
 
 ### Advanced Usage
@@ -99,22 +150,12 @@ aiready scan . --output json --output-file custom-results.json
 
 # Run only pattern analysis with custom similarity threshold
 aiready patterns . --similarity 0.6 --min-lines 10
+
+# Run context analysis with custom thresholds
+aiready context . --max-depth 3 --max-context 5000
 ```
 
-### Default Exclusions
-
-By default, these common build and output directories are excluded from analysis:
-
-- Dependencies: `**/node_modules/**`
-- Build outputs: `**/dist/**`, `**/build/**`, `**/out/**`, `**/output/**`, etc.
-- Framework caches: `**/.next/**`, `**/.nuxt/**`, `**/.cache/**`, `**/.turbo/**`
-- Test/coverage: `**/coverage/**`, `**/.nyc_output/**`, `**/.jest/**`
-- Version control/IDE: `**/.git/**`, `**/.vscode/**`, `**/.idea/**`
-- Build artifacts: `**/*.min.js`, `**/*.bundle.js`, `**/*.tsbuildinfo`
-
-Use `--include` and `--exclude` options to customize file selection.
-
-### Configuration
+## ⚙️ Configuration
 
 AIReady supports configuration files to persist your settings. Create one of these files in your project root:
 
@@ -125,7 +166,7 @@ AIReady supports configuration files to persist your settings. Create one of the
 - `aiready.config.js`
 - `.aireadyrc.js`
 
-#### Example Configuration
+### Example Configuration
 
 ```json
 {
@@ -154,7 +195,7 @@ AIReady supports configuration files to persist your settings. Create one of the
 
 Configuration values are merged with defaults, and CLI options take precedence over config file settings.
 
-### CI/CD Integration
+## 🔄 CI/CD Integration
 
 ```bash
 # JSON output for automated processing
@@ -164,7 +205,7 @@ aiready scan . --output json --output-file aiready-results.json
 aiready scan . && echo "No issues found" || echo "Issues detected"
 ```
 
-## Output Formats
+## 📊 Output Formats
 
 ### Console Output
 
@@ -178,12 +219,12 @@ Structured data including:
 - Issue breakdowns
 - Execution timing
 
-## Exit Codes
+## 🚦 Exit Codes
 
 - `0`: Success, no critical issues
 - `1`: Analysis failed or critical issues found
 
-## Integration
+## 🔗 Integration
 
 The CLI is designed to integrate with:
 - CI/CD pipelines
