@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 import RequestForm from '../components/RequestForm'
 import AnimatedHero from '../components/AnimatedHero'
 import AnimatedStats from '../components/AnimatedStats'
@@ -23,33 +24,33 @@ export default function HomePage() {
         transition={{ duration: 0.6 }}
         className="sticky top-0 z-50 backdrop-blur-lg bg-white/70 border-b border-slate-200/50 shadow-sm"
       >
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <nav className="container mx-auto px-4 py-2 flex items-center justify-between">
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="flex items-center gap-2"
           >
-            <span className="text-2xl font-black bg-gradient-to-r from-blue-600 via-cyan-500 to-purple-600 bg-clip-text text-transparent">
-              aiready
-            </span>
+            <Image 
+              src="/logo-text.png" 
+              alt="AIReady Logo" 
+              width={210} 
+              height={48}
+              className="h-12 w-auto"
+              priority
+            />
           </motion.div>
-          <div className="flex items-center gap-6">
-            <Link href="/docs" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-              Docs
-            </Link>
-            <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-              Pricing
-            </Link>
+          <div className="flex items-center gap-8">
             <Link 
               href="https://www.npmjs.com/package/@aiready/cli" 
               target="_blank"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              className="text-base font-medium text-slate-600 hover:text-slate-900 relative group transition-colors"
             >
-              NPM
+              <span>NPM</span>
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 group-hover:w-full transition-all duration-300"></span>
             </Link>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link 
                 href="#get-started"
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-bold rounded-lg hover:shadow-lg transition-all"
+                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-base font-bold rounded-lg hover:shadow-lg transition-all"
               >
                 Get Started
               </Link>
@@ -320,7 +321,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-12 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
+      <footer className="border-t border-slate-200 py-6 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5" />
         <div className="container mx-auto px-4 relative">
           <motion.div
@@ -328,10 +329,10 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="flex flex-col md:flex-row justify-between items-center gap-6"
+            className="flex flex-col md:flex-row justify-between items-center gap-4"
           >
             <div className="text-center md:text-left">
-              <div className="text-2xl font-black bg-gradient-to-r from-blue-600 via-cyan-500 to-purple-600 bg-clip-text text-transparent mb-2">
+              <div className="text-xl font-black bg-gradient-to-r from-blue-600 via-cyan-500 to-purple-600 bg-clip-text text-transparent mb-1">
                 aiready
               </div>
               <div className="text-sm text-slate-600">
@@ -342,8 +343,6 @@ export default function HomePage() {
               {[
                 { href: "https://www.npmjs.com/package/@aiready/cli", label: "NPM" },
                 { href: "https://github.com/caopengau/aiready-cli", label: "GitHub" },
-                { href: "https://twitter.com/aireadytools", label: "Twitter" },
-                { href: "/docs", label: "Documentation" },
               ].map((link, idx) => (
                 <motion.div
                   key={idx}

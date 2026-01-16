@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   authors: [{ name: "aiready Team" }],
   creator: "aiready",
   publisher: "aiready",
+  icons: {
+    icon: [
+      { url: "/logo-transparent-bg.png", sizes: "32x32", type: "image/png" },
+      { url: "/logo-transparent-bg.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo-transparent-bg.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     title: "AIReady - Make Your Codebase AI-Ready",
     description: "Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency.",
