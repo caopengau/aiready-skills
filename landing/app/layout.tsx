@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "aiready",
     images: [
       {
-        url: "/og-image.png",
+        url: "/logo-text.png",
         width: 1200,
         height: 630,
         alt: "aiready - AI-Ready Codebase Tools",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "aiready - Make Your Codebase AI-Ready",
     description: "Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency that AI models understand.",
-    images: ["/og-image.png"],
+    images: ["/logo-text.png"],
     creator: "@aireadytools",
   },
   robots: {
