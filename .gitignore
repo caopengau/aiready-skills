@@ -16,6 +16,7 @@ coverage/
 # Env
 .env
 .env.*
+!.env.example
 
 # Build artifacts
 **/dist/
@@ -23,3 +24,41 @@ coverage/
 # AIReady output
 .aiready/
 .aiready/stats/
+
+# Landing page (Next.js)
+landing/.next/
+landing/out/
+landing/.vercel
+landing/.sst/
+
+# SST (AWS deployment)
+.sst/
+.open-next/
+*.sst
+sst-env.d.ts
+
+# AWS credentials (paranoid)
+.aws/credentials
+.aws/config
+
+# Secrets and sensitive data
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

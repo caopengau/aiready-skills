@@ -10,6 +10,11 @@ RELEASE_ORDER := core $(filter-out core cli, $(sort $(ALL_SPOKES))) cli
 PACKAGES := core pattern-detect
 .ONESHELL:
 
+# AWS Configuration
+# Override with: export AWS_PROFILE=your-profile
+AWS_PROFILE ?= aiready
+AWS_REGION ?= ap-southeast-2
+
 # Color definitions
 RED        := $(shell printf '\033[0;31m')    # color: #FF0000
 GREEN      := $(shell printf '\033[0;32m')    # color: #00FF00
@@ -19,6 +24,7 @@ LIGHTBLUE  := $(shell printf '\033[1;34m')    # color: #1E90FF
 CYAN       := $(shell printf '\033[0;36m')    # color: #00FFFF
 MAGENTA    := $(shell printf '\033[0;35m')    # color: #FF00FF
 WHITE      := $(shell printf '\033[0;37m')    # color: #FFFFFF
+NC         := $(shell printf '\033[0m')       # alias for RESET_COLOR (no color)
 
 BOLD       := $(shell printf '\033[1m')       # style: bold
 UNDERLINE  := $(shell printf '\033[4m')       # style: underline
@@ -29,7 +35,7 @@ BG_GREEN   := $(shell printf '\033[42m')      # bg: #00FF00
 BG_YELLOW  := $(shell printf '\033[43m')      # bg: #FFFF00
 BG_BLUE    := $(shell printf '\033[44m')      # bg: #0000FF
 
-RESET_COLOR         := $(shell printf '\033[0m')    # reset
+RESET_COLOR         := $(shell printf '\033[0m')    # reset (same as NC)
 # Literal backslash-escaped clear sequence. Expand at runtime with printf '%b'.
 INDENT_CLEAR       := \r\033[K
 

@@ -19,11 +19,11 @@ export default function HomePage() {
               Pricing
             </Link>
             <Link 
-              href="https://github.com/caopengau/aiready" 
+              href="https://www.npmjs.com/package/@aiready/cli" 
               target="_blank"
               className="text-sm text-slate-600 hover:text-slate-900"
             >
-              GitHub
+              npm
             </Link>
             <Link 
               href="#get-started"
@@ -64,12 +64,12 @@ export default function HomePage() {
               <span>→</span>
             </Link>
             <Link 
-              href="https://github.com/caopengau/aiready"
+              href="https://www.npmjs.com/package/@aiready/cli"
               target="_blank"
               className="px-8 py-4 bg-slate-100 text-slate-900 font-semibold rounded-lg hover:bg-slate-200 transition-colors inline-flex items-center justify-center gap-2"
             >
-              <span>⭐</span>
-              View on GitHub
+              <span>📦</span>
+              View on npm
             </Link>
           </div>
 
@@ -190,6 +190,12 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Request Report Form */}
+      <section className="container mx-auto px-4 py-20">
+        {/* @ts-expect-error Server Component importing client */}
+        {require('../components/RequestForm').default()}
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-slate-200 py-12">
         <div className="container mx-auto px-4">
@@ -198,11 +204,11 @@ export default function HomePage() {
               © 2026 AIReady. MIT License.
             </div>
             <div className="flex gap-6">
-              <Link href="https://github.com/caopengau/aiready" target="_blank" className="text-sm text-slate-600 hover:text-slate-900">
-                GitHub
-              </Link>
               <Link href="https://www.npmjs.com/package/@aiready/cli" target="_blank" className="text-sm text-slate-600 hover:text-slate-900">
                 npm
+              </Link>
+              <Link href="https://twitter.com/aireadytools" target="_blank" className="text-sm text-slate-600 hover:text-slate-900">
+                Twitter
               </Link>
               <Link href="/docs" className="text-sm text-slate-600 hover:text-slate-900">
                 Documentation

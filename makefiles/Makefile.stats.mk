@@ -1,13 +1,9 @@
 # Stats and Analytics Tracking
 # Track NPM downloads, GitHub metrics, and package health
 
-.PHONY: stats stats-npm stats-github stats-all stats-weekly stats-export
+include makefiles/Makefile.shared.mk
 
-# Colors
-CYAN := \033[0;36m
-GREEN := \033[0;32m
-YELLOW := \033[0;33m
-NC := \033[0m
+.PHONY: stats stats-npm stats-github stats-all stats-weekly stats-export
 
 # Package names
 PACKAGES := @aiready/cli @aiready/pattern-detect @aiready/context-analyzer @aiready/consistency @aiready/core
