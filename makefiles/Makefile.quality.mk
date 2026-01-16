@@ -37,7 +37,7 @@ lint: ## Run ESLint on all packages
 	@if command -v turbo >/dev/null 2>&1; then \
 		turbo run lint; \
 	else \
-		$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(PACKAGES),lint-$(pkg)); \
+		$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(ALL_SPOKES),lint-$(pkg)); \
 	fi
 	@$(call log_success,All lint checks passed.)
 
@@ -54,7 +54,7 @@ lint-pattern-detect:
 # Lint fixes
 lint-fix: ## Run ESLint --fix on all packages
 	@$(call log_info,Auto-fixing lint issues on all packages...)
-	@$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(PACKAGES),lint-fix-$(pkg))
+	@$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(ALL_SPOKES),lint-fix-$(pkg))
 	@$(call log_success,All lint fixes completed)
 
 lint-fix-core:
@@ -84,7 +84,7 @@ format-check-pattern-detect:
 # Format fixes
 format: ## Format all packages with Prettier
 	@$(call log_step,Formatting code with Prettier...)
-	@$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(PACKAGES),format-$(pkg))
+	@$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(ALL_SPOKES),format-$(pkg))
 	@$(call log_success,All packages formatted)
 
 format-core:

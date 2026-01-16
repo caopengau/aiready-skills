@@ -15,10 +15,15 @@ endif
 
 # Dynamically discover all packages in packages/ directory
 ALL_SPOKES := $(notdir $(wildcard packages/*))
-# Smart release order: core first, cli last, others alphabetical
-RELEASE_ORDER := core $(filter-out core cli, $(sort $(ALL_SPOKES))) cli
-# Legacy static list (deprecated - use ALL_SPOKES)
-PACKAGES := core pattern-detect
+
+# Three-phase release strategy (matches release-all workflow)
+CORE_SPOKE := core
+CLI_SPOKE := cli
+MIDDLE_SPOKES := $(filter-out core cli, $(sort $(ALL_SPOKES)))
+
+# Legacy: Sequential release order (deprecated - use phase variables above)
+RELEASE_ORDER := core $(MIDDLE_SPOKES) cli
+
 .ONESHELL:
 
 # AWS Configuration

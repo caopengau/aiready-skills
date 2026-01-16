@@ -5,8 +5,7 @@ include makefiles/Makefile.shared.mk
 
 .PHONY: stats stats-npm stats-github stats-all stats-weekly stats-export
 
-# Package names
-PACKAGES := @aiready/cli @aiready/pattern-detect @aiready/context-analyzer @aiready/consistency @aiready/core
+TOOLS := @aiready/cli @aiready/pattern-detect @aiready/context-analyzer @aiready/consistency @aiready/core
 
 # Date helpers
 WEEK_AGO := $(shell date -v-7d +%Y-%m-%d 2>/dev/null || date -d '7 days ago' +%Y-%m-%d)
@@ -26,7 +25,7 @@ stats: ## Show quick stats summary
 
 stats-npm: ## Show NPM download statistics
 	@echo "$(GREEN)📦 NPM Downloads (Last 7 Days)$(NC)\n"
-	@for pkg in $(PACKAGES); do \
+	@for pkg in $(TOOLS); do \
 		echo "$(YELLOW)$$pkg$(NC)"; \
 		curl -s "https://api.npmjs.org/downloads/point/last-week/$$pkg" | \
 			jq -r '"  Downloads: \(.downloads // 0)"' 2>/dev/null || echo "  (API error)"; \
@@ -37,7 +36,7 @@ stats-npm: ## Show NPM download statistics
 
 stats-npm-detailed: ## Show detailed NPM statistics with trends
 	@echo "$(GREEN)📦 Detailed NPM Statistics$(NC)\n"
-	@for pkg in $(PACKAGES); do \
+	@for pkg in $(TOOLS); do \
 		echo "$(YELLOW)$$pkg$(NC)"; \
 		echo "  Last Week:"; \
 		curl -s "https://api.npmjs.org/downloads/point/last-week/$$pkg" | \
@@ -91,7 +90,7 @@ stats-export: ## Export stats to JSON file
 		echo '  "date": "$(TODAY)",'; \
 		echo '  "npm": {'; \
 		first=true; \
-		for pkg in $(PACKAGES); do \
+		for pkg in $(TOOLS); do \
 			if [ "$$first" = false ]; then echo "    ,"; fi; \
 			first=false; \
 			pkg_clean=$$(echo $$pkg | sed 's/@aiready\///'); \
@@ -156,7 +155,7 @@ stats-setup: ## Install required tools for stats tracking
 
 stats-dashboard: ## Open NPM/GitHub stats in browser
 	@echo "$(CYAN)🌐 Opening stats dashboards...$(NC)\n"
-	@for pkg in $(PACKAGES); do \
+	@for pkg in $(TOOLS); do \
 		echo "Opening npmjs.com for $$pkg"; \
 		open "https://www.npmjs.com/package/$$pkg" 2>/dev/null || xdg-open "https://www.npmjs.com/package/$$pkg" 2>/dev/null || true; \
 	done

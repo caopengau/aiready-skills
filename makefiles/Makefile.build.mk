@@ -40,6 +40,7 @@ dev-pattern-detect: ## Start development mode (watch) for pattern-detect package
 	@$(call log_info,Starting development mode for @aiready/pattern-detect...)
 	@$(PNPM) --filter @aiready/pattern-detect dev
 
+landing: dev-landing ## Alias for dev-landing
 dev-landing: ## Start landing page dev server at http://localhost:3000
 	@$(call log_step,Starting landing page dev server...)
 	@echo "$(CYAN)Landing page will be available at: $(GREEN)http://localhost:3000$(NC)"

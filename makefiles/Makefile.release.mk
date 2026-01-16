@@ -125,6 +125,7 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 	$(call log_success,Release finished for @aiready/$(SPOKE))
 
 # Release all spokes with the same bump type
+# Strategy: core → parallel middle packages → cli (respects dependencies)
 release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1]
 	@if [ -z "$(TYPE)" ]; then \
 		$(call log_error,TYPE parameter required. Example: make $@ TYPE=minor); \
@@ -136,11 +137,42 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 		exit 1; \
 	fi; \
 	$(call log_success,All tests passed)
-	@for spoke in $(RELEASE_ORDER); do \
-		$(call log_info,Releasing @aiready/$$spoke ($(TYPE))); \
-		$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$$spoke TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
-	done
-	@$(call log_success,All spokes released)
+	@# Phase 1: Release core first (dependency for all other packages)
+	$(call separator,$(CYAN)); \
+	$(call log_info,Phase 1/3: Releasing @aiready/$(CORE_SPOKE) ($(TYPE))); \
+	$(call separator,$(CYAN)); \
+	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CORE_SPOKE) TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
+	$(call log_success,✓ Core released)
+	@# Phase 2: Release middle packages in parallel (independent of each other)
+	if [ -n "$(MIDDLE_SPOKES)" ]; then \
+		$(call separator,$(CYAN)); \
+		$(call log_info,Phase 2/3: Releasing $(MIDDLE_SPOKES) in parallel); \
+		$(call separator,$(CYAN)); \
+		pids=""; \
+		for spoke in $(MIDDLE_SPOKES); do \
+			$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$$spoke TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) & \
+			pids="$$pids $$!"; \
+		done; \
+		failed=0; \
+		for pid in $$pids; do \
+			if ! wait $$pid; then \
+				failed=1; \
+			fi; \
+		done; \
+		if [ $$failed -eq 1 ]; then \
+			$(call log_error,One or more parallel releases failed); \
+			exit 1; \
+		fi; \
+		$(call log_success,✓ All middle packages released); \
+	fi
+	@# Phase 3: Release cli last (depends on all other packages)
+	$(call separator,$(CYAN)); \
+	$(call log_info,Phase 3/3: Releasing @aiready/$(CLI_SPOKE) ($(TYPE))); \
+	$(call separator,$(CYAN)); \
+	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CLI_SPOKE) TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
+	$(call separator,$(GREEN)); \
+	$(call log_success,🎉 All spokes released successfully); \
+	$(call separator,$(GREEN))
 
 # Status overview: local vs published versions
 release-status: ## Show local and npm registry versions for all spokes
