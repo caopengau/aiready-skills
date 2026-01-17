@@ -102,6 +102,18 @@ release-landing: ## Release landing page: TYPE=patch|minor|major
 		exit 1; \
 	}; \
 	$(call log_success,Build complete); \
+	$(call log_step,Deploying to production...); \
+	$(MAKE) -C $(ROOT_DIR) deploy-landing-prod || { \
+		$(call log_error,Production deployment failed. Aborting release.); \
+		$(call log_warning,Version was bumped and tagged locally. Run 'git reset --hard HEAD~1 && git tag -d landing-v'$$(node -p "require('$(LANDING_DIR)/package.json').version") to undo.); \
+		exit 1; \
+	}; \
+	$(call log_success,Production deployment complete); \
+	$(call log_step,Verifying deployment...); \
+	$(MAKE) -C $(ROOT_DIR) landing-verify VERIFY_RETRIES=3 VERIFY_WAIT=10 || { \
+		$(call log_warning,Deployment verification timed out - CloudFront may still be propagating); \
+		$(call log_info,Continuing with release - check deployment status with: make landing-verify); \
+	}; \
 	$(call log_step,Syncing landing to GitHub sub-repo...); \
 	$(MAKE) -C $(ROOT_DIR) publish-landing OWNER=$(OWNER); \
 	$(call log_step,Pushing monorepo branch and tags...); \
