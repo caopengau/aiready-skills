@@ -8,6 +8,7 @@
   "landing-release": ".github/sub-instructions/landing-release.md",
   "adding-new-tool": ".github/sub-instructions/adding-new-tool.md",
   "common-patterns": ".github/sub-instructions/common-patterns.md",
+  "error-handling": ".github/sub-instructions/error-handling-strategy.md",
   "devops-best-practices": ".github/sub-instructions/devops-best-practices.md",
   "troubleshooting": ".github/sub-instructions/troubleshooting.md",
   "landing-deployment": ".github/sub-instructions/landing-deployment.md",

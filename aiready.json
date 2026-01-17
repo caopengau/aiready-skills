@@ -1,0 +1,112 @@
+{
+  "$schema": "https://aiready.dev/schema.json",
+  "scan": {
+    "include": ["packages/*/src/**/*.ts", "landing/src/**/*.{ts,tsx}"],
+    "exclude": [
+      "**/dist/**",
+      "**/node_modules/**",
+      "**/__tests__/**",
+      "**/*.test.ts",
+      "**/*.spec.ts"
+    ]
+  },
+  "tools": {
+    "consistency": {
+      "checkNaming": true,
+      "checkPatterns": true,
+      "checkArchitecture": false,
+      "minSeverity": "minor",
+      "acceptedAbbreviations": [
+        "ast",
+        "dep",
+        "deps",
+        "dfs",
+        "bfs",
+        "tok",
+        "ctx",
+        "req",
+        "res",
+        "err",
+        "msg",
+        "num",
+        "str",
+        "obj",
+        "arr",
+        "fn",
+        "arg",
+        "args",
+        "param",
+        "params",
+        "attr",
+        "attrs",
+        "prop",
+        "props",
+        "cfg",
+        "config",
+        "env",
+        "vars",
+        "util",
+        "utils",
+        "lib",
+        "src",
+        "dest",
+        "tmp",
+        "temp",
+        "max",
+        "min",
+        "avg",
+        "sum",
+        "prod"
+      ],
+      "shortWords": [
+        "is",
+        "has",
+        "can",
+        "should",
+        "will",
+        "get",
+        "set",
+        "add",
+        "del",
+        "put",
+        "pop",
+        "push",
+        "map",
+        "key",
+        "val",
+        "ref",
+        "id",
+        "uid",
+        "uri",
+        "url",
+        "api",
+        "cli",
+        "sdk",
+        "css",
+        "html",
+        "dom",
+        "xhr",
+        "jwt",
+        "tag"
+      ]
+    },
+    "pattern-detect": {
+      "minSimilarity": 0.5,
+      "minLines": 10,
+      "approx": true,
+      "minSharedTokens": 15,
+      "maxCandidatesPerBlock": 100
+    },
+    "context-analyzer": {
+      "maxDepth": 5,
+      "maxContextBudget": 10000,
+      "minCohesion": 0.5,
+      "maxFragmentation": 0.55,
+      "includeNodeModules": false
+    }
+  },
+  "output": {
+    "format": "console",
+    "directory": ".aiready"
+  }
+}
