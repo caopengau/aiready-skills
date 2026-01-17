@@ -17,12 +17,20 @@ endif
 ALL_SPOKES := $(notdir $(wildcard packages/*))
 
 # Three-phase release strategy (matches release-all workflow)
+# Landing site is EXCLUDED from release-all (different release cadence)
 CORE_SPOKE := core
 CLI_SPOKE := cli
 MIDDLE_SPOKES := $(filter-out core cli, $(sort $(ALL_SPOKES)))
 
 # Legacy: Sequential release order (deprecated - use phase variables above)
 RELEASE_ORDER := core $(MIDDLE_SPOKES) cli
+
+# ⚠️  CRITICAL WORKFLOW RULE:
+# After publishing ANY spoke separately, ALWAYS republish CLI:
+#   make release-one SPOKE=<any-spoke> TYPE=patch
+#   make release-one SPOKE=cli TYPE=patch  # ← REQUIRED!
+# Why? CLI imports all spokes dynamically. Mismatch causes runtime errors.
+# Note: release-all handles this automatically by releasing CLI last.
 
 .ONESHELL:
 

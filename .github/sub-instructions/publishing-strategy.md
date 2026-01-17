@@ -72,10 +72,29 @@ Output legend:
 **Smart automatic ordering** - The `release-all` command automatically follows this dependency-safe order:
 
 1. **Core first** - `@aiready/core` (no dependencies)
-2. **Spokes alphabetical** - packages depending on core (context-analyzer, pattern-detect, etc.)
-3. **CLI last** - `@aiready/cli` (depends on core)
+2. **Spokes alphabetical** - packages depending on core (consistency, context-analyzer, pattern-detect, etc.)
+3. **CLI last** - `@aiready/cli` (depends on all spokes)
 
 > **✅ SIMPLE:** Core always first, CLI always last, spokes in alphabetical order. No complex dependency graphs needed!
+
+> **⚠️ CRITICAL:** After publishing ANY spoke tool separately (not via `release-all`), you MUST republish CLI:
+> ```bash
+> # After publishing any spoke:
+> make release-one SPOKE=consistency TYPE=patch
+> # ALWAYS follow with CLI republish:
+> make release-one SPOKE=cli TYPE=patch
+> ```
+> **Why?** CLI imports all spokes dynamically. Publishing a spoke without CLI creates version mismatch.
+
+> **📝 NOTE:** `release-all` handles this automatically - it releases CLI last, ensuring all dependencies are current.
+
+#### Landing Site (Excluded from release-all)
+
+The landing site is NOT included in `release-all` and should be released separately:
+```bash
+make release-landing TYPE=patch
+```
+This is intentional - the landing site has different release cadence and doesn't affect npm packages.
 
 #### Version Bump Guidelines
 

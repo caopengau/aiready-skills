@@ -198,7 +198,9 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 
 # Release all spokes with the same bump type
 # Strategy: core → parallel middle packages → cli (respects dependencies)
-release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1]
+# Landing site is EXCLUDED - use 'make release-landing' separately
+# ⚠️  CLI is ALWAYS released last because it depends on ALL spokes
+release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1] (excludes landing)
 	@if [ -z "$(TYPE)" ]; then \
 		$(call log_error,TYPE parameter required. Example: make $@ TYPE=minor); \
 		exit 1; \

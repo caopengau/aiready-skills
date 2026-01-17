@@ -96,6 +96,8 @@ make push-all  # ← This syncs ALL repos automatically
 - **GIT:** Am I following hub-and-spoke git practices? (Always load git-workflow first!)
 - **GIT:** Should I use `make push-all` or direct git commands?
 - **GIT:** Is this change in the monorepo or a spoke repo?
+- **RELEASE:** After publishing ANY spoke separately, did I republish CLI? (Required!)
+- **RELEASE:** Am I excluding landing from release-all? (It has separate workflow)
 
 ## Getting Help
 
