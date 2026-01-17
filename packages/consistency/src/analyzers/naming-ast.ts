@@ -1,6 +1,4 @@
 import { TSESTree } from '@typescript-eslint/typescript-estree';
-import { loadConfig } from '@aiready/core';
-import { dirname } from 'path';
 import type { NamingIssue } from '../types';
 import {
   parseFile,
@@ -18,10 +16,7 @@ import {
   isAcceptableInContext,
   calculateComplexity,
 } from '../utils/context-detector';
-import {
-  COMMON_SHORT_WORDS,
-  ACCEPTABLE_ABBREVIATIONS,
-} from './naming-constants';
+import { loadNamingConfig } from '../utils/config-loader';
 
 /**
  * AST-based naming analyzer
@@ -29,18 +24,8 @@ import {
 export async function analyzeNamingAST(files: string[]): Promise<NamingIssue[]> {
   const issues: NamingIssue[] = [];
 
-  // Load config
-  const rootDir = files.length > 0 ? dirname(files[0]) : process.cwd();
-  const config = await loadConfig(rootDir);
-  const consistencyConfig = config?.tools?.['consistency'];
-
-  // Merge custom configuration
-  const customAbbreviations = new Set(consistencyConfig?.acceptedAbbreviations || []);
-  const customShortWords = new Set(consistencyConfig?.shortWords || []);
-  const disabledChecks = new Set(consistencyConfig?.disableChecks || []);
-
-  const allAbbreviations = new Set([...ACCEPTABLE_ABBREVIATIONS, ...customAbbreviations]);
-  const allShortWords = new Set([...COMMON_SHORT_WORDS, ...customShortWords]);
+  // Load and merge configuration
+  const { allAbbreviations, allShortWords, disabledChecks } = await loadNamingConfig(files);
 
   for (const file of files) {
     try {

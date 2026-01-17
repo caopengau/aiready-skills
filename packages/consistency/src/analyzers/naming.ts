@@ -1,11 +1,11 @@
-import { readFileContent, loadConfig } from '@aiready/core';
+import { readFileContent } from '@aiready/core';
 import type { NamingIssue } from '../types';
-import { dirname } from 'path';
 import {
   COMMON_SHORT_WORDS,
   ACCEPTABLE_ABBREVIATIONS,
   snakeCaseToCamelCase,
 } from './naming-constants';
+import { loadNamingConfig } from '../utils/config-loader';
 
 /**
  * Analyzes naming conventions and quality
@@ -13,15 +13,8 @@ import {
 export async function analyzeNaming(files: string[]): Promise<NamingIssue[]> {
   const issues: NamingIssue[] = [];
 
-  // Load config from the first file's directory (or project root)
-  const rootDir = files.length > 0 ? dirname(files[0]) : process.cwd();
-  const config = await loadConfig(rootDir);
-  const consistencyConfig = config?.tools?.['consistency'];
-
-  // Merge custom abbreviations and short words with defaults
-  const customAbbreviations = new Set(consistencyConfig?.acceptedAbbreviations || []);
-  const customShortWords = new Set(consistencyConfig?.shortWords || []);
-  const disabledChecks = new Set(consistencyConfig?.disableChecks || []);
+  // Load and merge configuration
+  const { customAbbreviations, customShortWords, disabledChecks } = await loadNamingConfig(files);
 
   for (const file of files) {
     const content = await readFileContent(file);

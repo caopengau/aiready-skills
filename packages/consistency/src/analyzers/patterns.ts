@@ -135,7 +135,12 @@ async function analyzeImportStyles(files: string[]): Promise<PatternIssue[]> {
   for (const file of files) {
     const content = await readFileContent(file);
     const hasESM = content.match(/^import\s+/m);
-    const hasCJS = content.match(/require\s*\(/);
+    
+    // Check for actual CommonJS require() calls, excluding:
+    // - String literals: "require('...') or 'require('...')
+    // - Regex patterns: /require\(/
+    // - Comments: // require( or /* require( */
+    const hasCJS = hasActualRequireCalls(content);
     
     if (hasESM && hasCJS) {
       patterns.mixed.push(file);
@@ -177,6 +182,36 @@ async function analyzeImportStyles(files: string[]): Promise<PatternIssue[]> {
   }
 
   return issues;
+}
+
+/**
+ * Detects actual require() calls, excluding false positives
+ * Filters out require() in:
+ * - String literals (single/double/template quotes)
+ * - Regex patterns
+ * - Single-line comments (//)
+ * - Multi-line comments
+ */
+function hasActualRequireCalls(content: string): boolean {
+  // Simple heuristic: remove obvious false positives
+  // 1. Remove single-line comments
+  let cleaned = content.replace(/\/\/.*$/gm, '');
+  
+  // 2. Remove multi-line comments (non-greedy)
+  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+  
+  // 3. Remove string literals - use simpler regex to avoid backtracking
+  // Match strings but don't try to be perfect, just remove obvious ones
+  cleaned = cleaned.replace(/"[^"\n]*"/g, '""');
+  cleaned = cleaned.replace(/'[^'\n]*'/g, "''");
+  cleaned = cleaned.replace(/`[^`]*`/g, '``');
+  
+  // 4. Simple regex detection: if we see /require in the line, likely a regex pattern
+  // Remove lines that look like regex patterns with require
+  cleaned = cleaned.replace(/\/[^/\n]*require[^/\n]*\/[gimsuvy]*/g, '');
+  
+  // Now check for require( in the cleaned content
+  return /require\s*\(/.test(cleaned);
 }
 
 /**
