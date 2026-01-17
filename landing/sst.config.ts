@@ -14,13 +14,13 @@ export default $config({
       public: false,
     });
 
-    // API: request report form submissions
-    const requestApi = new sst.aws.Function("RequestReport", {
+    // API Gateway HTTP API for public form submissions
+    const api = new sst.aws.ApiGatewayV2("RequestApi", {
+      cors: true,
+    });
+
+    api.route("POST /", {
       handler: "api/request-report.handler",
-      url: {
-        authorization: "none", // Allow public access for form submissions
-        cors: true, // Enable CORS with default settings
-      },
       link: [submissions],
       environment: {
         SUBMISSIONS_BUCKET: submissions.name,
@@ -36,7 +36,7 @@ export default $config({
         output: "out",
       },
       environment: {
-        NEXT_PUBLIC_REQUEST_URL: requestApi.url,
+        NEXT_PUBLIC_REQUEST_URL: api.url,
       },
       domain: {
         name: "getaiready.dev",
@@ -48,7 +48,7 @@ export default $config({
 
     return {
       site: site.url,
-      requestApi: requestApi.url,
+      apiUrl: api.url,
       submissionsBucket: submissions.name,
     };
   },
