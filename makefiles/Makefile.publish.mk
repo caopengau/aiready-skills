@@ -162,7 +162,7 @@ sync-landing: ## Sync changes from aiready-landing repo back to monorepo
 	@$(call log_step,Syncing changes from aiready-landing back to monorepo...)
 	@url="https://github.com/$(OWNER)/aiready-landing.git"; \
 	remote="aiready-landing"; \
-	branch="master"; \
+	branch="main"; \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Fetching latest from $$remote...); \
 	git fetch "$$remote" "$$branch"; \
@@ -175,7 +175,8 @@ publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing 
 	@url="https://github.com/$(OWNER)/aiready-landing.git"; \
 	remote="aiready-landing"; \
 	branch="publish-landing"; \
-	target_branch="master"; \
+	target_branch="main"; \
+	landing_version=$$(node -p "require('$(REPO_ROOT)/landing/package.json').version" 2>/dev/null || echo "0.0.0"); \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Remote set: $$remote -> $$url); \
 	git branch -D "$$branch" >/dev/null 2>&1 || true; \
@@ -184,16 +185,16 @@ publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing 
 	$(call log_info,Removing sensitive files from split branch...); \
 	git checkout "$$branch" 2>/dev/null; \
 	git rm -f sst.config.ts .env >/dev/null 2>&1 || true; \
-	git commit --amend --no-edit -m "Landing page sync (public)" >/dev/null 2>&1 || true; \
+	git commit --amend --no-edit -m "chore(release): landing v$$landing_version" >/dev/null 2>&1 || true; \
 	git checkout $(TARGET_BRANCH) 2>/dev/null; \
 	$(call log_info,Subtree split complete: $$branch); \
 	split_commit=$$(git rev-parse "$$branch"); \
 	git push -f "$$remote" "$$branch:$$target_branch"; \
 	$(call log_success,Synced landing page to GitHub repo ($$target_branch)); \
-	$(call log_step,Tagging landing repo commit $$split_commit...); \
-	landing_tag="landing-$$(date +%Y%m%d-%H%M%S)"; \
-	git tag -a "$$landing_tag" "$$split_commit" -m "Landing page sync $$landing_tag"; \
-	git push "$$remote" "$$landing_tag"; \
+	$(call log_step,Tagging landing repo commit with v$$landing_version...); \
+	landing_tag="v$$landing_version"; \
+	git tag -f "$$landing_tag" "$$split_commit" 2>/dev/null || true; \
+	git push -f "$$remote" "$$landing_tag"; \
 	$(call log_success,Landing tag pushed: $$landing_tag)
 
 # Push to monorepo and all spoke repos
@@ -209,7 +210,7 @@ push-all: ## Push monorepo to origin and sync all spokes to their public repos
 		fi; \
 	done
 	@$(call log_step,Syncing landing page repository...)
-	@$(MAKE) sync-landing OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR)' || true; \
+	@$(MAKE) publish-landing OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR)' || true; \
 	$(call log_success,All spokes and landing page synced to GitHub)
 
 deploy: push-all ## Alias for push-all (push monorepo + publish all spokes)

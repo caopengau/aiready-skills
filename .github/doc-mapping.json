@@ -5,6 +5,7 @@
   "development-workflow": ".github/sub-instructions/development-workflow.md",
   "publishing-strategy": ".github/sub-instructions/publishing-strategy.md",
   "release-workflow": ".github/sub-instructions/publishing-strategy.md",
+  "landing-release": ".github/sub-instructions/landing-release.md",
   "adding-new-tool": ".github/sub-instructions/adding-new-tool.md",
   "common-patterns": ".github/sub-instructions/common-patterns.md",
   "devops-best-practices": ".github/sub-instructions/devops-best-practices.md",

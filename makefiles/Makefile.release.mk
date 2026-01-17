@@ -27,11 +27,13 @@ ROOT_DIR := $(abspath $(MAKEFILE_DIR)/..)
 include $(MAKEFILE_DIR)/Makefile.shared.mk
 include $(MAKEFILE_DIR)/Makefile.publish.mk
 
-.PHONY: check-changes check-dependency-updates check-dependency-updates release-one release-all release-status help
+.PHONY: check-changes check-dependency-updates check-dependency-updates release-one release-all release-status \
+	release-landing version-landing-patch version-landing-minor version-landing-major help
 
 # Default owner and branch (can be overridden)
 OWNER ?= caopengau
 TARGET_BRANCH ?= main
+LANDING_DIR := $(ROOT_DIR)/landing
 
 # Internal helper: resolve version bump target name from TYPE
 define bump_target_for_type
@@ -49,6 +51,64 @@ define commit_and_tag
 	cd $(ROOT_DIR) && git tag -a "$$tag_name" -m "Release @aiready/$(SPOKE) v$$version"; \
 	$(call log_success,Committed and tagged $$tag_name)
 endef
+
+# Internal: commit + tag for landing after version bump
+define commit_and_tag_landing
+	version=$$(node -p "require('$(LANDING_DIR)/package.json').version"); \
+	$(call log_step,Committing @aiready/landing v$$version...); \
+	cd $(ROOT_DIR) && git add landing/package.json; \
+	cd $(ROOT_DIR) && git commit -m "chore(release): @aiready/landing v$$version"; \
+	tag_name="landing-v$$version"; \
+	$(call log_step,Tagging $$tag_name...); \
+	cd $(ROOT_DIR) && git tag -a "$$tag_name" -m "Release @aiready/landing v$$version"; \
+	$(call log_success,Committed and tagged $$tag_name)
+endef
+
+##@ Landing Version Management
+
+version-landing-patch: ## Bump landing version (patch)
+	@$(call log_step,Bumping @aiready/landing version (patch)...)
+	@cd $(LANDING_DIR) && npm version patch --no-git-tag-version
+	@$(call log_success,Landing version bumped to $$(node -p "require('$(LANDING_DIR)/package.json').version"))
+
+version-landing-minor: ## Bump landing version (minor)
+	@$(call log_step,Bumping @aiready/landing version (minor)...)
+	@cd $(LANDING_DIR) && npm version minor --no-git-tag-version
+	@$(call log_success,Landing version bumped to $$(node -p "require('$(LANDING_DIR)/package.json').version"))
+
+version-landing-major: ## Bump landing version (major)
+	@$(call log_step,Bumping @aiready/landing version (major)...)
+	@cd $(LANDING_DIR) && npm version major --no-git-tag-version
+	@$(call log_success,Landing version bumped to $$(node -p "require('$(LANDING_DIR)/package.json').version"))
+
+##@ Landing Release
+
+release-landing: ## Release landing page: TYPE=patch|minor|major
+	@if [ -z "$(TYPE)" ]; then \
+		$(call log_error,TYPE parameter required. Usage: make $@ TYPE=minor); \
+		exit 1; \
+	fi
+	@bump_target="version-landing-$(TYPE)"; \
+	if [ "$(TYPE)" != "patch" ] && [ "$(TYPE)" != "minor" ] && [ "$(TYPE)" != "major" ]; then \
+		$(call log_error,Invalid TYPE '$(TYPE)'. Expected patch|minor|major); \
+		exit 1; \
+	fi; \
+	$(MAKE) -C $(ROOT_DIR) $$bump_target; \
+	$(call log_success,Version bump complete for @aiready/landing); \
+	$(call commit_and_tag_landing); \
+	$(call log_step,Building landing page...); \
+	cd $(LANDING_DIR) && pnpm build || { \
+		$(call log_error,Build failed for @aiready/landing. Aborting release.); \
+		exit 1; \
+	}; \
+	$(call log_success,Build complete); \
+	$(call log_step,Syncing landing to GitHub sub-repo...); \
+	$(MAKE) -C $(ROOT_DIR) publish-landing OWNER=$(OWNER); \
+	$(call log_step,Pushing monorepo branch and tags...); \
+	cd $(ROOT_DIR) && git push origin $(TARGET_BRANCH) --follow-tags; \
+	$(call log_success,Release finished for @aiready/landing)
+
+##@ Package Release
 
 # Check if a spoke has changes since its last release tag
 check-changes: ## Check if SPOKE has changes since last release tag (returns: has_changes/no_changes)
@@ -175,7 +235,7 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 	$(call separator,$(GREEN))
 
 # Status overview: local vs published versions
-release-status: ## Show local and npm registry versions for all spokes
+release-status: ## Show local and npm registry versions for all spokes + landing
 	@$(call log_step,Reading local and npm registry versions...)
 	@echo ""; \
 	printf "%-30s %-15s %-15s %-10s\n" "Package" "Local" "npm" "Status"; \
@@ -194,6 +254,19 @@ release-status: ## Show local and npm registry versions for all spokes
 			printf "%-30s %-15s %-15s %-10b\n" "@aiready/$$spoke" "$$local_ver" "$$npm_ver" "$$status"; \
 		fi; \
 	done; \
+	if [ -f "$(LANDING_DIR)/package.json" ]; then \
+		local_ver=$$(node -p "require('$(LANDING_DIR)/package.json').version" 2>/dev/null || echo "n/a"); \
+		last_tag=$$(git for-each-ref 'refs/tags/landing-v*' --sort=-creatordate --format '%(refname:short)' | head -n1 | sed 's/landing-v//'); \
+		if [ -z "$$last_tag" ]; then \
+			last_tag="n/a"; \
+			status="$(YELLOW)new$(RESET_COLOR)"; \
+		elif [ "$$local_ver" = "$$last_tag" ]; then \
+			status="$(GREEN)✓$(RESET_COLOR)"; \
+		else \
+			status="$(CYAN)ahead$(RESET_COLOR)"; \
+		fi; \
+		printf "%-30s %-15s %-15s %-10b\n" "@aiready/landing" "$$local_ver" "$$last_tag" "$$status"; \
+	fi; \
 	echo ""; \
 	$(call log_success,Status collected)
 
@@ -203,11 +276,13 @@ release-help: ## Show release help
 	echo "  check-dependency-updates - Check if SPOKE has outdated dependencies"; \
 	echo "  release-one              - Release one spoke (TYPE, SPOKE, [OTP], [FORCE])"; \
 	echo "  release-all              - Release all spokes (TYPE, [OTP], [FORCE])"; \
-	echo "  release-status           - Show local vs npm versions"; \
+	echo "  release-landing          - Release landing page (TYPE)"; \
+	echo "  release-status           - Show local vs npm/git tag versions"; \
 	echo ""; \
 	echo "Examples:"; \
 	echo "  make check-changes SPOKE=cli"; \
 	echo "  make check-dependency-updates SPOKE=cli"; \
 	echo "  make release-one SPOKE=pattern-detect TYPE=minor"; \
 	echo "  make release-all TYPE=minor"; \
+	echo "  make release-landing TYPE=minor"; \
 	echo "  make release-status";
