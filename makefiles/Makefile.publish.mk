@@ -184,8 +184,11 @@ publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing 
 	git subtree split --prefix=landing -b "$$branch" >/dev/null; \
 	$(call log_info,Removing sensitive files from split branch...); \
 	git checkout "$$branch" 2>/dev/null; \
-	git rm -f sst.config.ts .env >/dev/null 2>&1 || true; \
-	git commit --amend --no-edit -m "chore(release): landing v$$landing_version" >/dev/null 2>&1 || true; \
+	if [ -f sst.config.ts ]; then git rm -f sst.config.ts >/dev/null 2>&1; fi; \
+	if [ -f .env ]; then git rm -f .env >/dev/null 2>&1; fi; \
+	if ! git diff --cached --quiet 2>/dev/null; then \
+		git commit -m "chore: remove sensitive files for public repo" >/dev/null 2>&1; \
+	fi; \
 	git checkout $(TARGET_BRANCH) 2>/dev/null; \
 	$(call log_info,Subtree split complete: $$branch); \
 	split_commit=$$(git rev-parse "$$branch"); \
