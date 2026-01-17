@@ -76,8 +76,8 @@ make push-all  # ← This syncs ALL repos automatically
 
 ## Agent Workflow
 
-1. **Load Context:** Use doc-mapping.json to load relevant sub-instructions based on task (e.g., development-workflow.md for coding, adding-new-tool.md for new spokes)
-2. **Work:** Follow architecture rules, check existing implementations for patterns
+1. **Load Context:** Use doc-mapping.json to load relevant sub-instructions based on task (e.g., development-workflow.md for coding, adding-new-tool.md for new spokes, devops-best-practices.md for DevOps). Run `make help` to understand available curated commands.
+2. **Work:** Follow architecture rules, check existing implementations for patterns, use Makefiles for all DevOps practices (build, test, push, release)
 3. **Update Docs:** After each change, update relevant docs in .github/sub-instructions/ and doc-mapping.json if needed
 
 ## Questions for Agent
@@ -89,6 +89,7 @@ make push-all  # ← This syncs ALL repos automatically
 - Can I test on a real repo?
 - Does it comply with CLI specs?
 - Am I updating CLI for new spokes?
+- Am I using Makefiles for DevOps tasks instead of direct commands?
 - **AWS:** Have I verified AWS account identity with `aws sts get-caller-identity`?
 - **AWS:** Is AWS_PROFILE=aiready set correctly?
 - **AWS:** Did I get explicit user confirmation before deploying?
@@ -101,6 +102,7 @@ make push-all  # ← This syncs ALL repos automatically
 - Reference existing spokes (@aiready/pattern-detect)
 - Review core types and CLI interface
 - Keep spokes focused on one job
+- Use Makefiles for all DevOps practices (see devops-best-practices.md)
 - **Web Deployment:** Load `landing-deployment` from doc-mapping.json for Vercel/AWS deployment guides
 - **GIT:** Always load `git-workflow` sub-instructions before git operations
 - **GIT:** Use `make push-all` instead of direct git commands
