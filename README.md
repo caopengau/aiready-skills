@@ -1,12 +1,14 @@
 # AIReady
 
-> AI-readiness analysis tools for reducing tech debt and optimizing codebases for AI adoption
+> Explains why AI tools struggle with your codebase—and where small changes unlock outsized leverage
 
 🌐 **[Visit our website](https://getaiready.dev)** | 📦 [npm](https://www.npmjs.com/package/@aiready/cli) | ⭐ [GitHub](https://github.com/caopengau/aiready)
 
+📖 **Quick Links:** [🚀 Quick Start (5 min)](./QUICK-START.md) | [🔐 Security](./SECURITY.md) | [🤔 Not Another Linter?](./NOT-ANOTHER-LINTER.md) | [🏢 Enterprise](./ENTERPRISE-READINESS-PLAN.md)
+
 ## 🎯 Mission
 
-As AI becomes deeply integrated into SDLC, codebases accumulate tech debt faster due to:
+As AI becomes deeply integrated into SDLC, codebases become harder for AI models to understand due to:
 - Knowledge cutoff limitations in AI models
 - Different model preferences across team members
 - Duplicated patterns AI doesn't recognize

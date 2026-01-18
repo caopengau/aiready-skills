@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-AIReady is a monorepo with tools for assessing AI-readiness and visualizing tech debt in codebases. It helps teams prepare repositories for better AI adoption by detecting issues that confuse AI models and identifying tech debt.
+AIReady is a monorepo with tools for assessing AI-readiness and improving AI leverage. It helps teams prepare repositories for better AI adoption by detecting issues that confuse AI models and identifying context fragmentation.
 
 **Packages:**
 - **[@aiready/core](packages/core)** - Shared utilities and types (HUB)

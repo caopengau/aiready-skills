@@ -2,7 +2,7 @@
   "name": "@aiready/monorepo",
   "version": "0.0.0",
   "private": true,
-  "description": "AI-readiness analysis tools for reducing tech debt and optimizing codebases for AI adoption",
+  "description": "Explains why AI tools struggle with your codebase and where small changes unlock outsized AI leverage",
   "workspaces": [
     "packages/*"
   ],
