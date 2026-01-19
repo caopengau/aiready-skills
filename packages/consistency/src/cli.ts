@@ -12,7 +12,7 @@ const program = new Command();
 
 program
   .name('aiready-consistency')
-  .description('Detect consistency issues in naming, patterns, and architecture')
+  .description('Detect consistency patterns in naming, code structure, and architecture')
   .version('0.1.0')
   .addHelpText('after', `
 CONFIGURATION:
@@ -27,7 +27,7 @@ ANALYSIS CATEGORIES:
 EXAMPLES:
   aiready-consistency .                               # Full analysis
   aiready-consistency . --no-naming                   # Skip naming checks
-  aiready-consistency . --min-severity major          # Only show major+ issues
+  aiready-consistency . --min-severity major          # Only show major+ patterns
   aiready-consistency . --output json > report.json   # JSON export
 `)
   .argument('<directory>', 'Directory to analyze')
@@ -121,14 +121,14 @@ function displayConsoleReport(report: any, elapsedTime: string): void {
 
   console.log(chalk.bold('\n📊 Summary\n'));
   console.log(`Files Analyzed: ${chalk.cyan(summary.filesAnalyzed)}`);
-  console.log(`Total Issues: ${chalk.yellow(summary.totalIssues)}`);
+  console.log(`Total Patterns Found: ${chalk.yellow(summary.totalIssues)}`);
   console.log(`  Naming: ${chalk.yellow(summary.namingIssues)}`);
-  console.log(`  Patterns: ${chalk.yellow(summary.patternIssues)}`);
+  console.log(`  Code Patterns: ${chalk.yellow(summary.patternIssues)}`);
   console.log(`  Architecture: ${chalk.yellow(summary.architectureIssues)}`);
   console.log(`Analysis Time: ${chalk.gray(elapsedTime + 's')}\n`);
 
   if (summary.totalIssues === 0) {
-    console.log(chalk.green('✨ No consistency issues found! Your codebase is well-maintained.\n'));
+    console.log(chalk.green('✨ No consistency patterns found! Your codebase is AI-friendly.\n'));
     return;
   }
 
@@ -141,12 +141,12 @@ function displayConsoleReport(report: any, elapsedTime: string): void {
   );
 
   if (namingResults.length > 0) {
-    console.log(chalk.bold('🏷️  Naming Issues\n'));
+    console.log(chalk.bold('🏷️  Naming Patterns\n'));
     displayCategoryIssues(namingResults, 5);
   }
 
   if (patternResults.length > 0) {
-    console.log(chalk.bold('\n🔄 Pattern Issues\n'));
+    console.log(chalk.bold('\n🔄 Code Patterns\n'));
     displayCategoryIssues(patternResults, 5);
   }
 
@@ -191,7 +191,7 @@ function displayCategoryIssues(results: any[], maxToShow: number): void {
 
   const remaining = results.reduce((sum, r) => sum + r.issues.length, 0) - shown;
   if (remaining > 0) {
-    console.log(chalk.dim(`  ... and ${remaining} more issues\n`));
+    console.log(chalk.dim(`  ... and ${remaining} more patterns\n`));
   }
 }
 
@@ -204,24 +204,24 @@ function generateMarkdownReport(report: any, elapsedTime: string): string {
 
   markdown += `## Summary\n\n`;
   markdown += `- **Files Analyzed:** ${summary.filesAnalyzed}\n`;
-  markdown += `- **Total Issues:** ${summary.totalIssues}\n`;
+  markdown += `- **Total Patterns Found:** ${summary.totalIssues}\n`;
   markdown += `  - Naming: ${summary.namingIssues}\n`;
-  markdown += `  - Patterns: ${summary.patternIssues}\n`;
+  markdown += `  - Code Patterns: ${summary.patternIssues}\n`;
   markdown += `  - Architecture: ${summary.architectureIssues}\n\n`;
 
   if (summary.totalIssues === 0) {
-    markdown += `✨ No consistency issues found!\n`;
+    markdown += `✨ No consistency patterns found! Your codebase is AI-friendly.\n`;
     return markdown;
   }
 
-  markdown += `## Issues by Category\n\n`;
+  markdown += `## Patterns by Category\n\n`;
 
-  // Naming issues
+  // Naming patterns
   const namingResults = results.filter((r: any) =>
     r.issues.some((i: any) => i.category === 'naming')
   );
   if (namingResults.length > 0) {
-    markdown += `### 🏷️ Naming Issues\n\n`;
+    markdown += `### 🏷️ Naming Patterns\n\n`;
     for (const result of namingResults) {
       for (const issue of result.issues) {
         if (issue.category !== 'naming') continue;
@@ -235,12 +235,12 @@ function generateMarkdownReport(report: any, elapsedTime: string): string {
     markdown += `\n`;
   }
 
-  // Pattern issues
+  // Code patterns
   const patternResults = results.filter((r: any) =>
     r.issues.some((i: any) => i.category === 'patterns')
   );
   if (patternResults.length > 0) {
-    markdown += `### 🔄 Pattern Issues\n\n`;
+    markdown += `### 🔄 Code Patterns\n\n`;
     for (const result of patternResults) {
       for (const issue of result.issues) {
         if (issue.category !== 'patterns') continue;

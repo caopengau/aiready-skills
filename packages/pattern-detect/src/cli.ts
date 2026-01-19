@@ -178,7 +178,7 @@ program
       chalk.white(`📁 Files analyzed: ${chalk.bold(results.length)}`)
     );
     console.log(
-      chalk.yellow(`⚠  Duplicate patterns found: ${chalk.bold(totalIssues)}`)
+      chalk.yellow(`⚠  AI confusion patterns detected: ${chalk.bold(totalIssues)}`)
     );
     console.log(
       chalk.red(

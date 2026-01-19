@@ -141,7 +141,7 @@ function displayTuningGuidance(
   const issueCount = results.filter(r => r.severity !== 'info').length;
   
   if (issueCount === 0) {
-    console.log(chalk.green('\n✨ No issues found! Your code is well-structured for AI context usage.\n'));
+    console.log(chalk.green('\n✨ No optimization opportunities found! Your code is well-structured for AI context usage.\n'));
     return;
   }
   
@@ -150,19 +150,19 @@ function displayTuningGuidance(
   console.log(chalk.cyan('━'.repeat(60) + '\n'));
   
   if (issueCount < 5) {
-    console.log(chalk.yellow('📊 Showing few issues. To catch more potential problems:\n'));
+    console.log(chalk.yellow('📊 Showing few optimization opportunities. To find more areas to improve:\n'));
     console.log(chalk.dim('   • Lower --max-depth (currently: ' + options.maxDepth + ') to catch shallower import chains'));
     console.log(chalk.dim('   • Lower --max-context (currently: ' + options.maxContextBudget.toLocaleString() + ') to catch smaller files'));
     console.log(chalk.dim('   • Raise --min-cohesion (currently: ' + (options.minCohesion * 100).toFixed(0) + '%) to be stricter about mixed concerns'));
     console.log(chalk.dim('   • Lower --max-fragmentation (currently: ' + (options.maxFragmentation * 100).toFixed(0) + '%) to catch scattered code\n'));
   } else if (issueCount > 20) {
-    console.log(chalk.yellow('📊 Showing many issues. To focus on most critical problems:\n'));
+    console.log(chalk.yellow('📊 Showing many opportunities. To focus on highest-impact areas:\n'));
     console.log(chalk.dim('   • Raise --max-depth (currently: ' + options.maxDepth + ') to only catch very deep chains'));
     console.log(chalk.dim('   • Raise --max-context (currently: ' + options.maxContextBudget.toLocaleString() + ') to focus on largest files'));
     console.log(chalk.dim('   • Lower --min-cohesion (currently: ' + (options.minCohesion * 100).toFixed(0) + '%) to only flag severe mixed concerns'));
     console.log(chalk.dim('   • Raise --max-fragmentation (currently: ' + (options.maxFragmentation * 100).toFixed(0) + '%) to only flag highly scattered code\n'));
   } else {
-    console.log(chalk.green('📊 Good balance of issues detected (showing ' + issueCount + ' issues)\n'));
+    console.log(chalk.green('📊 Good balance of optimization opportunities (showing ' + issueCount + ' areas)\n'));
     console.log(chalk.dim('   💡 Tip: Adjust thresholds if needed:'));
     console.log(chalk.dim('      aiready-context . --max-depth N --max-context N --min-cohesion 0.X\n'));
   }
