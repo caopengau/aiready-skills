@@ -212,13 +212,13 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 	fi; \
 	$(call log_success,All tests passed)
 	@# Phase 1: Release core first (dependency for all other packages)
-	$(call separator,$(CYAN)); \
+	@$(call separator,$(CYAN)); \
 	$(call log_info,Phase 1/3: Releasing @aiready/$(CORE_SPOKE) ($(TYPE))); \
 	$(call separator,$(CYAN)); \
 	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CORE_SPOKE) TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
 	$(call log_success,✓ Core released)
 	@# Phase 2: Release middle packages in parallel (independent of each other)
-	if [ -n "$(MIDDLE_SPOKES)" ]; then \
+	@if [ -n "$(MIDDLE_SPOKES)" ]; then \
 		$(call separator,$(CYAN)); \
 		$(call log_info,Phase 2/3: Releasing $(MIDDLE_SPOKES) in parallel); \
 		$(call separator,$(CYAN)); \
@@ -240,7 +240,7 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 		$(call log_success,✓ All middle packages released); \
 	fi
 	@# Phase 3: Release cli last (depends on all other packages)
-	$(call separator,$(CYAN)); \
+	@$(call separator,$(CYAN)); \
 	$(call log_info,Phase 3/3: Releasing @aiready/$(CLI_SPOKE) ($(TYPE))); \
 	$(call separator,$(CYAN)); \
 	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CLI_SPOKE) TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
