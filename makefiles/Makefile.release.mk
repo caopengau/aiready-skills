@@ -205,6 +205,26 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 		$(call log_error,TYPE parameter required. Example: make $@ TYPE=minor); \
 		exit 1; \
 	fi
+	@# Check if any packages need release and prompt for OTP if 2FA is enabled
+	@if [ -z "$(OTP)" ]; then \
+		needs_release=0; \
+		for spoke in $(ALL_SPOKES); do \
+			if $(MAKE) -s check-changes SPOKE=$$spoke >/dev/null 2>&1 || [ "$(FORCE)" = "1" ]; then \
+				needs_release=1; \
+				break; \
+			fi; \
+		done; \
+		if [ $$needs_release -eq 1 ]; then \
+			$(call log_warning,No OTP provided. If your npm account has 2FA enabled, publish will fail.); \
+			printf "Enter OTP code (or press Enter to continue without OTP): "; \
+			read otp_input; \
+			if [ -n "$$otp_input" ]; then \
+				$(call log_info,Using OTP: $$otp_input); \
+				$(MAKE) release-all TYPE=$(TYPE) OTP=$$otp_input FORCE=$(FORCE); \
+				exit 0; \
+			fi; \
+		fi; \
+	fi
 	@$(call log_step,Running full test suite before release...); \
 	if ! $(MAKE) -C $(ROOT_DIR) test; then \
 		$(call log_error,Tests failed. Aborting release-all.); \
