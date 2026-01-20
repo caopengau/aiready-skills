@@ -20,6 +20,7 @@ import { loadNamingConfig } from '../utils/config-loader';
 
 /**
  * AST-based naming analyzer
+ * Only supports TypeScript/JavaScript files (.ts, .tsx, .js, .jsx)
  */
 export async function analyzeNamingAST(files: string[]): Promise<NamingIssue[]> {
   const issues: NamingIssue[] = [];
@@ -27,7 +28,12 @@ export async function analyzeNamingAST(files: string[]): Promise<NamingIssue[]> 
   // Load and merge configuration
   const { allAbbreviations, allShortWords, disabledChecks } = await loadNamingConfig(files);
 
-  for (const file of files) {
+  // Filter to only JS/TS files that the TypeScript parser can handle
+  const supportedFiles = files.filter(file => 
+    /\.(js|jsx|ts|tsx)$/i.test(file)
+  );
+
+  for (const file of supportedFiles) {
     try {
       const ast = parseFile(file);
       if (!ast) continue; // Skip files that fail to parse

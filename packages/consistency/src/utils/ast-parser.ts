@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 
 /**
  * Parse a file into an AST
+ * Only supports TypeScript/JavaScript files (.ts, .tsx, .js, .jsx)
  */
 export function parseFile(filePath: string, content?: string): TSESTree.Program | null {
   try {
@@ -22,8 +23,8 @@ export function parseFile(filePath: string, content?: string): TSESTree.Program 
       filePath: isTypeScript ? filePath : undefined,
     });
   } catch (error) {
-    // If TypeScript parsing fails, return null (file might have syntax errors)
-    console.warn(`Failed to parse ${filePath}:`, error instanceof Error ? error.message : error);
+    // Silently skip files that fail to parse (likely non-JS/TS or syntax errors)
+    // Non-JS/TS files should be filtered before reaching this point
     return null;
   }
 }

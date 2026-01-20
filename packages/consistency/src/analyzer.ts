@@ -6,6 +6,8 @@ import { analyzePatterns } from './analyzers/patterns';
 
 /**
  * Main consistency analyzer that orchestrates all analysis types
+ * Note: Currently only supports TypeScript/JavaScript files (.ts, .tsx, .js, .jsx)
+ * Python and other language files will be ignored during naming analysis.
  */
 export async function analyzeConsistency(
   options: ConsistencyOptions

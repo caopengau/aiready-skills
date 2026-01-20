@@ -15,6 +15,10 @@ program
   .description('Detect consistency patterns in naming, code structure, and architecture')
   .version('0.1.0')
   .addHelpText('after', `
+LANGUAGE SUPPORT:
+  Supported: TypeScript (.ts, .tsx), JavaScript (.js, .jsx)
+  Note: Python, Java, and other language files will be safely ignored
+
 CONFIGURATION:
   Supports config files: aiready.json, aiready.config.json, .aiready.json, .aireadyrc.json
   CLI options override config file settings
