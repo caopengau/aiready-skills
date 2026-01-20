@@ -31,6 +31,11 @@ program
   .option('--exclude-templates', 'Exclude template file duplication')
   .option('--include-tests', 'Include test files in analysis (excluded by default)')
   .option('--max-results <number>', 'Maximum number of results to show in console output. Default: 10')
+  .option('--no-group-by-file-pair', 'Disable grouping duplicates by file pair')
+  .option('--no-create-clusters', 'Disable creating refactor clusters')
+  .option('--min-cluster-tokens <number>', 'Minimum token cost for cluster reporting. Default: 1000')
+  .option('--min-cluster-files <number>', 'Minimum files for cluster reporting. Default: 3')
+  .option('--show-raw-duplicates', 'Show raw duplicates instead of grouped view')
   .option(
     '-o, --output <format>',
     'Output format: console, json, html',
@@ -61,6 +66,11 @@ program
       excludeTemplates: false,
       includeTests: false,
       maxResults: 10,
+      groupByFilePair: true,
+      createClusters: true,
+      minClusterTokenCost: 1000,
+      minClusterFiles: 3,
+      showRawDuplicates: false,
     };
 
     // Merge config with defaults
@@ -83,6 +93,11 @@ program
       excludeTemplates: options.excludeTemplates || mergedConfig.excludeTemplates,
       includeTests: options.includeTests || mergedConfig.includeTests,
       maxResults: options.maxResults ? parseInt(options.maxResults) : mergedConfig.maxResults,
+      groupByFilePair: options.groupByFilePair !== false && mergedConfig.groupByFilePair,
+      createClusters: options.createClusters !== false && mergedConfig.createClusters,
+      minClusterTokenCost: options.minClusterTokens ? parseInt(options.minClusterTokens) : mergedConfig.minClusterTokenCost,
+      minClusterFiles: options.minClusterFiles ? parseInt(options.minClusterFiles) : mergedConfig.minClusterFiles,
+      showRawDuplicates: options.showRawDuplicates || mergedConfig.showRawDuplicates,
     };
 
     // Test files are excluded by default in core's DEFAULT_EXCLUDE
@@ -100,7 +115,7 @@ program
       );
     }
 
-    const { results, duplicates: rawDuplicates, files } = await analyzePatterns(finalOptions);
+    const { results, duplicates: rawDuplicates, files, groups, clusters } = await analyzePatterns(finalOptions);
 
     // Apply severity filtering
     let filteredDuplicates = rawDuplicates;
@@ -128,6 +143,9 @@ program
       const jsonOutput = {
         summary,
         results,
+        duplicates: rawDuplicates,
+        groups: groups || [],
+        clusters: clusters || [],
         timestamp: new Date().toISOString(),
       };
 
@@ -205,8 +223,86 @@ program
       });
     }
 
-    // Show top duplicates with detailed information
-    if (totalIssues > 0) {
+    // Show grouped duplicates by file pair (reduces noise)
+    if (!finalOptions.showRawDuplicates && groups && groups.length > 0) {
+      console.log(chalk.cyan('\n' + divider));
+      console.log(chalk.bold.white(`  📦 DUPLICATE GROUPS (${groups.length} file pairs)`));
+      console.log(chalk.cyan(divider) + '\n');
+
+      // Sort by severity, then by token cost
+      const severityOrder: Record<Severity, number> = {
+        critical: 4,
+        major: 3,
+        minor: 2,
+        info: 1,
+      };
+
+      const topGroups = groups
+        .sort((a, b) => {
+          const severityDiff = severityOrder[b.severity] - severityOrder[a.severity];
+          if (severityDiff !== 0) return severityDiff;
+          return b.totalTokenCost - a.totalTokenCost;
+        })
+        .slice(0, finalOptions.maxResults);
+
+      topGroups.forEach((group, idx) => {
+        const severityBadge = getSeverityBadge(group.severity);
+        const [file1, file2] = group.filePair.split('::');
+        const file1Name = file1.split('/').pop() || file1;
+        const file2Name = file2.split('/').pop() || file2;
+
+        console.log(`${idx + 1}. ${severityBadge} ${chalk.bold(file1Name)} ↔ ${chalk.bold(file2Name)}`);
+        console.log(`   Occurrences: ${chalk.bold(group.occurrences)} | Total tokens: ${chalk.bold(group.totalTokenCost.toLocaleString())} | Avg similarity: ${chalk.bold(Math.round(group.averageSimilarity * 100) + '%')}`);
+        
+        // Show first 3 line ranges
+        const displayRanges = group.lineRanges.slice(0, 3);
+        displayRanges.forEach((range) => {
+          console.log(`   ${chalk.gray(file1)}:${chalk.cyan(`${range.file1.start}-${range.file1.end}`)} ↔ ${chalk.gray(file2)}:${chalk.cyan(`${range.file2.start}-${range.file2.end}`)}`);
+        });
+        
+        if (group.lineRanges.length > 3) {
+          console.log(`   ${chalk.gray(`... and ${group.lineRanges.length - 3} more ranges`)}`);
+        }
+        console.log();
+      });
+
+      if (groups.length > topGroups.length) {
+        console.log(chalk.gray(`   ... and ${groups.length - topGroups.length} more file pairs`));
+      }
+    }
+
+    // Show refactor clusters (high-level patterns)
+    if (!finalOptions.showRawDuplicates && clusters && clusters.length > 0) {
+      console.log(chalk.cyan('\n' + divider));
+      console.log(chalk.bold.white(`  🎯 REFACTOR CLUSTERS (${clusters.length} patterns)`));
+      console.log(chalk.cyan(divider) + '\n');
+
+      clusters
+        .sort((a, b) => b.totalTokenCost - a.totalTokenCost)
+        .forEach((cluster, idx) => {
+          const severityBadge = getSeverityBadge(cluster.severity);
+          console.log(`${idx + 1}. ${severityBadge} ${chalk.bold(cluster.name)}`);
+          console.log(`   Total tokens: ${chalk.bold(cluster.totalTokenCost.toLocaleString())} | Avg similarity: ${chalk.bold(Math.round(cluster.averageSimilarity * 100) + '%')} | Duplicates: ${chalk.bold(cluster.duplicateCount)}`);
+          
+          // Show first 5 files
+          const displayFiles = cluster.files.slice(0, 5);
+          console.log(`   Files (${cluster.files.length}): ${displayFiles.map(f => chalk.gray(f.split('/').pop() || f)).join(', ')}`);
+          if (cluster.files.length > 5) {
+            console.log(`   ${chalk.gray(`... and ${cluster.files.length - 5} more files`)}`);
+          }
+          
+          if (cluster.reason) {
+            console.log(`   ${chalk.italic.gray(cluster.reason)}`);
+          }
+          if (cluster.suggestion) {
+            console.log(`   ${chalk.cyan('→')} ${chalk.italic(cluster.suggestion)}`);
+          }
+          console.log();
+        });
+    }
+
+    // Show top duplicates with detailed information (raw view or fallback)
+    if (totalIssues > 0 && (finalOptions.showRawDuplicates || !groups || groups.length === 0)) {
       console.log(chalk.cyan('\n' + divider));
       console.log(chalk.bold.white('  TOP DUPLICATE PATTERNS'));
       console.log(chalk.cyan(divider) + '\n');

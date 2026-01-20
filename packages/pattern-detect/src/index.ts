@@ -2,8 +2,15 @@ import { scanFiles, readFileContent } from '@aiready/core';
 import type { AnalysisResult, Issue, ScanOptions } from '@aiready/core';
 import { detectDuplicatePatterns, type PatternType, type DuplicatePattern } from './detector';
 import type { Severity } from './context-rules';
+import {
+  groupDuplicatesByFilePair,
+  createRefactorClusters,
+  filterClustersByImpact,
+  type DuplicateGroup,
+  type RefactorCluster,
+} from './grouping';
 
-export type { PatternType, DuplicatePattern, Severity };
+export type { PatternType, DuplicatePattern, Severity, DuplicateGroup, RefactorCluster };
 
 export interface PatternDetectOptions extends ScanOptions {
   minSimilarity?: number; // 0-1, default 0.40 (Jaccard similarity)
@@ -16,6 +23,10 @@ export interface PatternDetectOptions extends ScanOptions {
   severity?: string; // Filter by severity: critical|high|medium|all (default: all)
   includeTests?: boolean; // Include test files in analysis (default: false)
   useSmartDefaults?: boolean; // Use smart defaults based on repo size (default: true)
+  groupByFilePair?: boolean; // Group duplicates by file pair to reduce noise (default: true)
+  createClusters?: boolean; // Create refactor clusters for related patterns (default: true)
+  minClusterTokenCost?: number; // Minimum token cost for cluster reporting (default: 1000)
+  minClusterFiles?: number; // Minimum files for cluster reporting (default: 3)
 }
 
 export interface PatternSummary {
@@ -159,7 +170,13 @@ function logConfiguration(config: PatternDetectOptions, estimatedBlocks: number)
 
 export async function analyzePatterns(
   options: PatternDetectOptions
-): Promise<{ results: AnalysisResult[], duplicates: DuplicatePattern[], files: string[] }> {
+): Promise<{ 
+  results: AnalysisResult[], 
+  duplicates: DuplicatePattern[], 
+  files: string[],
+  groups?: DuplicateGroup[],
+  clusters?: RefactorCluster[]
+}> {
   // Apply smart defaults based on repository size for unset options
   const smartDefaults = await getSmartDefaults(options.rootDir || '.', options);
 
@@ -176,6 +193,10 @@ export async function analyzePatterns(
     streamResults = false,
     severity = 'all',
     includeTests = false,
+    groupByFilePair = true,
+    createClusters = true,
+    minClusterTokenCost = 1000,
+    minClusterFiles = 3,
     ...scanOptions
   } = finalOptions;
 
@@ -260,7 +281,22 @@ export async function analyzePatterns(
     });
   }
 
-  return { results, duplicates, files };
+  // NEW: Create groups and clusters if requested
+  let groups: DuplicateGroup[] | undefined;
+  let clusters: RefactorCluster[] | undefined;
+
+  if (groupByFilePair) {
+    groups = groupDuplicatesByFilePair(duplicates);
+    console.log(`\n✅ Grouped ${duplicates.length} duplicates into ${groups.length} file pairs`);
+  }
+
+  if (createClusters) {
+    const allClusters = createRefactorClusters(duplicates);
+    clusters = filterClustersByImpact(allClusters, minClusterTokenCost, minClusterFiles);
+    console.log(`✅ Created ${clusters.length} refactor clusters (${allClusters.length - clusters.length} filtered by impact)`);
+  }
+
+  return { results, duplicates, files, groups, clusters };
 }
 
 /**
