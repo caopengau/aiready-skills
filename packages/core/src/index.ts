@@ -4,3 +4,4 @@ export * from './utils/ast-parser';
 export * from './utils/metrics';
 export * from './utils/config';
 export * from './utils/cli-helpers';
+export * from './scoring';

@@ -51,11 +51,14 @@ export interface AIReadyConfig {
   scan?: {
     include?: string[];
     exclude?: string[];
+    tools?: string[];  // Which tools to run: ["patterns", "context", "consistency"]
   };
 
   // Tool-specific configurations
   tools?: {
     'pattern-detect'?: {
+      enabled?: boolean;
+      scoreWeight?: number;
       minSimilarity?: number;
       minLines?: number;
       batchSize?: number;
@@ -66,6 +69,8 @@ export interface AIReadyConfig {
       maxResults?: number;
     };
     'context-analyzer'?: {
+      enabled?: boolean;
+      scoreWeight?: number;
       maxDepth?: number;
       maxContextBudget?: number;
       minCohesion?: number;
@@ -79,6 +84,8 @@ export interface AIReadyConfig {
       pathDomainMap?: Record<string, string>; // map of path segment -> domain (e.g., {'orders': 'order'})
     };
     'consistency'?: {
+      enabled?: boolean;
+      scoreWeight?: number;
       // Custom abbreviations to accept (domain-specific terms)
       acceptedAbbreviations?: string[]; // e.g., ['ses', 'gst', 'cdk', 'btn', 'buf', 'agg']
       // Custom short words that are full English words, not abbreviations
@@ -86,6 +93,19 @@ export interface AIReadyConfig {
       // Disable specific checks
       disableChecks?: ('single-letter' | 'abbreviation' | 'convention-mix' | 'unclear' | 'poor-naming')[];
     };
+    [toolName: string]: {
+      enabled?: boolean;
+      scoreWeight?: number;
+      [key: string]: any;
+    } | undefined;
+  };
+
+  // Scoring configuration
+  scoring?: {
+    threshold?: number;       // Minimum passing score
+    showBreakdown?: boolean;  // Show detailed breakdown
+    compareBaseline?: string; // Path to baseline JSON
+    saveTo?: string;          // Auto-save score to path
   };
 
   // Output preferences
