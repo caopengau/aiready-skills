@@ -10,6 +10,7 @@ import {
   calculateFragmentation,
   detectModuleClusters,
 } from './analyzer';
+import { calculateContextScore } from './scoring';
 import type {
   ContextAnalyzerOptions,
   ContextAnalysisResult,
@@ -542,3 +543,5 @@ function downgradeSeverity(s: ContextAnalysisResult['severity']): ContextAnalysi
       return 'info';
   }
 }
+
+export { calculateContextScore };
