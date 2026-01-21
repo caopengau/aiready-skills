@@ -44,19 +44,13 @@ export interface ScoringResult {
   toolsUsed: string[];
   
   /** Breakdown by tool */
-  breakdown: Record<string, {
-    score: number;
-    weight: number;
-    weightedScore: number;
-    contribution: string;  // Percentage as string (e.g., "27%")
-  }>;
+  breakdown: ToolScoringOutput[];
   
   /** Calculation details */
   calculation: {
     formula: string;
-    weightedSum: number;
-    totalWeight: number;
-    roundedScore: number;
+    weights: Record<string, number>;
+    normalized: string;
   };
 }
 
@@ -165,18 +159,29 @@ export function parseWeightString(weightStr?: string): Map<string, number> {
  */
 export function calculateOverallScore(
   toolOutputs: Map<string, ToolScoringOutput>,
-  weights: Map<string, number>
+  config?: any,
+  cliWeights?: Map<string, number>
 ): ScoringResult {
   if (toolOutputs.size === 0) {
     throw new Error('No tool outputs provided for scoring');
+  }
+  
+  // Build weights map with priority: CLI > config > defaults
+  const weights = new Map<string, number>();
+  for (const [toolName] of toolOutputs.entries()) {
+    const cliWeight = cliWeights?.get(toolName);
+    const configWeight = config?.tools?.[toolName]?.scoreWeight;
+    const weight = cliWeight ?? configWeight ?? DEFAULT_TOOL_WEIGHTS[toolName] ?? 10;
+    weights.set(toolName, weight);
   }
   
   // Calculate weighted sum and total weight
   let weightedSum = 0;
   let totalWeight = 0;
   
-  const breakdown: Record<string, any> = {};
+  const breakdown: ToolScoringOutput[] = [];
   const toolsUsed: string[] = [];
+  const calculationWeights: Record<string, number> = {};
   
   for (const [toolName, output] of toolOutputs.entries()) {
     const weight = weights.get(toolName) || 10;
@@ -185,26 +190,23 @@ export function calculateOverallScore(
     weightedSum += weightedScore;
     totalWeight += weight;
     toolsUsed.push(toolName);
-    
-    breakdown[toolName] = {
-      score: output.score,
-      weight,
-      weightedScore,
-      contribution: '', // Will calculate after we have total
-    };
+    calculationWeights[toolName] = weight;
+    breakdown.push(output);
   }
   
   // Calculate final score
   const overall = Math.round(weightedSum / totalWeight);
   
-  // Calculate contribution percentages
-  for (const toolName of Object.keys(breakdown)) {
-    const contribution = (breakdown[toolName].weightedScore / weightedSum) * 100;
-    breakdown[toolName].contribution = `${Math.round(contribution)}%`;
-  }
-  
   // Determine rating
   const rating = getRating(overall);
+  
+  // Build formula string
+  const formulaParts = Array.from(toolOutputs.entries())
+    .map(([name, output]) => {
+      const w = weights.get(name) || 10;
+      return `(${output.score} × ${w})`;
+    });
+  const formulaStr = `[${formulaParts.join(' + ')}] / ${totalWeight} = ${overall}`;
   
   return {
     overall,
@@ -213,10 +215,9 @@ export function calculateOverallScore(
     toolsUsed,
     breakdown,
     calculation: {
-      formula: 'Σ(tool_score × weight) / Σ(weights)',
-      weightedSum: Math.round(weightedSum * 10) / 10,
-      totalWeight,
-      roundedScore: overall,
+      formula: formulaStr,
+      weights: calculationWeights,
+      normalized: formulaStr,
     },
   };
 }
@@ -256,4 +257,32 @@ export function getRatingDisplay(rating: ScoringResult['rating']): { emoji: stri
 export function formatScore(result: ScoringResult): string {
   const { emoji, color } = getRatingDisplay(result.rating);
   return `${result.overall}/100 (${result.rating}) ${emoji}`;
+}
+
+/**
+ * Format individual tool score for display
+ */
+export function formatToolScore(output: ToolScoringOutput): string {
+  let result = `  Score: ${output.score}/100\n\n`;
+  
+  if (output.factors && output.factors.length > 0) {
+    result += `  Factors:\n`;
+    output.factors.forEach(factor => {
+      const impactSign = factor.impact > 0 ? '+' : '';
+      result += `    • ${factor.name}: ${impactSign}${factor.impact} - ${factor.description}\n`;
+    });
+    result += '\n';
+  }
+  
+  if (output.recommendations && output.recommendations.length > 0) {
+    result += `  Recommendations:\n`;
+    output.recommendations.forEach((rec, i) => {
+      const priorityIcon = rec.priority === 'high' ? '🔴' : 
+                          rec.priority === 'medium' ? '🟡' : '🔵';
+      result += `    ${i + 1}. ${priorityIcon} ${rec.action}\n`;
+      result += `       Impact: +${rec.estimatedImpact} points\n\n`;
+    });
+  }
+  
+  return result;
 }
