@@ -10,15 +10,15 @@
 # - Push monorepo branch and tags
 #
 # Usage examples:
-#   make release-one SPOKE=pattern-detect TYPE=minor [OTP=123456]
-#   make release-one SPOKE=core TYPE=patch [OTP=123456]
-#   make release-all TYPE=minor [OTP=123456]
+#   make release-one SPOKE=pattern-detect TYPE=minor
+#   make release-one SPOKE=core TYPE=patch
+#   make release-all TYPE=minor
 #   make release-status
 #
 # Notes:
 # - Always uses pnpm for publish to resolve workspace:* dependencies
 # - Tags use the form: <spoke>-v<version> (e.g., pattern-detect-v0.3.0)
-# - Requires npm login for publish; uses optional OTP if 2FA enabled
+# - Requires npm login for publish
 ###############################################################################
 
 # Resolve this makefile's directory to allow absolute invocation
@@ -156,7 +156,7 @@ check-dependency-updates: ## Check if SPOKE's published dependencies have newer 
 	@./makefiles/scripts/check-dependency-updates.sh $(SPOKE)
 
 # Release a single spoke end-to-end
-release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-detect [OTP=123456]
+release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-detect
 	$(call require_spoke)
 	@if [ -z "$(TYPE)" ]; then \
 		$(call log_error,TYPE parameter required. Usage: make $@ SPOKE=pattern-detect TYPE=minor); \
@@ -186,7 +186,7 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 	fi; \
 	$(call log_success,Tests passed); \
 	$(call log_step,Publishing @aiready/$(SPOKE) to npm...); \
-	if ! $(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$(SPOKE) OTP=$(OTP); then \
+	if ! $(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$(SPOKE); then \
 		$(call log_error,NPM publish failed for @aiready/$(SPOKE). Aborting release.); \
 		exit 1; \
 	fi; \
@@ -200,30 +200,10 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 # Strategy: core → parallel middle packages → cli (respects dependencies)
 # Landing site is EXCLUDED - use 'make release-landing' separately
 # ⚠️  CLI is ALWAYS released last because it depends on ALL spokes
-release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1] (excludes landing)
+release-all: ## Release all spokes: TYPE=patch|minor|major [FORCE=1] (excludes landing)
 	@if [ -z "$(TYPE)" ]; then \
 		$(call log_error,TYPE parameter required. Example: make $@ TYPE=minor); \
 		exit 1; \
-	fi
-	@# Check if any packages need release and prompt for OTP if 2FA is enabled
-	@if [ -z "$(OTP)" ]; then \
-		needs_release=0; \
-		for spoke in $(ALL_SPOKES); do \
-			if $(MAKE) -s check-changes SPOKE=$$spoke >/dev/null 2>&1 || [ "$(FORCE)" = "1" ]; then \
-				needs_release=1; \
-				break; \
-			fi; \
-		done; \
-		if [ $$needs_release -eq 1 ]; then \
-			$(call log_warning,No OTP provided. If your npm account has 2FA enabled, publish will fail.); \
-			printf "Enter OTP code (or press Enter to continue without OTP): "; \
-			read otp_input; \
-			if [ -n "$$otp_input" ]; then \
-				$(call log_info,Using OTP: $$otp_input); \
-				$(MAKE) release-all TYPE=$(TYPE) OTP=$$otp_input FORCE=$(FORCE); \
-				exit 0; \
-			fi; \
-		fi; \
 	fi
 	@$(call log_step,Running full test suite before release...); \
 	if ! $(MAKE) -C $(ROOT_DIR) test; then \
@@ -235,7 +215,7 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 	@$(call separator,$(CYAN)); \
 	$(call log_info,Phase 1/3: Releasing @aiready/$(CORE_SPOKE) ($(TYPE))); \
 	$(call separator,$(CYAN)); \
-	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CORE_SPOKE) TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
+	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CORE_SPOKE) TYPE=$(TYPE) FORCE=$(FORCE) || exit 1; \
 	$(call log_success,✓ Core released)
 	@# Phase 2: Release middle packages in parallel (independent of each other)
 	@if [ -n "$(MIDDLE_SPOKES)" ]; then \
@@ -244,7 +224,7 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 		$(call separator,$(CYAN)); \
 		pids=""; \
 		for spoke in $(MIDDLE_SPOKES); do \
-			$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$$spoke TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) & \
+			$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$$spoke TYPE=$(TYPE) FORCE=$(FORCE) & \
 			pids="$$pids $$!"; \
 		done; \
 		failed=0; \
@@ -263,7 +243,7 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [OTP=123456] [FORCE=1
 	@$(call separator,$(CYAN)); \
 	$(call log_info,Phase 3/3: Releasing @aiready/$(CLI_SPOKE) ($(TYPE))); \
 	$(call separator,$(CYAN)); \
-	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CLI_SPOKE) TYPE=$(TYPE) OTP=$(OTP) FORCE=$(FORCE) || exit 1; \
+	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CLI_SPOKE) TYPE=$(TYPE) FORCE=$(FORCE) || exit 1; \
 	$(call separator,$(GREEN)); \
 	$(call log_success,🎉 All spokes released successfully); \
 	$(call separator,$(GREEN))
@@ -308,8 +288,8 @@ release-help: ## Show release help
 	@echo "Available targets:"; \
 	echo "  check-changes            - Check if SPOKE has changes since last release"; \
 	echo "  check-dependency-updates - Check if SPOKE has outdated dependencies"; \
-	echo "  release-one              - Release one spoke (TYPE, SPOKE, [OTP], [FORCE])"; \
-	echo "  release-all              - Release all spokes (TYPE, [OTP], [FORCE])"; \
+	echo "  release-one              - Release one spoke (TYPE, SPOKE, [FORCE])"; \
+	echo "  release-all              - Release all spokes (TYPE, [FORCE])"; \
 	echo "  release-landing          - Release landing page (TYPE)"; \
 	echo "  release-status           - Show local vs npm/git tag versions"; \
 	echo ""; \

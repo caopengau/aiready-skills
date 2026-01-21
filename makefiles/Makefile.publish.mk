@@ -76,28 +76,13 @@ version-major: ## Bump spoke major version (0.1.0 -> 1.0.0). Usage: make version
 	@$(call log_success,Version bumped to $$(cd packages/$(SPOKE) && node -p "require('./package.json').version"))
 
 # Generic npm publish (requires SPOKE parameter)
-npm-publish: npm-check ## Publish spoke to npm. Usage: make npm-publish SPOKE=pattern-detect [OTP=123456]
+npm-publish: npm-check ## Publish spoke to npm. Usage: make npm-publish SPOKE=pattern-detect
 	$(call require_spoke)
 	@$(call log_step,Publishing @aiready/$(SPOKE) to npm...)
 	@# CRITICAL: Use pnpm publish (not npm) to resolve workspace:* dependencies
-	@OTP_FLAG=""; \
-	if [ -n "$(OTP)" ]; then \
-		OTP_FLAG="--otp $(OTP)"; \
-	fi; \
-	cd packages/$(SPOKE) && pnpm publish --access public --no-git-checks $$OTP_FLAG || { \
-		exit_code=$$?; \
-		if [ $$exit_code -eq 1 ]; then \
-			$(call log_warning,Publish failed. If 2FA is enabled, provide OTP code:); \
-			read -p "Enter OTP code (or press Enter to skip): " otp_input; \
-			if [ -n "$$otp_input" ]; then \
-				$(call log_step,Retrying publish with OTP...); \
-				pnpm publish --access public --no-git-checks --otp "$$otp_input" || exit 1; \
-			else \
-				$(call log_error,Publish cancelled); \
-				exit 1; \
-			fi; \
-		else \
-			exit $$exit_code; \
+	@cd packages/$(SPOKE) && pnpm publish --access public --no-git-checks || { \
+		$(call log_error,Publish failed); \
+		exit 1; \
 		fi; \
 	}
 	@$(call log_success,Published @aiready/$(SPOKE) to npm)
