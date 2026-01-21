@@ -36,18 +36,29 @@ endef
 
 npm-check: ## Check npm login status
 	@$(call log_step,Checking npm authentication...)
-	@npm whoami >/dev/null 2>&1 || { \
-		$(call log_error,Not logged into npm. Run: make npm-login); \
-		read -p "Would you like to login now? (y/N): " response; \
+	@if ! npm whoami >/dev/null 2>&1; then \
+		$(call log_error,Not logged into npm. Prompting for login...); \
+		echo ""; \
+		printf "Would you like to login now? (Y/n): "; \
+		read response; \
+		response=$${response:-Y}; \
 		case $$response in \
 			[Yy]|[Yy][Ee][Ss]) \
-				$(MAKE) npm-login && $(call log_success,Logged into npm as $$(npm whoami)) ;; \
+				$(MAKE) npm-login; \
+				if npm whoami >/dev/null 2>&1; then \
+					$(call log_success,Logged into npm as $$(npm whoami)); \
+				else \
+					$(call log_error,NPM login failed. Aborting release.); \
+					exit 1; \
+				fi \
+				;; \
 			*) \
-				$(call log_error,NPM login required for publishing. Run 'make npm-login' manually.); \
+				$(call log_error,NPM login required for publishing. Aborting release.); \
 				exit 1 ;; \
 		esac; \
-	}
-	@$(call log_success,Logged into npm as $$(npm whoami))
+	else \
+		$(call log_success,Logged into npm as $$(npm whoami)); \
+	fi
 
 npm-login: ## Login to npm registry
 	@$(call log_step,Logging into npm...)
