@@ -62,17 +62,48 @@ Look for these key sections:
 - **High context cost** → AI hits token limits faster
 - **Naming inconsistencies** → AI gets confused about your conventions
 
-### Step 3: Save the Report (Optional, 1 minute)
+### Step 3: Get Your AI Readiness Score (Optional, 30 seconds)
+
+Want a single number that tells the story?
+
+```bash
+npx @aiready/cli scan ./src --score
+```
+
+**Output:**
+```
+🎯 AI Readiness Score: 65/100 (Fair)
+
+📊 Breakdown:
+  • Pattern Detection:    66/100  (40% weight)
+  • Context Analysis:     52/100  (35% weight)
+  • Consistency:          80/100  (25% weight)
+```
+
+**What the ratings mean:**
+- **90-100 (Excellent)** 🟢 - AI works optimally
+- **75-89 (Good)** 🟡 - Minor improvements possible  
+- **60-74 (Fair)** 🟠 - Noticeable AI confusion
+- **40-59 (Needs Work)** 🔴 - Significant AI struggles
+- **0-39 (Critical)** 🚨 - Major refactoring recommended
+
+**Customize weights:**
+```bash
+# Prioritize pattern detection
+npx @aiready/cli scan ./src --score --weights patterns:50,context:30,consistency:20
+```
+
+### Step 4: Save the Report (Optional, 1 minute)
 
 Want to save results or share with your team?
 
 ```bash
-npx @aiready/cli scan ./src --output json
+npx @aiready/cli scan ./src --output json --score
 ```
 
 Output saved to `.aiready/aiready-scan-YYYY-MM-DD.json`
 
-### Step 4: Drill Down (1 minute)
+### Step 5: Drill Down (1 minute)
 
 Run individual tools for detailed analysis:
 

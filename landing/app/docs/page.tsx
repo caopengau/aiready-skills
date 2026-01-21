@@ -99,6 +99,8 @@ CRITICAL (2 files)
 const sections = [
   { id: "getting-started", label: "Getting Started" },
   { id: "tools", label: "Tools" },
+  { id: "scoring", label: "AI Readiness Scoring" },
+  { id: "metrics", label: "Understanding Metrics" },
   { id: "unified-cli", label: "Unified CLI" },
   { id: "options", label: "CLI Options" },
   { id: "contributing", label: "Contributing" },
@@ -284,6 +286,211 @@ export default function DocsPage() {
                 <pre className="whitespace-pre-wrap">{selectedTool.output}</pre>
               </div>
             </motion.div>
+          </section>
+
+          {/* AI Readiness Scoring */}
+          <section id="scoring" className="mb-16">
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                AI Readiness Scoring
+              </span>
+            </h2>
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-8 shadow-lg mb-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">📊 One Number, Complete Picture</h3>
+              <p className="text-slate-700 mb-4">
+                Get a unified <strong>0-100 score</strong> combining all three tools with proven default weights:
+              </p>
+              <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-6">
+                <div>npx @aiready/cli scan ./src --score</div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">Default Weights</h4>
+                  <ul className="space-y-2 text-slate-700">
+                    <li className="flex justify-between">
+                      <span>Pattern Detection:</span>
+                      <span className="font-bold">40%</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span>Context Analysis:</span>
+                      <span className="font-bold">35%</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span>Consistency:</span>
+                      <span className="font-bold">25%</span>
+                    </li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">Rating Scale</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span className="font-semibold">90-100 Excellent</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <span className="font-semibold">75-89 Good</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                      <span className="font-semibold">60-74 Fair</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <span className="font-semibold">40-59 Needs Work</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-800"></div>
+                      <span className="font-semibold">0-39 Critical</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg mb-6">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">🎯 Customizable Weights</h3>
+              <p className="text-slate-700 mb-4">
+                Adjust weights to match your team's priorities:
+              </p>
+              <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+                <div className="mb-2"># Prioritize pattern detection</div>
+                <div className="mb-4">aiready scan . --score --weights patterns:60,context:25,consistency:15</div>
+                <div className="mb-2"># Equal weighting</div>
+                <div>aiready scan . --score --weights patterns:33,context:33,consistency:34</div>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-slate-700">
+                  <strong>💡 Tip:</strong> Use <code className="bg-white px-2 py-1 rounded">--threshold 75</code> to enforce minimum scores in CI/CD pipelines.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">🚀 Forward-Compatible & Flexible</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">Forward-Compatible</h4>
+                  <ul className="space-y-2 text-slate-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 mt-1">✓</span>
+                      <span>Scores remain comparable as new tools are added</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 mt-1">✓</span>
+                      <span>New tools are opt-in via <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">--tools</code> flag</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 mt-1">✓</span>
+                      <span>Existing scores unchanged when new tools launch</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-600 mt-1">✓</span>
+                      <span>Historical trends stay valid for tracking progress</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">Fully Customizable</h4>
+                  <ul className="space-y-2 text-slate-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600 mt-1">✓</span>
+                      <span>Run any tool combination you need</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600 mt-1">✓</span>
+                      <span>Adjust weights for your team's priorities</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600 mt-1">✓</span>
+                      <span>Override defaults via config files</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-purple-600 mt-1">✓</span>
+                      <span>Scoring is optional (backward compatible)</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Metrics Explained */}
+          <section id="metrics" className="mb-16">
+            <h2 className="text-4xl font-black text-slate-900 mb-6">Understanding Metrics</h2>
+            
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-slate-900 mb-3">📊 Fragmentation</h3>
+                <p className="text-slate-700 mb-3">
+                  Measures how scattered related code is across directories. Impacts AI's ability to load context efficiently.
+                </p>
+                <div className="bg-slate-50 p-4 rounded-lg mb-3">
+                  <code className="text-sm text-slate-800">fragmentation = (unique_directories - 1) / (total_files - 1)</code>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="font-bold text-green-900 mb-1">0% = Perfect Cohesion</div>
+                    <div className="text-sm text-slate-700">All related files in same directory</div>
+                  </div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="font-bold text-red-900 mb-1">100% = Maximum Scatter</div>
+                    <div className="text-sm text-slate-700">Every file in different directory</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-slate-900 mb-3">🔄 Duplication Density</h3>
+                <p className="text-slate-700 mb-3">
+                  Ratio of files with semantic duplicates. High density indicates systematic copy-paste patterns.
+                </p>
+                <div className="bg-slate-50 p-4 rounded-lg">
+                  <code className="text-sm text-slate-800">density = files_with_duplicates / total_files_analyzed</code>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-slate-900 mb-3">🪙 Token Waste</h3>
+                <p className="text-slate-700 mb-3">
+                  Estimated tokens consumed by duplicate code when loaded into AI context windows.
+                </p>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-700">
+                    <strong>Example:</strong> 24 duplicates consuming 20,300 tokens = ~25% of a typical 80K context budget wasted
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-slate-900 mb-3">📏 Context Budget</h3>
+                <p className="text-slate-700 mb-3">
+                  Total tokens (file + all dependencies) needed to provide full context for AI edits.
+                </p>
+                <div className="bg-slate-50 p-4 rounded-lg mb-3">
+                  <code className="text-sm text-slate-800">budget = file_tokens + sum(dependency_tokens)</code>
+                </div>
+                <div className="text-sm text-slate-700">
+                  <strong>Thresholds:</strong> &lt;10K tokens = Good | 10-20K = Warning | &gt;20K = Critical
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-slate-900 mb-3">🔗 Import Depth</h3>
+                <p className="text-slate-700 mb-3">
+                  Maximum levels of transitive imports. Deep chains make it harder for AI to understand full context.
+                </p>
+                <div className="text-sm text-slate-700 space-y-1">
+                  <div><strong>Depth 1-3:</strong> Excellent (direct dependencies)</div>
+                  <div><strong>Depth 4-6:</strong> Good (reasonable depth)</div>
+                  <div><strong>Depth 7-10:</strong> Warning (getting deep)</div>
+                  <div><strong>Depth 11+:</strong> Critical (too many layers)</div>
+                </div>
+              </div>
+            </div>
           </section>
 
           {/* Unified CLI */}
