@@ -94,7 +94,6 @@ npm-publish: npm-check ## Publish spoke to npm. Usage: make npm-publish SPOKE=pa
 	@cd packages/$(SPOKE) && pnpm publish --access public --no-git-checks || { \
 		$(call log_error,Publish failed); \
 		exit 1; \
-		fi; \
 	}
 	@$(call log_success,Published @aiready/$(SPOKE) to npm)
 
