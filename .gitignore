@@ -9,6 +9,9 @@ coverage/
 # TurboRepo
 .turbo/
 
+# Nx
+.nx/
+
 # Logs
 *.log
 .pnpm-debug.log*
