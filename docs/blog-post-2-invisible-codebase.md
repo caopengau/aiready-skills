@@ -270,7 +270,7 @@ I'm building `@aiready/consistency` to detect:
 
 ## The ReceiptClaimer Results
 
-I ran these tools on my own codebase. Here's what I found:
+I ran these tools on my own codebase — [ReceiptClaimer](https://receiptclaimer.com.au/), an AI-powered receipt tracker for Australian taxpayers. Here's what I found:
 
 ### Before Measurement
 - **Semantic duplicates:** 23 patterns repeated 87 times
