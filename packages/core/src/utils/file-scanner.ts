@@ -1,5 +1,7 @@
 import { glob } from 'glob';
 import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { ScanOptions } from '../types';
 
 export const DEFAULT_EXCLUDE = [
@@ -73,9 +75,25 @@ export async function scanFiles(options: ScanOptions): Promise<string[]> {
 
   // Always merge user excludes with defaults to ensure critical paths like
   // cdk.out, node_modules, build dirs are excluded
-  const finalExclude = exclude 
-    ? [...new Set([...DEFAULT_EXCLUDE, ...exclude])] 
-    : DEFAULT_EXCLUDE;
+  // Load .aireadyignore from repository root if present and merge
+  const ignoreFilePath = join(rootDir || '.', '.aireadyignore');
+  let ignoreFromFile: string[] = [];
+  if (existsSync(ignoreFilePath)) {
+    try {
+      const txt = await readFile(ignoreFilePath, 'utf-8');
+      ignoreFromFile = txt
+        .split(/\r?\n/)
+        .map(s => s.trim())
+        .filter(Boolean)
+        .filter(l => !l.startsWith('#'))
+        .filter(l => !l.startsWith('!')); // ignore negations for now
+    } catch (e) {
+      // noop - fall back to defaults if file can't be read
+      ignoreFromFile = [];
+    }
+  }
+
+  const finalExclude = [...new Set([...(exclude || []), ...ignoreFromFile, ...DEFAULT_EXCLUDE])];
 
   const files = await glob(include, {
     cwd: rootDir,
