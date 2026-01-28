@@ -22,10 +22,16 @@ Guidelines for writing AI-friendly codebases that AI coding assistants can under
 
 1. [Pattern Detection (patterns)](#1-pattern-detection-(patterns)) (CRITICAL)
    - 1.1 [Avoid Semantic Duplicate Patterns](#11-avoid-semantic-duplicate-patterns)
+   - 1.2 [Unify Fragmented Interfaces](#12-unify-fragmented-interfaces)
 2. [Context Optimization (context)](#2-context-optimization-(context)) (HIGH)
    - 2.1 [Keep Import Chains Shallow](#21-keep-import-chains-shallow)
+   - 2.2 [Maintain High Module Cohesion](#22-maintain-high-module-cohesion)
+   - 2.3 [Split Large Files (>500 lines)](#23-split-large-files-(>500-lines))
 3. [Consistency Checking (consistency)](#3-consistency-checking-(consistency)) (MEDIUM)
    - 3.1 [Follow Consistent Naming Conventions](#31-follow-consistent-naming-conventions)
+   - 3.2 [Use Consistent Error Handling Patterns](#32-use-consistent-error-handling-patterns)
+4. [Documentation (docs)](#4-documentation-(docs)) (MEDIUM)
+   - 4.1 [Keep Documentation in Sync with Code](#41-keep-documentation-in-sync-with-code)
 
 ---
 
@@ -86,6 +92,70 @@ import { getUser } from './users'
 
 Reference: [https://getaiready.dev/docs/pattern-detect](https://getaiready.dev/docs/pattern-detect)
 
+### 1.2 Unify Fragmented Interfaces
+
+**Impact: CRITICAL (40-80% reduction in AI confusion, prevents wrong type usage)**
+
+*Tags: patterns, interfaces, types, consistency*
+
+Multiple similar interfaces or types for the same concept confuse AI models and lead to incorrect implementations. When AI encounters 5 different user types (`User`, `UserData`, `UserInfo`, `UserProfile`, `UserDTO`), it cannot determine which to use and often mixes them incorrectly.
+
+This is one of the most critical issues for AI comprehension because it directly causes type errors and logic bugs that are hard to detect.
+
+**Incorrect:**
+
+```typescript
+// user.types.ts
+interface User {
+  id: string
+  email: string
+}
+
+// profile.types.ts
+interface UserProfile {
+  userId: string
+  email: string
+  name: string
+}
+
+// api.types.ts
+interface UserData {
+  id: string
+  emailAddress: string
+  displayName: string
+}
+
+// Three different interfaces for the same concept!
+// AI cannot determine which to use where
+function updateUser(user: User) { /* ... */ }
+function getProfile(userId: string): UserProfile { /* ... */ }
+function syncData(data: UserData) { /* ... */ }
+```
+
+**Correct:**
+
+```typescript
+// user.types.ts
+interface User {
+  id: string
+  email: string
+  name?: string // Optional fields for different contexts
+}
+
+// Use a single source of truth
+function updateUser(user: User) { /* ... */ }
+function getProfile(userId: string): User { /* ... */ }
+function syncData(user: User) { /* ... */ }
+
+// For API-specific needs, extend rather than duplicate
+interface UserDTO extends User {
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+Reference: [https://refactoring.guru/extract-interface](https://refactoring.guru/extract-interface)
+
 ---
 
 ## 2. Context Optimization (context)
@@ -144,6 +214,167 @@ export { checkSchema } from './schema'
 ```
 
 Reference: [https://getaiready.dev/docs/context-analyzer](https://getaiready.dev/docs/context-analyzer)
+
+### 2.2 Maintain High Module Cohesion
+
+**Impact: HIGH (25-40% reduction in context pollution, improves AI file selection)**
+
+*Tags: context, cohesion, organization, modules*
+
+Low cohesion forces AI to load multiple unrelated files to understand one feature. When a file contains unrelated functions (authentication + date formatting + validation), AI must read the entire file even when only needing one function.
+
+High cohesion means related code stays together. AI can load the minimal context needed.
+
+**Incorrect:**
+
+```typescript
+// utils.ts - Everything dumped together
+export function hashPassword(password: string) {
+  return bcrypt.hash(password, 10)
+}
+
+export function formatDate(date: Date) {
+  return date.toISOString()
+}
+
+export function validateEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+export function generateToken(userId: string) {
+  return jwt.sign({ userId }, SECRET)
+}
+
+// AI must load ALL of this just to understand password hashing!
+// Context cost: 150+ lines for 10 lines of relevant code
+```
+
+**Correct:**
+
+```typescript
+// auth/password.ts
+export function hashPassword(password: string) {
+  return bcrypt.hash(password, 10)
+}
+
+export function verifyPassword(password: string, hash: string) {
+  return bcrypt.compare(password, hash)
+}
+
+// auth/token.ts
+export function generateToken(userId: string) {
+  return jwt.sign({ userId }, SECRET)
+}
+
+export function verifyToken(token: string) {
+  return jwt.verify(token, SECRET)
+}
+
+// validation/email.ts
+export function validateEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+// utils/date.ts
+export function formatDate(date: Date) {
+  return date.toISOString()
+}
+
+// AI loads only auth/password.ts for password operations
+// Context cost: 15 lines instead of 150+
+```
+
+Reference: [https://en.wikipedia.org/wiki/Cohesion_(computer_science)](https://en.wikipedia.org/wiki/Cohesion_(computer_science))
+
+### 2.3 Split Large Files (>500 lines)
+
+**Impact: HIGH (30-50% reduction in context window usage)**
+
+*Tags: context, file-size, refactoring, modules*
+
+Files over 500 lines often exceed AI context windows or force loading unnecessary code. When AI needs to understand one function in a 2000-line file, it must process the entire file, wasting 90%+ of its context budget.
+
+Split large files by feature, responsibility, or data type.
+
+**Incorrect:**
+
+```typescript
+// user-service.ts (2000+ lines)
+class UserService {
+  // Profile management (300 lines)
+  async getProfile(userId: string) { /* ... */ }
+  async updateProfile(userId: string, data: any) { /* ... */ }
+  async uploadAvatar(userId: string, file: File) { /* ... */ }
+  
+  // Authentication (400 lines)
+  async login(email: string, password: string) { /* ... */ }
+  async logout(userId: string) { /* ... */ }
+  async resetPassword(email: string) { /* ... */ }
+  async verifyEmail(token: string) { /* ... */ }
+  
+  // Permissions (350 lines)
+  async hasPermission(userId: string, resource: string) { /* ... */ }
+  async grantPermission(userId: string, permission: string) { /* ... */ }
+  async revokePermission(userId: string, permission: string) { /* ... */ }
+  
+  // Notifications (300 lines)
+  async sendNotification(userId: string, message: string) { /* ... */ }
+  async getNotifications(userId: string) { /* ... */ }
+  async markAsRead(notificationId: string) { /* ... */ }
+  
+  // Analytics (350 lines)
+  async trackUserEvent(userId: string, event: string) { /* ... */ }
+  async getUserStats(userId: string) { /* ... */ }
+  
+  // ... 300 more lines
+}
+
+// AI needs 2000 lines context just to understand profile updates!
+```
+
+**Correct:**
+
+```typescript
+// user/profile-service.ts (150 lines)
+export class ProfileService {
+  async get(userId: string) { /* ... */ }
+  async update(userId: string, data: ProfileData) { /* ... */ }
+  async uploadAvatar(userId: string, file: File) { /* ... */ }
+}
+
+// user/auth-service.ts (200 lines)
+export class AuthService {
+  async login(email: string, password: string) { /* ... */ }
+  async logout(userId: string) { /* ... */ }
+  async resetPassword(email: string) { /* ... */ }
+  async verifyEmail(token: string) { /* ... */ }
+}
+
+// user/permission-service.ts (180 lines)
+export class PermissionService {
+  async check(userId: string, resource: string) { /* ... */ }
+  async grant(userId: string, permission: string) { /* ... */ }
+  async revoke(userId: string, permission: string) { /* ... */ }
+}
+
+// user/notification-service.ts (160 lines)
+export class NotificationService {
+  async send(userId: string, message: string) { /* ... */ }
+  async list(userId: string) { /* ... */ }
+  async markRead(notificationId: string) { /* ... */ }
+}
+
+// user/analytics-service.ts (170 lines)
+export class AnalyticsService {
+  async trackEvent(userId: string, event: string) { /* ... */ }
+  async getStats(userId: string) { /* ... */ }
+}
+
+// AI loads only 150 lines for profile operations
+// Context savings: 1850 lines (92% reduction)
+```
+
+Reference: [https://refactoring.guru/extract-class](https://refactoring.guru/extract-class)
 
 ---
 
@@ -213,6 +444,198 @@ interface UserPreferences { ... }
 ```
 
 Reference: [https://getaiready.dev/docs/consistency](https://getaiready.dev/docs/consistency)
+
+### 3.2 Use Consistent Error Handling Patterns
+
+**Impact: MEDIUM (15-25% improvement in AI error handling suggestions)**
+
+*Tags: consistency, errors, patterns, exceptions*
+
+Mixed error patterns confuse AI models. When your codebase uses throw, try-catch, error callbacks, Result types, and null returns interchangeably, AI cannot predict the correct pattern and suggests inconsistent error handling.
+
+Choose one primary pattern and use it consistently.
+
+**Incorrect:**
+
+```typescript
+// File 1: throws exceptions
+function parseUserData(data: string): User {
+  if (!data) throw new Error('Invalid data')
+  return JSON.parse(data)
+}
+
+// File 2: returns null
+function getUserById(id: string): User | null {
+  const user = database.get(id)
+  return user ?? null
+}
+
+// File 3: uses error callbacks
+function fetchUser(id: string, callback: (error: Error | null, user?: User) => void) {
+  // ...
+}
+
+// File 4: returns Result type
+function validateUser(user: User): Result<User, ValidationError> {
+  // ...
+}
+
+// AI cannot determine which pattern to use when suggesting code!
+```
+
+**Correct:**
+
+```typescript
+// shared/result.ts
+export type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E }
+
+export function ok<T>(data: T): Result<T> {
+  return { success: true, data }
+}
+
+export function err<E>(error: E): Result<never, E> {
+  return { success: false, error }
+}
+
+// All functions use the same pattern
+function parseUserData(data: string): Result<User> {
+  if (!data) return err(new Error('Invalid data'))
+  try {
+    return ok(JSON.parse(data))
+  } catch (e) {
+    return err(new Error('Parse failed'))
+  }
+}
+
+function getUserById(id: string): Result<User> {
+  const user = database.get(id)
+  if (!user) return err(new Error('User not found'))
+  return ok(user)
+}
+
+function validateUser(user: User): Result<User, ValidationError> {
+  if (!user.email) return err({ field: 'email', message: 'Required' })
+  return ok(user)
+}
+
+// Usage is consistent everywhere
+const result = getUserById('123')
+if (result.success) {
+  console.log(result.data.name)
+} else {
+  console.error(result.error.message)
+}
+```
+
+Reference: [https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
+
+---
+
+## 4. Documentation (docs)
+
+**Impact: MEDIUM**
+
+Keeps documentation synchronized with code changes. Outdated documentation misleads AI models, causing them to suggest deprecated patterns or incorrect implementations.
+
+---
+
+### 4.1 Keep Documentation in Sync with Code
+
+**Impact: MEDIUM (20-30% reduction in AI suggestion errors from stale docs)**
+
+*Tags: documentation, maintenance, comments, sync*
+
+Outdated documentation misleads AI models. When function signatures change but JSDoc comments don't update, AI suggests code based on old documentation, causing type errors and logic bugs.
+
+Keep docs close to code and update them together.
+
+**Incorrect:**
+
+```typescript
+/**
+ * Fetch user by email
+ * @param email - User email address
+ * @returns User object
+ */
+function getUser(id: string, options?: FetchOptions): Promise<User | null> {
+  // Function signature changed but docs didn't!
+  // AI will suggest: getUser('user@example.com')
+  // Actual usage: getUser('user-123', { includeDeleted: false })
+  return database.users.findOne({ id, ...options })
+}
+
+/**
+ * Calculate total price
+ * @param items - Array of items
+ * @returns Total price
+ */
+function calculateTotal(
+  items: CartItem[],
+  taxRate: number,
+  discount?: Discount
+): Money {
+  // Added taxRate and discount but docs don't mention them
+  // AI won't know these parameters exist
+}
+
+// Comments that lie
+const MAX_RETRIES = 5 // Maximum retry attempts (actually 5, not 3!)
+// This function is deprecated (but it's still used everywhere)
+function legacyAuth() { /* ... */ }
+```
+
+**Correct:**
+
+```typescript
+/**
+ * Fetch user by ID with optional fetch configurations
+ * @param id - User ID (UUID format)
+ * @param options - Optional fetch configuration
+ * @param options.includeDeleted - Include soft-deleted users
+ * @param options.relations - Related entities to include
+ * @returns User object if found, null otherwise
+ * @throws {DatabaseError} If database connection fails
+ * 
+ * @example
+ * const user = await getUser('user-123')
+ * const userWithPosts = await getUser('user-123', { relations: ['posts'] })
+ */
+function getUser(id: string, options?: FetchOptions): Promise<User | null> {
+  return database.users.findOne({ id, ...options })
+}
+
+/**
+ * Calculate total price including tax and discounts
+ * @param items - Cart items to calculate
+ * @param taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
+ * @param discount - Optional discount to apply
+ * @returns Total price after tax and discounts
+ * 
+ * @example
+ * const total = calculateTotal(items, 0.08)
+ * const discounted = calculateTotal(items, 0.08, { type: 'percentage', value: 10 })
+ */
+function calculateTotal(
+  items: CartItem[],
+  taxRate: number,
+  discount?: Discount
+): Money {
+  // Implementation
+}
+
+// Accurate comments
+const MAX_RETRIES = 5 // Maximum retry attempts before giving up
+
+/**
+ * @deprecated Use authenticateWithJWT instead. Will be removed in v2.0
+ * @see authenticateWithJWT
+ */
+function legacyAuth() { /* ... */ }
+```
+
+Reference: [https://jsdoc.app/](https://jsdoc.app/)
 
 ---
 
