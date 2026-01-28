@@ -291,7 +291,7 @@ AI models work best with consistent codebases because:
 
 ## 📦 Integration with AIReady
 
-This tool is part of the [AIReady](https://github.com/caopengau/aiready) ecosystem:
+This tool is part of the [AIReady](https://getaiready.dev) ecosystem:
 
 **Related packages:**
 - [**@aiready/cli**](https://www.npmjs.com/package/@aiready/cli) - Unified interface for all analysis tools
@@ -303,7 +303,7 @@ This tool is part of the [AIReady](https://github.com/caopengau/aiready) ecosyst
 ## 📖 Documentation
 
 - [Contributing Guide](./CONTRIBUTING.md)
-- [AIReady Main Repo](https://github.com/caopengau/aiready)
+- [AIReady Website](https://getaiready.dev)
 
 ## 🌐 Visit Our Website
 

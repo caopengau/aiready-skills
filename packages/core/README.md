@@ -117,4 +117,4 @@ MIT - See [LICENSE](./LICENSE)
 
 ---
 
-**Part of the [AIReady](https://github.com/caopengau/aiready) toolkit** | Docs: see the monorepo [README](https://github.com/caopengau/aiready#readme) | Status: website not live yet
+**Part of the [AIReady](https://getaiready.dev) toolkit** | Learn more at [getaiready.dev](https://getaiready.dev)
