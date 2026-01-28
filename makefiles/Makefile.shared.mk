@@ -14,10 +14,12 @@ ifneq (,$(wildcard landing/.env))
 endif
 
 # Dynamically discover all packages in packages/ directory
-ALL_SPOKES := $(notdir $(wildcard packages/*))
+# Exclude skills (skills.sh distribution only, not npm)
+ALL_SPOKES := $(filter-out skills, $(notdir $(wildcard packages/*)))
 
 # Three-phase release strategy (matches release-all workflow)
 # Landing site is EXCLUDED from release-all (different release cadence)
+# Skills is EXCLUDED - it's distributed via skills.sh, not npm
 CORE_SPOKE := core
 CLI_SPOKE := cli
 MIDDLE_SPOKES := $(filter-out core cli, $(sort $(ALL_SPOKES)))
