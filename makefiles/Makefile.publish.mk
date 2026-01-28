@@ -152,10 +152,9 @@ npm-publish-context-analyzer: ## Publish @aiready/context-analyzer to npm (short
 npm-publish-cli: ## Publish @aiready/cli to npm (shortcut for: make npm-publish SPOKE=cli)
 	@$(MAKE) npm-publish SPOKE=cli OTP=$(OTP)
 
-npm-publish-skills: ## Publish @aiready/skills to npm (shortcut for: make npm-publish SPOKE=skills)
-	@$(MAKE) npm-publish SPOKE=skills OTP=$(OTP)
+# Note: skills is NOT published to npm, only via skills.sh (GitHub)
 
-npm-publish-all: build npm-publish-core npm-publish-pattern-detect npm-publish-context-analyzer npm-publish-cli npm-publish-skills
+npm-publish-all: build npm-publish-core npm-publish-pattern-detect npm-publish-context-analyzer npm-publish-cli
 
 # Sync changes from spoke repos back to monorepo (for external contributions)
 sync-from-spoke: ## Sync changes from spoke repo back to monorepo. Usage: make sync-from-spoke SPOKE=pattern-detect

@@ -16,14 +16,10 @@ This package provides procedural knowledge for AI coding agents to help them wri
 ### Via skills.sh (Recommended)
 
 ```bash
-npx skills add aiready/skills
+npx skills add caopengau/aiready-skills
 ```
 
-### Via NPM
-
-```bash
-npm install -g @aiready/skills
-```
+> **Note:** This skill is distributed via skills.sh, not npm. It's designed for AI agents to consume directly.
 
 ## Available Skills
 
