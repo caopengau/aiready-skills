@@ -197,7 +197,11 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 	$(call log_success,Release finished for @aiready/$(SPOKE))
 
 # Release all spokes with the same bump type
-# Strategy: core → parallel middle packages → cli (respects dependencies)
+# Strategy: 
+#   1. Version bump all packages (serial to avoid git conflicts)
+#   2. Commit + tag all changes together (once)
+#   3. Build + test (once)
+#   4. Publish to npm + sync GitHub (parallel for speed)
 # Landing site is EXCLUDED - use 'make release-landing' separately
 # ⚠️  CLI is ALWAYS released last because it depends on ALL spokes
 release-all: ## Release all spokes: TYPE=patch|minor|major [FORCE=1] (excludes landing)
@@ -211,39 +215,89 @@ release-all: ## Release all spokes: TYPE=patch|minor|major [FORCE=1] (excludes l
 		exit 1; \
 	fi; \
 	$(call log_success,All tests passed)
-	@# Phase 1: Release core first (dependency for all other packages)
+	@# Phase 1: Collect all packages that need releasing
 	@$(call separator,$(CYAN)); \
-	$(call log_info,Phase 1/3: Releasing @aiready/$(CORE_SPOKE) ($(TYPE))); \
+	$(call log_info,Phase 1/4: Determining packages to release...); \
 	$(call separator,$(CYAN)); \
-	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CORE_SPOKE) TYPE=$(TYPE) FORCE=$(FORCE) || exit 1; \
-	$(call log_success,✓ Core released)
-	@# Phase 2: Release middle packages in parallel (independent of each other)
-	@if [ -n "$(MIDDLE_SPOKES)" ]; then \
-		$(call separator,$(CYAN)); \
-		$(call log_info,Phase 2/3: Releasing $(MIDDLE_SPOKES) in parallel); \
-		$(call separator,$(CYAN)); \
-		pids=""; \
-		for spoke in $(MIDDLE_SPOKES); do \
-			$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$$spoke TYPE=$(TYPE) FORCE=$(FORCE) & \
-			pids="$$pids $$!"; \
-		done; \
-		failed=0; \
-		for pid in $$pids; do \
-			if ! wait $$pid; then \
-				failed=1; \
-			fi; \
-		done; \
-		if [ $$failed -eq 1 ]; then \
-			$(call log_error,One or more parallel releases failed); \
-			exit 1; \
+	spokes_to_release=""; \
+	for spoke in $(CORE_SPOKE) $(MIDDLE_SPOKES) $(CLI_SPOKE); do \
+		if [ "$(FORCE)" = "1" ] || $(MAKE) -s check-changes SPOKE=$$spoke >/dev/null 2>&1; then \
+			spokes_to_release="$$spokes_to_release $$spoke"; \
+			$(call log_info,✓ @aiready/$$spoke will be released); \
+		else \
+			$(call log_info,⊘ @aiready/$$spoke skipped (no changes)); \
 		fi; \
-		$(call log_success,✓ All middle packages released); \
-	fi
-	@# Phase 3: Release cli last (depends on all other packages)
+	done; \
+	if [ -z "$$spokes_to_release" ]; then \
+		$(call log_success,No packages need releasing); \
+		exit 0; \
+	fi; \
+	$(call log_success,Packages to release:$$spokes_to_release)
+	@# Phase 2: Version bump all packages (serial to avoid git conflicts)
 	@$(call separator,$(CYAN)); \
-	$(call log_info,Phase 3/3: Releasing @aiready/$(CLI_SPOKE) ($(TYPE))); \
+	$(call log_info,Phase 2/4: Version bumping all packages...); \
 	$(call separator,$(CYAN)); \
-	$(MAKE) -f $(MAKEFILE_DIR)/Makefile.release.mk release-one SPOKE=$(CLI_SPOKE) TYPE=$(TYPE) FORCE=$(FORCE) || exit 1; \
+	for spoke in $$spokes_to_release; do \
+		bump_target="$(call bump_target_for_type,$(TYPE))"; \
+		$(MAKE) -C $(ROOT_DIR) $$bump_target SPOKE=$$spoke; \
+		$(call log_success,✓ Bumped @aiready/$$spoke to $$(node -p "require('$(ROOT_DIR)/packages/$$spoke/package.json').version")); \
+	done
+	@# Phase 3: Commit and tag all changes together (once)
+	@$(call separator,$(CYAN)); \
+	$(call log_info,Phase 3/4: Committing and tagging all changes...); \
+	$(call separator,$(CYAN)); \
+	cd $(ROOT_DIR) && git add packages/*/package.json; \
+	commit_msg="chore(release): bump versions"; \
+	for spoke in $$spokes_to_release; do \
+		version=$$(node -p "require('$(ROOT_DIR)/packages/$$spoke/package.json').version"); \
+		commit_msg="$$commit_msg\n\n- @aiready/$$spoke v$$version"; \
+	done; \
+	cd $(ROOT_DIR) && git commit -m "$$commit_msg"; \
+	for spoke in $$spokes_to_release; do \
+		version=$$(node -p "require('$(ROOT_DIR)/packages/$$spoke/package.json').version"); \
+		tag_name="$$spoke-v$$version"; \
+		cd $(ROOT_DIR) && git tag -a "$$tag_name" -m "Release @aiready/$$spoke v$$version"; \
+		$(call log_success,✓ Tagged $$tag_name); \
+	done; \
+	$(call log_step,Building workspace...); \
+	$(MAKE) -C $(ROOT_DIR) build; \
+	$(call log_success,Build complete); \
+	if ! $(MAKE) -C $(ROOT_DIR) test; then \
+		$(call log_error,Tests failed. Aborting release-all.); \
+		exit 1; \
+	fi; \
+	$(call log_success,Tests passed)
+	@# Phase 4: Publish to npm + sync GitHub (parallel for speed)
+	@$(call separator,$(CYAN)); \
+	$(call log_info,Phase 4/4: Publishing packages to npm and GitHub...); \
+	$(call separator,$(CYAN)); \
+	pids=""; \
+	for spoke in $$spokes_to_release; do \
+		( \
+			$(call log_step,Publishing @aiready/$$spoke to npm...); \
+			if ! $(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$$spoke; then \
+				$(call log_error,NPM publish failed for @aiready/$$spoke); \
+				exit 1; \
+			fi; \
+			$(call log_step,Syncing GitHub spoke for @aiready/$$spoke...); \
+			$(MAKE) -C $(ROOT_DIR) publish SPOKE=$$spoke OWNER=$(OWNER); \
+			version=$$(node -p "require('$(ROOT_DIR)/packages/$$spoke/package.json').version"); \
+			$(call log_success,✓ Published @aiready/$$spoke v$$version); \
+		) & \
+		pids="$$pids $$!"; \
+	done; \
+	failed=0; \
+	for pid in $$pids; do \
+		if ! wait $$pid; then \
+			failed=1; \
+		fi; \
+	done; \
+	if [ $$failed -eq 1 ]; then \
+		$(call log_error,One or more publications failed); \
+		exit 1; \
+	fi; \
+	$(call log_step,Pushing monorepo branch and tags...); \
+	cd $(ROOT_DIR) && git push origin $(TARGET_BRANCH) --follow-tags; \
 	$(call separator,$(GREEN)); \
 	$(call log_success,🎉 All spokes released successfully); \
 	$(call separator,$(GREEN))
