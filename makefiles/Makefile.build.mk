@@ -3,7 +3,7 @@
 ###############################################################################
 include makefiles/Makefile.shared.mk
 
-.PHONY: build build-core build-pattern-detect dev dev-core dev-pattern-detect dev-landing
+.PHONY: build build-core build-pattern-detect build-skills dev dev-core dev-pattern-detect dev-skills dev-landing
 
 build: ## Build all packages
 	@$(call log_step,Building all packages...)
@@ -13,6 +13,11 @@ build: ## Build all packages
 		$(PNPM) run build; \
 	fi
 	@$(call log_success,All packages built successfully)
+
+build-skills: ## Build skills package (compiles AGENTS.md from rules)
+	@$(call log_info,Building @aiready/skills...)
+	@$(PNPM) $(SILENT_PNPM) --filter @aiready/skills build
+	@$(call log_success,Skills package built)
 
 build-core: ## Build core package only
 	@$(call log_info,Building @aiready/core...)
@@ -39,6 +44,11 @@ dev-core: ## Start development mode (watch) for core package
 dev-pattern-detect: ## Start development mode (watch) for pattern-detect package
 	@$(call log_info,Starting development mode for @aiready/pattern-detect...)
 	@$(PNPM) --filter @aiready/pattern-detect dev
+
+dev-skills: ## Build and validate skills rules
+	@$(call log_info,Building and validating skills...)
+	@$(PNPM) --filter @aiready/skills dev
+	@$(call log_success,Skills validated)
 
 landing: dev-landing ## Alias for dev-landing
 dev-landing: ## Start landing page dev server at http://localhost:3000

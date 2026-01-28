@@ -14,7 +14,8 @@ REPO_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 
 .PHONY: publish npm-publish npm-login npm-check npm-publish-all \
 	version-patch version-minor version-major \
-        publish-core publish-pattern-detect npm-publish-core npm-publish-pattern-detect \
+        publish-core publish-pattern-detect publish-skills \
+        npm-publish-core npm-publish-pattern-detect npm-publish-skills \
         pull sync-from-spoke push-all deploy push
 
 # Default owner for GitHub repos
@@ -136,6 +137,9 @@ publish-context-analyzer: ## Publish @aiready/context-analyzer to GitHub (shortc
 publish-cli: ## Publish @aiready/cli to GitHub (shortcut for: make publish SPOKE=cli)
 	@$(MAKE) publish SPOKE=cli OWNER=$(OWNER)
 
+publish-skills: ## Publish @aiready/skills to GitHub (shortcut for: make publish SPOKE=skills)
+	@$(MAKE) publish SPOKE=skills OWNER=$(OWNER)
+
 npm-publish-core: ## Publish @aiready/core to npm (shortcut for: make npm-publish SPOKE=core)
 	@$(MAKE) npm-publish SPOKE=core OTP=$(OTP)
 
@@ -148,7 +152,10 @@ npm-publish-context-analyzer: ## Publish @aiready/context-analyzer to npm (short
 npm-publish-cli: ## Publish @aiready/cli to npm (shortcut for: make npm-publish SPOKE=cli)
 	@$(MAKE) npm-publish SPOKE=cli OTP=$(OTP)
 
-npm-publish-all: build npm-publish-core npm-publish-pattern-detect npm-publish-context-analyzer npm-publish-cli
+npm-publish-skills: ## Publish @aiready/skills to npm (shortcut for: make npm-publish SPOKE=skills)
+	@$(MAKE) npm-publish SPOKE=skills OTP=$(OTP)
+
+npm-publish-all: build npm-publish-core npm-publish-pattern-detect npm-publish-context-analyzer npm-publish-cli npm-publish-skills
 
 # Sync changes from spoke repos back to monorepo (for external contributions)
 sync-from-spoke: ## Sync changes from spoke repo back to monorepo. Usage: make sync-from-spoke SPOKE=pattern-detect
