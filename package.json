@@ -7,8 +7,11 @@
   "homepage": "https://getaiready.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/caopengau/aiready",
-    "directory": "packages/skills"
+    "url": "https://github.com/caopengau/aiready-skills.git"
+  },
+  "homepage": "https://github.com/caopengau/aiready-skills",
+  "bugs": {
+    "url": "https://github.com/caopengau/aiready-skills/issues"
   },
   "keywords": [
     "aiready",
