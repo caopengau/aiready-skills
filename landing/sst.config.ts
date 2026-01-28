@@ -15,12 +15,37 @@ export default $config({
     });
 
     // SES Email Domain Identity with DKIM
-    const emailDomain = new sst.aws.Email("NotificationEmail", {
-      sender: "getaiready.dev",
-      dns: sst.cloudflare.dns({
-        zone: "50eb7dcadc84c58ab34583742db0b671",
-      }),
-    });
+    // If the SES domain identity already exists (e.g. created previously), skip creating it
+    const domainName = "getaiready.dev";
+    let emailDomain: any = undefined;
+    try {
+      const cp = await import("child_process");
+      const cmd = `aws sesv2 get-email-identity --email-identity ${domainName} --output json`;
+      try {
+        const out = cp.execSync(cmd, { encoding: "utf8", env: process.env });
+        if (out) {
+          console.log(`SES identity for ${domainName} already exists; skipping creation.`);
+          emailDomain = { sender: domainName };
+        }
+      } catch (e: any) {
+        // If aws cli returns non-zero, assume identity not found and create via SST
+        const stderr = (e && e.stderr) ? String(e.stderr) : String(e || "");
+        if (stderr.includes("NotFoundException") || stderr.includes("not found") || stderr.includes("Not Found")) {
+          emailDomain = new sst.aws.Email("NotificationEmail", {
+            sender: domainName,
+            dns: sst.cloudflare.dns({
+              zone: "50eb7dcadc84c58ab34583742db0b671",
+            }),
+          });
+        } else {
+          // Unknown error - rethrow so deploy fails visibly
+          throw e;
+        }
+      }
+    } catch (err) {
+      // If child_process import or aws CLI check fails, rethrow to make the failure visible
+      throw err;
+    }
 
     // API Gateway HTTP API for public form submissions
     const api = new sst.aws.ApiGatewayV2("RequestApi", {
@@ -64,7 +89,7 @@ export default $config({
       site: site.url,
       apiUrl: api.url,
       submissionsBucket: submissions.name,
-      emailDomain: emailDomain.sender,
+      emailDomain: emailDomain?.sender ?? domainName,
     };
   },
 });

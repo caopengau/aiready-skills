@@ -1,0 +1,46 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "AIReady Scan API",
+    "version": "1.0.0",
+    "description": "Run AIReady scans and return JSON reports describing duplicates, context, and consistency issues."
+  },
+  "paths": {
+    "/api/scan": {
+      "post": {
+        "summary": "Run a scan",
+        "description": "Run AIReady scan on a code directory and return JSON results.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "directory": { "type": "string", "description": "Directory to scan (relative to repo root)." },
+                  "tools": { "type": "string", "description": "Comma-separated tool list: patterns,context,consistency" },
+                  "include": { "type": "string" },
+                  "exclude": { "type": "string" },
+                  "score": { "type": "boolean" },
+                  "weights": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scan results",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "400": { "description": "Bad request" },
+          "500": { "description": "Error running scan" }
+        }
+      }
+    }
+  }
+}

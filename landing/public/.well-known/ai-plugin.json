@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "AIReady Scan",
+  "name_for_model": "aiready_scan",
+  "description_for_human": "Run AIReady codebase scans and get JSON reports about patterns, context, and consistency.",
+  "description_for_model": "Use this tool to run scans on repositories and return machine-readable JSON reports describing duplicates, context cost and consistency issues.",
+  "auth": { "type": "none" },
+  "api": {
+    "type": "openapi",
+    "url": "https://getaiready.dev/.well-known/openapi.json",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://getaiready.dev/_next/static/media/logo.9a8a7c.png",
+  "contact_email": "hello@getaiready.dev",
+  "legal_info_url": "https://getaiready.dev/terms"
+}
