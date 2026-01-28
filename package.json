@@ -1,0 +1,42 @@
+{
+  "name": "@aiready/skills",
+  "version": "0.1.0",
+  "description": "AI-friendly coding practices for AI agents - procedural knowledge for writing maintainable code",
+  "license": "MIT",
+  "author": "AIReady",
+  "homepage": "https://getaiready.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caopengau/aiready",
+    "directory": "packages/skills"
+  },
+  "keywords": [
+    "aiready",
+    "ai-coding",
+    "best-practices",
+    "code-quality",
+    "agent-skills",
+    "ai-friendly"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsx src/build.ts",
+    "build:upgrade": "tsx src/build.ts --upgrade-version",
+    "validate": "tsx src/validate.ts",
+    "dev": "pnpm run build && pnpm run validate",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@aiready/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "files": [
+    "aiready-best-practices/**/*",
+    "README.md",
+    "LICENSE"
+  ]
+}
