@@ -115,17 +115,6 @@ pnpm run build
 
 ## Publishing
 
-### To NPM
-
-```bash
-# From monorepo root
-make npm-publish-skills
-
-# Or directly
-cd packages/skills
-pnpm publish
-```
-
 ### To GitHub (Spoke Repo)
 
 ```bash

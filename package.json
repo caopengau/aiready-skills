@@ -1,6 +1,7 @@
 {
   "name": "@aiready/skills",
   "version": "0.1.0",
+  "private": true,
   "description": "AI-friendly coding practices for AI agents - procedural knowledge for writing maintainable code",
   "license": "MIT",
   "author": "AIReady",

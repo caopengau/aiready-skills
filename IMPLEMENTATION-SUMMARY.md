@@ -165,23 +165,17 @@ Add 7-10 more high-quality rules:
 - Add more real-world scenarios
 
 ### Phase 4: Publishing & Promotion
-1. **Publish to NPM:**
-   ```bash
-   make npm-publish-skills
-   ```
-
-2. **Create GitHub spoke repo:**
+1. **GitHub spoke repo** (already created):
    ```bash
    make publish-skills
    ```
 
-3. **Submit to skills.sh:**
-   Users can then install with:
+2. **Users install via skills.sh:**
    ```bash
-   npx skills add aiready/skills
+   npx skills add caopengau/aiready-skills
    ```
 
-4. **Announce:**
+3. **Announce:**
    - Blog post on getaiready.dev
    - Twitter/social media
    - Add to main README
