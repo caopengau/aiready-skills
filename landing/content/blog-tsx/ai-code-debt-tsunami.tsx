@@ -35,27 +35,25 @@ const Post = () => (
       <a href="https://receiptclaimer.com">receiptclaimer</a>, our receipt
       management SaaS:
     </p>
-    <ul>
-      <li>
-        <strong>Month 1-2:</strong> 🚀 Amazing! We're shipping features
-        daily. Copilot writes boilerplate, Claude helps with complex logic,
-        ChatGPT generates tests. We're moving 3x faster than any team
-        I've been on.
-      </li>
-      <li>
-        <strong>Month 3-4:</strong> 🤔 Hmm. Our AI assistants keep suggesting
-        we create utilities that... already exist? They're also suggesting
-        3 different patterns for the same API endpoint. Which one is
-        "right"?
-      </li>
-      <li>
-        <strong>Month 5-6:</strong> 😰 Wait. Our codebase has 23 nearly-identical
-        validation functions. Our import chains are 8 levels deep. AI tools are
-        now giving <em>worse</em> suggestions because they can't fit our
-        context into their windows. We've gone from 3x faster to 0.5x
-        slower.
-      </li>
-    </ul>
+    <p>
+      <strong>Month 1-2:</strong> 🚀 Amazing! We're shipping features
+      daily. Copilot writes boilerplate, Claude helps with complex logic,
+      ChatGPT generates tests. We're moving 3x faster than any team
+      I've been on.
+    </p>
+    <p>
+      <strong>Month 3-4:</strong> 🤔 Hmm. Our AI assistants keep suggesting
+      we create utilities that... already exist? They're also suggesting
+      3 different patterns for the same API endpoint. Which one is
+      "right"?
+    </p>
+    <p>
+      <strong>Month 5-6:</strong> 😰 Wait. Our codebase has 23 nearly-identical
+      validation functions. Our import chains are 8 levels deep. AI tools are
+      now giving <em>worse</em> suggestions because they can't fit our
+      context into their windows. We've gone from 3x faster to 0.5x
+      slower.
+    </p>
     <p>
       <strong>The math:</strong> 4 months of 3x productivity = 12 months of
       traditional work. But we also accumulated what feels like 24 months of
@@ -69,12 +67,29 @@ const Post = () => (
       </strong>
     </p>
 
+    <div className="my-12 max-w-2xl mx-auto">
+      <img 
+        src="/series-1-1-codebase-5-members-20-models.png" 
+        alt="Codebase fragmentation with multiple AI models" 
+        className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
+      />
+      <p className="text-center text-sm text-slate-500 mt-4 italic">When every team member uses a different AI model, your codebase becomes a fragmented Frankenstein.</p>
+    </div>
+
     <h2>The Four Horsemen of AI Code Debt</h2>
     <p>
       After analyzing dozens of AI-assisted projects (including my own),
       I've identified four distinct problems that traditional metrics
       completely miss:
     </p>
+
+    <div className="my-12 max-w-2xl mx-auto">
+      <img 
+        src="/series-1-the-horsemen-of-ai-code-debt.png" 
+        alt="The Four Horsemen of AI Code Debt" 
+        className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
+      />
+    </div>
 
     <h3>1. Knowledge Cutoff Gaps (The Outdated Pattern Problem)</h3>
     <p>
@@ -359,11 +374,20 @@ export const getUser = async (id) => {
     </p>
     <p>The tsunami is here. But we can learn to surf.</p>
 
+    <div className="my-12 max-w-2xl mx-auto">
+      <img 
+        src="/series-1-the-ai-code-debt-tsunami.png" 
+        alt="The AI Code Debt Tsunami" 
+        className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
+      />
+      <p className="text-center text-sm text-slate-500 mt-4 italic">The wave is coming, and traditional metrics aren't built to detect it.</p>
+    </div>
+
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p>
-      <strong>Next in this series:</strong> Part 2 - "Why Your Codebase is
-      Invisible to AI (And What to Do About It)" — We'll dive deep into
+      <strong>Next in this series:</strong> Part 2 - <a href="/blog/invisible-codebase">"Why Your Codebase is
+      Invisible to AI (And What to Do About It)"</a> — We'll dive deep into
       semantic duplicates and context fragmentation, with concrete examples and
       detection strategies.
     </p>
