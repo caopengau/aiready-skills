@@ -120,14 +120,18 @@ export async function analyzeConsistency(
   // Generate recommendations
   const recommendations = generateRecommendations(namingIssues, patternIssues);
 
+  // Compute filtered counts (respecting minSeverity) to report accurate summary
+  const namingCountFiltered = namingIssues.filter(i => shouldIncludeSeverity(i.severity, minSeverity)).length;
+  const patternCountFiltered = patternIssues.filter(i => shouldIncludeSeverity(i.severity, minSeverity)).length;
+
   // Detect naming conventions (TODO: re-implement for AST version)
   // const conventionAnalysis = detectNamingConventions(filePaths, namingIssues);
 
   return {
     summary: {
-      totalIssues: namingIssues.length + patternIssues.length,
-      namingIssues: namingIssues.length,
-      patternIssues: patternIssues.length,
+      totalIssues: namingCountFiltered + patternCountFiltered,
+      namingIssues: namingCountFiltered,
+      patternIssues: patternCountFiltered,
       architectureIssues: 0,
       filesAnalyzed: filePaths.length
     },
