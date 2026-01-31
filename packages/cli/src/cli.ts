@@ -28,22 +28,64 @@ const program = new Command();
 
 program
   .name('aiready')
-  .description('AIReady - Unified AI-readiness analysis tools')
+  .description('AIReady - Assess and improve AI-readiness of codebases')
   .version(packageJson.version)
-  .addHelpText('after', '\nCONFIGURATION:\n  Supports config files: aiready.json, aiready.config.json, .aiready.json, .aireadyrc.json, aiready.config.js, .aireadyrc.js\n  CLI options override config file settings');
+  .addHelpText('after', `
+AI READINESS SCORING:
+  Get a 0-100 score indicating how AI-ready your codebase is.
+  Use --score flag with any analysis command for detailed breakdown.
+
+EXAMPLES:
+  $ aiready scan                          # Quick analysis of current directory
+  $ aiready scan --score                  # Get AI Readiness Score (0-100)
+  $ aiready scan --tools patterns         # Run only pattern detection
+  $ aiready patterns --similarity 0.6     # Custom similarity threshold
+  $ aiready scan --output json --output-file results.json
+
+GETTING STARTED:
+  1. Run 'aiready scan' to analyze your codebase
+  2. Use 'aiready scan --score' for AI readiness assessment
+  3. Create aiready.json for persistent configuration
+  4. Set up CI/CD with '--threshold' for quality gates
+
+CONFIGURATION:
+  Config files (searched upward): aiready.json, .aiready.json, aiready.config.*
+  CLI options override config file settings
+
+  Example aiready.json:
+  {
+    "scan": { "exclude": ["**/dist/**", "**/node_modules/**"] },
+    "tools": {
+      "pattern-detect": { "minSimilarity": 0.5 },
+      "context-analyzer": { "maxContextBudget": 15000 }
+    },
+    "output": { "format": "json", "directory": ".aiready" }
+  }
+
+VERSION: ${packageJson.version}
+DOCUMENTATION: https://aiready.dev/docs/cli
+GITHUB: https://github.com/caopengau/aiready-cli
+LANDING: https://github.com/caopengau/aiready-landing`);
 
 program
   .command('scan')
-  .description('Run unified analysis on a codebase')
+  .description('Run comprehensive AI-readiness analysis (patterns + context + consistency)')
   .argument('[directory]', 'Directory to analyze', '.')
   .option('-t, --tools <tools>', 'Tools to run (comma-separated: patterns,context,consistency)', 'patterns,context,consistency')
   .option('--include <patterns>', 'File patterns to include (comma-separated)')
   .option('--exclude <patterns>', 'File patterns to exclude (comma-separated)')
   .option('-o, --output <format>', 'Output format: console, json', 'console')
   .option('--output-file <path>', 'Output file path (for json)')
-  .option('--score', 'Calculate and display AI Readiness Score (0-100)')
-  .option('--weights <weights>', 'Override tool weights for scoring (e.g., "patterns:50,context:30,consistency:20")')
-  .option('--threshold <score>', 'Minimum passing score for CI/CD (exits with code 1 if below)')
+  .option('--score', 'Calculate and display AI Readiness Score (0-100) with breakdown')
+  .option('--weights <weights>', 'Custom scoring weights (patterns:40,context:35,consistency:25)')
+  .option('--threshold <score>', 'Fail CI/CD if score below threshold (0-100)')
+  .addHelpText('after', `
+EXAMPLES:
+  $ aiready scan                                    # Analyze all tools
+  $ aiready scan --tools patterns,context           # Skip consistency
+  $ aiready scan --score --threshold 75             # CI/CD with threshold
+  $ aiready scan --output json --output-file report.json
+`)
   .action(async (directory, options) => {
     console.log(chalk.blue('🚀 Starting AIReady unified analysis...\n'));
 
@@ -343,7 +385,7 @@ program
 // Individual tool commands for convenience
 program
   .command('patterns')
-  .description('Run pattern detection analysis')
+  .description('Detect duplicate code patterns that confuse AI models')
   .argument('[directory]', 'Directory to analyze', '.')
   .option('-s, --similarity <number>', 'Minimum similarity score (0-1)', '0.40')
   .option('-l, --min-lines <number>', 'Minimum lines to consider', '5')
@@ -355,6 +397,12 @@ program
   .option('-o, --output <format>', 'Output format: console, json', 'console')
   .option('--output-file <path>', 'Output file path (for json)')
   .option('--score', 'Calculate and display AI Readiness Score for patterns (0-100)')
+  .addHelpText('after', `
+EXAMPLES:
+  $ aiready patterns                                 # Default analysis
+  $ aiready patterns --similarity 0.6               # Stricter matching
+  $ aiready patterns --min-lines 10                 # Larger patterns only
+`)
   .action(async (directory, options) => {
     console.log(chalk.blue('🔍 Analyzing patterns...\n'));
 
@@ -499,7 +547,7 @@ program
 
 program
   .command('context')
-  .description('Run context window cost analysis')
+  .description('Analyze context window costs and dependency fragmentation')
   .argument('[directory]', 'Directory to analyze', '.')
   .option('--max-depth <number>', 'Maximum acceptable import depth', '5')
   .option('--max-context <number>', 'Maximum acceptable context budget (tokens)', '10000')
@@ -675,7 +723,7 @@ program
 
   program
     .command('consistency')
-    .description('Check naming, patterns, and architecture consistency')
+    .description('Check naming conventions and architectural consistency')
     .argument('[directory]', 'Directory to analyze', '.')
     .option('--naming', 'Check naming conventions (default: true)')
     .option('--no-naming', 'Skip naming analysis')

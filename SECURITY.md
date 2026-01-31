@@ -38,7 +38,7 @@ aiready scan . --trace
 ## Open Source Transparency
 
 All code is open source and auditable:
-- **Repository:** https://github.com/caopengau/aiready
+- **Repository:** https://github.com/caopengau/aiready-cli
 - **License:** MIT (permissive, commercial-friendly)
 - **Dependencies:** All open source, npm-auditable
 
@@ -104,7 +104,7 @@ We aim to:
 
 Before using AIReady in your organization:
 
-- [ ] Review the [source code](https://github.com/caopengau/aiready)
+- [ ] Review the [source code](https://github.com/caopengau/aiready-cli)
 - [ ] Run `npm audit` on installed packages
 - [ ] Test with `--trace` mode to verify file access
 - [ ] Scan generated reports for sensitive data
@@ -124,7 +124,7 @@ We're working on:
 ## Questions?
 
 - **Documentation:** [Security section](https://getaiready.dev/docs/security)
-- **GitHub Discussions:** [Security topics](https://github.com/caopengau/aiready/discussions)
+- **GitHub Discussions:** [Security topics](https://github.com/caopengau/aiready-cli/discussions)
 - **Email:** security@getaiready.dev
 
 ---
