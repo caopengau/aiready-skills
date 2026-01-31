@@ -18,7 +18,7 @@
     "@types/node": "^24.0.0",
     "npm-check-updates": "^19.3.1",
     "semver": "^7.7.3",
-    "turbo": "^2.7.5",
+    "turbo": "^2.8.1",
     "typescript": "^5.7.2",
     "vitest": "^4.0.0"
   },
