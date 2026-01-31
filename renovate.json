@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", ":preserveSemverRanges"],
+  "prConcurrentLimit": 20,
+  "prHourlyLimit": 0,
   "packageRules": [
     {
       "groupName": "all dependencies",
