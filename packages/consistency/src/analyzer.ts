@@ -2,12 +2,12 @@ import { scanFiles } from '@aiready/core';
 import type { AnalysisResult, Issue } from '@aiready/core';
 import type { ConsistencyOptions, ConsistencyReport, ConsistencyIssue } from './types';
 import { analyzeNamingAST } from './analyzers/naming-ast';
+import { analyzePythonNaming } from './analyzers/naming-python';
 import { analyzePatterns } from './analyzers/patterns';
 
 /**
  * Main consistency analyzer that orchestrates all analysis types
- * Note: Currently only supports TypeScript/JavaScript files (.ts, .tsx, .js, .jsx)
- * Python and other language files will be ignored during naming analysis.
+ * Supports: TypeScript, JavaScript, Python
  */
 export async function analyzeConsistency(
   options: ConsistencyOptions
@@ -23,8 +23,18 @@ export async function analyzeConsistency(
   // Scan files
   const filePaths = await scanFiles(scanOptions);
 
-  // Collect issues by category
-  const namingIssues = checkNaming ? await analyzeNamingAST(filePaths) : [];
+  // Separate files by language
+  const tsJsFiles = filePaths.filter(f => /\.(ts|tsx|js|jsx)$/i.test(f));
+  const pythonFiles = filePaths.filter(f => /\.py$/i.test(f));
+
+  // Collect issues by category - now handles multiple languages
+  let namingIssues: any[] = [];
+  if (checkNaming) {
+    const tsJsNamingIssues = tsJsFiles.length > 0 ? await analyzeNamingAST(tsJsFiles) : [];
+    const pythonNamingIssues = pythonFiles.length > 0 ? await analyzePythonNaming(pythonFiles) : [];
+    namingIssues = [...tsJsNamingIssues, ...pythonNamingIssues];
+  }
+  
   const patternIssues = checkPatterns ? await analyzePatterns(filePaths) : [];
 
   // Convert to AnalysisResult format

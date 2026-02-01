@@ -277,6 +277,27 @@ export async function detectDuplicatePatterns(
 
   console.log(`Extracted ${allBlocks.length} code blocks for analysis`);
   
+  // Add Python blocks if present
+  const pythonFiles = files.filter(f => f.file.toLowerCase().endsWith('.py'));
+  if (pythonFiles.length > 0) {
+    const { extractPythonPatterns } = await import('./extractors/python-extractor');
+    const patterns = await extractPythonPatterns(pythonFiles.map(f => f.file));
+    
+    const pythonBlocks: CodeBlock[] = patterns.map(p => ({
+      content: p.code,
+      startLine: p.startLine,
+      endLine: p.endLine,
+      file: p.file,
+      normalized: normalizeCode(p.code),
+      patternType: p.type as PatternType,
+      tokenCost: estimateTokens(p.code),
+      linesOfCode: p.endLine - p.startLine + 1,
+    }));
+    
+    allBlocks.push(...pythonBlocks);
+    console.log(`Added ${pythonBlocks.length} Python patterns`);
+  }
+  
   // Warn about --no-approx performance implications
   if (!approx && allBlocks.length > 500) {
     console.log(`⚠️  Using --no-approx mode with ${allBlocks.length} blocks may be slow (O(B²) complexity).`);

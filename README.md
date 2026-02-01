@@ -16,6 +16,21 @@ As AI becomes deeply integrated into SDLC, codebases become harder for AI models
 
 AIReady helps teams **assess, visualize, and prepare** repositories for better AI adoption.
 
+## 🌍 Language Support
+
+**Currently Supported (64% market coverage):**
+- ✅ **TypeScript** (`.ts`, `.tsx`)
+- ✅ **JavaScript** (`.js`, `.jsx`)
+- ✅ **Python** (`.py`) - NEW! PEP 8 conventions, import analysis, pattern detection
+
+**Roadmap:**
+- 🔜 **Java** (Q3 2026) - Maven/Gradle, Spring Framework
+- 🔜 **Go** (Q4 2026) - Go modules, concurrency patterns
+- 🔜 **Rust** (Q4 2026) - Cargo, ownership patterns
+- 🔜 **C#** (Q1 2027) - .NET, LINQ patterns
+
+Mixed-language projects are fully supported - the tool automatically detects and analyzes each file type appropriately.
+
 ## 📦 Packages
 
 ### Core Tools (Free)

@@ -4,6 +4,23 @@
 
 When AI tools try to help with your code, they need to load files into their context window. Fragmented code structures make this expensive and sometimes impossible. This tool analyzes your codebase to identify:
 
+## 🌍 Language Support
+
+**Currently Supported (64% market coverage):**
+- ✅ **TypeScript** (`.ts`, `.tsx`) - Import chains, context budget, cohesion
+- ✅ **JavaScript** (`.js`, `.jsx`) - Import chains, context budget, cohesion
+- ✅ **Python** (`.py`) - Import chains, context budget, circular deps, cohesion
+
+**Roadmap:**
+- 🔜 **Java** (Q3 2026) - Package dependencies, Maven/Gradle analysis
+- 🔜 **Go** (Q4 2026) - Module dependencies, package cohesion
+- 🔜 **Rust** (Q4 2026) - Crate dependencies, module structure
+- 🔜 **C#** (Q1 2027) - Namespace dependencies, project references
+
+## 🎯 Why This Tool?
+
+When AI tools try to help with your code, they need to load files into their context window. Fragmented code structures make this expensive and sometimes impossible. This tool analyzes your codebase to identify:
+
 - 📦 **High Context Budget**: Files that cost too many AI tokens to understand (file + dependencies)
 - 🔗 **Deep Import Chains**: Cascading dependencies that force AI to load many files
 - 🎯 **Low Cohesion**: Files mixing unrelated concerns (God objects)

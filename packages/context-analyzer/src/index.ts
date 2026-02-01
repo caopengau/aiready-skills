@@ -132,7 +132,7 @@ export async function analyzeContext(
     ...scanOptions
   } = options;
 
-  // Scan files
+  // Scan files (supports .ts, .js, .tsx, .jsx, .py)
   // Note: scanFiles now automatically merges user excludes with DEFAULT_EXCLUDE
   const files = await scanFiles({
     ...scanOptions,
@@ -144,6 +144,10 @@ export async function analyzeContext(
       : scanOptions.exclude,
   });
 
+  // Separate files by language
+  const pythonFiles = files.filter(f => f.toLowerCase().endsWith('.py'));
+  const tsJsFiles = files.filter(f => !f.toLowerCase().endsWith('.py'));
+
   // Read all file contents
   const fileContents = await Promise.all(
     files.map(async (file) => ({
@@ -152,10 +156,53 @@ export async function analyzeContext(
     }))
   );
 
-  // Build dependency graph
-  const graph = buildDependencyGraph(fileContents);
+  // Build dependency graph (TS/JS)
+  const graph = buildDependencyGraph(fileContents.filter(f => !f.file.toLowerCase().endsWith('.py')));
 
-  // Detect circular dependencies
+  // Analyze Python files separately (if any)
+  let pythonResults: ContextAnalysisResult[] = [];
+  if (pythonFiles.length > 0) {
+    const { analyzePythonContext } = await import('./analyzers/python-context');
+    const pythonMetrics = await analyzePythonContext(pythonFiles, scanOptions.rootDir || options.rootDir || '.');
+    
+    // Convert Python metrics to ContextAnalysisResult format
+    pythonResults = pythonMetrics.map(metric => {
+      const { severity, issues, recommendations, potentialSavings } = analyzeIssues({
+        file: metric.file,
+        importDepth: metric.importDepth,
+        contextBudget: metric.contextBudget,
+        cohesionScore: metric.cohesion,
+        fragmentationScore: 0, // Python analyzer doesn't calculate fragmentation yet
+        maxDepth,
+        maxContextBudget,
+        minCohesion,
+        maxFragmentation,
+        circularDeps: metric.metrics.circularDependencies.map(cycle => cycle.split(' → ')),
+      });
+
+      return {
+        file: metric.file,
+        tokenCost: Math.floor(metric.contextBudget / (1 + metric.imports.length || 1)), // Estimate
+        linesOfCode: metric.metrics.linesOfCode,
+        importDepth: metric.importDepth,
+        dependencyCount: metric.imports.length,
+        dependencyList: metric.imports.map(imp => imp.resolvedPath || imp.source),
+        circularDeps: metric.metrics.circularDependencies.map(cycle => cycle.split(' → ')),
+        cohesionScore: metric.cohesion,
+        domains: ['python'], // Generic for now
+        exportCount: metric.exports.length,
+        contextBudget: metric.contextBudget,
+        fragmentationScore: 0,
+        relatedFiles: [],
+        severity,
+        issues,
+        recommendations,
+        potentialSavings,
+      };
+    });
+  }
+
+  // Detect circular dependencies (TS/JS)
   const circularDeps = detectCircularDependencies(graph);
 
   // Detect module clusters for fragmentation analysis
@@ -245,9 +292,12 @@ export async function analyzeContext(
     });
   }
 
+  // Merge Python and TS/JS results
+  const allResults = [...results, ...pythonResults];
+
   // Filter to only files with actual issues (not just info)
   // This reduces output noise and focuses on actionable problems
-  const issuesOnly = results.filter(r => r.severity !== 'info');
+  const issuesOnly = allResults.filter(r => r.severity !== 'info');
   
   // Sort by severity and context budget
   const sorted = issuesOnly.sort((a, b) => {

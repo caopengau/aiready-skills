@@ -4,6 +4,21 @@
 
 The CLI provides both unified analysis (scan multiple tools at once) and individual tool access for pattern detection, context analysis, and consistency checking.
 
+## 🌍 Language Support
+
+**Currently Supported (64% market coverage):**
+- ✅ **TypeScript** (`.ts`, `.tsx`)
+- ✅ **JavaScript** (`.js`, `.jsx`)
+- ✅ **Python** (`.py`) - PEP 8 conventions, import analysis, pattern detection
+
+**Roadmap:**
+- 🔜 **Java** (Q3 2026) - Maven/Gradle, Spring Framework
+- 🔜 **Go** (Q4 2026) - Go modules, concurrency patterns
+- 🔜 **Rust** (Q4 2026) - Cargo, ownership patterns
+- 🔜 **C#** (Q1 2027) - .NET, LINQ patterns
+
+Mixed-language projects are fully supported - the tool automatically detects and analyzes each file type appropriately.
+
 ## 🚀 Quick Start
 
 **Zero config, works out of the box:**

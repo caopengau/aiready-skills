@@ -4,9 +4,18 @@
 
 Helps teams maintain consistent coding practices across their codebase, making it easier for AI tools to understand and work with your code.
 
-**Supported Languages:** TypeScript, JavaScript (`.ts`, `.tsx`, `.js`, `.jsx`)
+## 🌍 Language Support
 
-> **Note:** Python, Java, and other language files in your project will be safely ignored during analysis.
+**Currently Supported (64% market coverage):**
+- ✅ **TypeScript** (`.ts`, `.tsx`) - camelCase, PascalCase conventions
+- ✅ **JavaScript** (`.js`, `.jsx`) - camelCase, PascalCase conventions
+- ✅ **Python** (`.py`) - PEP 8 conventions (snake_case, PascalCase, UPPER_CASE)
+
+**Roadmap:**
+- 🔜 **Java** (Q3 2026) - Java naming conventions, JavaBean patterns
+- 🔜 **Go** (Q4 2026) - Go naming conventions, exported names
+- 🔜 **Rust** (Q4 2026) - Rust naming conventions, snake_case
+- 🔜 **C#** (Q1 2027) - C# conventions, PascalCase
 
 ## 🚀 Quick Start
 

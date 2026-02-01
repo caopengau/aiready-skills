@@ -4,6 +4,19 @@
 
 Finds semantically similar but syntactically different code patterns that waste AI context and confuse models.
 
+## 🌍 Language Support
+
+**Currently Supported (64% market coverage):**
+- ✅ **TypeScript** (`.ts`, `.tsx`) - AST-based pattern extraction
+- ✅ **JavaScript** (`.js`, `.jsx`) - AST-based pattern extraction
+- ✅ **Python** (`.py`) - Function/class pattern extraction, similarity scoring
+
+**Roadmap:**
+- 🔜 **Java** (Q3 2026) - Method/class patterns, Spring annotations
+- 🔜 **Go** (Q4 2026) - Function patterns, interface implementations
+- 🔜 **Rust** (Q4 2026) - Function/trait patterns, macro detection
+- 🔜 **C#** (Q1 2027) - Method/class patterns, LINQ queries
+
 ## 🚀 Quick Start
 
 **Zero config, works out of the box:**
