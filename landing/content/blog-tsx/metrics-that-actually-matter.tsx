@@ -36,6 +36,15 @@ const Post = () => (
     <h2>The Three Dimensions of AI-Readiness</h2>
     <p>AIReady focuses on three core metrics:</p>
 
+    <div className="my-12 max-w-2xl mx-auto">
+      <img
+        src="/series-3-metrics-that-matters.png"
+        alt="The Three Dimensions of AI-Readiness: Semantic Similarity, Context Budget, and Consistency Scoring"
+        className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
+      />
+      <p className="text-center text-sm text-slate-500 mt-4 italic">The three metrics that actually matter for AI-ready codebases: semantic similarity, context budget, and consistency.</p>
+    </div>
+
     <h3>1. Semantic Similarity (pattern-detect)</h3>
     <ul>
       <li><strong>What it is:</strong> Finds code that does the same thing, even if it looks different.</li>
