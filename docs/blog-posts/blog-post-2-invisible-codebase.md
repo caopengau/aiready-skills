@@ -355,6 +355,10 @@ Until then, run the tools. Measure your codebase. See how invisible it really is
 
 ---
 
+**Have questions or want to share your AI code quality story?** Drop them in the comments. I read every one.
+
+---
+
 **Try it yourself:**
 - GitHub: [github.com/caopengau/aiready-cli](https://github.com/caopengau/aiready-cli)
 - Docs: [aiready.dev](https://aiready.dev)
