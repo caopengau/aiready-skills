@@ -4,7 +4,27 @@
 
 Finds semantically similar but syntactically different code patterns that waste AI context and confuse models.
 
-## 🌍 Language Support
+## �️ Architecture
+
+```
+                           🎯 USER
+                             │
+                             ▼
+                   🎛️  CLI (orchestrator)
+                             │
+                             ▼
+                     🏢 HUB (core)
+                             │
+      ┌──────────────────────┼───────────┬───────────┐
+      ▼                      ▼           ▼           ▼
+┌─────────────┐      📦 CONTEXT  🔧 CONSIST  📚 DOC
+│ 📊 PATTERN  │ ⬅ YOU ARE HERE   ENCY        DRIFT
+│   DETECT    │       ANALYZER
+│  ✅ Ready   │      ✅ Ready    ✅ Ready    🔜 Soon
+└─────────────┘
+```
+
+## �🌍 Language Support
 
 **Currently Supported (64% market coverage):**
 - ✅ **TypeScript** (`.ts`, `.tsx`) - AST-based pattern extraction

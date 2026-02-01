@@ -4,7 +4,27 @@
 
 Helps teams maintain consistent coding practices across their codebase, making it easier for AI tools to understand and work with your code.
 
-## 🌍 Language Support
+## �️ Architecture
+
+```
+                           🎯 USER
+                             │
+                             ▼
+                   🎛️  CLI (orchestrator)
+                             │
+                             ▼
+                     🏢 HUB (core)
+                             │
+      ┌──────────────────────┼───────────┬───────────┐
+      ▼                      ▼           ▼           ▼
+  📊 PATTERN          📦 CONTEXT  ┌─────────────┐  📚 DOC
+   DETECT              ANALYZER   │ 🔧 CONSIST  │ ⬅ YOU ARE HERE
+   ✅ Ready           ✅ Ready    │    ENCY     │   DRIFT
+                                  │ ✅ Ready    │  🔜 Soon
+                                  └─────────────┘
+```
+
+## �🌍 Language Support
 
 **Currently Supported (64% market coverage):**
 - ✅ **TypeScript** (`.ts`, `.tsx`) - camelCase, PascalCase conventions

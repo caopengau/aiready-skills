@@ -45,6 +45,71 @@ Mixed-language projects are fully supported - the tool automatically detects and
 - **[@aiready/doc-drift](./packages/doc-drift)** - Track documentation freshness vs code churn to identify outdated docs
 - **[@aiready/deps](./packages/deps)** - Analyze dependency health and detect circular dependencies
 
+## 🏗️ Architecture
+
+AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                           🎯 USER                               │
+└─────────────────┬───────────────────────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        🎛️  CLI (@aiready/cli)                  │
+│                    Unified Interface & Orchestration            │
+│  • Single command for all tools                                │
+│  • Multi-language support (auto-detects files)                 │
+│  • Scoring & unified reporting                                 │
+└─────────────────┬───────────────────────────────────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      🏢 HUB (@aiready/core)                      │
+│                   Shared Infrastructure                         │
+│  • Multi-language parsers (TS, JS, Python)                     │
+│  • File scanning & analysis utilities                          │
+│  • Common types & interfaces                                   │
+│  • No dependencies on spokes                                   │
+└─────┬───────────┬───────────┬───────────┬───────────┬───────────┘
+      │           │           │           │           │
+      ▼           ▼           ▼           ▼           ▼
+┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
+│  📊 PATTERN │  📦 CONTEXT │  🔧 CONSIST │  📚 DOC     │  📋 DEPS    │
+│   DETECT    │   ANALYZER  │   ENCY      │   DRIFT     │   ANALYZER  │
+│             │             │             │             │             │
+│  • Semantic │  • Context  │  • Naming   │  • Doc      │  • Dep      │
+│    duplicates│   budgets   │   rules     │   freshness │   health    │
+│             │             │             │             │             │
+│  ✅ Ready   │  ✅ Ready   │  ✅ Ready   │  🔜 Soon    │  🔜 Soon    │
+└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┘
+   @aiready/     @aiready/     @aiready/     @aiready/     @aiready/
+   pattern-      context-      consistency  doc-drift    deps
+   detect        analyzer
+```
+
+### 🎯 Design Benefits
+
+- **Modular**: Use individual tools or run everything together
+- **Independent**: Each spoke focuses on one problem, can be updated separately
+- **Extensible**: Easy to add new languages or analysis types
+- **Clean**: Spokes only depend on core, not each other
+
+### 🌍 Language Support
+
+**Currently Supported (64% market coverage):**
+- ✅ **TypeScript** (`.ts`, `.tsx`)
+- ✅ **JavaScript** (`.js`, `.jsx`)
+- ✅ **Python** (`.py`) - NEW! PEP 8 conventions, import analysis, pattern detection
+
+**Roadmap:**
+- 🔜 **Java** (Q3 2026) - Maven/Gradle, Spring Framework
+- 🔜 **Go** (Q4 2026) - Go modules, concurrency patterns
+- 🔜 **Rust** (Q4 2026) - Cargo, ownership patterns
+- 🔜 **C#** (Q1 2027) - .NET, LINQ patterns
+
+Mixed-language projects are fully supported - the tool automatically detects and analyzes each file type appropriately.
+
 ## 🚀 Quick Start
 
 ### Using Individual Tools
