@@ -4,7 +4,6 @@ import typescript from 'highlight.js/lib/languages/typescript';
 import javascript from 'highlight.js/lib/languages/javascript';
 import bash from 'highlight.js/lib/languages/bash';
 import json from 'highlight.js/lib/languages/json';
-import 'highlight.js/styles/github-dark.css';
 import { CodeBlockCopyButton } from './CodeBlockCopyButton';
 
 // Register languages

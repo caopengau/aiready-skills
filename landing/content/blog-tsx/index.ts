@@ -4,6 +4,8 @@ import AiCodeDebtTsunami from './ai-code-debt-tsunami';
 import aiCodeDebtTsunamiMeta from './ai-code-debt-tsunami.meta';
 import MetricsThatMatter from './metrics-that-actually-matter';
 import metricsThatMatterMeta from './metrics-that-actually-matter.meta';
+import SemanticDuplicateDetection from './semantic-duplicate-detection';
+import semanticDuplicateDetectionMeta from './semantic-duplicate-detection.meta';
 
 export const posts = [
   {
@@ -35,5 +37,15 @@ export const posts = [
     tags: metricsThatMatterMeta.tags || [],
     readingTime: metricsThatMatterMeta.readingTime || '5 min read',
     Content: MetricsThatMatter,
+  },
+  {
+    slug: semanticDuplicateDetectionMeta.slug,
+    title: semanticDuplicateDetectionMeta.title,
+    date: semanticDuplicateDetectionMeta.date,
+    excerpt: semanticDuplicateDetectionMeta.excerpt,
+    author: semanticDuplicateDetectionMeta.author,
+    tags: semanticDuplicateDetectionMeta.tags || [],
+    readingTime: semanticDuplicateDetectionMeta.readingTime || '5 min read',
+    Content: SemanticDuplicateDetection,
   },
 ];

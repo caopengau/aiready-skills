@@ -143,9 +143,9 @@ h3 {
 
 /* Code block base styles (used by CodeBlock component) */
 .code-block {
-  background: var(--code-bg);
-  color: var(--code-foreground);
-  border: 1px solid var(--code-border);
+  background: #0d1117;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
 }
 
 .code-block pre {
@@ -153,10 +153,182 @@ h3 {
 }
 
 .code-block code {
-  color: inherit;
+  color: #f0f6fc !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Helvetica Neue", monospace;
   font-size: 0.92rem;
   line-height: 1.35; /* tighter lines */
+}
+
+/* Base hljs syntax highlighting (replaces github-dark.css) */
+.code-block .hljs {
+  color: #f0f6fc !important;
+}
+
+.code-block .hljs-doctag,
+.code-block .hljs-keyword,
+.code-block .hljs-meta .hljs-keyword,
+.code-block .hljs-template-tag,
+.code-block .hljs-template-variable,
+.code-block .hljs-type,
+.code-block .hljs-variable.language_ {
+  color: #ff7b72 !important;
+}
+
+.code-block .hljs-title,
+.code-block .hljs-title.class_,
+.code-block .hljs-title.class_.inherited__,
+.code-block .hljs-title.function_ {
+  color: #d2a8ff !important;
+}
+
+.code-block .hljs-attr,
+.code-block .hljs-attribute,
+.code-block .hljs-literal,
+.code-block .hljs-meta,
+.code-block .hljs-number,
+.code-block .hljs-operator,
+.code-block .hljs-selector-attr,
+.code-block .hljs-selector-class,
+.code-block .hljs-selector-id,
+.code-block .hljs-variable {
+  color: #79c0ff !important;
+}
+
+.code-block .hljs-meta .hljs-string,
+.code-block .hljs-regexp,
+.code-block .hljs-string {
+  color: #a5d6ff !important;
+}
+
+.code-block .hljs-built_in,
+.code-block .hljs-symbol {
+  color: #ffa657 !important;
+}
+
+.code-block .hljs-code,
+.code-block .hljs-comment,
+.code-block .hljs-formula {
+  color: #8b949e !important;
+}
+
+.code-block .hljs-name,
+.code-block .hljs-quote,
+.code-block .hljs-selector-pseudo,
+.code-block .hljs-selector-tag {
+  color: #7ee787 !important;
+}
+
+.code-block .hljs-subst {
+  color: #f0f6fc !important;
+}
+
+.code-block .hljs-section {
+  color: #1f6feb !important;
+  font-weight: 700;
+}
+
+.code-block .hljs-bullet {
+  color: #f2cc60 !important;
+}
+
+.code-block .hljs-emphasis {
+  color: #f0f6fc !important;
+  font-style: italic;
+}
+
+.code-block .hljs-strong {
+  color: #f0f6fc !important;
+  font-weight: 700;
+}
+
+.code-block .hljs-addition {
+  color: #aff5b4 !important;
+  background-color: #033a16;
+}
+
+.code-block .hljs-deletion {
+  color: #ffdcd7 !important;
+  background-color: #67060c;
+}
+
+/* Enhanced syntax highlighting for better dark mode readability */
+@media (prefers-color-scheme: dark) {
+  /* Strings - very bright cyan-white for maximum visibility */
+  .code-block .hljs-string,
+  .code-block .hljs-attr,
+  .code-block .hljs-template-variable,
+  .code-block .hljs-symbol,
+  .code-block .hljs-bullet,
+  .code-block .hljs-addition {
+    color: #e3f8ff !important; /* Even brighter blue-white */
+  }
+
+  /* Keywords - vibrant purple */
+  .code-block .hljs-keyword,
+  .code-block .hljs-selector-tag,
+  .code-block .hljs-literal,
+  .code-block .hljs-section,
+  .code-block .hljs-link {
+    color: #d2a8ff !important; /* Light purple */
+  }
+
+  /* Functions and variables - bright cyan */
+  .code-block .hljs-title,
+  .code-block .hljs-name,
+  .code-block .hljs-variable,
+  .code-block .hljs-template-tag,
+  .code-block .hljs-class .hljs-title {
+    color: #79c0ff !important; /* Bright blue */
+  }
+
+  /* Numbers - bright orange */
+  .code-block .hljs-number,
+  .code-block .hljs-regexp,
+  .code-block .hljs-meta {
+    color: #ffa657 !important; /* Bright orange */
+  }
+
+  /* Comments - medium gray with good contrast */
+  .code-block .hljs-comment,
+  .code-block .hljs-quote {
+    color: #8b949e !important; /* Medium gray */
+    font-style: italic;
+  }
+
+  /* Types and classes - bright green */
+  .code-block .hljs-type,
+  .code-block .hljs-built_in,
+  .code-block .hljs-builtin-name,
+  .code-block .hljs-doctag {
+    color: #7ee787 !important; /* Bright green */
+  }
+
+  /* Attributes and properties - lighter teal */
+  .code-block .hljs-attribute,
+  .code-block .hljs-property {
+    color: #79c0ff !important; /* Bright blue */
+  }
+
+  /* Operators - bright white */
+  .code-block .hljs-operator,
+  .code-block .hljs-punctuation {
+    color: #e6edf3 !important; /* Bright white */
+  }
+
+  /* Tags (for markup) - light green */
+  .code-block .hljs-tag {
+    color: #7ee787 !important;
+  }
+
+  /* Deletion - light red */
+  .code-block .hljs-deletion {
+    color: #ffa198 !important;
+  }
+
+  /* Base text - ensure good contrast */
+  .code-block code {
+    color: #f0f6fc !important; /* Very bright white-blue */
+  }
 }
 
 /* Prose typography styles for blog content */

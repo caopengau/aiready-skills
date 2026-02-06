@@ -187,8 +187,12 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ### Key Points
 - The convergence: AI-optimized code = cleaner code
 - Emerging patterns: How successful teams structure AI-friendly repos
-- The roadmap: doc-drift, dependency health, more metrics
-- Vision: SaaS tier for tracking improvements over time
+- The roadmap: doc-drift, dependency health, consistency improvements
+- **Vision: Visualization as the next frontier**
+  - Why human-in-the-loop needs better interfaces
+  - The case for visual orchestration (coming soon)
+  - Teaser: G6-based tools in development
+- SaaS tier for tracking improvements over time
 - Call to action: Start measuring your AI-readiness today
 - Open source philosophy: Why aiready will stay free + flexible
 - Community building: How to contribute
@@ -196,9 +200,10 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ### Structure
 1. Opening: Look back at the journey
 2. The bigger picture (industry shift)
-3. What's next for aiready
-4. How readers can get started
-5. Call to contribute
+3. What's next for aiready (roadmap)
+4. **Teaser: Visualization coming** (honest about it being future work)
+5. How readers can get started
+6. Call to contribute
 
 **Audience:** Broad tech audience, thought leaders  
 **SEO Focus:** Future of development, AI code quality, developer tools
@@ -257,6 +262,7 @@ Each post should include:
 3. **Architecture diagram** - Hub-and-spoke pattern
 4. **Import chain visualization** - Deep vs shallow
 5. **Fragmentation heatmap** - Code scattered across files
+6. **Future roadmap diagram** - Visualization features as teaser (Part 7)
 
 ### Code Examples
 1. **Semantic duplicates** - 2-3 real examples (anonymized from receiptclaimer)
@@ -273,6 +279,7 @@ Each post should include:
 1. **receiptclaimer timeline** - Metrics improvement over weeks
 2. **Comparison chart** - aiready vs traditional tools (table format)
 3. **ROI calculation** - Time investment vs savings
+4. **Roadmap visualization** - Future features including visualization (Part 7)
 
 ### Video/GIFs (Optional but High Impact)
 1. **Tool demo** - Running aiready scan on sample repo
@@ -293,6 +300,7 @@ Each post should include:
 - **NPM downloads:** 2x growth
 - **Community:** 50+ contributors/issue reporters
 - **receiptclaimer signups:** Track referrals from blog
+- **Visualization tool interest:** Track inquiries after Part 7 teaser
 
 ### Long-term
 - **SEO ranking:** Top 10 for primary keywords within 6 months
@@ -319,3 +327,32 @@ Each post should include:
 - Include code snippets that are directly runnable
 - Every post should have clear "try it now" CTA
 - Build narrative tension: Problem → Solution → Validation → Future
+
+### Roadmap Alignment & Strategic Sequencing
+
+**Publishing Strategy Decision:**
+- **Keep momentum** with Posts 4-6 using EXISTING features (semantic duplicates, context-analyzer, receiptclaimer case study)
+- **Part 7** teases visualization as future work - honest about roadmap
+- **After series completion:** Build visualization, then potentially launch new blog series or update
+
+**Why this approach:**
+1. **Authenticity:** Only write about features that exist and work
+2. **Momentum:** Posts 1-3 published, can continue immediately
+3. **Credibility:** Show real code, real results, real impact
+4. **Strategic:** Part 7 teaser validates market interest before building
+
+**Development Priority AFTER blog series:**
+1. **Complete current series** with existing tools (Parts 4-7)
+2. **Build visualization framework** using G6 (https://g6.antv.antgroup.com/)
+   - Interactive graphs for codebase state
+   - Hotspot maps showing issue clusters
+   - Dependency visualization with context costs
+   - Pattern heatmaps for semantic duplicates
+3. **Launch follow-up content** once visualization is built
+   - Standalone post or new series
+   - Live demos and real screenshots
+   - User testimonials from beta testing
+
+**Posts 1-3 Status:** Published ✅  
+**Current Focus:** Part 4 draft (Semantic Duplicates - feature exists, can write now)  
+**Visualization:** Future work - Part 7 teases it, build after series completion
