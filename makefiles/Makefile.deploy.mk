@@ -47,7 +47,8 @@ landing-post-deploy: ## Sync blog HTML files and invalidate CloudFront cache
 		echo "$(CYAN)Using bucket: $$BUCKET$(NC)"; \
 		aws s3 cp s3://$$BUCKET/blog/ai-code-debt-tsunami.html s3://$$BUCKET/blog/ai-code-debt-tsunami/index.html --profile $(AWS_PROFILE) 2>/dev/null && \
 		aws s3 cp s3://$$BUCKET/blog/invisible-codebase.html s3://$$BUCKET/blog/invisible-codebase/index.html --profile $(AWS_PROFILE) 2>/dev/null && \
-		aws s3 cp s3://$$BUCKET/blog/metrics-that-actually-matter.html s3://$$BUCKET/blog/metrics-that-actually-matter/index.html --profile $(AWS_PROFILE) 2>/dev/null || true; \
+		aws s3 cp s3://$$BUCKET/blog/metrics-that-actually-matter.html s3://$$BUCKET/blog/metrics-that-actually-matter/index.html --profile $(AWS_PROFILE) 2>/dev/null && \
+		aws s3 cp s3://$$BUCKET/blog/semantic-duplicate-detection.html s3://$$BUCKET/blog/semantic-duplicate-detection/index.html --profile $(AWS_PROFILE) 2>/dev/null || true; \
 		echo "$(GREEN)✓ Blog HTML files synced$(NC)"; \
 	fi
 	@echo ""
