@@ -53,6 +53,10 @@ secrets/
 *.p12
 *.pfx
 
+# Moltbook credentials and state
+.config/moltbook/
+.moltbot/
+
 # Editor
 .vscode/settings.json
 .idea/
