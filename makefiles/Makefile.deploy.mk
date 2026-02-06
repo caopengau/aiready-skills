@@ -3,7 +3,7 @@
 
 include makefiles/Makefile.shared.mk
 
-.PHONY: deploy-landing deploy-landing-prod deploy-landing-remove landing-logs landing-verify landing-cleanup landing-post-deploy landing-invalidate
+.PHONY: deploy-landing deploy-landing-prod deploy-landing-remove landing-logs landing-verify landing-cleanup
 
 ##@ Deployment
 
@@ -33,53 +33,22 @@ deploy-landing-prod: ## Deploy landing page to AWS (production)
 		export CLOUDFLARE_ACCOUNT_ID="$${CLOUDFLARE_ACCOUNT_ID}" && \
 		sst deploy --stage production
 	@$(call log_success,Landing page deployed to production)
+	@echo "$(CYAN)💡 Blog files synced during build, CloudFront invalidated automatically$(NC)"
 	@echo ""
-	@$(MAKE) landing-post-deploy
 	@$(MAKE) landing-verify VERIFY_RETRIES=3 VERIFY_WAIT=10
-
-landing-post-deploy: ## Sync blog HTML files and invalidate CloudFront cache
-	@$(call log_step,Post-deployment cleanup)
-	@echo "$(CYAN)Syncing blog HTML files to index.html locations...$(NC)"
-	@BUCKET=$$(aws s3 ls --profile $(AWS_PROFILE) | grep 'aiready-landing-production-aireadylandingassetsbucket' | awk '{print $$3}' | head -1); \
-	if [ -z "$$BUCKET" ]; then \
-		echo "$(YELLOW)⚠️  Could not find assets bucket$(NC)"; \
-	else \
-		echo "$(CYAN)Using bucket: $$BUCKET$(NC)"; \
-		aws s3 cp s3://$$BUCKET/blog/ai-code-debt-tsunami.html s3://$$BUCKET/blog/ai-code-debt-tsunami/index.html --profile $(AWS_PROFILE) 2>/dev/null && \
-		aws s3 cp s3://$$BUCKET/blog/invisible-codebase.html s3://$$BUCKET/blog/invisible-codebase/index.html --profile $(AWS_PROFILE) 2>/dev/null && \
-		aws s3 cp s3://$$BUCKET/blog/metrics-that-actually-matter.html s3://$$BUCKET/blog/metrics-that-actually-matter/index.html --profile $(AWS_PROFILE) 2>/dev/null && \
-		aws s3 cp s3://$$BUCKET/blog/semantic-duplicate-detection.html s3://$$BUCKET/blog/semantic-duplicate-detection/index.html --profile $(AWS_PROFILE) 2>/dev/null || true; \
-		echo "$(GREEN)✓ Blog HTML files synced$(NC)"; \
-	fi
-	@echo ""
-	@$(MAKE) landing-invalidate
-
-landing-invalidate: ## Invalidate CloudFront cache for blog posts
-	@echo "$(CYAN)Invalidating CloudFront cache...$(NC)"
-	@DIST_ID=$$(aws cloudfront list-distributions --profile $(AWS_PROFILE) --output json 2>/dev/null | \
-		jq -r '.DistributionList.Items[] | select(.Aliases.Items // [] | any(. == "getaiready.dev")) | .Id' | head -1); \
-	if [ -z "$$DIST_ID" ]; then \
-		echo "$(YELLOW)⚠️  Could not find CloudFront distribution$(NC)"; \
-	else \
-		echo "$(CYAN)Distribution ID: $$DIST_ID$(NC)"; \
-		aws cloudfront create-invalidation --distribution-id $$DIST_ID --paths "/blog/*" --profile $(AWS_PROFILE) >/dev/null 2>&1 && \
-		echo "$(GREEN)✓ CloudFront invalidation created for /blog/*$(NC)" || \
-		echo "$(YELLOW)⚠️  Failed to create invalidation$(NC)"; \
-	fi
-	@echo ""
 
 landing-verify: ## Check CloudFront distribution propagation status
 	@$(call log_step,Checking CloudFront distribution status)
 	@RETRIES=$${VERIFY_RETRIES:-1}; \
 	WAIT=$${VERIFY_WAIT:-0}; \
+	cd landing && \
 	for i in $$(seq 1 $$RETRIES); do \
-		DIST_ID=$$(aws cloudfront list-distributions --profile $(AWS_PROFILE) --output json 2>/dev/null | \
-			jq -r '.DistributionList.Items[] | select(.Aliases.Items // [] | any(. == "getaiready.dev")) | .Id' | head -1); \
+		DIST_ID=$$(AWS_PROFILE=$(AWS_PROFILE) AWS_REGION=$(AWS_REGION) sst list --stage production 2>/dev/null | awk '/distributionId:/ {print $$2}'); \
 		if [ -z "$$DIST_ID" ]; then \
 			if [ $$RETRIES -gt 1 ]; then \
-				echo "$(YELLOW)⚠️  Attempt $$i/$$RETRIES: Could not find CloudFront distribution with alias$(NC)"; \
+				echo "$(YELLOW)⚠️  Attempt $$i/$$RETRIES: Could not find CloudFront distribution from SST outputs$(NC)"; \
 			else \
-				echo "$(YELLOW)⚠️  Could not find CloudFront distribution with alias getaiready.dev$(NC)"; \
+				echo "$(YELLOW)⚠️  Could not find CloudFront distribution from SST outputs$(NC)"; \
 			fi; \
 			if [ $$i -eq $$RETRIES ]; then \
 				echo "$(RED)✗ Distribution not found$(NC)"; \
