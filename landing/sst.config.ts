@@ -94,8 +94,6 @@ export default $config({
       apiUrl: api.url,
       submissionsBucket: submissions.name,
       emailDomain: emailDomain?.sender ?? domainName,
-      assetsBucket: site.nodes?.assets?.name ?? "",
-      distributionId: site.nodes?.cdn?.id ?? "",
     };
   },
 });
