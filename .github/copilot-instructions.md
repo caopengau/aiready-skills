@@ -22,6 +22,7 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 - Hubs: No spoke dependencies
 - Spokes: Import only from core, focus on one problem, comply with CLI specs
 - All spokes must integrate with CLI (--output, --include, --exclude, unified format)
+- ✅ **Agent Branch Rule:** Agents MUST start work on and target the `main` branch by default. Always confirm with the repository owner before creating or committing to any other branch.
 
 ## 🚨 CRITICAL: AWS Credentials & Deployment
 
