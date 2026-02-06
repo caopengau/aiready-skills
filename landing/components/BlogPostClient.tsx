@@ -40,7 +40,7 @@ export function BlogPostClient({ post, content }: { post: BlogPost; content: Rea
       {/* Reading Progress Bar (dynamically loaded) */}
       <MotionProgress />
 
-      <main className="container mx-auto px-4 py-16 md:py-24">
+      <main className="container mx-auto px-4 py-8">
         <article className="max-w-4xl mx-auto">
           {/* Back Button */}
           <Link 

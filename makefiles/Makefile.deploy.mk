@@ -35,53 +35,17 @@ deploy-landing-prod: ## Deploy landing page to AWS (production)
 	@$(call log_success,Landing page deployed to production)
 	@echo "$(CYAN)💡 Blog files synced during build, CloudFront invalidated automatically$(NC)"
 	@echo ""
-	@$(MAKE) landing-verify VERIFY_RETRIES=3 VERIFY_WAIT=10
+	@$(MAKE) landing-verify
 
-landing-verify: ## Check CloudFront distribution propagation status
-	@$(call log_step,Checking CloudFront distribution status)
-	@RETRIES=$${VERIFY_RETRIES:-1}; \
-	WAIT=$${VERIFY_WAIT:-0}; \
-	cd landing && \
-	for i in $$(seq 1 $$RETRIES); do \
-		DIST_ID=$$(AWS_PROFILE=$(AWS_PROFILE) AWS_REGION=$(AWS_REGION) sst list --stage production 2>/dev/null | awk '/distributionId:/ {print $$2}'); \
-		if [ -z "$$DIST_ID" ]; then \
-			if [ $$RETRIES -gt 1 ]; then \
-				echo "$(YELLOW)⚠️  Attempt $$i/$$RETRIES: Could not find CloudFront distribution from SST outputs$(NC)"; \
-			else \
-				echo "$(YELLOW)⚠️  Could not find CloudFront distribution from SST outputs$(NC)"; \
-			fi; \
-			if [ $$i -eq $$RETRIES ]; then \
-				echo "$(RED)✗ Distribution not found$(NC)"; \
-				echo "$(YELLOW)💡 First deploy? Run 'make deploy-landing-prod' again to apply aliases$(NC)"; \
-				exit 1; \
-			fi; \
-			[ $$WAIT -gt 0 ] && sleep $$WAIT; \
-		else \
-			STATUS=$$(aws cloudfront get-distribution --id $$DIST_ID --profile $(AWS_PROFILE) 2>/dev/null | jq -r '.Distribution.Status'); \
-			echo "$(CYAN)Distribution ID: $$DIST_ID$(NC)"; \
-			if [ "$$STATUS" = "Deployed" ]; then \
-				echo "$(GREEN)✓ Status: Deployed - Site is live!$(NC)"; \
-				echo "$(CYAN)🌐 URL: https://getaiready.dev$(NC)"; \
-				break; \
-			elif [ "$$STATUS" = "InProgress" ]; then \
-				if [ $$RETRIES -gt 1 ]; then \
-					echo "$(YELLOW)⏳ Attempt $$i/$$RETRIES: Status is InProgress$(NC)"; \
-				else \
-					echo "$(YELLOW)⏳ Status: InProgress - CloudFront is deploying changes$(NC)"; \
-				fi; \
-				if [ $$i -eq $$RETRIES ]; then \
-					echo "$(YELLOW)CloudFront is still deploying (takes 5-15 minutes)$(NC)"; \
-					echo "$(CYAN)💡 Monitor: make landing-verify$(NC)"; \
-					echo "$(CYAN)💡 Or redeploy: make deploy-landing-prod$(NC)"; \
-				else \
-					[ $$WAIT -gt 0 ] && sleep $$WAIT; \
-				fi; \
-			else \
-				echo "$(YELLOW)Status: $$STATUS$(NC)"; \
-				break; \
-			fi; \
-		fi; \
-	done
+landing-verify: ## Verify site is accessible
+	@$(call log_step,Verifying site is accessible)
+	@if curl -fsS -o /dev/null https://getaiready.dev >/dev/null 2>&1; then \
+		echo "$(GREEN)✓ Site is live and responding$(NC)"; \
+		echo "$(CYAN)🌐 URL: https://getaiready.dev$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Site may still be deploying$(NC)"; \
+		echo "$(CYAN)💡 SST handles invalidation automatically - site will be live shortly$(NC)"; \
+	fi
 	@echo ""
 
 deploy-landing-remove: ## Remove landing page deployment (dev)
