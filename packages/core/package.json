@@ -42,7 +42,7 @@
     "CONTRIBUTING.md"
   ],
   "devDependencies": {
-    "eslint": "^9.17.0",
+    "eslint": "^10.0.0",
     "tsup": "^8.3.5"
   },
   "dependencies": {
