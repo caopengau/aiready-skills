@@ -1,9 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import ParallaxSection from "./ParallaxSection";
+import AgentPrompt from "./AgentPrompt";
 
 export function CTA() {
+  const [showAgent, setShowAgent] = useState(false);
   return (
     <section className="container mx-auto px-4 py-20">
       <ParallaxSection offset={10}>
@@ -34,27 +37,75 @@ export function CTA() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 viewport={{ once: true }}
-                className="text-slate-300 mb-8 text-xl"
+                className="text-slate-300 mb-6 text-xl"
               >
                 Find AI confusion points in 5 minutes. Local. Safe. Free forever.
               </motion.p>
-              
+
+              {/* Toggle buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.35 }}
                 viewport={{ once: true }}
-                className="bg-slate-800 rounded-2xl p-6 text-left mb-6 border border-slate-700"
+                className="flex justify-center gap-2 mb-6"
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                </div>
-                <code className="text-green-400 font-mono text-lg">
-                  npx @aiready/cli scan .
-                </code>
+                <button
+                  onClick={() => setShowAgent(false)}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    !showAgent
+                      ? "bg-slate-700 text-white"
+                      : "bg-slate-800 text-slate-400 hover:text-slate-300"
+                  }`}
+                >
+                  💻 CLI Command
+                </button>
+                <button
+                  onClick={() => setShowAgent(true)}
+                  className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                    showAgent
+                      ? "bg-slate-700 text-white"
+                      : "bg-slate-800 text-slate-400 hover:text-slate-300"
+                  }`}
+                >
+                  🤖 AI Agent Prompt
+                </button>
               </motion.div>
+              
+              {/* CLI Command */}
+              {!showAgent && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-slate-800 rounded-2xl p-6 text-left mb-6 border border-slate-700"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                  </div>
+                  <code className="text-green-400 font-mono text-lg">
+                    npx @aiready/cli scan .
+                  </code>
+                </motion.div>
+              )}
+
+              {/* Agent Prompt */}
+              {showAgent && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="mb-6"
+                >
+                  <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                    <AgentPrompt variant="basic" />
+                  </div>
+                </motion.div>
+              )}
               
               <motion.p
                 initial={{ opacity: 0 }}

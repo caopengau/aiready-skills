@@ -1,0 +1,450 @@
+# AIReady - Complete Documentation for AI Models
+
+> Comprehensive guide to AI-ready codebase optimization tools
+
+## Overview
+
+AIReady is a free, open-source suite of command-line tools designed to analyze and optimize codebases for better AI collaboration. It identifies issues that make code harder for AI models (ChatGPT, Claude, GitHub Copilot, etc.) to understand and work with effectively.
+
+**Website**: https://getaiready.dev
+**GitHub**: https://github.com/caopengau/aiready-cli
+**npm**: https://www.npmjs.com/package/@aiready/cli
+
+## Core Philosophy
+
+Modern AI tools struggle with codebases that have:
+- Semantic duplicates (variations that do the same thing)
+- High context fragmentation (scattered related code)
+- Inconsistent naming and patterns
+- Deep dependency chains that exceed context windows
+
+AIReady detects these issues automatically and provides actionable recommendations.
+
+## Installation & Quick Start
+
+### Option 1: No Installation (npx)
+```bash
+npx @aiready/cli scan .
+```
+
+### Option 2: Global Installation
+```bash
+npm install -g @aiready/cli
+aiready scan .
+```
+
+### Option 3: Project Dependency
+```bash
+npm install --save-dev @aiready/cli
+npx aiready scan .
+```
+
+## Core Tools
+
+### 1. Pattern Detection (@aiready/pattern-detect)
+
+**Purpose**: Identifies semantic duplicates that waste AI context tokens
+
+**What it detects**:
+- Functionally similar code patterns across the codebase
+- Variations that look different but do the same thing
+- Copy-paste patterns with minor modifications
+- Pattern-specific detection (API handlers, validators, utilities)
+
+**Key metrics**:
+- Number of duplicate patterns found
+- Similarity scores (based on Jaccard similarity of AST tokens)
+- Token waste estimation (how many tokens are wasted in AI context)
+- Duplication density (percentage of files affected)
+
+**Example usage**:
+```bash
+npx @aiready/pattern-detect ./src
+npx @aiready/cli patterns ./src --threshold 0.8
+```
+
+**Example output**:
+```
+📊 Duplicate Pattern Analysis
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 Files analyzed: 47
+⚠️  Duplicate patterns: 12 files with 23 issues
+💰 Wasted tokens: 8,450
+
+CRITICAL (6 files)
+  src/handlers/users.ts - 4 duplicates (1,200 tokens)
+  src/handlers/posts.ts - 3 duplicates (950 tokens)
+```
+
+**Configuration**:
+- Auto-excludes tests and build outputs
+- Adaptive threshold based on codebase size
+- Configurable via .aiready.json
+
+### 2. Context Analysis (@aiready/context-analyzer)
+
+**Purpose**: Analyzes import depth, cohesion, and fragmentation for AI optimization
+
+**What it detects**:
+- Context budget (file + all dependencies' token count)
+- Deep import chains that exceed typical AI context windows
+- Low cohesion (God objects with too many responsibilities)
+- High fragmentation (related code scattered across directories)
+- Framework-aware analysis (Next.js, AWS CDK patterns)
+
+**Key metrics**:
+- Context budget (total tokens needed for AI to understand file)
+- Import depth (levels of transitive imports)
+- Cohesion score (0-1, how related responsibilities are)
+- Fragmentation score (0-1, how scattered related code is)
+
+**Example usage**:
+```bash
+npx @aiready/context-analyzer ./src
+npx @aiready/cli context ./src
+```
+
+**Example output**:
+```
+📊 Context Analysis Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📁 Files analyzed: 47
+⚠️  Issues found: 8 files with problems
+
+CRITICAL (3 files)
+  src/services/user.ts
+    • Context budget: 15,234 tokens (HIGH)
+    • Import depth: 8 levels (DEEP)
+    • Cohesion: 0.23 (LOW)
+```
+
+**Thresholds**:
+- Context budget: <10K = Good, 10-20K = Warning, >20K = Critical
+- Import depth: 1-3 = Excellent, 4-6 = Good, 7-10 = Warning, 11+ = Critical
+- Cohesion: >0.7 = Good, 0.4-0.7 = Fair, <0.4 = Poor
+- Fragmentation: <0.3 = Good, 0.3-0.6 = Fair, >0.6 = High scatter
+
+### 3. Consistency Checker (@aiready/consistency)
+
+**Purpose**: Catches naming issues and architectural drift
+
+**What it detects**:
+- Poor naming quality (single-letter vars, unclear abbreviations)
+- Convention mixing (camelCase vs snake_case in same file)
+- Boolean naming issues (missing is/has/can prefixes)
+- Pattern inconsistencies (error handling, async patterns)
+- 100+ built-in acceptable abbreviations
+
+**Key metrics**:
+- Naming quality issues per file
+- Convention violations
+- Pattern consistency score
+
+**Example usage**:
+```bash
+npx @aiready/consistency ./src
+npx @aiready/cli consistency ./src
+```
+
+**Example output**:
+```
+📊 Consistency Analysis
+━━━━━━━━━━━━━━━━━━━━━━━━
+📁 Files analyzed: 47
+⚠️  Issues found: 15 naming + 8 pattern issues
+
+CRITICAL (2 files)
+  src/utils/helpers.ts:12 - poor-naming: x
+  src/api/users.ts:45 - convention-mix: user_name
+```
+
+## AI Readiness Scoring
+
+AIReady provides a unified **0-100 score** combining all three tools:
+
+```bash
+npx @aiready/cli scan ./src --score
+```
+
+### Default Weights
+- Pattern Detection: 40% (most impactful on AI understanding)
+- Context Analysis: 35% (affects AI's ability to load full context)
+- Consistency: 25% (helps AI learn patterns)
+
+### Rating Scale
+- **90-100**: Excellent - AI-optimized codebase
+- **75-89**: Good - Minor improvements possible
+- **60-74**: Fair - Some optimization needed
+- **40-59**: Needs Work - Multiple issues affecting AI
+- **0-39**: Critical - Significant barriers to AI collaboration
+
+### Customizable Weights
+```bash
+# Prioritize pattern detection
+aiready scan . --score --weights patterns:60,context:25,consistency:15
+
+# Equal weighting
+aiready scan . --score --weights patterns:33,context:33,consistency:34
+```
+
+### CI/CD Integration
+```bash
+# Enforce minimum score
+aiready scan . --score --threshold 75
+```
+
+## CLI Options
+
+### Common Options (All Tools)
+
+**--output <path>**: Save results to JSON file
+```bash
+npx @aiready/cli scan ./src --output results.json
+```
+
+**--exclude <patterns>**: Glob patterns to exclude (comma-separated)
+```bash
+npx @aiready/cli scan ./src --exclude "**/*.d.ts,**/generated/**"
+```
+
+**--include-tests**: Include test files in analysis (default: excluded)
+```bash
+npx @aiready/cli scan ./src --include-tests
+```
+
+### Tool-Specific Options
+
+**--threshold <number>**: Similarity threshold for pattern detection (0-1, default: 0.7)
+```bash
+npx @aiready/cli patterns ./src --threshold 0.8
+```
+
+**--tools <list>**: Run specific tools only
+```bash
+npx @aiready/cli scan ./src --tools patterns,context
+```
+
+## Understanding Metrics
+
+### Fragmentation
+Measures how scattered related code is across directories. Impacts AI's ability to load context efficiently.
+
+**Formula**: `fragmentation = (unique_directories - 1) / (total_files - 1)`
+
+**Interpretation**:
+- 0% = Perfect cohesion (all related files in same directory)
+- 100% = Maximum scatter (every file in different directory)
+
+### Duplication Density
+Ratio of files with semantic duplicates. High density indicates systematic copy-paste patterns.
+
+**Formula**: `density = files_with_duplicates / total_files_analyzed`
+
+### Token Waste
+Estimated tokens consumed by duplicate code when loaded into AI context windows.
+
+**Example**: 24 duplicates consuming 20,300 tokens = ~25% of a typical 80K context budget wasted
+
+### Context Budget
+Total tokens (file + all dependencies) needed to provide full context for AI edits.
+
+**Formula**: `budget = file_tokens + sum(dependency_tokens)`
+
+### Import Depth
+Maximum levels of transitive imports. Deep chains make it harder for AI to understand full context.
+
+**Levels**:
+- Depth 1-3: Excellent (direct dependencies)
+- Depth 4-6: Good (reasonable depth)
+- Depth 7-10: Warning (getting deep)
+- Depth 11+: Critical (too many layers)
+
+## Privacy & Security
+
+AIReady is built with privacy and security as core principles:
+
+- ✅ **Runs completely offline** - Zero network calls, no code uploaded
+- ✅ **No SaaS, no cloud** - All analysis happens on your local machine
+- ✅ **Air-gap compatible** - Works in secure/isolated environments
+- ✅ **Open source** - Inspect the code yourself (MIT license)
+- ✅ **No telemetry** - We don't collect any usage data
+
+## Language Support
+
+**Currently Supported**:
+- TypeScript
+- JavaScript (ES6+)
+
+**Coming in 2025**:
+- Python
+- Java
+
+**Parser**: Uses language-specific AST parsers for semantic analysis
+
+## Use Cases
+
+### 1. Before AI Pair Programming
+Optimize your codebase before starting AI-assisted development. Identify and fix issues that would confuse AI models.
+
+### 2. Code Reviews
+Check if new code maintains AI-friendly patterns. Integrate into PR workflows to prevent regression.
+
+### 3. Legacy Code Modernization
+Identify areas that need refactoring for better AI collaboration. Prioritize high-impact changes.
+
+### 4. Onboarding
+Help new team members (and AI) understand codebase patterns and structure.
+
+### 5. Monorepo Management
+Maintain consistency across multiple packages. Ensure all packages are equally AI-friendly.
+
+### 6. CI/CD Integration
+Enforce AI readiness standards in your build pipeline:
+
+```yaml
+# .github/workflows/ai-readiness.yml
+name: AI Readiness Check
+on: [pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npx @aiready/cli scan . --score --threshold 75
+```
+
+## Comparison: AIReady vs Linters
+
+**Traditional Linters (ESLint, TSLint)**:
+- Check syntax correctness
+- Enforce coding standards
+- Detect potential bugs
+- Focus on human readability
+
+**AIReady**:
+- Check AI understandability
+- Detect semantic duplicates
+- Optimize context usage
+- Focus on AI collaboration
+
+**Bottom line**: They complement each other. Use both for best results.
+
+## Output Format
+
+AIReady generates detailed JSON and Markdown reports including:
+
+- AI Readiness Score (0-100)
+- List of semantic duplicates with similarity scores
+- Context window analysis with token counts
+- Pattern consistency violations
+- Actionable recommendations
+- File-by-file breakdown
+- Summary statistics
+
+**Example JSON output structure**:
+```json
+{
+  "score": 72,
+  "timestamp": "2026-01-15T10:30:00Z",
+  "summary": {
+    "filesAnalyzed": 47,
+    "duplicatesFound": 12,
+    "tokenWaste": 8450,
+    "avgContextBudget": 6234
+  },
+  "results": {
+    "patterns": [...],
+    "context": [...],
+    "consistency": [...]
+  }
+}
+```
+
+## Configuration
+
+Create `.aiready.json` in your project root:
+
+```json
+{
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/generated/**",
+    "**/build/**",
+    "**/dist/**"
+  ],
+  "threshold": 0.7,
+  "weights": {
+    "patterns": 40,
+    "context": 35,
+    "consistency": 25
+  },
+  "minScore": 75
+}
+```
+
+## Common Questions
+
+**Q: Is my code uploaded anywhere?**
+A: No. Everything runs locally on your machine. Zero network calls. 100% offline.
+
+**Q: What languages are supported?**
+A: Currently TypeScript and JavaScript. Python and Java support coming in 2025.
+
+**Q: How is this different from a linter?**
+A: Linters check code correctness. AIReady checks AI understandability - semantic duplicates, context fragmentation, pattern consistency.
+
+**Q: Can I use it in CI/CD?**
+A: Yes! AIReady can be integrated into your CI/CD pipeline to maintain AI readiness scores.
+
+**Q: Is it free for commercial use?**
+A: Yes. MIT license allows commercial use without restrictions.
+
+**Q: How accurate is the duplication detection?**
+A: Uses Jaccard similarity on AST tokens. Tuned thresholds minimize false positives while catching meaningful duplicates.
+
+**Q: Does it work with monorepos?**
+A: Yes. Designed to work with monorepos, multiple packages, and complex project structures.
+
+**Q: How long does a scan take?**
+A: Typically 5-30 seconds for medium projects (100-500 files). Scales linearly with codebase size.
+
+## Requirements
+
+- Node.js 18 or higher
+- npm, pnpm, or yarn package manager
+- Supported OS: macOS, Linux, Windows
+
+## Contributing
+
+Contributions welcome! See [CONTRIBUTING.md](https://github.com/caopengau/aiready-cli/blob/main/CONTRIBUTING.md)
+
+Areas we'd love help with:
+- Language support expansion (Python, Java, Go, Rust)
+- New detection patterns
+- Performance optimizations
+- Documentation improvements
+- Bug reports and fixes
+
+## License
+
+MIT License - Free for personal and commercial use
+
+## Maintainers
+
+AIReady Team - https://github.com/caopengau/aiready-cli
+
+## Version
+
+Current: 0.7.x
+Status: Active Development
+
+## Keywords
+
+AI codebase optimization, semantic duplicate detection, context window analysis, code consistency, AI readiness score, developer tools, static analysis, TypeScript analyzer, JavaScript linter, AI pair programming, code quality, AST parsing, token optimization, AI collaboration, open source tools, GitHub Copilot optimization, Claude optimization, ChatGPT code analysis
+
+---
+
+**Last Updated**: January 2026
+**Documentation Version**: 1.0

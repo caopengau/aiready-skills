@@ -5,6 +5,11 @@ Allow: /
 # Sitemap location
 Sitemap: https://getaiready.dev/sitemap.xml
 
+# LLM-friendly documentation
+# See https://llmstxt.org for specification
+# Concise: https://getaiready.dev/llms.txt
+# Full: https://getaiready.dev/llms-full.txt
+
 # Crawl delay (optional, helps with server load)
 Crawl-delay: 1
 

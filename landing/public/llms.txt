@@ -1,0 +1,49 @@
+# AIReady
+
+> Free CLI tools to optimize codebases for AI collaboration
+
+AIReady analyzes your codebase to identify issues that make it harder for AI models (ChatGPT, Claude, Copilot) to understand and work with your code effectively.
+
+## Links
+
+- Home: https://getaiready.dev
+- Documentation: https://getaiready.dev/docs
+- Blog: https://getaiready.dev/blog
+- Full details: https://getaiready.dev/llms-full.txt
+
+## Core Tools
+
+- @aiready/pattern-detect: Identifies semantic duplicates that waste AI context tokens
+- @aiready/context-analyzer: Calculates context window usage and dependency analysis
+- @aiready/consistency: Detects naming and pattern inconsistencies that confuse AI models
+
+## Quick Start
+
+```bash
+# Run all tools at once
+npx @aiready/cli scan .
+
+# Or install globally
+npm install -g @aiready/cli
+aiready scan .
+```
+
+## Key Features
+
+- 100% free and open source (MIT license)
+- Runs completely offline (zero network calls)
+- AI Readiness Score (0-100) for tracking progress
+- Language support: TypeScript/JavaScript (Python & Java coming 2025)
+
+## Use Cases
+
+1. Before AI pair programming - optimize codebase first
+2. Code reviews - maintain AI-friendly patterns
+3. Legacy code modernization - identify refactoring areas
+4. CI/CD integration - enforce AI readiness standards
+
+## Support
+
+- GitHub: https://github.com/caopengau/aiready-cli
+- Issues: https://github.com/caopengau/aiready-cli/issues
+- npm: https://www.npmjs.com/package/@aiready/cli

@@ -7,6 +7,7 @@ import { useState } from "react";
 import Breadcrumb from "../../components/Breadcrumb";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
+import AgentPrompt from "../../components/AgentPrompt";
 
 const tools = [
   {
@@ -100,6 +101,7 @@ CRITICAL (2 files)
 
 const sections = [
   { id: "getting-started", label: "Getting Started" },
+  { id: "ai-agent", label: "Use with AI Agent" },
   { id: "tools", label: "Tools" },
   { id: "scoring", label: "AI Readiness Scoring" },
   { id: "metrics", label: "Understanding Metrics" },
@@ -191,6 +193,76 @@ export default function DocsPage() {
                 </div>
               </div>
             </motion.div>
+          </section>
+
+          {/* Use with AI Agent Section */}
+          <section id="ai-agent" className="mb-16">
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Use with AI Agent
+              </span>
+            </h2>
+            
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6 mb-6">
+              <p className="text-slate-700 mb-4">
+                Prefer using AI agents like <strong>Cline</strong>, <strong>Cursor</strong>, <strong>GitHub Copilot Chat</strong>, or <strong>ChatGPT</strong>? 
+                Copy these ready-to-use prompts and paste them into your agent to run AIReady analysis.
+              </p>
+              <p className="text-sm text-slate-600">
+                💡 These prompts include step-by-step instructions for the AI agent to run the analysis and provide actionable recommendations.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {/* Basic Scan Prompt */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">🔍 Basic Scan</h3>
+                <p className="text-slate-600 mb-4">
+                  Quick analysis to identify top issues and get your AI Readiness Score.
+                </p>
+                <AgentPrompt variant="basic" />
+              </div>
+
+              {/* Detailed Analysis Prompt */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">📊 Detailed Analysis</h3>
+                <p className="text-slate-600 mb-4">
+                  Comprehensive analysis with prioritized recommendations and impact assessment.
+                </p>
+                <AgentPrompt variant="detailed" />
+              </div>
+
+              {/* Fix Issues Prompt */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">🔧 Fix Issues</h3>
+                <p className="text-slate-600 mb-4">
+                  Have your AI agent automatically fix the top 3 critical issues and verify improvements.
+                </p>
+                <AgentPrompt variant="fix" />
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mt-6">
+              <h4 className="font-bold text-slate-900 mb-2">💡 Pro Tips</h4>
+              <ul className="space-y-2 text-sm text-slate-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">•</span>
+                  <span>These prompts work with any AI agent that can execute terminal commands</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">•</span>
+                  <span>The agent will run the commands locally and analyze the results</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">•</span>
+                  <span>All analysis happens on your machine - no code is uploaded</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-0.5">•</span>
+                  <span>Customize the prompts to focus on specific tools or issues</span>
+                </li>
+              </ul>
+            </div>
           </section>
 
           {/* Tools Section */}
