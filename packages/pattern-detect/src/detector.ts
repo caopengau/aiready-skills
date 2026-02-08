@@ -203,6 +203,11 @@ function extractCodeBlocks(content: string, minLines: number): Array<{
  * - Keep structure intact
  */
 function normalizeCode(code: string): string {
+  // Safety check for undefined/null input
+  if (!code) {
+    return '';
+  }
+  
   return (
     code
       // Remove single-line comments
@@ -263,16 +268,18 @@ export async function detectDuplicatePatterns(
 
   // Extract blocks from all files
   const allBlocks: CodeBlock[] = files.flatMap((file) =>
-    extractCodeBlocks(file.content, minLines).map((block) => ({
-      content: block.content,
-      startLine: block.startLine,
-      endLine: block.endLine,
-      file: file.file,
-      normalized: normalizeCode(block.content),
-      patternType: block.patternType,
-      tokenCost: estimateTokens(block.content),
-      linesOfCode: block.linesOfCode,
-    }))
+    extractCodeBlocks(file.content, minLines)
+      .filter((block) => block.content && block.content.trim().length > 0)
+      .map((block) => ({
+        content: block.content,
+        startLine: block.startLine,
+        endLine: block.endLine,
+        file: file.file,
+        normalized: normalizeCode(block.content),
+        patternType: block.patternType,
+        tokenCost: estimateTokens(block.content),
+        linesOfCode: block.linesOfCode,
+      }))
   );
 
   console.log(`Extracted ${allBlocks.length} code blocks for analysis`);
@@ -283,16 +290,18 @@ export async function detectDuplicatePatterns(
     const { extractPythonPatterns } = await import('./extractors/python-extractor');
     const patterns = await extractPythonPatterns(pythonFiles.map(f => f.file));
     
-    const pythonBlocks: CodeBlock[] = patterns.map(p => ({
-      content: p.code,
-      startLine: p.startLine,
-      endLine: p.endLine,
-      file: p.file,
-      normalized: normalizeCode(p.code),
-      patternType: p.type as PatternType,
-      tokenCost: estimateTokens(p.code),
-      linesOfCode: p.endLine - p.startLine + 1,
-    }));
+    const pythonBlocks: CodeBlock[] = patterns
+      .filter((p) => p.code && p.code.trim().length > 0)
+      .map(p => ({
+        content: p.code,
+        startLine: p.startLine,
+        endLine: p.endLine,
+        file: p.file,
+        normalized: normalizeCode(p.code),
+        patternType: p.type as PatternType,
+        tokenCost: estimateTokens(p.code),
+        linesOfCode: p.endLine - p.startLine + 1,
+      }));
     
     allBlocks.push(...pythonBlocks);
     console.log(`Added ${pythonBlocks.length} Python patterns`);
