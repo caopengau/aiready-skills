@@ -139,7 +139,7 @@ EXAMPLES:
       if (finalOptions.exclude) console.log(`  exclude: ${chalk.bold(truncate(finalOptions.exclude, 6))}`);
 
       if (finalOptions['pattern-detect'] || finalOptions.minSimilarity) {
-        const pd = finalOptions['pattern-detect'] || {
+        const patternDetectConfig = finalOptions['pattern-detect'] || {
           minSimilarity: finalOptions.minSimilarity,
           minLines: finalOptions.minLines,
           approx: finalOptions.approx,
@@ -151,15 +151,15 @@ EXAMPLES:
           includeTests: (finalOptions as any).includeTests,
         };
         console.log(chalk.white('\nPattern-detect settings:'));
-        console.log(`  minSimilarity: ${chalk.bold(pd.minSimilarity ?? 'default')}`);
-        console.log(`  minLines: ${chalk.bold(pd.minLines ?? 'default')}`);
-        if (pd.approx !== undefined) console.log(`  approx: ${chalk.bold(String(pd.approx))}`);
-        if (pd.minSharedTokens !== undefined) console.log(`  minSharedTokens: ${chalk.bold(String(pd.minSharedTokens))}`);
-        if (pd.maxCandidatesPerBlock !== undefined) console.log(`  maxCandidatesPerBlock: ${chalk.bold(String(pd.maxCandidatesPerBlock))}`);
-        if (pd.batchSize !== undefined) console.log(`  batchSize: ${chalk.bold(String(pd.batchSize))}`);
-        if (pd.streamResults !== undefined) console.log(`  streamResults: ${chalk.bold(String(pd.streamResults))}`);
-        if (pd.severity !== undefined) console.log(`  severity: ${chalk.bold(String(pd.severity))}`);
-        if (pd.includeTests !== undefined) console.log(`  includeTests: ${chalk.bold(String(pd.includeTests))}`);
+        console.log(`  minSimilarity: ${chalk.bold(patternDetectConfig.minSimilarity ?? 'default')}`);
+        console.log(`  minLines: ${chalk.bold(patternDetectConfig.minLines ?? 'default')}`);
+        if (patternDetectConfig.approx !== undefined) console.log(`  approx: ${chalk.bold(String(patternDetectConfig.approx))}`);
+        if (patternDetectConfig.minSharedTokens !== undefined) console.log(`  minSharedTokens: ${chalk.bold(String(patternDetectConfig.minSharedTokens))}`);
+        if (patternDetectConfig.maxCandidatesPerBlock !== undefined) console.log(`  maxCandidatesPerBlock: ${chalk.bold(String(patternDetectConfig.maxCandidatesPerBlock))}`);
+        if (patternDetectConfig.batchSize !== undefined) console.log(`  batchSize: ${chalk.bold(String(patternDetectConfig.batchSize))}`);
+        if (patternDetectConfig.streamResults !== undefined) console.log(`  streamResults: ${chalk.bold(String(patternDetectConfig.streamResults))}`);
+        if (patternDetectConfig.severity !== undefined) console.log(`  severity: ${chalk.bold(String(patternDetectConfig.severity))}`);
+        if (patternDetectConfig.includeTests !== undefined) console.log(`  includeTests: ${chalk.bold(String(patternDetectConfig.includeTests))}`);
       }
 
       if (finalOptions['context-analyzer'] || finalOptions.maxDepth) {

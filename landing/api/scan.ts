@@ -10,7 +10,7 @@ export async function handler(event: Event) {
   const method = event.requestContext?.http?.method || 'POST';
 
   if (method === 'OPTIONS') {
-    return json(200, {}, corsHeaders());
+    return json(200, {}, allowedCorsHeaders());
   }
 
   try {
@@ -91,7 +91,7 @@ export async function handler(event: Event) {
   }
 }
 
-function corsHeaders() {
+function allowedCorsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -102,7 +102,7 @@ function corsHeaders() {
 function json(statusCode: number, body: any, extraHeaders: Record<string,string> = {}) {
   return {
     statusCode,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders(), ...extraHeaders },
+    headers: { 'Content-Type': 'application/json', ...allowedCorsHeaders(), ...extraHeaders },
     body: JSON.stringify(body)
   };
 }

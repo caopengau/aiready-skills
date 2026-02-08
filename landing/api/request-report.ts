@@ -19,7 +19,7 @@ export async function handler(event: Event) {
   if (method === "OPTIONS") {
     return {
       statusCode: 200,
-      headers: corsHeaders(),
+      headers: allowedCorsHeaders(),
       body: ""
     };
   }
@@ -148,7 +148,7 @@ https://getaiready.dev`;
   }
 }
 
-function corsHeaders() {
+function allowedCorsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -159,7 +159,7 @@ function corsHeaders() {
 function json(statusCode: number, body: any) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json", ...corsHeaders() },
+    headers: { "Content-Type": "application/json", ...allowedCorsHeaders() },
     body: JSON.stringify(body)
   };
 }

@@ -167,20 +167,20 @@ export default function LiveScanDemo() {
                   const strokeWidth = 8;
                   const gapAngle = 4;
                   
-                  const x1 = 50 + radius * Math.cos((startAngle * Math.PI) / 180);
-                  const y1 = 50 + radius * Math.sin((startAngle * Math.PI) / 180);
-                  const x2 = 50 + radius * Math.cos(((startAngle + (360/20) - gapAngle) * Math.PI) / 180);
-                  const y2 = 50 + radius * Math.sin(((startAngle + (360/20) - gapAngle) * Math.PI) / 180);
+                  const startX = 50 + radius * Math.cos((startAngle * Math.PI) / 180);
+                  const startY = 50 + radius * Math.sin((startAngle * Math.PI) / 180);
+                  const endX = 50 + radius * Math.cos(((startAngle + (360/20) - gapAngle) * Math.PI) / 180);
+                  const endY = 50 + radius * Math.sin(((startAngle + (360/20) - gapAngle) * Math.PI) / 180);
                   
                   const isActive = (i / 20) * 100 <= progress;
                   
                   return (
                     <motion.line
                       key={i}
-                      x1={`${x1}%`}
-                      y1={`${y1}%`}
-                      x2={`${x2}%`}
-                      y2={`${y2}%`}
+                      x1={`${startX}%`}
+                      y1={`${startY}%`}
+                      x2={`${endX}%`}
+                      y2={`${endY}%`}
                       stroke={isActive ? scoreColor.stroke : '#334155'}
                       strokeWidth={strokeWidth}
                       strokeLinecap="round"

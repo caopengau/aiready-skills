@@ -14,27 +14,27 @@ function loadIgnorePatterns() {
 
 function matchesIgnore(filePath, patterns) {
   if (!filePath) return false;
-  const abs = String(filePath).replace(/\\\\/g, '/');
-  const rel = path.relative(root, abs).replace(/\\\\/g, '/');
+  const absolutePath = String(filePath).replace(/\\\\/g, '/');
+  const relativePath = path.relative(root, absolutePath).replace(/\\\\/g, '/');
 
   let matched = false;
-  for (const pat of patterns) {
-    const isNeg = pat.startsWith('!');
-    const patRaw = isNeg ? pat.slice(1) : pat;
-    const patClean = patRaw.replace(/\*\*/g, '').replace(/\*/g, '').replace(/^\/+/, '');
-    if (patClean === '') continue;
-    if (abs.includes(patClean) || rel.includes(patClean)) {
+  for (const pattern of patterns) {
+    const isNeg = pattern.startsWith('!');
+    const patternRaw = isNeg ? pattern.slice(1) : pattern;
+    const patternClean = patternRaw.replace(/\*\*/g, '').replace(/\*/g, '').replace(/^\/+/, '');
+    if (patternClean === '') continue;
+    if (absolutePath.includes(patternClean) || relativePath.includes(patternClean)) {
       if (isNeg) return false; // negation overrides
       matched = true; // mark as ignored, but later negations can un-ignore
     }
   }
 
   // heuristics for cdk outputs and asset files
-  if (abs.includes('/cdk.out/') || rel.includes('cdk.out/')) matched = true;
-  if (abs.match(/asset\.[a-f0-9]{8,}\./) || rel.match(/asset\.[a-f0-9]{8,}\./)) matched = true;
-  if (abs.includes('/node_modules/') || rel.includes('node_modules/')) matched = true;
-  if (abs.includes('/.next/') || rel.includes('.next/')) matched = true;
-  if (abs.includes('/dist/') || rel.includes('dist/')) matched = true;
+  if (absolutePath.includes('/cdk.out/') || relativePath.includes('cdk.out/')) matched = true;
+  if (absolutePath.match(/asset\.[a-f0-9]{8,}\./) || relativePath.match(/asset\.[a-f0-9]{8,}\./)) matched = true;
+  if (absolutePath.includes('/node_modules/') || relativePath.includes('node_modules/')) matched = true;
+  if (absolutePath.includes('/.next/') || relativePath.includes('.next/')) matched = true;
+  if (absolutePath.includes('/dist/') || relativePath.includes('dist/')) matched = true;
 
   return !!matched;
 }
