@@ -195,7 +195,7 @@ release-one: ## Release one spoke: TYPE=patch|minor|major, SPOKE=core|pattern-de
 #   1. Version bump all packages (serial to avoid git conflicts)
 #   2. Commit + tag all changes together (once)
 #   3. Build + test (once)
-#   4. Publish to npm + sync GitHub (parallel for speed)
+#   4. Publish to npm + sync GitHub (serial for proper dependency order)
 # Landing site is EXCLUDED - use 'make release-landing' separately
 # ⚠️  CLI is ALWAYS released last because it depends on ALL spokes
 
@@ -204,21 +204,51 @@ release-all: ## Release all spokes: TYPE=patch|minor|major (excludes landing)
 		$(call log_error,TYPE parameter required. Example: make $@ TYPE=minor); \
 		exit 1; \
 	fi; \
-	$(call log_step,Running full test suite before release...); \
-	if ! $(MAKE) -C $(ROOT_DIR) test; then \
-		$(call log_error,Tests failed. Aborting release-all.); \
+	bump_target="$(call bump_target_for_type,$(TYPE))"; \
+	if [ -z "$$bump_target" ]; then \
+		$(call log_error,Invalid TYPE '$(TYPE)'. Expected patch|minor|major); \
 		exit 1; \
 	fi; \
-	$(call log_success,All tests passed); \
-	# Release core and middle spokes first
-	for spoke in $(CORE_SPOKE) $(MIDDLE_SPOKES); do \
-		$(call log_info,Releasing @aiready/$$spoke...); \
-		$(MAKE) -C $(ROOT_DIR) release-one SPOKE=$$spoke TYPE=$(TYPE) || exit 1; \
+	$(call log_step,Phase 1: Version bumping all spokes...); \
+	for spoke in $(CORE_SPOKE) $(MIDDLE_SPOKES) $(CLI_SPOKE); do \
+		$(call log_info,Bumping @aiready/$$spoke...); \
+		$(MAKE) -C $(ROOT_DIR) $$bump_target SPOKE=$$spoke || exit 1; \
+		$(call log_success,Version bumped for @aiready/$$spoke); \
 	done; \
-	# Release CLI last
-	$(call log_info,Releasing CLI last...); \
-	$(MAKE) -C $(ROOT_DIR) release-one SPOKE=$(CLI_SPOKE) TYPE=$(TYPE) || exit 1; \
-	$(call log_success,🎉 All spokes released successfully)
+	$(call log_step,Phase 2: Committing and tagging all changes...); \
+	for spoke in $(CORE_SPOKE) $(MIDDLE_SPOKES) $(CLI_SPOKE); do \
+		$(call commit_and_tag); \
+	done; \
+	$(call log_step,Phase 3: Building workspace ONCE...); \
+	$(MAKE) -C $(ROOT_DIR) build || { \
+		$(call log_error,Build failed. Aborting release-all.); \
+		exit 1; \
+	}; \
+	$(call log_success,Build complete); \
+	$(call log_step,Phase 4: Testing workspace ONCE...); \
+	$(MAKE) -C $(ROOT_DIR) test || { \
+		$(call log_error,Tests failed. Aborting release-all.); \
+		exit 1; \
+	}; \
+	$(call log_success,All tests passed); \
+	$(call log_step,Phase 5: Publishing core spoke first...); \
+	$(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$(CORE_SPOKE) || exit 1; \
+	$(MAKE) -C $(ROOT_DIR) publish SPOKE=$(CORE_SPOKE) OWNER=$(OWNER) || exit 1; \
+	$(call log_success,Published @aiready/$(CORE_SPOKE)); \
+	$(call log_step,Phase 6: Publishing middle spokes...); \
+	for spoke in $(MIDDLE_SPOKES); do \
+		$(call log_info,Publishing @aiready/$$spoke...); \
+		$(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$$spoke || exit 1; \
+		$(MAKE) -C $(ROOT_DIR) publish SPOKE=$$spoke OWNER=$(OWNER) || exit 1; \
+		$(call log_success,Published @aiready/$$spoke); \
+	done; \
+	$(call log_step,Phase 7: Publishing CLI last...); \
+	$(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$(CLI_SPOKE) || exit 1; \
+	$(MAKE) -C $(ROOT_DIR) publish SPOKE=$(CLI_SPOKE) OWNER=$(OWNER) || exit 1; \
+	$(call log_success,Published @aiready/$(CLI_SPOKE)); \
+	$(call log_step,Phase 8: Pushing all changes to monorepo...); \
+	cd $(ROOT_DIR) && git push origin $(TARGET_BRANCH) --follow-tags; \
+	$(call log_success,🎉 All spokes released successfully in proper order: core → middle → cli)
 
 # Status overview: local vs published versions
 release-status: ## Show local and npm registry versions for all spokes + landing
