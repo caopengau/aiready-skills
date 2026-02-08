@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AgentPromptProps {
   variant?: "basic" | "detailed" | "fix";
@@ -9,47 +9,53 @@ interface AgentPromptProps {
 }
 
 const prompts = {
-  basic: `Scan this codebase for AI readiness issues. Run:
-
-npx @aiready/cli scan .
-
-Then review the report and summarize:
-1. Overall AI Readiness Score
-2. Top 3 critical issues found
-3. Quick wins we can fix immediately`,
+  basic: [
+    "Scan this codebase for AI readiness issues. Run:",
+    "",
+    "npx @aiready/cli scan .",
+    "",
+    "Then review the report and summarize:",
+    "1. Overall AI Readiness Score",
+    "2. Top 3 critical issues found",
+    "3. Quick wins we can fix immediately"
+  ],
   
-  detailed: `Perform a comprehensive AI readiness analysis on this codebase:
+  detailed: [
+    "Perform a comprehensive AI readiness analysis on this codebase:",
+    "",
+    "Step 1: Run the analysis",
+    "npx @aiready/cli scan . --score",
+    "",
+    "Step 2: Review the report and identify:",
+    "- Semantic duplicates (wasted AI context tokens)",
+    "- High context budget files (too many dependencies)",
+    "- Naming inconsistencies (confuse AI models)",
+    "- Deep import chains (exceed context windows)",
+    "",
+    "Step 3: Prioritize fixes by impact:",
+    "- Which issues cause the most AI confusion?",
+    "- What quick wins exist (low effort, high impact)?",
+    "- What systemic patterns need addressing?",
+    "",
+    "Step 4: Provide actionable recommendations with file references."
+  ],
 
-Step 1: Run the analysis
-npx @aiready/cli scan . --score
-
-Step 2: Review the report and identify:
-- Semantic duplicates (wasted AI context tokens)
-- High context budget files (too many dependencies)
-- Naming inconsistencies (confuse AI models)
-- Deep import chains (exceed context windows)
-
-Step 3: Prioritize fixes by impact:
-- Which issues cause the most AI confusion?
-- What quick wins exist (low effort, high impact)?
-- What systemic patterns need addressing?
-
-Step 4: Provide actionable recommendations with file references.`,
-
-  fix: `Fix AI readiness issues in this codebase:
-
-Step 1: Run analysis
-npx @aiready/cli scan . --score
-
-Step 2: Fix the top 3 critical issues:
-- For semantic duplicates: Extract to shared utilities
-- For high context files: Break into smaller modules
-- For naming issues: Use clear, consistent names
-
-Step 3: Re-run to verify improvements
-npx @aiready/cli scan . --score
-
-Step 4: Report before/after AI Readiness Score and changes made.`,
+  fix: [
+    "Fix AI readiness issues in this codebase:",
+    "",
+    "Step 1: Run analysis",
+    "npx @aiready/cli scan . --score",
+    "",
+    "Step 2: Fix the top 3 critical issues:",
+    "- For semantic duplicates: Extract to shared utilities",
+    "- For high context files: Break into smaller modules",
+    "- For naming issues: Use clear, consistent names",
+    "",
+    "Step 3: Re-run to verify improvements",
+    "npx @aiready/cli scan . --score",
+    "",
+    "Step 4: Report before/after AI Readiness Score and changes made."
+  ]
 };
 
 const promptTitles = {
@@ -58,54 +64,151 @@ const promptTitles = {
   fix: "Fix Issues",
 };
 
+const agentIcons = [
+  { name: "Cline", emoji: "🤖" },
+  { name: "Cursor", emoji: "⚡" },
+  { name: "Copilot", emoji: "🚀" },
+  { name: "ChatGPT", emoji: "💬" },
+];
+
 export default function AgentPrompt({ variant = "basic", className = "" }: AgentPromptProps) {
   const [copied, setCopied] = useState(false);
+  const [visibleLines, setVisibleLines] = useState<number[]>([]);
+  const promptLines = prompts[variant];
+
+  useEffect(() => {
+    // Animate lines appearing one by one
+    const delays = promptLines.map((_, index) => 
+      setTimeout(() => {
+        setVisibleLines(prev => [...prev, index]);
+      }, index * 100 + 500) // Start after 500ms, then 100ms between lines
+    );
+
+    return () => delays.forEach(clearTimeout);
+  }, [variant, promptLines]);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(prompts[variant]);
+    await navigator.clipboard.writeText(promptLines.join('\n'));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={`relative ${className}`}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🤖</span>
-          <span className="text-sm font-semibold text-slate-700">
-            AI Agent Prompt - {promptTitles[variant]}
-          </span>
+      {/* Main terminal-style card */}
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="bg-slate-900 rounded-2xl p-6 text-left max-w-3xl mx-auto border border-slate-800 shadow-2xl relative overflow-hidden"
+      >
+        {/* Window chrome dots and label */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500" />
+            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <span className="ml-2 text-sm text-slate-500 font-mono">agent prompt</span>
+          </div>
+          
+          {/* Copy button */}
+          <motion.button
+            onClick={handleCopy}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              copied
+                ? "bg-green-500 text-white"
+                : "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg"
+            }`}
+          >
+            {copied ? "✓ Copied!" : "📋 Copy Prompt"}
+          </motion.button>
         </div>
-        <motion.button
-          onClick={handleCopy}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            copied
-              ? "bg-green-500 text-white"
-              : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-          }`}
-        >
-          {copied ? "✓ Copied!" : "Copy Prompt"}
-        </motion.button>
-      </div>
 
-      {/* Prompt Content */}
-      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border-2 border-blue-200 shadow-md">
-        <pre className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap font-sans">
-          {prompts[variant]}
-        </pre>
-      </div>
+        {/* Prompt content with typing animation */}
+        <div className="space-y-1 min-h-[200px]">
+          <div className="flex items-start gap-2 mb-2">
+            <span className="text-purple-400 text-xl">🤖</span>
+            <span className="text-purple-400 font-mono text-sm">
+              {promptTitles[variant]} Prompt
+            </span>
+          </div>
+          
+          <AnimatePresence>
+            {promptLines.map((line, index) => (
+              visibleLines.includes(index) && (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className={`font-mono text-sm leading-relaxed ${
+                    line.startsWith('npx') || line.startsWith('Step') 
+                      ? 'text-cyan-400 font-semibold' 
+                      : line.startsWith('-') || line.match(/^\d\./)
+                      ? 'text-green-400 pl-4'
+                      : line === ''
+                      ? 'h-2'
+                      : 'text-slate-300 pl-4'
+                  }`}
+                >
+                  {line || '\u00A0'}
+                </motion.div>
+              )
+            ))}
+          </AnimatePresence>
 
-      {/* Helper Text */}
-      <p className="text-xs text-slate-500 mt-2 italic">
-        Copy this prompt and paste it into Cline, Cursor, Copilot Chat, ChatGPT, or any AI agent
-      </p>
+          {/* Blinking cursor at the end */}
+          {visibleLines.length === promptLines.length && (
+            <motion.span
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              className="text-cyan-400 font-mono text-sm inline-block ml-1"
+            >
+              |
+            </motion.span>
+          )}
+        </div>
+
+        {/* Animated glow effect */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-cyan-500/10 pointer-events-none"
+          animate={{
+            opacity: [0.5, 0.8, 0.5],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </motion.div>
+
+      {/* Agent compatibility badges */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="flex items-center justify-center gap-2 mt-4 flex-wrap"
+      >
+        <span className="text-xs text-slate-500 font-medium">Compatible with:</span>
+        {agentIcons.map((agent, index) => (
+          <motion.span
+            key={agent.name}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.5 + index * 0.1 }}
+            className="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-medium border border-slate-700 flex items-center gap-1"
+          >
+            <span>{agent.emoji}</span>
+            {agent.name}
+          </motion.span>
+        ))}
+      </motion.div>
     </motion.div>
   );
 }

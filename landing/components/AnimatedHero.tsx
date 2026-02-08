@@ -8,7 +8,7 @@ const words = ["AI-Ready", "Optimized", "Consistent", "Efficient"];
 
 export default function AnimatedHero() {
   const [currentWord, setCurrentWord] = useState(0);
-  const [activeTab, setActiveTab] = useState<"terminal" | "agent">("terminal");
+  const [activeTab, setActiveTab] = useState<"terminal" | "agent">("agent");
 
   useEffect(() => {
     const interval = setInterval(() => {
