@@ -4,7 +4,7 @@
 
 The CLI provides both unified analysis (scan multiple tools at once) and individual tool access for pattern detection, context analysis, and consistency checking.
 
-## �️ Architecture
+## 🏛️ Architecture
 
 ```
                            🎯 USER
@@ -25,14 +25,16 @@ The CLI provides both unified analysis (scan multiple tools at once) and individ
    ✅ Ready    ✅ Ready    ✅ Ready    🔜 Soon
 ```
 
-## �🌍 Language Support
+## 🌍 Language Support
 
 **Currently Supported (64% market coverage):**
+
 - ✅ **TypeScript** (`.ts`, `.tsx`)
 - ✅ **JavaScript** (`.js`, `.jsx`)
 - ✅ **Python** (`.py`) - PEP 8 conventions, import analysis, pattern detection
 
 **Roadmap:**
+
 - 🔜 **Java** (Q3 2026) - Maven/Gradle, Spring Framework
 - 🔜 **Go** (Q4 2026) - Go modules, concurrency patterns
 - 🔜 **Rust** (Q4 2026) - Cargo, ownership patterns
@@ -56,11 +58,13 @@ aiready scan ./src
 ### 🎯 Input & Output
 
 **Input:** Path to your source code directory
+
 ```bash
 aiready scan ./src
 ```
 
 **Output:** Terminal report + optional JSON file (saved to `.aiready/` directory)
+
 ```
 📊 AIReady Scan Results
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -96,6 +100,7 @@ aiready scan <directory>
 ```
 
 **Options:**
+
 - `-t, --tools <tools>`: Tools to run (comma-separated: patterns,context,consistency) (default: patterns,context)
 - `--include <patterns>`: File patterns to include (comma-separated)
 - `--exclude <patterns>`: File patterns to exclude (comma-separated)
@@ -113,6 +118,7 @@ aiready patterns <directory> [options]
 ```
 
 **Options:**
+
 - `-s, --similarity <number>`: Minimum similarity score (0-1) (default: 0.40)
 - `-l, --min-lines <number>`: Minimum lines to consider (default: 5)
 - `--include <patterns>`: File patterns to include (comma-separated)
@@ -127,6 +133,7 @@ aiready context <directory> [options]
 ```
 
 **Options:**
+
 - `--max-depth <number>`: Maximum acceptable import depth (default: 5)
 - `--max-context <number>`: Maximum acceptable context budget (tokens) (default: 10000)
 - `--include <patterns>`: File patterns to include (comma-separated)
@@ -141,6 +148,7 @@ aiready consistency <directory> [options]
 ```
 
 **Options:**
+
 - `--include <patterns>`: File patterns to include (comma-separated)
 - `--exclude <patterns>`: File patterns to exclude (comma-separated)
 - `-o, --output <format>`: Output format: console, json (default: console)
@@ -250,6 +258,7 @@ Human-readable summary with key metrics and issue counts.
 ### JSON Output
 
 Structured data including:
+
 - Full analysis results
 - Detailed metrics
 - Issue breakdowns
@@ -263,12 +272,14 @@ Structured data including:
 ## 🔗 Integration
 
 The CLI is designed to integrate with:
+
 - CI/CD pipelines
 - Pre-commit hooks
 - IDE extensions
 - Automated workflows
 
 For programmatic usage, see the individual packages:
+
 - [@aiready/pattern-detect](https://www.npmjs.com/package/@aiready/pattern-detect)
 - [@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)
 - [@aiready/consistency](https://www.npmjs.com/package/@aiready/consistency)

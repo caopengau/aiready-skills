@@ -4,7 +4,7 @@
 
 Helps teams maintain consistent coding practices across their codebase, making it easier for AI tools to understand and work with your code.
 
-## �️ Architecture
+## 🏛️ Architecture
 
 ```
                            🎯 USER
@@ -24,7 +24,7 @@ Helps teams maintain consistent coding practices across their codebase, making i
                                   └─────────────┘
 ```
 
-## �🌍 Language Support
+## 🌍 Language Support
 
 **Currently Supported (64% market coverage):**
 - ✅ **TypeScript** (`.ts`, `.tsx`) - camelCase, PascalCase conventions

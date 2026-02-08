@@ -297,7 +297,7 @@ function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
   "eslint": "^9.18.0"
 }
 
-## � Visualization Opportunities (SaaS)
+## 📊 Visualization Opportunities (SaaS)
 
 ### Dashboard Views
 
@@ -398,7 +398,7 @@ Library: AG Grid / TanStack Table
 - CSV/JSON for data analysis
 - Markdown for GitHub wiki
 
-## �💰 SaaS Monetization Strategy
+## 💰 SaaS Monetization Strategy
 
 ### Free Tier: CLI Analysis
 ```bash

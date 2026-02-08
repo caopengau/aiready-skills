@@ -491,7 +491,7 @@ const fragmented = clusters.filter(c => c.fragmentationScore > 0.6);
 const plan = generateRefactoringPlan(fragmented);
 ```
 
-## � Visualization Opportunities (SaaS)
+## 📊 Visualization Opportunities (SaaS)
 
 ### Dashboard Views
 
@@ -638,7 +638,7 @@ Library: Chart.js time series
 - Industry averages by language/framework
 - Gamification: "Your repo is 35% more optimized than average"
 
-## �💰 SaaS Monetization Strategy
+## 💰 SaaS Monetization Strategy
 
 ### Free Tier: CLI Analysis
 - One-time snapshot analysis

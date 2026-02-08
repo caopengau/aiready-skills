@@ -333,7 +333,7 @@ Roadmap (planned, not yet available):
 - Custom rule engines and integration APIs
 - Automated fix suggestions and CI/CD integration
 
-## � Stats & Analytics
+## 📊 Stats & Analytics
 
 Track package downloads, GitHub metrics, and growth:
 
@@ -350,6 +350,6 @@ make stats-weekly
 
 See [Tracking Stats Guide](./docs/TRACKING-STATS.md) for complete details.
 
-## �📄 License
+## 📄 License
 
 MIT - See LICENSE in individual packages
