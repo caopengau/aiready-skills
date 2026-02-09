@@ -8,17 +8,21 @@
 
 ### Core Value Proposition
 
-**Free CLI:** One-time snapshots showing current problems
+**Free CLI (Open Source):** One-time snapshots showing current problems + full local visualization
 **Pro SaaS:** Historical trends, benchmarks, automated recommendations
 **Enterprise:** CI/CD integration, team analytics, custom rules
 
+### Strategic Approach: Open Source + Hosted SaaS
+
+Core analysis tools and visualization remain open source (MIT). Revenue comes from the hosted platform providing trends, benchmarks, team features, and CI/CD integration. See `docs/monetization-strategy-visualization.md` for full strategic rationale.
+
 ## 🏗️ Technical Architecture
 
-### System Components
+### System Components (Serverless)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Frontend (Next.js)                    │
+│                    Frontend (Next.js on Vercel)              │
 │  ┌───────────────┐  ┌───────────────┐  ┌────────────────┐  │
 │  │  Dashboard    │  │  Visualizations│  │  Settings      │  │
 │  │  - Trends     │  │  - D3.js graphs│  │  - Thresholds  │  │
@@ -27,7 +31,7 @@
 └─────────────────────────────────────────────────────────────┘
                               ↓ HTTPS
 ┌─────────────────────────────────────────────────────────────┐
-│                      API Layer (Node.js/Express)             │
+│                  API Gateway + Lambda (Node.js 20)           │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
 │  │  Auth      │  │  Analysis  │  │  Webhooks  │            │
 │  │  - JWT     │  │  - Upload  │  │  - GitHub  │            │
@@ -36,15 +40,25 @@
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                    Database (PostgreSQL)                     │
+│              DynamoDB (Single Table Design)                   │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
 │  │  Users     │  │  Analysis  │  │  Metrics   │            │
-│  │  Teams     │  │  Results   │  │  Timeseries│            │
+│  │  Teams     │  │  Runs      │  │  Timeseries│            │
+│  │  Repos     │  │  Results   │  │  Recs      │            │
+│  └────────────┘  └────────────┘  └────────────┘            │
+│            ↕ DAX (DynamoDB Accelerator)                      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│           Event-Driven Processing (Async)                    │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
+│  │ EventBridge│  │    SQS     │  │  Lambda    │            │
+│  │ (routing)  │→ │  (queues)  │→ │ (workers)  │            │
 │  └────────────┘  └────────────┘  └────────────┘            │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                   Storage (S3/CloudFlare R2)                 │
+│                       Storage (S3)                           │
 │  - Raw analysis JSON files                                   │
 │  - Generated reports (HTML/PDF)                              │
 │  - Visualization data (cached)                               │
@@ -59,274 +73,553 @@ CLI Tool (Local)
     ↓ generate JSON
     ↓ POST /api/analysis/upload
         ↓
-    API Server
+    API Gateway → Lambda
         ↓ validate JWT
         ↓ parse JSON
-        ↓ extract metrics
-        ↓ store in PostgreSQL
         ↓ store raw JSON in S3
-        ↓ trigger async jobs
+        ↓ write run record to DynamoDB
+        ↓ emit event to EventBridge
             ↓
-        Background Workers
-            ↓ calculate trends
-            ↓ compute benchmarks
+        EventBridge → SQS → Processing Lambda
+            ↓ extract metrics
+            ↓ calculate trends (query previous runs)
+            ↓ compute benchmarks (aggregate across repos)
             ↓ generate recommendations
-            ↓ send notifications
+            ↓ write metrics to DynamoDB
+            ↓ send notifications (SES/Slack webhook)
                 ↓
-            WebSocket Server
+            API Gateway WebSocket (v2)
                 ↓ push updates to dashboard
                     ↓
                 Browser (Real-time)
 ```
 
-## 📊 Database Schema
+### Why Serverless?
 
-### Core Tables
+| Aspect | Traditional (Express + PostgreSQL) | Serverless (Lambda + DynamoDB) |
+|--------|-----------------------------------|-------------------------------|
+| **Cost at 0 users** | ~$30-50/mo (server + DB) | **$0/mo** (pay per request) |
+| **Cost at 1K users** | ~$50-100/mo | **~$5-20/mo** |
+| **Cost at 10K users** | ~$200-500/mo | **~$30-80/mo** |
+| **Scaling** | Manual (add servers) | **Automatic** |
+| **Ops burden** | Patching, backups, monitoring | **Near zero** |
+| **Cold starts** | N/A | ~200ms (acceptable for API) |
+| **Deployment** | Docker/CI/CD pipeline | **SST (already used!)** |
 
-```sql
--- Users and authentication
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  name VARCHAR(255),
-  avatar_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+## 📊 DynamoDB Single Table Design
 
-CREATE TABLE auth_tokens (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  token_hash VARCHAR(64) UNIQUE NOT NULL, -- SHA-256 of token
-  expires_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+### Design Philosophy
 
--- Teams and organizations
-CREATE TABLE teams (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255) NOT NULL,
-  slug VARCHAR(100) UNIQUE NOT NULL,
-  plan VARCHAR(50) NOT NULL, -- 'free', 'pro', 'enterprise'
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+Single table design stores all entities in one DynamoDB table using composite keys. This eliminates JOINs (which DynamoDB doesn't support), keeps infrastructure simple, and allows all access patterns to be served efficiently.
 
-CREATE TABLE team_members (
-  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  role VARCHAR(50) NOT NULL, -- 'owner', 'admin', 'member'
-  joined_at TIMESTAMPTZ DEFAULT NOW(),
-  PRIMARY KEY (team_id, user_id)
-);
+### Access Patterns (Define First)
 
--- Repositories
-CREATE TABLE repositories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
-  name VARCHAR(255) NOT NULL,
-  git_url TEXT,
-  default_branch VARCHAR(100) DEFAULT 'main',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (team_id, name)
-);
+| # | Access Pattern | PK | SK | Index |
+|---|---------------|----|----|-------|
+| 1 | Get user by ID | `USER#<id>` | `PROFILE` | Table |
+| 2 | Get user by email | `<email>` | `USER` | GSI1 |
+| 3 | Get team by ID | `TEAM#<id>` | `META` | Table |
+| 4 | Get team by slug | `<slug>` | `TEAM` | GSI1 |
+| 5 | List team members | `TEAM#<id>` | `MEMBER#` (begins_with) | Table |
+| 6 | List teams for user | `USER#<id>` | `TEAM#` (begins_with) | Table |
+| 7 | List repos for team | `TEAM#<id>` | `REPO#` (begins_with) | Table |
+| 8 | Get repo by ID | `REPO#<id>` | `META` | Table |
+| 9 | List runs for repo (newest first) | `REPO#<id>` | `RUN#` (begins_with, ScanIndexForward=false) | Table |
+| 10 | List runs by status | `<status>` | `RUN#<timestamp>` | GSI2 |
+| 11 | Get daily metrics for repo+tool | `REPO#<id>` | `METRIC#<tool>#<date>` (between) | Table |
+| 12 | List recommendations for repo | `REPO#<id>` | `REC#` (begins_with) | Table |
+| 13 | Get subscription for team | `TEAM#<id>` | `SUB` | Table |
+| 14 | Get auth token by hash | `TOKEN#<hash>` | `AUTH` | Table |
+| 15 | List file metrics for a run | `RUN#<id>` | `FILE#` (begins_with) | Table |
 
--- Analysis runs (core data)
-CREATE TABLE analysis_runs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  repository_id UUID REFERENCES repositories(id) ON DELETE CASCADE,
-  tool VARCHAR(50) NOT NULL, -- 'pattern-detect', 'context-analyzer', 'consistency'
-  version VARCHAR(20) NOT NULL, -- CLI tool version
-  commit_sha VARCHAR(40),
-  branch VARCHAR(255),
-  triggered_by UUID REFERENCES users(id),
-  status VARCHAR(50) NOT NULL, -- 'pending', 'processing', 'completed', 'failed'
-  raw_data_url TEXT, -- S3 URL to full JSON
-  summary JSONB, -- Quick access to key metrics
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  completed_at TIMESTAMPTZ,
-  INDEX idx_repo_tool_created (repository_id, tool, created_at DESC)
-);
+### Table Schema
 
--- Pattern detection metrics (timeseries)
-CREATE TABLE pattern_metrics (
-  id BIGSERIAL PRIMARY KEY,
-  analysis_run_id UUID REFERENCES analysis_runs(id) ON DELETE CASCADE,
-  timestamp TIMESTAMPTZ DEFAULT NOW(),
-  
-  -- Summary metrics
-  total_files INT NOT NULL,
-  total_patterns INT NOT NULL,
-  total_token_cost INT NOT NULL,
-  
-  -- By pattern type
-  api_handler_count INT,
-  validator_count INT,
-  utility_count INT,
-  component_count INT,
-  
-  -- Top duplicates (JSON array)
-  top_duplicates JSONB,
-  
-  INDEX idx_analysis_timestamp (analysis_run_id, timestamp)
-);
+```
+Table Name: aiready-saas
+Billing Mode: PAY_PER_REQUEST (on-demand)
 
--- Context analyzer metrics (timeseries)
-CREATE TABLE context_metrics (
-  id BIGSERIAL PRIMARY KEY,
-  analysis_run_id UUID REFERENCES analysis_runs(id) ON DELETE CASCADE,
-  timestamp TIMESTAMPTZ DEFAULT NOW(),
-  
-  -- Summary metrics
-  total_files INT NOT NULL,
-  avg_import_depth DECIMAL(5,2),
-  max_import_depth INT,
-  avg_context_budget INT,
-  max_context_budget INT,
-  
-  -- Fragmentation
-  avg_fragmentation DECIMAL(3,2),
-  avg_cohesion DECIMAL(3,2),
-  fragmented_domains JSONB, -- Array of domains with scores
-  
-  -- Circular dependencies
-  circular_dependency_count INT,
-  
-  INDEX idx_analysis_timestamp (analysis_run_id, timestamp)
-);
+Primary Key:
+  PK (String) - Partition Key
+  SK (String) - Sort Key
 
--- Consistency metrics (timeseries)
-CREATE TABLE consistency_metrics (
-  id BIGSERIAL PRIMARY KEY,
-  analysis_run_id UUID REFERENCES analysis_runs(id) ON DELETE CASCADE,
-  timestamp TIMESTAMPTZ DEFAULT NOW(),
-  
-  -- Summary metrics
-  total_files INT NOT NULL,
-  total_issues INT NOT NULL,
-  consistency_score DECIMAL(3,2), -- 0-1 scale
-  
-  -- Issue breakdown
-  naming_issues INT NOT NULL,
-  pattern_issues INT NOT NULL,
-  architecture_issues INT DEFAULT 0,
-  
-  -- Severity distribution
-  critical_count INT DEFAULT 0,
-  major_count INT DEFAULT 0,
-  minor_count INT DEFAULT 0,
-  info_count INT DEFAULT 0,
-  
-  -- Issue type details
-  naming_convention_violations INT DEFAULT 0, -- snake_case in JS/TS
-  poor_naming_count INT DEFAULT 0, -- single letters, unclear
-  unclear_booleans INT DEFAULT 0, -- missing is/has/can
-  unclear_functions INT DEFAULT 0, -- missing action verbs
-  
-  -- Pattern inconsistencies
-  error_handling_inconsistencies INT DEFAULT 0,
-  async_pattern_inconsistencies INT DEFAULT 0,
-  import_style_inconsistencies INT DEFAULT 0,
-  
-  -- Top issues (JSON array)
-  top_issues JSONB,
-  
-  INDEX idx_analysis_timestamp (analysis_run_id, timestamp)
-);
+GSI1: (for inverse lookups)
+  GSI1PK (String) - Partition Key
+  GSI1SK (String) - Sort Key
 
--- File-level details (for drill-down)
-CREATE TABLE file_metrics (
-  id BIGSERIAL PRIMARY KEY,
-  analysis_run_id UUID REFERENCES analysis_runs(id) ON DELETE CASCADE,
-  file_path TEXT NOT NULL,
-  tool VARCHAR(50) NOT NULL,
-  
-  -- Common metrics
-  token_cost INT,
-  lines_of_code INT,
-  
-  -- Pattern-detect specific
-  pattern_type VARCHAR(50),
-  similarity_score DECIMAL(3,2),
-  
-  -- Context-analyzer specific
-  import_depth INT,
-  context_budget INT,
-  cohesion_score DECIMAL(3,2),
-  fragmentation_score DECIMAL(3,2),
-  
-  metrics_json JSONB, -- Full metrics object
-  
-  INDEX idx_file_path (analysis_run_id, file_path)
-);
-
--- Recommendations
-CREATE TABLE recommendations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  analysis_run_id UUID REFERENCES analysis_runs(id) ON DELETE CASCADE,
-  type VARCHAR(50) NOT NULL, -- 'consolidation', 'refactoring', 'architecture'
-  severity VARCHAR(50) NOT NULL, -- 'critical', 'major', 'minor', 'info'
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  affected_files JSONB, -- Array of file paths
-  estimated_savings INT, -- Token savings
-  status VARCHAR(50) DEFAULT 'open', -- 'open', 'in-progress', 'completed', 'wont-fix'
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
-  INDEX idx_status (analysis_run_id, status)
-);
-
--- Billing
-CREATE TABLE subscriptions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
-  plan VARCHAR(50) NOT NULL,
-  stripe_subscription_id VARCHAR(255) UNIQUE,
-  status VARCHAR(50) NOT NULL, -- 'active', 'canceled', 'past_due'
-  current_period_start TIMESTAMPTZ,
-  current_period_end TIMESTAMPTZ,
-  cancel_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+GSI2: (for status/type queries)
+  GSI2PK (String) - Partition Key
+  GSI2SK (String) - Sort Key
 ```
 
-### Hypertables for Timeseries (TimescaleDB Extension)
+### Entity Definitions
 
-```sql
--- Enable TimescaleDB
-CREATE EXTENSION IF NOT EXISTS timescaledb;
+#### User
 
--- Convert to hypertables for efficient time-series queries
-SELECT create_hypertable('pattern_metrics', 'timestamp');
-SELECT create_hypertable('context_metrics', 'timestamp');
-SELECT create_hypertable('consistency_metrics', 'timestamp');
+```json
+{
+  "PK": "USER#01JXYZ",
+  "SK": "PROFILE",
+  "GSI1PK": "user@example.com",
+  "GSI1SK": "USER",
+  "entityType": "User",
+  "id": "01JXYZ",
+  "email": "user@example.com",
+  "name": "Jane Developer",
+  "avatarUrl": "https://...",
+  "createdAt": "2026-01-15T10:00:00Z",
+  "updatedAt": "2026-01-15T10:00:00Z"
+}
+```
 
--- Retention policy: keep detailed data for 90 days
-SELECT add_retention_policy('pattern_metrics', INTERVAL '90 days');
-SELECT add_retention_policy('context_metrics', INTERVAL '90 days');
-SELECT add_retention_policy('consistency_metrics', INTERVAL '90 days');
+#### Auth Token
 
--- Continuous aggregates for dashboards (pre-computed views)
-CREATE MATERIALIZED VIEW daily_pattern_summary
-WITH (timescaledb.continuous) AS
-SELECT
-  time_bucket('1 day', timestamp) AS day,
-  repository_id,
-  AVG(total_patterns) as avg_patterns,
-  AVG(total_token_cost) as avg_token_cost,
-  MAX(total_patterns) as max_patterns
-FROM pattern_metrics pm
-JOIN analysis_runs ar ON pm.analysis_run_id = ar.id
-GROUP BY day, repository_id;
+```json
+{
+  "PK": "TOKEN#a1b2c3d4e5f6",
+  "SK": "AUTH",
+  "entityType": "AuthToken",
+  "userId": "01JXYZ",
+  "tokenHash": "a1b2c3d4e5f6",
+  "expiresAt": "2026-02-15T10:00:00Z",
+  "createdAt": "2026-01-15T10:00:00Z",
+  "ttl": 1739613600
+}
+```
 
--- Refresh policy: update every hour
-SELECT add_continuous_aggregate_policy('daily_pattern_summary',
-  start_offset => INTERVAL '3 days',
-  end_offset => INTERVAL '1 hour',
-  schedule_interval => INTERVAL '1 hour');
+#### Team
+
+```json
+{
+  "PK": "TEAM#01TABC",
+  "SK": "META",
+  "GSI1PK": "my-team-slug",
+  "GSI1SK": "TEAM",
+  "entityType": "Team",
+  "id": "01TABC",
+  "name": "Acme Engineering",
+  "slug": "my-team-slug",
+  "plan": "pro",
+  "createdAt": "2026-01-15T10:00:00Z",
+  "updatedAt": "2026-01-15T10:00:00Z"
+}
+```
+
+#### Team Membership (bidirectional)
+
+```json
+// Query: List members of team
+{
+  "PK": "TEAM#01TABC",
+  "SK": "MEMBER#01JXYZ",
+  "entityType": "TeamMember",
+  "teamId": "01TABC",
+  "userId": "01JXYZ",
+  "role": "owner",
+  "joinedAt": "2026-01-15T10:00:00Z"
+}
+
+// Query: List teams for user
+{
+  "PK": "USER#01JXYZ",
+  "SK": "TEAM#01TABC",
+  "entityType": "UserTeam",
+  "teamId": "01TABC",
+  "userId": "01JXYZ",
+  "role": "owner",
+  "teamName": "Acme Engineering",
+  "plan": "pro"
+}
+```
+
+#### Repository
+
+```json
+{
+  "PK": "TEAM#01TABC",
+  "SK": "REPO#my-project",
+  "GSI1PK": "REPO#01RABC",
+  "GSI1SK": "META",
+  "entityType": "Repository",
+  "id": "01RABC",
+  "teamId": "01TABC",
+  "name": "my-project",
+  "gitUrl": "https://github.com/acme/my-project.git",
+  "defaultBranch": "main",
+  "createdAt": "2026-01-15T10:00:00Z",
+  "updatedAt": "2026-01-15T10:00:00Z"
+}
+```
+
+#### Analysis Run
+
+```json
+{
+  "PK": "REPO#01RABC",
+  "SK": "RUN#2026-01-15T10:30:00Z",
+  "GSI2PK": "completed",
+  "GSI2SK": "RUN#2026-01-15T10:30:00Z",
+  "entityType": "AnalysisRun",
+  "id": "01RUNXYZ",
+  "repoId": "01RABC",
+  "tool": "pattern-detect",
+  "version": "0.8.1",
+  "commitSha": "abc123def",
+  "branch": "main",
+  "triggeredBy": "01JXYZ",
+  "status": "completed",
+  "rawDataUrl": "s3://aiready-saas/runs/01RUNXYZ/raw.json",
+  "summary": {
+    "totalFiles": 42,
+    "totalPatterns": 23,
+    "totalTokenCost": 8500,
+    "criticalCount": 3,
+    "majorCount": 8,
+    "minorCount": 12
+  },
+  "createdAt": "2026-01-15T10:30:00Z",
+  "completedAt": "2026-01-15T10:30:45Z",
+  "ttl": 1747353600
+}
+```
+
+#### Daily Metrics (Time-Series)
+
+```json
+// Pattern metrics for a specific day
+{
+  "PK": "REPO#01RABC",
+  "SK": "METRIC#pattern-detect#2026-01-15",
+  "entityType": "DailyMetric",
+  "repoId": "01RABC",
+  "tool": "pattern-detect",
+  "date": "2026-01-15",
+  "totalFiles": 42,
+  "totalPatterns": 23,
+  "totalTokenCost": 8500,
+  "patternsByType": {
+    "api-handler": 12,
+    "validator": 8,
+    "utility": 3
+  },
+  "topDuplicates": [...],
+  "createdAt": "2026-01-15T10:30:45Z",
+  "ttl": 1747353600
+}
+
+// Context metrics for a specific day
+{
+  "PK": "REPO#01RABC",
+  "SK": "METRIC#context-analyzer#2026-01-15",
+  "entityType": "DailyMetric",
+  "repoId": "01RABC",
+  "tool": "context-analyzer",
+  "date": "2026-01-15",
+  "totalFiles": 42,
+  "avgImportDepth": 3.2,
+  "maxImportDepth": 8,
+  "avgContextBudget": 5200,
+  "maxContextBudget": 18000,
+  "avgFragmentation": 0.35,
+  "avgCohesion": 0.72,
+  "circularDependencyCount": 2,
+  "fragmentedDomains": [...],
+  "createdAt": "2026-01-15T10:30:45Z",
+  "ttl": 1747353600
+}
+
+// Consistency metrics for a specific day
+{
+  "PK": "REPO#01RABC",
+  "SK": "METRIC#consistency#2026-01-15",
+  "entityType": "DailyMetric",
+  "repoId": "01RABC",
+  "tool": "consistency",
+  "date": "2026-01-15",
+  "totalFiles": 42,
+  "totalIssues": 45,
+  "consistencyScore": 0.82,
+  "namingIssues": 26,
+  "patternIssues": 15,
+  "architectureIssues": 4,
+  "bySeverity": {
+    "critical": 2,
+    "major": 8,
+    "minor": 20,
+    "info": 15
+  },
+  "topIssueTypes": {
+    "snake_case_violations": 12,
+    "poor_naming": 8,
+    "error_handling_mix": 5,
+    "async_pattern_mix": 3
+  },
+  "topIssues": [...],
+  "createdAt": "2026-01-15T10:30:45Z",
+  "ttl": 1747353600
+}
+```
+
+#### File-Level Metrics (Per Run)
+
+```json
+{
+  "PK": "RUN#01RUNXYZ",
+  "SK": "FILE#src/api/users.ts",
+  "entityType": "FileMetric",
+  "runId": "01RUNXYZ",
+  "filePath": "src/api/users.ts",
+  "tool": "pattern-detect",
+  "tokenCost": 450,
+  "linesOfCode": 120,
+  "patternType": "api-handler",
+  "similarityScore": 0.87,
+  "importDepth": 4,
+  "contextBudget": 3200,
+  "cohesionScore": 0.65,
+  "fragmentationScore": 0.42,
+  "metrics": { ... },
+  "ttl": 1747353600
+}
+```
+
+#### Recommendation
+
+```json
+{
+  "PK": "REPO#01RABC",
+  "SK": "REC#01RECXYZ",
+  "GSI2PK": "open",
+  "GSI2SK": "REC#2026-01-15T10:30:45Z",
+  "entityType": "Recommendation",
+  "id": "01RECXYZ",
+  "repoId": "01RABC",
+  "runId": "01RUNXYZ",
+  "type": "consolidation",
+  "severity": "critical",
+  "title": "Consolidate 12 scattered user management files",
+  "description": "...",
+  "affectedFiles": ["src/user/get.ts", "..."],
+  "estimatedSavings": 3200,
+  "status": "open",
+  "createdAt": "2026-01-15T10:30:45Z",
+  "updatedAt": "2026-01-15T10:30:45Z"
+}
+```
+
+#### Subscription
+
+```json
+{
+  "PK": "TEAM#01TABC",
+  "SK": "SUB",
+  "entityType": "Subscription",
+  "teamId": "01TABC",
+  "plan": "pro",
+  "stripeSubscriptionId": "sub_xyz123",
+  "status": "active",
+  "currentPeriodStart": "2026-01-15T00:00:00Z",
+  "currentPeriodEnd": "2026-02-15T00:00:00Z",
+  "cancelAt": null,
+  "createdAt": "2026-01-15T10:00:00Z",
+  "updatedAt": "2026-01-15T10:00:00Z"
+}
+```
+
+### Data Retention via TTL
+
+DynamoDB TTL automatically deletes expired items at no cost. This replaces TimescaleDB retention policies.
+
+| Plan | Retention | TTL Strategy |
+|------|-----------|-------------|
+| **Free** | 7 days | `ttl = createdAt + 7 days` |
+| **Pro** | 90 days | `ttl = createdAt + 90 days` |
+| **Enterprise** | 1 year+ | `ttl = createdAt + 365 days` (or no TTL) |
+
+```typescript
+// Calculate TTL based on plan
+function calculateTTL(plan: 'free' | 'pro' | 'enterprise', createdAt: Date): number | undefined {
+  const retentionDays = {
+    free: 7,
+    pro: 90,
+    enterprise: 365,
+  };
+  
+  const days = retentionDays[plan];
+  const ttlDate = new Date(createdAt.getTime() + days * 24 * 60 * 60 * 1000);
+  return Math.floor(ttlDate.getTime() / 1000); // Unix epoch seconds
+}
+```
+
+### Query Examples
+
+```typescript
+import { DynamoDBDocumentClient, QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+
+// 1. Get user by email
+const userByEmail = new QueryCommand({
+  TableName: 'aiready-saas',
+  IndexName: 'GSI1',
+  KeyConditionExpression: 'GSI1PK = :email AND GSI1SK = :sk',
+  ExpressionAttributeValues: {
+    ':email': 'user@example.com',
+    ':sk': 'USER',
+  },
+});
+
+// 2. List analysis runs for repo (newest first, last 30)
+const recentRuns = new QueryCommand({
+  TableName: 'aiready-saas',
+  KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+  ExpressionAttributeValues: {
+    ':pk': 'REPO#01RABC',
+    ':sk': 'RUN#',
+  },
+  ScanIndexForward: false, // newest first
+  Limit: 30,
+});
+
+// 3. Get metrics trend for last 30 days (pattern-detect)
+const metricsTrend = new QueryCommand({
+  TableName: 'aiready-saas',
+  KeyConditionExpression: 'PK = :pk AND SK BETWEEN :start AND :end',
+  ExpressionAttributeValues: {
+    ':pk': 'REPO#01RABC',
+    ':start': 'METRIC#pattern-detect#2025-12-15',
+    ':end': 'METRIC#pattern-detect#2026-01-15',
+  },
+});
+
+// 4. List open recommendations for repo
+const openRecs = new QueryCommand({
+  TableName: 'aiready-saas',
+  KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+  FilterExpression: '#status = :status',
+  ExpressionAttributeNames: { '#status': 'status' },
+  ExpressionAttributeValues: {
+    ':pk': 'REPO#01RABC',
+    ':sk': 'REC#',
+    ':status': 'open',
+  },
+});
+
+// 5. List all teams for a user
+const userTeams = new QueryCommand({
+  TableName: 'aiready-saas',
+  KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+  ExpressionAttributeValues: {
+    ':pk': 'USER#01JXYZ',
+    ':sk': 'TEAM#',
+  },
+});
+```
+
+### SST Infrastructure Definition
+
+```typescript
+// sst.config.ts (SaaS platform)
+import { SSTConfig } from 'sst';
+import { Api, Table, Bucket, EventBus, NextjsSite } from 'sst/constructs';
+
+export default {
+  config() {
+    return { name: 'aiready-saas', region: 'ap-southeast-2' };
+  },
+  stacks(app) {
+    app.stack(function SaaSStack({ stack }) {
+      // Single DynamoDB table
+      const table = new Table(stack, 'MainTable', {
+        fields: {
+          PK: 'string',
+          SK: 'string',
+          GSI1PK: 'string',
+          GSI1SK: 'string',
+          GSI2PK: 'string',
+          GSI2SK: 'string',
+        },
+        primaryIndex: { partitionKey: 'PK', sortKey: 'SK' },
+        globalIndexes: {
+          GSI1: { partitionKey: 'GSI1PK', sortKey: 'GSI1SK' },
+          GSI2: { partitionKey: 'GSI2PK', sortKey: 'GSI2SK' },
+        },
+        timeToLiveAttribute: 'ttl',
+      });
+
+      // S3 bucket for raw analysis data
+      const bucket = new Bucket(stack, 'AnalysisBucket');
+
+      // Event bus for async processing
+      const bus = new EventBus(stack, 'AnalysisBus', {
+        rules: {
+          analysisUploaded: {
+            pattern: { source: ['aiready.analysis'], detailType: ['uploaded'] },
+            targets: { processor: 'functions/process-analysis.handler' },
+          },
+          metricsComputed: {
+            pattern: { source: ['aiready.metrics'], detailType: ['computed'] },
+            targets: { notifier: 'functions/send-notifications.handler' },
+          },
+        },
+      });
+
+      // API
+      const api = new Api(stack, 'Api', {
+        defaults: {
+          function: {
+            bind: [table, bucket, bus],
+            environment: {
+              TABLE_NAME: table.tableName,
+              BUCKET_NAME: bucket.bucketName,
+              BUS_NAME: bus.eventBusName,
+            },
+          },
+        },
+        routes: {
+          // Auth
+          'POST /auth/login': 'functions/auth/login.handler',
+          'POST /auth/callback': 'functions/auth/callback.handler',
+          'POST /auth/refresh': 'functions/auth/refresh.handler',
+
+          // Analysis
+          'POST /analysis/upload': 'functions/analysis/upload.handler',
+          'GET /repos/{repoId}/runs': 'functions/analysis/list-runs.handler',
+          'GET /runs/{runId}': 'functions/analysis/get-run.handler',
+
+          // Metrics
+          'GET /repos/{repoId}/metrics': 'functions/metrics/get-trends.handler',
+          'GET /repos/{repoId}/benchmarks': 'functions/metrics/get-benchmarks.handler',
+
+          // Recommendations
+          'GET /repos/{repoId}/recommendations': 'functions/recommendations/list.handler',
+          'PATCH /recommendations/{recId}': 'functions/recommendations/update.handler',
+
+          // Teams & Repos
+          'GET /teams': 'functions/teams/list.handler',
+          'POST /teams': 'functions/teams/create.handler',
+          'GET /teams/{teamId}/repos': 'functions/repos/list.handler',
+          'POST /teams/{teamId}/repos': 'functions/repos/create.handler',
+
+          // Billing
+          'POST /billing/webhook': 'functions/billing/stripe-webhook.handler',
+          'GET /billing/portal': 'functions/billing/create-portal.handler',
+        },
+      });
+
+      // Frontend
+      const site = new NextjsSite(stack, 'Dashboard', {
+        path: 'apps/dashboard',
+        environment: {
+          NEXT_PUBLIC_API_URL: api.url,
+        },
+      });
+
+      stack.addOutputs({
+        ApiUrl: api.url,
+        SiteUrl: site.url,
+        TableName: table.tableName,
+      });
+    });
+  },
+} satisfies SSTConfig;
 ```
 
 ## 🔐 Authentication & Authorization
@@ -347,32 +640,35 @@ interface JWTPayload {
   exp: number;
 }
 
-// Middleware
-function requireAuth(requiredPlan?: 'pro' | 'enterprise') {
-  return async (req, res, next) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) return res.status(401).json({ error: 'Unauthorized' });
-    
-    try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET);
-      
-      if (requiredPlan && !hasAccessToPlan(payload.plan, requiredPlan)) {
-        return res.status(403).json({ error: 'Upgrade required' });
-      }
-      
-      req.user = payload;
-      next();
-    } catch (err) {
-      return res.status(401).json({ error: 'Invalid token' });
+// Lambda middleware (lightweight, no Express)
+async function withAuth(event: APIGatewayProxyEventV2, requiredPlan?: string) {
+  const token = event.headers.authorization?.replace('Bearer ', '');
+  if (!token) throw new AuthError('Unauthorized', 401);
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
+
+    if (requiredPlan && !hasAccessToPlan(payload.plan, requiredPlan)) {
+      throw new AuthError('Upgrade required', 403);
     }
-  };
+
+    return payload;
+  } catch (err) {
+    if (err instanceof AuthError) throw err;
+    throw new AuthError('Invalid token', 401);
+  }
+}
+
+function hasAccessToPlan(userPlan: string, requiredPlan: string): boolean {
+  const planHierarchy = { free: 0, pro: 1, enterprise: 2 };
+  return (planHierarchy[userPlan] || 0) >= (planHierarchy[requiredPlan] || 0);
 }
 ```
 
 ### OAuth Integration
 
 **Supported Providers:**
-- GitHub (primary - repo access)
+- GitHub (primary — repo access)
 - Google (email-based)
 - Microsoft (enterprise customers)
 
@@ -381,7 +677,7 @@ function requireAuth(requiredPlan?: 'pro' | 'enterprise') {
 ### Analysis Upload
 
 ```typescript
-POST /api/analysis/upload
+POST /analysis/upload
 Authorization: Bearer <jwt>
 Content-Type: application/json
 
@@ -399,9 +695,9 @@ Request Body:
 
 Response:
 {
-  "analysisId": "uuid",
+  "analysisId": "01RUNXYZ",
   "status": "processing",
-  "estimatedTime": 30, // seconds
+  "estimatedTime": 30,
   "dashboardUrl": "https://app.getaiready.dev/repos/:id/analysis/:analysisId"
 }
 ```
@@ -409,14 +705,14 @@ Response:
 ### Metrics Query
 
 ```typescript
-GET /api/repos/:repoId/metrics?tool=pattern-detect&from=2026-01-01&to=2026-01-14
+GET /repos/:repoId/metrics?tool=pattern-detect&from=2026-01-01&to=2026-01-14
 Authorization: Bearer <jwt>
 
 Response:
 {
   "data": [
     {
-      "timestamp": "2026-01-01T00:00:00Z",
+      "date": "2026-01-01",
       "totalPatterns": 23,
       "totalTokenCost": 8500,
       "byType": {
@@ -424,25 +720,23 @@ Response:
         "validator": 8,
         "utility": 3
       }
-    },
-    // ... more data points
+    }
   ],
   "summary": {
     "avgPatterns": 21.5,
-    "trend": "decreasing", // or "increasing", "stable"
+    "trend": "decreasing",
     "changePercent": -8.5
   }
 }
 
-// Consistency metrics
-GET /api/repos/:repoId/metrics?tool=consistency&from=2026-01-01&to=2026-01-14
+GET /repos/:repoId/metrics?tool=consistency&from=2026-01-01&to=2026-01-14
 Authorization: Bearer <jwt>
 
 Response:
 {
   "data": [
     {
-      "timestamp": "2026-01-01T00:00:00Z",
+      "date": "2026-01-01",
       "totalIssues": 45,
       "consistencyScore": 0.82,
       "namingIssues": 26,
@@ -460,14 +754,13 @@ Response:
         "error_handling_mix": 5,
         "async_pattern_mix": 3
       }
-    },
-    // ... more data points
+    }
   ],
   "summary": {
     "avgIssues": 42.5,
     "avgConsistencyScore": 0.84,
-    "trend": "improving", // or "degrading", "stable"
-    "changePercent": -6.7 // negative = fewer issues (good)
+    "trend": "improving",
+    "changePercent": -6.7
   }
 }
 ```
@@ -475,20 +768,20 @@ Response:
 ### Recommendations
 
 ```typescript
-GET /api/repos/:repoId/recommendations?status=open&severity=critical
+GET /repos/:repoId/recommendations?status=open&severity=critical
 Authorization: Bearer <jwt>
 
 Response:
 {
   "recommendations": [
     {
-      "id": "uuid",
+      "id": "01RECXYZ",
       "type": "consolidation",
       "severity": "critical",
       "title": "Consolidate 12 scattered user management files",
       "description": "...",
       "affectedFiles": ["src/user/get.ts", "..."],
-      "estimatedSavings": 3200, // tokens
+      "estimatedSavings": 3200,
       "status": "open",
       "createdAt": "2026-01-14T10:00:00Z"
     }
@@ -505,7 +798,7 @@ Response:
 - 3 repositories
 - 10 analysis runs/month
 - 7-day data retention
-- CLI access only
+- CLI access (full open source tools + visualization)
 - JSON/HTML export
 
 **Value Prop:** Try before you buy, personal projects
@@ -518,7 +811,7 @@ Response:
 - Unlimited analysis runs
 - 90-day data retention
 - Historical trends & charts
-- Team benchmarks
+- Team benchmarking (compare against similar repos)
 - 5 AI-generated refactoring plans/month
 - Slack/Discord webhooks
 - Email support
@@ -607,7 +900,9 @@ Total: $14,800 MRR = $177,600 ARR
 ### Phase 1: Launch (Months 1-3)
 - ✅ Launch pattern-detect CLI (done)
 - ✅ Launch context-analyzer CLI (done)
-- 🔜 Build MVP SaaS platform
+- ✅ Launch consistency CLI (done)
+- 🔜 Build open-source visualizer
+- 🔜 Build MVP SaaS platform (serverless)
 - 🔜 Onboard 50 beta users
 - 🔜 Product Hunt launch
 - 🔜 First paid customer
@@ -753,50 +1048,78 @@ Total: $14,800 MRR = $177,600 ARR
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **Framework:** Next.js 14 (App Router)
-- **Styling:** Tailwind CSS + shadcn/ui
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS 4 + shadcn/ui
 - **Charts:** D3.js, Chart.js, Plotly.js
 - **State:** Zustand + TanStack Query
-- **Auth:** NextAuth.js
+- **Auth:** NextAuth.js (with JWT)
+- **Hosting:** Vercel
 
-### Backend
-- **Runtime:** Node.js 20+
-- **Framework:** Express.js
-- **Database:** PostgreSQL 16 + TimescaleDB
-- **Cache:** Redis
-- **Storage:** AWS S3 / CloudFlare R2
-- **Queue:** BullMQ (Redis-based)
+### Backend (Serverless)
+- **Runtime:** Node.js 20+ (Lambda)
+- **API:** API Gateway (REST + WebSocket)
+- **Database:** DynamoDB (single table design)
+- **Cache:** DAX (DynamoDB Accelerator)
+- **Storage:** AWS S3
+- **Queue:** SQS + EventBridge
+- **IaC:** SST (Serverless Stack Toolkit)
 
 ### Infrastructure
-- **Hosting:** Vercel (frontend) + Railway/Fly.io (backend)
-- **CDN:** CloudFlare
-- **Monitoring:** Sentry (errors) + Plausible (analytics)
-- **Email:** Resend
+- **Hosting:** Vercel (frontend) + AWS (backend via SST)
+- **CDN:** CloudFront (automatic with S3)
+- **Monitoring:** Sentry (errors) + CloudWatch (metrics) + Plausible (analytics)
+- **Email:** Resend or AWS SES
 - **Payments:** Stripe
+
+### Cost Comparison (Monthly)
+
+| Service | 0 Users | 1K Users | 10K Users |
+|---------|---------|----------|-----------|
+| **Traditional Stack** | | | |
+| Express (Railway) | $5 | $20 | $100 |
+| PostgreSQL (Railway) | $10 | $30 | $150 |
+| Redis (Upstash) | $10 | $20 | $50 |
+| **Subtotal** | **$25** | **$70** | **$300** |
+| | | | |
+| **Serverless Stack** | | | |
+| Lambda (requests) | $0 | $2 | $15 |
+| DynamoDB (on-demand) | $0 | $3 | $20 |
+| API Gateway | $0 | $1 | $10 |
+| S3 | $1 | $2 | $5 |
+| EventBridge/SQS | $0 | $1 | $5 |
+| **Subtotal** | **$1** | **$9** | **$55** |
+
+**Savings:** ~96% at 0 users, ~87% at 1K users, ~82% at 10K users
 
 ## 📝 Next Steps
 
 ### Immediate (Month 1)
-- [ ] Set up Next.js project with authentication
-- [ ] Design database schema (PostgreSQL)
-- [ ] Build analysis upload API endpoint
-- [ ] Create basic dashboard UI
-- [ ] Implement JWT auth flow
+- [ ] Set up Next.js dashboard project with authentication
+- [ ] Design DynamoDB single table schema (done ✅)
+- [ ] Create SST infrastructure stack
+- [ ] Build analysis upload Lambda + API endpoint
+- [ ] Implement JWT auth flow with GitHub OAuth
+- [ ] Create basic dashboard UI (repo list, run history)
 
 ### Short-term (Months 2-3)
-- [ ] Add historical trend charts
-- [ ] Build recommendation system
-- [ ] Stripe integration for billing
-- [ ] Email notifications
-- [ ] Beta user onboarding
+- [ ] Add historical trend charts (query DDB time-series)
+- [ ] Build recommendation system (Lambda processor)
+- [ ] Stripe integration for billing (webhook handler)
+- [ ] Email notifications (SES)
+- [ ] Beta user onboarding flow
+- [ ] Ship open-source visualizer (@aiready/visualizer)
 
 ### Long-term (Months 4-12)
-- [ ] CI/CD integrations
-- [ ] Real-time WebSocket updates
+- [ ] CI/CD integrations (GitHub Actions, GitLab CI)
+- [ ] Real-time WebSocket updates (API Gateway v2)
 - [ ] Team collaboration features
-- [ ] AI-powered refactoring plans
-- [ ] Enterprise features (SSO, RBAC)
+- [ ] AI-powered refactoring plans (GPT-4 integration)
+- [ ] Enterprise features (SSO, RBAC, custom rules)
+- [ ] Benchmarking engine (aggregate metrics across repos)
 
 ---
 
-**Status:** Planning phase. CLI tools operational, SaaS platform in design.
+**Status:** Planning complete. Ready for implementation.
+**Strategic Approach:** Open Source + Hosted SaaS (see `docs/monetization-strategy-visualization.md`)
+**Architecture:** Serverless (Lambda + DynamoDB + SST)
+**Target:** $177K ARR Year 1, $840K ARR Year 2, $3.4M ARR Year 3
