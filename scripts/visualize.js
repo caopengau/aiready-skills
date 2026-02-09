@@ -1,0 +1,60 @@
+#!/usr/bin/env node
+const { execSync } = require('child_process');
+const { existsSync } = require('fs');
+const { resolve } = require('path');
+
+function usage() {
+  console.log(`Usage: node scripts/visualize.js [directory] [--report <report.json>] [--output <out.html>] [--open]`);
+  process.exit(1);
+}
+
+const args = process.argv.slice(2);
+let dir = '.';
+let report = 'aiready-improvement-report.json';
+let out = 'packages/visualizer/visualization.html';
+let openFlag = false;
+
+for (let i = 0; i < args.length; i++) {
+  const a = args[i];
+  if (!a) continue;
+  if (!a.startsWith('--') && dir === '.') {
+    dir = a;
+    continue;
+  }
+  if (a === '--report' && args[i + 1]) { report = args[i + 1]; i++; continue; }
+  if ((a === '--output' || a === '-o') && args[i + 1]) { out = args[i + 1]; i++; continue; }
+  if (a === '--open') { openFlag = true; continue; }
+  if (a === '--help' || a === '-h') usage();
+}
+
+const reportPath = resolve(dir, report);
+const outPath = resolve(process.cwd(), out);
+
+try {
+  if (!existsSync(reportPath)) {
+    console.log(`Report not found at ${reportPath}. Running scan to produce report...`);
+    // Run aiready scan to produce JSON report. Prefer local CLI if available via npx
+    const cmd = `npx @aiready/cli scan "${dir}" --output json --output-file "${reportPath}"`;
+    console.log(`> ${cmd}`);
+    execSync(cmd, { stdio: 'inherit' });
+  } else {
+    console.log(`Found existing report: ${reportPath}. Skipping scan.`);
+  }
+
+  // Generate visualization
+  console.log(`Generating visualization to ${outPath}...`);
+  const genCmd = `node packages/visualizer/tools/generate_from_report.cjs --report "${reportPath}" --output "${outPath}"`;
+  console.log(`> ${genCmd}`);
+  execSync(genCmd, { stdio: 'inherit' });
+
+  if (openFlag) {
+    console.log('Opening visualization in default browser...');
+    const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+    execSync(`${opener} "${outPath}"`);
+  } else {
+    console.log(`Visualization written to: ${outPath}`);
+  }
+} catch (err) {
+  console.error('Error during visualize:', err && err.message ? err.message : err);
+  process.exit(1);
+}

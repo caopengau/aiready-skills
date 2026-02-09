@@ -13,7 +13,8 @@
     "dev": "turbo run dev",
     "clean": "turbo run clean && rm -rf node_modules",
     "consume-reports": "node ./scripts/consume-aiready-reports.js",
-    "graph": "nx graph"
+    "graph": "nx graph",
+    "visualize": "node scripts/visualize.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

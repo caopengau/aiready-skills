@@ -20,7 +20,9 @@ import {
   type AIReadyConfig,
   type ToolScoringOutput,
 } from '@aiready/core';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { resolve as resolvePath } from 'path';
+import { GraphBuilder } from '@aiready/visualizer/graph';
 
 const packageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
 
@@ -920,3 +922,108 @@ program
   }
 
 program.parse();
+
+// Visualize command: build interactive HTML from an AIReady report
+program
+  .command('visualize')
+  .description('Generate interactive visualization from an AIReady report')
+  .argument('[directory]', 'Directory to analyze', '.')
+  .option('--report <path>', 'Report path (relative to directory)', 'aiready-improvement-report.json')
+  .option('-o, --output <path>', 'Output HTML path (relative to directory)', 'packages/visualizer/visualization.html')
+  .option('--open', 'Open generated HTML in default browser')
+  .option('--serve [port]', 'Start a local static server to serve the visualization (optional port number)', false)
+  .addHelpText('after', `
+EXAMPLES:
+  $ aiready visualize . --report aiready-improvement-report.json
+  $ aiready visualize . --report report.json -o out/visualization.html --open
+  $ aiready visualize . --report report.json --serve
+  $ aiready visualize . --report report.json --serve 8080
+
+NOTES:
+  - The value passed to --report is interpreted relative to the directory argument (first positional).
+    If the report is not found, the CLI will suggest running 'aiready scan' to generate it.
+  - Default output path: packages/visualizer/visualization.html (relative to the directory argument).
+  - --serve starts a tiny single-file HTTP server (default port: 5173) and opens your browser.
+    It serves only the generated HTML (no additional asset folders).
+  - Relatedness is represented by node proximity and size; explicit 'related' edges are not drawn to
+    reduce clutter and improve interactivity on large graphs.
+  - For very large graphs, consider narrowing the input with --include/--exclude or use --serve and
+    allow the browser a moment to stabilize after load.
+`)
+  .action(async (directory, options) => {
+    try {
+      const dirPath = resolvePath(process.cwd(), directory || '.');
+      const reportPath = resolvePath(dirPath, options.report || 'aiready-improvement-report.json');
+      if (!existsSync(reportPath)) {
+        console.error('Report not found at', reportPath);
+        console.log('Run `aiready scan` to generate the report, or pass --report');
+        return;
+      }
+
+      const raw = readFileSync(reportPath, 'utf8');
+      const report = JSON.parse(raw);
+
+      console.log('Building graph from report...');
+      const graph = GraphBuilder.buildFromReport(report, dirPath);
+
+      // Reuse the package CLI's HTML generator if available
+      // generateHTML is a local helper in this file; call it
+      console.log('Generating HTML...');
+      // @ts-ignore - generateHTML exists in this file
+      const html = generateHTML(graph as any);
+
+      const outPath = resolvePath(dirPath, options.output || 'packages/visualizer/visualization.html');
+      writeFileSync(outPath, html, 'utf8');
+      console.log('Visualization written to:', outPath);
+
+      if (options.open) {
+        const { exec } = await import('child_process');
+        const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+        exec(`${opener} "${outPath}"`);
+      }
+
+      // Optionally start a tiny static server to serve the generated HTML
+      if (options.serve) {
+        try {
+          const port = Number(options.serve) || 5173;
+          const http = await import('http');
+          const fsp = await import('fs/promises');
+
+          const server = http.createServer(async (req, res) => {
+            try {
+              const urlPath = req.url || '/';
+              if (urlPath === '/' || urlPath === '/index.html') {
+                const content = await fsp.readFile(outPath, 'utf8');
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(content);
+                return;
+              }
+              // For any other path, return 404 (visualization is single-file)
+              res.writeHead(404, { 'Content-Type': 'text/plain' });
+              res.end('Not found');
+            } catch (e: any) {
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Server error');
+            }
+          });
+
+          server.listen(port, () => {
+            const addr = `http://localhost:${port}/`;
+            console.log(`Local visualization server running at ${addr}`);
+            const { exec } = require('child_process');
+            const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+            exec(`${opener} "${addr}"`);
+          });
+
+          process.on('SIGINT', () => {
+            server.close();
+            process.exit(0);
+          });
+        } catch (err) {
+          console.error('Failed to start local server:', err);
+        }
+      }
+    } catch (err: any) {
+      handleCLIError(err, 'Visualization');
+    }
+  });
