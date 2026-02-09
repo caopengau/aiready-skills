@@ -4,26 +4,40 @@
 
 ## 🎯 Overview
 
-Create three shared packages (`@aiready/ui`, `@aiready/charts`, `@aiready/utils`) to provide consistent UI components, data visualization, and utilities across all AIReady frontend applications.
+**DECISION:** Create ONE unified shared package (`@aiready/components`) containing UI components, D3 charts, and utilities for maximum simplicity and maintainability.
+
+**Why One Package:**
+- ✅ Simpler to manage (1 repo vs 3)
+- ✅ Single version tracking
+- ✅ Still tree-shakeable at module level
+- ✅ Better for small team
+- ✅ Can split later if needed (rare)
 
 **Consumer Applications:**
-- 🎨 Landing (existing - Next.js 16)
-- 🚀 SaaS Dashboard (future - Next.js 16)
-- 📊 Visualizer Web (Phase 2 - React 19 + Vite)
+- 🎨 Landing (existing - Next.js 16, public)
+- 🚀 SaaS Dashboard (future - Next.js 16, **private repo**)
+- 📊 Visualizer Web (Phase 2 - React 19 + Vite, public)
 
 ## 📦 Package Structure
 
 ```
-packages/
-├── core/              # Existing - analysis utilities
-├── cli/               # Existing - CLI tool
-├── pattern-detect/    # Existing - analysis tool
-├── context-analyzer/  # Existing - analysis tool
-├── consistency/       # Existing - analysis tool
-├── visualizer/        # NEW (Phase 1 complete) - visualization engine
-├── ui/                # NEW - shared component library ⭐
-├── charts/            # NEW - shared D3 charts ⭐
-└── utils/             # NEW - shared utilities ⭐
+PUBLIC MONOREPO (github.com/caopengau/aiready)
+├── packages/
+│   ├── core/              # Existing - analysis utilities
+│   ├── cli/               # Existing - CLI tool
+│   ├── pattern-detect/    # Existing - analysis tool
+│   ├── context-analyzer/  # Existing - analysis tool
+│   ├── consistency/       # Existing - analysis tool
+│   ├── visualizer/        # NEW (Phase 1 complete) - visualization engine
+│   └── components/        # NEW - unified UI/charts/utils ⭐
+│       ├── components/    # UI components (Button, Card, etc.)
+│       ├── charts/        # D3 visualizations (LineChart, ForceGraph)
+│       ├── hooks/         # React hooks (useDebounce, useTheme)
+│       └── utils/         # Utilities (formatters, colors)
+└── landing/              # Existing - public marketing site
+
+PRIVATE REPO (github.com/caopengau/aiready-dashboard)
+└── SaaS Dashboard (Next.js 16, uses @aiready/components from npm)
 ```
 
 ## 🏗️ Architecture Compliance
@@ -33,32 +47,53 @@ packages/
 ```
 @aiready/core (HUB)
     ↓
-[@aiready/ui, @aiready/charts, @aiready/utils] (NEW SPOKES)
+@aiready/components (NEW SPOKE - unified package)
+    ├── components/  (UI)
+    ├── charts/      (D3 visualizations)
+    ├── hooks/       (React hooks)
+    └── utils/       (Utilities)
     ↓
-Consumer Apps (Landing, SaaS Dashboard, Visualizer Web)
+Consumer Apps:
+├── Landing (public - in monorepo)
+├── Visualizer Web (public - in monorepo)
+└── SaaS Dashboard (private - separate repo)
 ```
 
 **Key Principles:**
-- ✅ Each package depends only on @aiready/core (if needed)
-- ✅ Independently useful
-- ✅ No cross-dependencies between ui/charts/utils
-- ✅ Published to npm as public packages
-- ✅ Synced to GitHub spoke repos
+- ✅ Single package depends only on @aiready/core (if needed)
+- ✅ Independently useful and tree-shakeable
+- ✅ Published to npm as public package
+- ✅ Synced to GitHub spoke repo (public)
+- ✅ SaaS dashboard is private repo consuming public package
+
+### Repository Visibility Strategy
+
+**Public Repositories (Open Source):**
+- All analysis tools (core, cli, pattern-detect, context-analyzer, consistency)
+- Visualizer package
+- **Components package** (NEW - public)
+- Landing site
+
+**Private Repository:**
+- **SaaS Dashboard** - separate from monorepo, business logic protected
 
 ## 📋 Implementation Phases
 
-### Phase 1: @aiready/ui (Weeks 1-2) 🚀 PRIORITY
+### Phase 1: @aiready/components - Foundation (Week 1) 🚀 PRIORITY
 
 **Status:** 🔜 Not Started
 
-#### Week 1: Foundation
+**Package:** `packages/components/` (unified package)
+
+#### Week 1: Package Setup + Core UI Components
 
 - [ ] **Package Setup**
-  - [ ] Create `packages/ui/` directory structure
-  - [ ] Set up `package.json` with proper exports
+  - [ ] Create `packages/components/` directory structure
+  - [ ] Set up `package.json` with granular exports (tree-shakeable)
   - [ ] Configure TypeScript (`tsconfig.json`)
-  - [ ] Set up build system (tsup for library, Vite for dev)
+  - [ ] Set up build system (tsup with multiple entry points)
   - [ ] Create `README.md` with usage examples
+  - [ ] Set up internal structure: `/components`, `/charts`, `/hooks`, `/utils`
 
 - [ ] **Tailwind Configuration**
   - [ ] Create shared `tailwind.config.js`
@@ -78,7 +113,9 @@ Consumer Apps (Landing, SaaS Dashboard, Visualizer Web)
   - [ ] Write component tests (Vitest + Testing Library)
   - [ ] Document usage in README
 
-#### Week 2: Extended Components
+### Phase 2: @aiready/components - Extended UI + Charts (Week 2)
+
+**Status:** 🔜 Not Started
 
 - [ ] **Layout Components**
   - [ ] Container (responsive widths)
@@ -105,133 +142,71 @@ Consumer Apps (Landing, SaaS Dashboard, Visualizer Web)
   - [ ] useTheme hook
   - [ ] Dark/light mode toggle
 
-- [ ] **Release Preparation**
-  - [ ] Build package (`pnpm build`)
-  - [ ] Test in landing page
-  - [ ] Create GitHub repo: `aiready-ui`
-  - [ ] Publish to npm: `@aiready/ui@0.1.0`
-
-**Deliverable:** `@aiready/ui@0.1.0` published and ready for consumption
-
----
-
-### Phase 2: @aiready/charts (Weeks 3-4)
-
-**Status:** 🔜 Not Started
-
-#### Week 3: Core Charts
-
-- [ ] **Package Setup**
-  - [ ] Create `packages/charts/` directory structure
-  - [ ] Set up `package.json` with D3 dependencies
-  - [ ] Configure TypeScript
-  - [ ] Set up build system (tsup)
-  - [ ] Create `README.md`
-
-- [ ] **D3 Foundation**
-  - [ ] Create shared D3 utilities (scales, axes)
-  - [ ] Set up responsive SVG/Canvas wrappers
-  - [ ] Create tooltip system
-  - [ ] Set up color schemes (from @aiready/utils)
-
-- [ ] **Basic Charts**
+- [ ] **D3 Charts (in /charts directory)**
+  - [ ] Add D3 dependencies to package
   - [ ] LineChart (time series trends)
   - [ ] BarChart (comparisons)
   - [ ] ScatterPlot (correlation)
-  - [ ] PieChart (distribution)
 
-#### Week 4: Advanced Visualizations
-
-- [ ] **Specialized Charts**
-  - [ ] ForceDirectedGraph (d3-force integration)
-  - [ ] HeatMap (file/module hotspots)
-  - [ ] TreeMap (hierarchical data)
-  - [ ] Sankey Diagram (flow visualization)
-
-- [ ] **Interactive Features**
-  - [ ] Zoom & pan support
-  - [ ] Brush selection
-  - [ ] Crosshairs
-  - [ ] Legend system
-  - [ ] Export to PNG/SVG
-
-- [ ] **Hooks**
-  - [ ] useD3 (D3 lifecycle management)
-  - [ ] useForceSimulation (d3-force wrapper)
-  - [ ] useTooltip (tooltip positioning)
-  - [ ] useResponsive (responsive sizing)
-
-- [ ] **Release Preparation**
-  - [ ] Build package (`pnpm build`)
-  - [ ] Test with sample data
-  - [ ] Create GitHub repo: `aiready-charts`
-  - [ ] Publish to npm: `@aiready/charts@0.1.0`
-
-**Deliverable:** `@aiready/charts@0.1.0` published with D3-based chart components
-
----
-
-### Phase 3: @aiready/utils (Week 5)
+### Phase 3: @aiready/components - Advanced Charts + Utilities (Week 3)
 
 **Status:** 🔜 Not Started
 
-- [ ] **Package Setup**
-  - [ ] Create `packages/utils/` directory structure
-  - [ ] Set up `package.json`
-  - [ ] Configure TypeScript
-  - [ ] Set up build system (tsup)
-  - [ ] Create `README.md`
+- [ ] **Advanced Charts**
+  - [ ] ForceDirectedGraph (d3-force integration) - priority for visualizer
+  - [ ] HeatMap (file/module hotspots)
+  - [ ] TreeMap (hierarchical data)
+  - [ ] D3 utilities (scales, axes, tooltips)
 
-- [ ] **Formatters**
-  - [ ] Date/time formatters (relative time, ISO format)
-  - [ ] Number formatters (token costs, percentages, file sizes)
-  - [ ] String utilities (truncate, slugify, capitalize)
+- [ ] **Chart Interactivity**
+  - [ ] Zoom & pan support
+  - [ ] Legend system
+  - [ ] Export to PNG/SVG
 
-- [ ] **Color Schemes**
-  - [ ] Severity colors (critical → major → minor → info)
-  - [ ] Domain/category colors (consistent palette)
-  - [ ] Color manipulation (lighten, darken, alpha)
-
-- [ ] **React Hooks**
+- [ ] **React Hooks (in /hooks directory)**
+  - [ ] useD3 (D3 lifecycle management)
+  - [ ] useForceSimulation (d3-force wrapper)
   - [ ] useDebounce
   - [ ] useLocalStorage
   - [ ] useMediaQuery
-  - [ ] useIntersectionObserver
-  - [ ] usePrevious
-  - [ ] useClickOutside
+  - [ ] useTheme
 
-- [ ] **Constants**
-  - [ ] Breakpoints (mobile, tablet, desktop)
-  - [ ] Z-index scale
-  - [ ] Animation timings
-  - [ ] API endpoints (if shared)
+- [ ] **Utilities (in /utils directory)**
+  - [ ] Formatters (date, number, string)
+  - [ ] Color schemes (severity, domain colors)
+  - [ ] Constants (breakpoints, z-index)
+
+- [ ] **Testing & Documentation**
+  - [ ] Component tests (Vitest)
+  - [ ] Storybook setup (optional)
+  - [ ] Complete README with all examples
 
 - [ ] **Release Preparation**
   - [ ] Build package (`pnpm build`)
-  - [ ] Write unit tests
-  - [ ] Create GitHub repo: `aiready-utils`
-  - [ ] Publish to npm: `@aiready/utils@0.1.0`
+  - [ ] Test all exports are tree-shakeable
+  - [ ] Create GitHub repo: `aiready-components` (public)
+  - [ ] Publish to npm: `@aiready/components@0.1.0`
 
-**Deliverable:** `@aiready/utils@0.1.0` published
+**Deliverable:** `@aiready/components@0.1.0` - unified package with UI, charts, hooks, and utilities
 
 ---
 
-### Phase 4: Integration (Week 6)
+### Phase 4: Integration & Visualizer Phase 2 (Week 4)
 
 **Status:** 🔜 Not Started
 
 #### Landing Page Migration
 
 - [ ] **Update Dependencies**
-  - [ ] Add `@aiready/ui`, `@aiready/charts`, `@aiready/utils` to package.json
+  - [ ] Add `@aiready/components` to package.json
   - [ ] Remove duplicate component code
   - [ ] Update Tailwind config to use shared config
 
 - [ ] **Component Migration**
-  - [ ] Replace custom buttons with `@aiready/ui/button`
-  - [ ] Replace custom cards with `@aiready/ui/card`
-  - [ ] Update chart components to use `@aiready/charts`
-  - [ ] Use shared formatters from `@aiready/utils`
+  - [ ] Replace custom buttons with `@aiready/components/button`
+  - [ ] Replace custom cards with `@aiready/components/card`
+  - [ ] Update chart components to use `@aiready/components/line-chart`
+  - [ ] Use shared formatters from `@aiready/components/utils`
 
 - [ ] **Testing & Validation**
   - [ ] Test all pages work correctly
@@ -246,14 +221,14 @@ Consumer Apps (Landing, SaaS Dashboard, Visualizer Web)
   - [ ] Create `packages/visualizer/web/` directory
   - [ ] Set up Vite configuration
   - [ ] Configure TypeScript
-  - [ ] Add dependencies: `@aiready/ui`, `@aiready/charts`, `@aiready/utils`
+  - [ ] Add dependency: `@aiready/components`
 
 - [ ] **Build Interactive UI**
-  - [ ] App shell with `@aiready/ui` components
-  - [ ] ForceDirectedGraph from `@aiready/charts`
-  - [ ] Controls panel (filters, layout options)
-  - [ ] Details panel (node/edge info)
-  - [ ] Legend component
+  - [ ] App shell with `@aiready/components` UI components
+  - [ ] ForceDirectedGraph from `@aiready/components/force-graph`
+  - [ ] Controls panel (filters, layout options) using shared components
+  - [ ] Details panel (node/edge info) using shared components
+  - [ ] Legend component using shared utilities
 
 - [ ] **CLI Integration**
   - [ ] Build Vite bundle
@@ -270,19 +245,17 @@ Consumer Apps (Landing, SaaS Dashboard, Visualizer Web)
 ### Initial Setup (One-time)
 
 ```bash
-# Create GitHub repos for new packages
-gh repo create aiready-ui --public --description "Shared UI component library for AIReady"
-gh repo create aiready-charts --public --description "Shared D3-based chart components for AIReady"
-gh repo create aiready-utils --public --description "Shared utilities for AIReady frontend packages"
+# Create GitHub repo for components package
+gh repo create aiready-components --public --description "Unified shared components library (UI, charts, hooks, utilities) for AIReady"
 ```
 
-### Publishing Workflow (For Each Package)
+### Publishing Workflow
 
 #### 1. Development in Monorepo
 
 ```bash
-# Work in monorepo (packages/ui/, packages/charts/, packages/utils/)
-cd packages/ui
+# Work in monorepo (packages/components/)
+cd packages/components
 pnpm install
 pnpm build
 pnpm test
@@ -291,8 +264,8 @@ pnpm test
 #### 2. Commit to Monorepo
 
 ```bash
-git add packages/ui
-git commit -m "feat(ui): add Button and Card components"
+git add packages/components
+git commit -m "feat(components): add Button and Card components"
 git push origin main
 ```
 
@@ -303,20 +276,20 @@ git push origin main
 make push-all
 
 # Or sync individual package
-make publish SPOKE=ui OWNER=caopengau
+make publish SPOKE=components OWNER=caopengau
 ```
 
 #### 4. Publish to npm
 
 ```bash
 # Bump version
-make version-patch SPOKE=ui  # 0.1.0 → 0.1.1
+make version-patch SPOKE=components  # 0.1.0 → 0.1.1
 
 # Publish to npm
-make npm-publish SPOKE=ui
+make npm-publish SPOKE=components
 
 # Or use shortcuts
-make npm-publish-ui
+make npm-publish-components
 ```
 
 ### Makefile Shortcuts (To Be Added)
@@ -324,24 +297,12 @@ make npm-publish-ui
 Add to `makefiles/Makefile.publish.mk`:
 
 ```makefile
-# Convenience shortcuts for new packages
-publish-ui: ## Publish @aiready/ui to GitHub
-	@$(MAKE) publish SPOKE=ui OWNER=$(OWNER)
+# Convenience shortcuts for components package
+publish-components: ## Publish @aiready/components to GitHub
+	@$(MAKE) publish SPOKE=components OWNER=$(OWNER)
 
-publish-charts: ## Publish @aiready/charts to GitHub
-	@$(MAKE) publish SPOKE=charts OWNER=$(OWNER)
-
-publish-utils: ## Publish @aiready/utils to GitHub
-	@$(MAKE) publish SPOKE=utils OWNER=$(OWNER)
-
-npm-publish-ui: ## Publish @aiready/ui to npm
-	@$(MAKE) npm-publish SPOKE=ui
-
-npm-publish-charts: ## Publish @aiready/charts to npm
-	@$(MAKE) npm-publish SPOKE=charts
-
-npm-publish-utils: ## Publish @aiready/utils to npm
-	@$(MAKE) npm-publish SPOKE=utils
+npm-publish-components: ## Publish @aiready/components to npm
+	@$(MAKE) npm-publish SPOKE=components
 ```
 
 ### Release Checklist Template
@@ -370,20 +331,23 @@ For each package release:
 ## 📊 Package Dependencies
 
 ```
-@aiready/core
+@aiready/core (optional)
     ↓
-[@aiready/ui]  [@aiready/charts]  [@aiready/utils]
-    ↓               ↓                    ↓
-    └───────────────┴────────────────────┘
-                    ↓
-        [Landing, SaaS, Visualizer Web]
+@aiready/components (unified package)
+    ├── /components (UI)
+    ├── /charts (D3 visualizations)
+    ├── /hooks (React hooks)
+    └── /utils (Utilities)
+    ↓
+[Landing, SaaS, Visualizer Web]
 ```
 
 **Dependency Rules:**
-- ✅ `@aiready/ui` → can import `@aiready/utils`
-- ✅ `@aiready/charts` → can import `@aiready/utils`
-- ❌ `@aiready/ui` ↔️ `@aiready/charts` (no cross-dependencies)
+- ✅ Internal subdirectories can import from `/utils`
+- ✅ `/charts` can use `/hooks` (e.g., useD3)
+- ✅ `/components` can use `/hooks` and `/utils`
 - ❌ Consumer apps should not be dependencies
+- ✅ Tree-shakeable via granular exports
 
 ---
 
@@ -462,15 +426,15 @@ export const spacing = {
 
 ---
 
-## 📦 Package.json Templates
+## 📦 Package.json Template
 
-### @aiready/ui
+### @aiready/components (Unified Package)
 
 ```json
 {
-  "name": "@aiready/ui",
+  "name": "@aiready/components",
   "version": "0.1.0",
-  "description": "Shared UI component library for AIReady",
+  "description": "Unified shared components library (UI, charts, hooks, utilities) for AIReady",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -478,74 +442,59 @@ export const spacing = {
     ".": "./dist/index.js",
     "./button": "./dist/components/button.js",
     "./card": "./dist/components/card.js",
+    "./input": "./dist/components/input.js",
+    "./badge": "./dist/components/badge.js",
+    "./line-chart": "./dist/charts/LineChart.js",
+    "./bar-chart": "./dist/charts/BarChart.js",
+    "./force-graph": "./dist/charts/ForceGraph.js",
+    "./use-debounce": "./dist/hooks/useDebounce.js",
+    "./use-theme": "./dist/hooks/useTheme.js",
+    "./use-d3": "./dist/hooks/useD3.js",
+    "./use-force-simulation": "./dist/hooks/useForceSimulation.js",
+    "./utils": "./dist/utils/index.js",
+    "./utils/colors": "./dist/utils/colors.js",
+    "./utils/formatters": "./dist/utils/formatters.js",
     "./tailwind-config": "./tailwind.config.js"
   },
   "files": ["dist", "tailwind.config.js"],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@aiready/utils": "workspace:*",
+    "@aiready/core": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "tailwind-merge": "^2.0.0"
+    "tailwind-merge": "^2.0.0",
+    "d3": "^7.9.0",
+    "d3-force": "^3.0.0"
   },
   "devDependencies": {
     "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
     "tailwindcss": "^4",
     "tsup": "^8.3.5",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.0.0"
   }
 }
 ```
 
-### @aiready/charts
-
-```json
-{
-  "name": "@aiready/charts",
-  "version": "0.1.0",
-  "description": "Shared D3-based chart components for AIReady",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": "./dist/index.js",
-    "./line-chart": "./dist/components/LineChart.js",
-    "./force-graph": "./dist/components/ForceGraph.js"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "dependencies": {
-    "@aiready/utils": "workspace:*",
-    "d3": "^7.9.0",
-    "d3-force": "^3.0.0"
-  }
-}
-```
-
-### @aiready/utils
-
-```json
-{
-  "name": "@aiready/utils",
-  "version": "0.1.0",
-  "description": "Shared utilities for AIReady frontend packages",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "sideEffects": false,
-  "dependencies": {}
-}
-```
+**Key Features:**
+- ✅ Granular exports for tree-shaking
+- ✅ All UI, charts, hooks, and utils in one package
+- ✅ Import only what you need: `import { Button } from '@aiready/components/button'`
+- ✅ Single version, simple management
+- ✅ Can split later if truly needed (rare for small teams)
 
 ---
 
@@ -579,9 +528,7 @@ export const spacing = {
 
 | Package | Status | Version | npm | GitHub | Notes |
 |---------|--------|---------|-----|--------|-------|
-| @aiready/ui | 🔜 Not Started | - | - | - | Priority Phase 1 |
-| @aiready/charts | 🔜 Not Started | - | - | - | Phase 2 |
-| @aiready/utils | 🔜 Not Started | - | - | - | Phase 3 |
+| @aiready/components | 🔜 Not Started | - | - | [aiready-components](https://github.com/caopengau/aiready-components) (to be created) | Unified package: UI + Charts + Hooks + Utils |
 
 **Legend:**
 - 🔜 Not Started
@@ -600,6 +547,6 @@ export const spacing = {
 ---
 
 **Status:** Ready to begin implementation
-**Priority:** Phase 1 (@aiready/ui) for Visualizer Phase 2
-**Timeline:** 6 weeks total (2 weeks per major phase)
+**Priority:** Phase 1 (@aiready/components foundation) for Visualizer Phase 2
+**Timeline:** 4 weeks total (Week 1: Foundation, Week 2: Extended UI + Charts, Week 3: Advanced + Utilities, Week 4: Integration)
 **Maintainer:** @caopengau
