@@ -44,4 +44,8 @@
     "format": "console",
     "directory": ".aiready"
   }
+  ,
+  "visualizer": {
+    "groupingDirs": ["landing", "packages"]
+  }
 }
