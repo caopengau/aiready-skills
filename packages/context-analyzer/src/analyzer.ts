@@ -297,8 +297,12 @@ export function detectCircularDependencies(
  * @param exports - Array of export information
  * @param filePath - Optional file path for context-aware scoring
  */
-export function calculateCohesion(exports: ExportInfo[], filePath?: string): number {
-  return calculateEnhancedCohesion(exports, filePath);
+export function calculateCohesion(
+  exports: ExportInfo[],
+  filePath?: string,
+  options?: { coUsageMatrix?: Map<string, Map<string, number>>; weights?: { importBased?: number; structural?: number; domainBased?: number } }
+): number {
+  return calculateEnhancedCohesion(exports, filePath, options);
 }
 
 /**
@@ -368,7 +372,7 @@ export function detectModuleClusters(
     const avgCohesion =
       files.reduce((sum, file) => {
         const node = graph.nodes.get(file);
-        return sum + (node ? calculateCohesion(node.exports, file) : 0);
+        return sum + (node ? calculateCohesion(node.exports, file, { coUsageMatrix: graph.coUsageMatrix }) : 0);
       }, 0) / files.length;
 
     // Generate consolidation plan
@@ -631,7 +635,8 @@ export function extractExportsWithAST(
  */
 export function calculateEnhancedCohesion(
   exports: ExportInfo[],
-  filePath?: string
+  filePath?: string,
+  options?: { coUsageMatrix?: Map<string, Map<string, number>>; weights?: { importBased?: number; structural?: number; domainBased?: number } }
 ): number {
   if (exports.length === 0) return 1;
   if (exports.length === 1) return 1;
@@ -645,17 +650,67 @@ export function calculateEnhancedCohesion(
   const domainCohesion = calculateDomainCohesion(exports);
 
   // Calculate import-based cohesion if imports are available
-  const hasImportData = exports.some(e => e.imports && e.imports.length > 0);
-  
-  if (!hasImportData) {
-    // No import data available, use domain-based only
-    return domainCohesion;
+  const hasImportData = exports.some((e) => e.imports && e.imports.length > 0);
+  const importCohesion = hasImportData ? calculateImportBasedCohesion(exports) : undefined;
+
+  // Calculate structural cohesion (co-usage) if coUsageMatrix and filePath available
+  const coUsageMatrix = options?.coUsageMatrix;
+  const structuralCohesion = filePath && coUsageMatrix ? calculateStructuralCohesionFromCoUsage(filePath, coUsageMatrix) : undefined;
+
+  // Default weights (can be overridden via options)
+  const defaultWeights = { importBased: 0.5, structural: 0.3, domainBased: 0.2 };
+  const weights = { ...defaultWeights, ...(options?.weights || {}) };
+
+  // Collect available signals and normalize weights
+  const signals: Array<{ score: number; weight: number }> = [];
+  if (importCohesion !== undefined) signals.push({ score: importCohesion, weight: weights.importBased });
+  if (structuralCohesion !== undefined) signals.push({ score: structuralCohesion, weight: weights.structural });
+  // domain cohesion is always available
+  signals.push({ score: domainCohesion, weight: weights.domainBased });
+
+  const totalWeight = signals.reduce((s, el) => s + el.weight, 0);
+  if (totalWeight === 0) return domainCohesion;
+
+  const combined = signals.reduce((sum, el) => sum + el.score * (el.weight / totalWeight), 0);
+  return combined;
+}
+
+/**
+ * Calculate structural cohesion for a file based on co-usage patterns.
+ * Uses the co-usage distribution (files commonly imported alongside this file)
+ * and computes an entropy-based cohesion score in [0,1].
+ * - 1 => highly cohesive (imports mostly appear together with a small set)
+ * - 0 => maximally fragmented (imports appear uniformly across many partners)
+ */
+export function calculateStructuralCohesionFromCoUsage(
+  file: string,
+  coUsageMatrix?: Map<string, Map<string, number>>
+): number {
+  if (!coUsageMatrix) return 1;
+
+  const coUsages = coUsageMatrix.get(file);
+  if (!coUsages || coUsages.size === 0) return 1;
+
+  // Build probability distribution over co-imported files
+  let total = 0;
+  for (const count of coUsages.values()) total += count;
+  if (total === 0) return 1;
+
+  const probs: number[] = [];
+  for (const count of coUsages.values()) {
+    if (count > 0) probs.push(count / total);
   }
 
-  const importCohesion = calculateImportBasedCohesion(exports);
+  if (probs.length <= 1) return 1;
 
-  // Weighted combination: 60% import-based, 40% domain-based
-  return importCohesion * 0.6 + domainCohesion * 0.4;
+  // Calculate entropy
+  let entropy = 0;
+  for (const p of probs) {
+    entropy -= p * Math.log2(p);
+  }
+
+  const maxEntropy = Math.log2(probs.length);
+  return maxEntropy > 0 ? 1 - entropy / maxEntropy : 1;
 }
 
 /**
