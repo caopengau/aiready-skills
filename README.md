@@ -38,6 +38,10 @@ Mixed-language projects are fully supported - the tool automatically detects and
 - **[@aiready/cli](https://www.npmjs.com/package/@aiready/cli)** [![npm](https://img.shields.io/npm/v/@aiready/cli)](https://www.npmjs.com/package/@aiready/cli) - Unified CLI interface for running all analysis tools together or individually
 - **[@aiready/pattern-detect](https://www.npmjs.com/package/@aiready/pattern-detect)** [![npm](https://img.shields.io/npm/v/@aiready/pattern-detect)](https://www.npmjs.com/package/@aiready/pattern-detect) - Detect semantic duplicate patterns that waste AI context window tokens
 - **[@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Analyze context window costs, import depth, cohesion, and fragmentation
+ - **[@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Analyze context window costs, import depth, cohesion, and fragmentation
+   • New: structural (co-usage) cohesion signal — complements import-based and domain signals to better capture runtime co-occurrence and coupling.
+   • Defaults: combined enhanced cohesion uses weights (import: 0.5, structural: 0.3, domain: 0.2); weights are configurable via analyzer options.
+   • Tests: unit tests added for structural cohesion behavior (balanced, skewed, and no-data cases).
 - **[@aiready/consistency](https://www.npmjs.com/package/@aiready/consistency)** [![npm](https://img.shields.io/npm/v/@aiready/consistency)](https://www.npmjs.com/package/@aiready/consistency) - Check naming conventions and pattern consistency across your codebase
 
 ### Coming Soon
