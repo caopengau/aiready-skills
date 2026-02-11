@@ -97,6 +97,29 @@ CRITICAL (2 files)
   src/utils/helpers.ts:12 - poor-naming: x
   src/api/users.ts:45 - convention-mix: user_name`,
   },
+    {
+      id: "visualize",
+      icon: "🖼️",
+      name: "Visualizer",
+      package: "packages/visualizer (or npm run visualize)",
+      description: "Generate interactive visualizations from AIReady JSON reports",
+      color: "from-amber-500 to-amber-400",
+      features: [
+        "Generate an HTML visualization from an AIReady report",
+        "Auto-runs a scan if no report is present",
+        "Opens result in the browser with --open",
+        "Customizable output path and input report",
+      ],
+      quickStart: `# From repo root
+  npm run visualize -- . --open
+
+  # Or with pnpm
+  pnpm run visualize -- . --open`,
+      output: `🔍 Visualization generated
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Output: packages/visualizer/visualization.html
+  Open it in your browser to explore discovery charts and token waste breakdowns`,
+    },
 ];
 
 const sections = [
@@ -106,6 +129,7 @@ const sections = [
   { id: "scoring", label: "AI Readiness Scoring" },
   { id: "metrics", label: "Understanding Metrics" },
   { id: "unified-cli", label: "Unified CLI" },
+  { id: "visualize", label: "Visualize" },
   { id: "options", label: "CLI Options" },
   { id: "contributing", label: "Contributing" },
 ];
@@ -552,6 +576,31 @@ export default function DocsPage() {
               <p className="text-slate-700">
                 The CLI automatically formats results, handles errors, and provides a consistent experience across all tools.
               </p>
+            </div>
+          </section>
+
+          {/* Visualize */}
+          <section id="visualize" className="mb-16">
+            <h2 className="text-4xl font-black text-slate-900 mb-6">Visualize</h2>
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg mb-6">
+              <p className="text-slate-700 mb-4">
+                Generate an interactive HTML visualization from an AIReady JSON report. The repo includes a convenience script exposed as the `visualize` npm script.
+              </p>
+              <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+                <div className="mb-2"># Produce and open a visualization for the current repo</div>
+                <div className="mb-2">npm run visualize -- . --open</div>
+                <div className="mb-2">pnpm run visualize -- . --open</div>
+                <div className="mb-2"># If you have the `aiready` CLI installed globally</div>
+                <div className="mb-2">aiready visualize . --open</div>
+                <div>npx @aiready/cli visualize . --open</div>
+              </div>
+
+              <h4 className="font-bold text-slate-900 mb-2">Options</h4>
+              <ul className="space-y-2 text-slate-700">
+                <li><strong>--report &lt;file&gt;:</strong> Path to an existing report JSON (default: aiready-improvement-report.json)</li>
+                <li><strong>--output &lt;file&gt;:</strong> Output HTML path (default: packages/visualizer/visualization.html)</li>
+                <li><strong>--open:</strong> Open the generated visualization in the default browser</li>
+              </ul>
             </div>
           </section>
 

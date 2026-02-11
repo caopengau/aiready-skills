@@ -34,7 +34,15 @@ try {
   if (!existsSync(reportPath)) {
     console.log(`Report not found at ${reportPath}. Running scan to produce report...`);
     // Run aiready scan to produce JSON report. Prefer local CLI if available via npx
-    const cmd = `npx @aiready/cli scan "${dir}" --output json --output-file "${reportPath}"`;
+    let cliCmd = 'npx @aiready/cli';
+    try {
+      execSync(process.platform === 'win32' ? 'where aiready' : 'command -v aiready', { stdio: 'ignore' });
+      cliCmd = 'aiready';
+      console.log('Using global `aiready` CLI for scan.');
+    } catch (e) {
+      console.log('Global `aiready` CLI not found; using `npx @aiready/cli`.');
+    }
+    const cmd = `${cliCmd} scan "${dir}" --output json --output-file "${reportPath}"`;
     console.log(`> ${cmd}`);
     execSync(cmd, { stdio: 'inherit' });
   } else {

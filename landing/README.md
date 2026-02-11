@@ -31,6 +31,33 @@ npm run dev
 npm run build
 ```
 
+## Visualize
+
+Generate an interactive visualization from an AIReady report (or run a scan to produce one).
+
+- Run (from the repo root):
+```bash
+# produce a visualization for the current repo and open it
+npm run visualize -- . --open
+# or with pnpm
+pnpm run visualize -- . --open
+```
+
+- Options: `--report <report.json>` `--output <out.html>` `--open` (opens in browser).
+- If the report is missing the script runs `npx @aiready/cli scan` to create it. Default output: `packages/visualizer/visualization.html`.
+
+You can also invoke visualization via the `aiready` CLI directly if you have it installed globally. The script will automatically prefer a global `aiready` binary when available, and otherwise use `npx @aiready/cli`.
+
+Examples:
+
+```bash
+# If you have the CLI installed globally
+aiready visualize . --open
+
+# If you don't have it globally (uses npx)
+npx @aiready/cli visualize . --open
+```
+
 ## Environment Variables
 
 Copy `.env.example` to `.env.local` and fill in the required values:
