@@ -5,12 +5,12 @@ include makefiles/Makefile.shared.mk
 
 .PHONY: test test-core test-pattern-detect test-watch test-coverage
 
-test: ## Run tests for all packages
-	@$(call log_step,Running tests for all packages...)
+test: ## Run tests for all packages (noninteractive)
+	@$(call log_step,Running tests for all packages (noninteractive)...) 
 	@if command -v turbo >/dev/null 2>&1; then \
-		turbo run test; \
+		CI=1 turbo run test; \
 	else \
-		$(PNPM) test; \
+		CI=1 $(PNPM) --no-interactive $(SILENT_PNPM) test; \
 	fi
 	@$(call log_success,All tests passed)
 
