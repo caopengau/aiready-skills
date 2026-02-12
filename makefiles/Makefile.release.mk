@@ -215,9 +215,16 @@ release-all: ## Release all spokes: TYPE=patch|minor|major (excludes landing)
 		$(MAKE) -C $(ROOT_DIR) $$bump_target SPOKE=$$spoke || exit 1; \
 		$(call log_success,Version bumped for @aiready/$$spoke); \
 	done; \
-	$(call log_step,Phase 2: Committing and tagging all changes...); \
+	$(call log_step,Phase 2: Committing all version bumps in a single commit...); \
+	# Add all package.json bumps and commit once to avoid repeated commits per-spoke
+	cd $(ROOT_DIR) && git add packages/*/package.json || true; \
+	cd $(ROOT_DIR) && git commit -m "chore(release): version bumps across spokes" || $(call log_info,No changes to commit); \
+	$(call log_step,Tagging each spoke...); \
 	for spoke in $(CORE_SPOKE) $(MIDDLE_SPOKES) $(CLI_SPOKE); do \
-		$(call commit_and_tag); \
+		version=$$(node -p "require('$(ROOT_DIR)/packages/$$spoke/package.json').version"); \
+		tag_name="$$spoke-v$$version"; \
+		$(call log_step,Tagging $$tag_name...); \
+		cd $(ROOT_DIR) && git tag -a "$$tag_name" -m "Release @aiready/$$spoke v$$version" || true; \
 	done; \
 	$(call log_step,Phase 3: Building workspace ONCE...); \
 	$(MAKE) -C $(ROOT_DIR) build || { \
