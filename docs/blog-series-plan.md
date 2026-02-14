@@ -96,7 +96,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 4: "Deep Dive: Semantic Duplicate Detection"
-**Status:** 📝 Planned  
+**Status:** ✅ Published (Feb 7, 2026)  
 **Hook:** Your AI keeps rewriting the same validation logic in 5 different ways  
 **Target Length:** 2,000-2,200 words (most technical)
 
@@ -123,7 +123,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 5: "The Hidden Cost of Import Chains"
-**Status:** 📝 Planned  
+**Status:** ✅ Published (Feb 15, 2026)  
 **Hook:** Every import you add costs AI tokens you don't see  
 **Target Length:** 1,800-2,000 words
 
@@ -353,6 +353,6 @@ Each post should include:
    - Live demos and real screenshots
    - User testimonials from beta testing
 
-**Posts 1-3 Status:** Published ✅  
-**Current Focus:** Part 4 draft (Semantic Duplicates - feature exists, can write now)  
+**Posts 1-5 Status:** Published ✅  
+**Current Focus:** Part 6 draft (receiptclaimer Case Study - comprehensive results)  
 **Visualization:** Future work - Part 7 teases it, build after series completion
