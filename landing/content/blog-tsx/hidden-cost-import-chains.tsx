@@ -62,7 +62,7 @@ Total: 801 lines, 19,153 tokens`}</CodeBlock>
     </ol>
 
     <p>
-      Modern AI models have context windows of 32K-128K tokens. Sounds like a lot, right? But in a real codebase:
+      Modern AI models have context windows of 128K-1M tokens. Sounds like a lot, right? But in a real codebase:
     </p>
 
     <ul>
