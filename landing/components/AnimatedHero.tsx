@@ -78,6 +78,8 @@ export default function AnimatedHero() {
         <span className="font-semibold text-slate-900">Your AI tools aren't broken. Your codebase confuses them.</span>
         <br />
         See why Coding Agent struggles and where small changes unlock outsized AI leverage—in 5 minutes.
+        <br />
+        <span className="text-blue-600 font-medium">Perfect for vibe coders & non-technical founders building with AI.</span>
       </motion.p>
 
       {/* CTA Buttons */}

@@ -14,6 +14,14 @@ const faqs = [
     answer: "Nowhere. Everything runs locally on your machine. Zero network calls. No code upload. No SaaS. Air-gap compatible. See our Security page for full details.",
   },
   {
+    question: "I'm a non-technical founder - will this help me?",
+    answer: "Absolutely! If you're building with AI and burning through tokens without seeing results, we help you find why. No coding knowledge needed to run our tools or read the simple reports. We also offer personalized consulting to help you understand and fix issues.",
+  },
+  {
+    question: "I'm vibe coding - how do I know if my code confuses AI?",
+    answer: "That's exactly what we solve! Vibe coding (letting AI do most of the work) often produces code that confuses other AI tools. Our scanner finds semantic duplicates, deep import chains, and naming inconsistencies that make AI struggle. Run npx @aiready/cli scan . to see your AI Readiness Score.",
+  },
+  {
     question: "Is this another linter?",
     answer: "No. Linters check code correctness. AIReady checks AI understandability. We find semantic duplicates, context fragmentation, and pattern inconsistencies that confuse AI models—things ESLint can't detect.",
   },

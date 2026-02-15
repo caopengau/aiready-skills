@@ -16,7 +16,7 @@ export function CTA() {
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="max-w-4xl mx-auto relative scroll-mt-20 md:scroll-mt-24 lg:scroll-mt-28"
+          className="max-w-4xl mx-auto relative scroll-mt-32 md:scroll-mt-40 lg:scroll-mt-48"
         >
           {/* Animated background */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-3xl blur-2xl opacity-20 animate-pulse" />
@@ -40,6 +40,8 @@ export function CTA() {
                 className="text-slate-300 mb-6 text-xl"
               >
                 Find AI confusion points in 5 minutes. Local. Safe. Free forever.
+                <br />
+                <span className="text-blue-300 text-base">Need help? Request a personalized audit or consulting session.</span>
               </motion.p>
 
               {/* Toggle buttons */}

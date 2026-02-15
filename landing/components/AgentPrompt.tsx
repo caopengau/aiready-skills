@@ -66,6 +66,7 @@ const promptTitles = {
 
 const agentIcons = [
   { name: "Cline", emoji: "🤖" },
+  { name: "Claude Code", emoji: "🔮" },
   { name: "Cursor", emoji: "⚡" },
   { name: "Copilot", emoji: "🚀" },
   { name: "ChatGPT", emoji: "💬" },

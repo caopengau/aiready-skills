@@ -24,6 +24,12 @@ export function Benefits() {
       desc: "Surface hidden issues fast so humans and AI collaborate smoothly.",
       color: "from-orange-500 to-red-500",
     },
+    {
+      icon: "🔥",
+      title: "Stop Burning Tokens",
+      desc: "Don't let AI waste your budget. Find code that confuses AI and burns through tokens fast.",
+      color: "from-red-500 to-pink-600",
+    },
   ];
 
   return (

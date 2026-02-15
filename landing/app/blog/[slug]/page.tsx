@@ -14,6 +14,7 @@ const imageMap: Record<string, string> = {
   'invisible-codebase': '/series-2-invisible-to-ai.png',
   'metrics-that-actually-matter': '/series-3-metrics-that-matters.png',
   'semantic-duplicate-detection': '/series-4-sementic-duplicate-detection.png',
+  'hidden-cost-import-chains': '/series-5-hidden-cost-import-chains.png',
 };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
