@@ -45,8 +45,17 @@ Total: 801 lines, 19,153 tokens`}</CodeBlock>
     </p>
 
     <p>
-      This is the <strong>hidden cost of import chains</strong>—and it&apos;s one of the biggest reasons AI struggles with your codebase.
+      This is the <strong>hidden cost of import chains</strong>—and it's one of the biggest reasons AI struggles with your codebase.
     </p>
+
+    <div className="my-12 max-w-2xl mx-auto">
+      <img 
+        src="/series-5-hidden-cost-import-chains.png" 
+        alt="The Hidden Cost of Import Chains" 
+        className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
+      />
+      <p className="text-center text-sm text-slate-500 mt-4 italic">Every import creates a cascading context cost that adds up quickly.</p>
+    </div>
 
     <h2>The Context Window Crisis</h2>
 
