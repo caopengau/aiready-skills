@@ -90,12 +90,13 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
               key={post.slug}
               variants={itemVariants}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
+              className="h-full"
             >
               <Link
                 href={`/blog/${post.slug}`}
-                className="group block bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 h-full"
+                className="group block bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 h-full flex flex-col"
               >
-                <div className="p-8">
+                <div className="p-8 flex flex-col flex-1">
                   {/* Post metadata */}
                   <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
                     <time dateTime={post.date} className="font-medium">
@@ -140,7 +141,7 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
                   </div>
 
                   {/* Read more link */}
-                  <div className="flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition-all">
+                  <div className="mt-auto flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition-all">
                     <span>Read full article</span>
                     <svg
                       className="w-5 h-5 group-hover:translate-x-1 transition-transform"

@@ -1,24 +1,34 @@
 ---
 title: "Building AIReady: Metrics That Actually Matter"
 date: "2026-01-31"
-excerpt: "Why traditional code metrics miss the real blockers for AI-assisted teams, and how AIReady measures what actually matters."
+excerpt: "Traditional code metrics fail for vibe coding. Learn why AI-generated code needs new metrics—and how AIReady measures semantic duplicates, context costs, and code consistency."
 author: "Peng Cao"
-tags: ["AI", "Code Metrics", "Developer Productivity", "AIReady"]
+tags: ["Vibe Coding", "AI Code Metrics", "Developer Productivity", "AIReady", "Token Optimization", "Non-Technical Founders"]
 readingTime: "13 min read"
 ---
 
-For decades, software teams have relied on metrics like cyclomatic complexity, code coverage, and lint warnings to measure code quality. These tools were designed for human reviewers. But as AI-assisted development becomes the norm, these old metrics are no longer enough. AI models don’t “see” code the way humans do. They don’t care about your coverage percentage or how many branches your function has. What matters is how much context they can fit, how consistent your patterns are, and how much semantic duplication lurks beneath the surface.
+For decades, software teams have relied on metrics like cyclomatic complexity, code coverage, and lint warnings to measure code quality. These tools were designed for human reviewers. But as AI-assisted development becomes the norm, these old metrics are no longer enough. AI models don't "see" code the way humans do. They don't care about your coverage percentage or how many branches your function has. What matters is how much context they can fit, how consistent your patterns are, and how much semantic duplication lurks beneath the surface.
 
-That’s why we built **AIReady**: to measure what actually matters for AI-driven teams.
+That's why we built **AIReady**: to measure what actually matters for AI-driven teams.
 
 ## Why Existing Tools Fall Short
 
-Tools like **madge** and **dependency-cruiser** are great for visualizing dependencies and spotting cycles, but they don’t answer the questions that matter for AI:
+Tools like **madge** and **dependency-cruiser** are great for visualizing dependencies and spotting cycles, but they don't answer the questions that matter for AI:
 - How much of your codebase is semantically duplicated?
 - How fragmented is your domain logic across files?
 - How consistent are your naming and patterns?
 
 Traditional metrics miss these AI-specific pain points.
+
+## Why Vibe Coders Need New Metrics
+
+Here's the uncomfortable truth: if you're vibe coding (describing what you want in plain English and letting AI write the code), traditional code metrics barely apply to you. AI writes the code, not you—so the old rules about cyclomatic complexity and code coverage don't capture what's actually happening.
+
+Traditional metrics were designed for human-written code, where a developer would carefully craft each function, think through the logic, and manually review changes. But when you're vibe coding, you're working with AI-generated code at speed. The patterns that emerge are different—sometimes repetitive, sometimes fragmented across files you didn't even know existed.
+
+That's why we built AIReady specifically for vibe coders. We measure the things that actually block AI productivity: semantic duplication that wastes your tokens, context fragmentation that breaks AI understanding, and inconsistency that makes it impossible for AI to learn your codebase's patterns.
+
+**Want help understanding what's actually happening in your codebase?** We work with non-technical founders who are burning through AI tokens and can't troubleshoot when things break. [Let's talk](/contact) about getting your code AI-ready.
 
 ## The Three Dimensions of AI-Readiness
 
@@ -26,7 +36,7 @@ AIReady focuses on three core metrics:
 
 ### 1. Semantic Similarity (`pattern-detect`)
 - **What it is:** Finds code that does the same thing, even if it looks different.
-- **How:** Uses Jaccard similarity on AST tokens to detect “semantic duplicates.”
+- **How:** Uses Jaccard similarity on AST tokens to detect "semantic duplicates."
 - **Why it matters:** AI models waste context window on repeated logic, making suggestions less relevant and increasing maintenance cost.
 
 ```typescript
@@ -37,9 +47,9 @@ const isValidUser = (user) => user.id && user.email.indexOf('@') !== -1;
 ```
 
 ### 2. Context Budget (`context-analyzer`)
-- **What it is:** Measures the “token cost” of understanding a feature or file.
+- **What it is:** Measures the "token cost" of understanding a feature or file.
 - **How:** Analyzes import chains, file size, and fragmentation to estimate how much context an AI needs to answer a question about your code.
-- **Why it matters:** The more fragmented your logic, the more tokens are needed—quickly exceeding the model’s window and leading to hallucinations or missed context.
+- **Why it matters:** The more fragmented your logic, the more tokens are needed—quickly exceeding the model's window and leading to hallucinations or missed context.
 
 ```typescript
 // src/api/users.ts
@@ -75,7 +85,7 @@ AIReady is open source and designed for customization:
 
 ## Conclusion
 
-If you’re still measuring code quality with tools built for humans, you’re missing the real blockers to AI productivity. AIReady gives you the metrics that actually matter—so you can build codebases that are ready for the future.
+If you're still measuring code quality with tools built for humans, you're missing the real blockers to AI productivity. AIReady gives you the metrics that actually matter—so you can build codebases that are ready for the future.
 
 **Try it yourself:**
 ```bash

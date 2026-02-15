@@ -6,6 +6,8 @@ import MetricsThatMatter from './metrics-that-actually-matter';
 import metricsThatMatterMeta from './metrics-that-actually-matter.meta';
 import SemanticDuplicateDetection from './semantic-duplicate-detection';
 import semanticDuplicateDetectionMeta from './semantic-duplicate-detection.meta';
+import HiddenCostImportChains from './hidden-cost-import-chains';
+import hiddenCostImportChainsMeta from './hidden-cost-import-chains.meta';
 
 export const posts = [
   {
@@ -15,7 +17,7 @@ export const posts = [
     excerpt: invisibleCodebaseMeta.excerpt,
     author: invisibleCodebaseMeta.author,
     tags: invisibleCodebaseMeta.tags || [],
-    readingTime: invisibleCodebaseMeta.readingTime || '5 min read',
+    readingTime: invisibleCodebaseMeta.readingTime,
     Content: InvisibleCodebase,
   },
   {
@@ -25,7 +27,7 @@ export const posts = [
     excerpt: aiCodeDebtTsunamiMeta.excerpt,
     author: aiCodeDebtTsunamiMeta.author,
     tags: aiCodeDebtTsunamiMeta.tags || [],
-    readingTime: aiCodeDebtTsunamiMeta.readingTime || '5 min read',
+    readingTime: aiCodeDebtTsunamiMeta.readingTime,
     Content: AiCodeDebtTsunami,
   },
   {
@@ -35,7 +37,7 @@ export const posts = [
     excerpt: metricsThatMatterMeta.excerpt,
     author: metricsThatMatterMeta.author,
     tags: metricsThatMatterMeta.tags || [],
-    readingTime: metricsThatMatterMeta.readingTime || '5 min read',
+    readingTime: metricsThatMatterMeta.readingTime,
     Content: MetricsThatMatter,
   },
   {
@@ -45,7 +47,17 @@ export const posts = [
     excerpt: semanticDuplicateDetectionMeta.excerpt,
     author: semanticDuplicateDetectionMeta.author,
     tags: semanticDuplicateDetectionMeta.tags || [],
-    readingTime: semanticDuplicateDetectionMeta.readingTime || '5 min read',
+    readingTime: semanticDuplicateDetectionMeta.readingTime,
     Content: SemanticDuplicateDetection,
+  },
+  {
+    slug: hiddenCostImportChainsMeta.slug,
+    title: hiddenCostImportChainsMeta.title,
+    date: hiddenCostImportChainsMeta.date,
+    excerpt: hiddenCostImportChainsMeta.excerpt,
+    author: hiddenCostImportChainsMeta.author,
+    tags: hiddenCostImportChainsMeta.tags || [],
+    readingTime: hiddenCostImportChainsMeta.readingTime,
+    Content: HiddenCostImportChains,
   },
 ];

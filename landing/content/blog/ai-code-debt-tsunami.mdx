@@ -1,11 +1,13 @@
 ---
 title: "The AI Code Debt Tsunami is Here (And We're Not Ready)"
 date: "2025-01-15"
-excerpt: "AI coding assistants have made us 2-5x faster at writing individual functions. But there's a dark side: AI-generated code creates tech debt at unprecedented scale and speed."
+excerpt: "Vibe coding has made developers 2-5x faster at shipping features—but it's also creating AI code debt faster than ever. Learn why your vibe-coded project is becoming unmaintainable and how to fix it."
 author: "Peng Cao"
-tags: ["AI", "Tech Debt", "Code Quality", "Developer Productivity"]
+tags: ["Vibe Coding", "AI Code Debt", "Tech Debt", "Code Quality", "AI Productivity", "Non-Technical Founders"]
 readingTime: "12 min read"
 ---
+
+Most new developers today don't actually write code anymore - they "vibe" it, describing what they want in plain English and letting AI generate the implementation.
 
 Six months ago, GitHub Copilot helped me write a user validation function in 30 seconds. Yesterday, it wrote the same function again. And again. Five different versions across my codebase, each slightly different, none aware of the others.
 
@@ -14,6 +16,16 @@ This isn't a bug in the AI. This is the new normal.
 We're witnessing the fastest productivity boost in software development history. AI coding assistants have made us 2-5x faster at writing individual functions. But there's a dark side we're only beginning to understand: **AI-generated code creates tech debt at an unprecedented scale and speed.**
 
 Traditional tech debt accumulates linearly—messy code compounds over months or years. AI code debt accumulates exponentially. What used to take 18 months to become unmaintainable now happens in 6 weeks.
+
+## Enter Vibe Coding
+
+You've probably heard of "vibe coding" - that trendy new approach where you tell AI what you want and it writes the code for you. Founders love it because they can ship features without hiring a dev team. Developers love it because they can move incredibly fast without writing boilerplate.
+
+But here's what nobody talks about: **vibe coding is also the fastest way to accumulate tech debt you can't see.**
+
+When you describe what you want in plain English, AI generates code that works - but it doesn't know about the 23 other similar functions you already have, the middleware pattern you standardized on, or the architectural decisions you made last month. Every "vibe" session creates a fresh implementation, slightly different from the last, and none of them talk to each other.
+
+This is the AI code debt paradox in its purest form: the faster you vibe, the faster you build a codebase that even AI can't understand.
 
 The tsunami is here. Most teams don't even see the wave.
 
@@ -211,6 +223,12 @@ The tsunami is here. But we can learn to surf.
 npx @aiready/pattern-detect ./src
 npx @aiready/context-analyzer ./src
 ```
+
+
+
+---
+
+**Need help with your vibe-coded project?** We've helped teams clean up AI-generated codebases that became unmaintainable - restoring velocity and reducing AI token costs by up to 70%. [Schedule a free consultation](/contact) to discuss your specific situation.
 
 **Have questions or war stories about AI-generated tech debt?** Drop them in the comments. I read every one.
 

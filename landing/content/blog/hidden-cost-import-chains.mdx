@@ -1,9 +1,9 @@
 ---
 title: "The Hidden Cost of Import Chains"
 date: "2026-02-15"
-excerpt: "Every import you add costs AI tokens you don't see. Learn how deep import chains, domain fragmentation, and low cohesion silently exhaust your context window—and what to do about it."
+excerpt: "Vibe coding burns tokens twice: once generating code, again when AI can't understand it. Learn how import chains silently exhaust your context window—and what to do about it."
 author: "Peng Cao"
-tags: ["AI", "Context Optimization", "Dependencies", "Architecture", "Refactoring"]
+tags: ["Vibe Coding", "Context Optimization", "Dependencies", "Architecture", "Refactoring", "Token Optimization", "Non-Technical Founders"]
 readingTime: "16 min read"
 ---
 
@@ -41,6 +41,8 @@ Total: 801 lines, 19,153 tokens
 
 Your 52-line file just became a **19,153-token context load**. That's 366x more expensive than it appears. And your AI assistant has to load all of this to understand your simple function.
 
+This is especially painful for vibe coders - you're burning tokens twice: once when AI generates the code, and again every time future AI needs to understand what it created.
+
 This is the **hidden cost of import chains**—and it's one of the biggest reasons AI struggles with your codebase.
 
 ## The Context Window Crisis
@@ -60,6 +62,8 @@ Modern AI models have context windows of 32K-128K tokens. Sounds like a lot, rig
 - **Multiple related files**: Context exhaustion
 
 Suddenly that 128K context window doesn't feel so spacious. Add a few related files to analyze a feature, and your AI is already hitting limits—or worse, truncating critical context.
+
+For vibe coders, this is especially sneaky - you ask AI 'add user authentication' and it writes 8 files with deep import chains. You're not just paying for the generation - you're paying every time future AI needs to understand that code.
 
 ## Real-World Impact: The receiptclaimer Analysis
 
@@ -665,6 +669,10 @@ npx @aiready/cli scan --score
 ---
 
 **What's your biggest context budget file?** Run the analyzer and share your findings—I'd love to see what you discover.
+
+---
+
+If you're vibe coding and noticing your AI responses getting slower or more confused, your import chains might be the culprit. We can help diagnose and fix it.
 
 ---
 

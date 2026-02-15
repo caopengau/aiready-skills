@@ -1,15 +1,17 @@
 ---
 title: "Why Your Codebase is Invisible to AI (And What to Do About It)"
 date: "2025-01-22"
-excerpt: "AI can write code, but it can't see your patterns. When you have the same logic scattered across different files with different names, AI treats each one as unique. It's expensive, and it's fixable."
+excerpt: "Vibe coding creates invisible codebases where AI writes the same logic 5 different ways—without you knowing. Learn how to make your vibe-coded project visible to AI and save on token costs."
 author: "Peng Cao"
-tags: ["AI", "Code Quality", "Context Window", "Semantic Analysis"]
+tags: ["Vibe Coding", "AI Code Quality", "Context Window", "Semantic Analysis", "Token Optimization", "Non-Technical Founders"]
 readingTime: "15 min read"
 ---
 
 I watched GitHub Copilot suggest the same validation logic three times in one week. Different syntax. Different variable names. Same exact purpose.
 
 The AI wasn't broken. My codebase was invisible.
+
+If this sounds familiar, you've been "vibe coding" - asking AI to write code without seeing all the variations it's creating. Every time you ask AI "write me a login function" without showing it existing code, you're creating a new variant. Multiply this by hundreds of features and suddenly your codebase is full of ghost patterns only AI can see.
 
 Here's the problem: AI can write code, but it can't *see* your patterns. Not the way humans do. When you have the same logic scattered across different files with different names, AI treats each one as unique. It doesn't know you've already solved this problem. So it solves it again. And again.
 
@@ -105,6 +107,8 @@ But to an AI reading your codebase? These are two competing patterns. Should it 
 **It doesn't know. So it picks randomly. Or invents a third way.**
 
 I found 23 of these in ReceiptClaimer before I measured. Receipt validation, user authentication, file upload checks, date parsing, currency formatting.
+
+This is especially common when you're "vibe coding" - asking AI for the same feature multiple times without showing it what already exists. Each time, AI creates a slightly different solution. Over weeks of rapid prototyping, you've accidentally built a museum of slight variations, each one different enough that AI treats them as unique patterns.
 
 Each one was a signal to AI: "We don't have a standard way of doing this."
 
@@ -302,6 +306,10 @@ Making my code visible to AI made it better for humans too.
 ## What You Can Do Today
 
 You don't need to refactor everything. Start with measurement.
+
+**Need help?** If you're a non-technical founder whose AI-generated project is becoming "invisible" to AI assistants — where every new feature burns more tokens than the last — I offer consulting calls to audit your codebase and create a refactoring plan. [Book a call here] or reach out on Twitter.
+
+
 
 ### Step 1: Measure Your Semantic Duplicates
 

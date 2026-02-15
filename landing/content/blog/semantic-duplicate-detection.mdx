@@ -1,9 +1,9 @@
 ---
 title: "Deep Dive: Semantic Duplicate Detection"
 date: "2026-02-07"
-excerpt: "How your AI keeps rewriting the same validation logic in five different ways—and what you can do about it. A technical deep dive into detecting semantic duplicates with AST analysis."
+excerpt: "Vibe coding makes AI rewrite the same logic 5 times without you knowing. Learn how semantic duplicate detection works—and how to stop wasting tokens on duplicate patterns."
 author: "Peng Cao"
-tags: ["AI", "Code Quality", "AST", "Pattern Detection", "Semantic Analysis"]
+tags: ["Vibe Coding", "AI Code Quality", "AST", "Pattern Detection", "Semantic Analysis", "Token Optimization", "Non-Technical Founders"]
 readingTime: "15 min read"
 ---
 
@@ -33,6 +33,8 @@ return email.search('@') >= 0 && email.search('.') >= 0;
 
 Your AI didn't see these patterns. Why? Because they look different syntactically, even though they're semantically identical. This is **semantic duplication**—and it's one of the biggest hidden costs in AI-assisted development.
 
+If this sounds familiar, congratulations - you're **vibe coding**. And you've just discovered one of the hidden costs: your AI wrote 5 different versions of the same logic because each time you asked, it generated fresh code without knowing the others existed. When you're vibe coding and ask AI 'add email validation' three times across your project, you don't see that it's creating three different implementations. To you, the problem is solved. To your AI assistant? It's seeing three competing patterns.
+
 ## The Problem: Syntax Blinds AI Models
 
 Traditional duplicate detection tools look for *exact* or near-exact text matches. They catch copy-paste duplicates, but miss logic that's been rewritten with different:
@@ -45,6 +47,8 @@ AI models suffer from the same limitation. When they scan your codebase for cont
 ## Real-World Impact: The receiptclaimer Story
 
 When I ran `@aiready/pattern-detect` on [receiptclaimer](https://receiptclaimer.com)'s codebase, I found **23 semantic duplicate patterns** scattered across 47 files. Here's what that looked like:
+
+Vibe coders are particularly prone to semantic duplicates because they don't see what the AI is creating. When you're focused on shipping features, you ask AI to solve problems as they come up—without visibility into what's already in your codebase. Each request generates fresh logic, and the duplication stays hidden until you run a tool like this.
 
 **Before:**
 - 23 duplicate patterns (validation, formatting, error handling)
@@ -344,6 +348,13 @@ Customize pattern detection for your project:
 4. **Educate your team**: Share findings in code reviews, explain semantic vs syntactic
 5. **Track progress**: Measure token reduction over time
 
+
+
+---
+
+**Struggling with semantic duplicates in your vibe-coded project?** I help non-technical founders clean up their AI-generated codebases and optimize them for smarter, faster AI assistance. [Book a free 30-minute consultation](https://cal.com/peng-cao) to get a personalized audit and action plan.
+
+---
 ## The Bottom Line
 
 Semantic duplication is invisible to traditional tools and AI models alike. But it's costing you:
