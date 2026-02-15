@@ -71,3 +71,4 @@ secrets/
 *.tmp
 *.temp
 .cache/
+packages/visualizer/web/report-data.json

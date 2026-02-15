@@ -1087,14 +1087,46 @@ program
 </html>`;
   }
 
+  /**
+   * Find the latest aiready scan report in the .aiready directory
+   */
+  function findLatestScanReport(dirPath: string): string | null {
+    const aireadyDir = resolvePath(dirPath, '.aiready');
+    if (!existsSync(aireadyDir)) {
+      return null;
+    }
+    
+    const { readdirSync, statSync } = require('fs');
+    const files = readdirSync(aireadyDir).filter(f => f.startsWith('aiready-scan-') && f.endsWith('.json'));
+    
+    if (files.length === 0) {
+      return null;
+    }
+    
+    // Sort by modification time, most recent first
+    const sortedFiles = files
+      .map(f => ({ name: f, path: resolvePath(aireadyDir, f), mtime: statSync(resolvePath(aireadyDir, f)).mtime }))
+      .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+    
+    return sortedFiles[0].path;
+  }
+
   async function handleVisualize(directory: string | undefined, options: any) {
     try {
       const dirPath = resolvePath(process.cwd(), directory || '.');
-      const reportPath = resolvePath(dirPath, options.report || 'aiready-improvement-report.json');
+      let reportPath = resolvePath(dirPath, options.report || 'aiready-improvement-report.json');
+      
+      // If report not found, try to find latest scan report
       if (!existsSync(reportPath)) {
-        console.error('Report not found at', reportPath);
-        console.log('Run `aiready scan` to generate the report, or pass --report');
-        return;
+        const latestScan = findLatestScanReport(dirPath);
+        if (latestScan) {
+          console.log(`Using latest scan report: ${latestScan}`);
+          reportPath = latestScan;
+        } else {
+          console.error('Report not found at', reportPath);
+          console.log('Run `aiready scan --output json` to generate the report, or pass --report');
+          return;
+        }
       }
 
       const raw = readFileSync(reportPath, 'utf8');
