@@ -140,7 +140,7 @@ This package is part of the AIReady monorepo. If contributing to the monorepo:
 
 ## 📚 Resources
 
-- [AIReady Main Repo](https://github.com/caopengau/aiready)
+- [AIReady CLI](https://github.com/caopengau/aiready-cli)
 - [AIReady Documentation](.github/copilot-instructions.md)
 - [TypeScript Best Practices](https://github.com/labs42io/clean-code-typescript)
 

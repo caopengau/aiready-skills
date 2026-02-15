@@ -157,9 +157,9 @@ Stats are exported to `.aiready/stats/YYYY-MM-DD.json`:
 - **npms.io**: https://npms.io/search?q=%40aiready
 
 ### GitHub Insights
-- **Pulse**: https://github.com/caopengau/aiready/pulse
-- **Traffic**: https://github.com/caopengau/aiready/graphs/traffic
-- **Community**: https://github.com/caopengau/aiready/pulse
+- **Pulse**: https://github.com/caopengau/aiready-cli/pulse
+- **Traffic**: https://github.com/caopengau/aiready-cli/graphs/traffic
+- **Community**: https://github.com/caopengau/aiready-cli/pulse
 
 Quick access: `make stats-dashboard`
 

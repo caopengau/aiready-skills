@@ -297,7 +297,7 @@ function checkUserValid(data) {
 
                               <p><strong>Try it yourself:</strong></p>
                               <ul>
-                                <li>GitHub: <a href="https://github.com/caopengau/aiready">github.com/caopengau/aiready</a></li>
+                                <li>GitHub: <a href="https://github.com/caopengau/aiready-cli">github.com/caopengau/aiready-cli</a></li>
                                 <li>Docs: <a href="https://aiready.dev">aiready.dev</a></li>
                               </ul>
 

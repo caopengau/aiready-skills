@@ -21,7 +21,7 @@
 ## 📦 Package Structure
 
 ```
-PUBLIC MONOREPO (github.com/caopengau/aiready)
+PUBLIC REPO (github.com/caopengau/aiready-cli)
 ├── packages/
 │   ├── core/              # Existing - analysis utilities
 │   ├── cli/               # Existing - CLI tool

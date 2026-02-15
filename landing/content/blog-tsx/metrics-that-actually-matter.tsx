@@ -132,7 +132,7 @@ npx @aiready/context-analyzer ./src
     <p className="text-sm italic text-slate-500">
       *Peng Cao is the founder of{" "}
       <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{" "}
-      <a href="https://github.com/caopengau/aiready">aiready</a>, an open-source
+      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an open-source
       suite for measuring and optimizing codebases for AI adoption.*
     </p>
   </>

@@ -3,7 +3,7 @@
 ## Hub-and-Spoke Git Architecture
 
 AIReady uses a **hub-and-spoke git architecture** where:
-- **Hub (Monorepo):** `https://github.com/caopengau/aiready` - Contains all packages
+- **Public Entry Point:** `https://github.com/caopengau/aiready-cli` - The CLI tool users install
 - **Spokes:** Individual GitHub repos for each package (e.g., `aiready-cli`, `aiready-core`)
 
 ### Why This Architecture?

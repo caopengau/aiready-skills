@@ -432,9 +432,9 @@ npx @aiready/cli scan --score`}</CodeBlock>
     </p>
 
     <ul>
-      <li>GitHub: <a href="https://github.com/caopengau/aiready">github.com/caopengau/aiready</a></li>
+      <li>GitHub: <a href="https://github.com/caopengau/aiready-cli">github.com/caopengau/aiready-cli</a></li>
       <li>Docs: <a href="https://aiready.dev">aiready.dev</a></li>
-      <li>Report issues: <a href="https://github.com/caopengau/aiready/issues">github.com/caopengau/aiready/issues</a></li>
+      <li>Report issues: <a href="https://github.com/caopengau/aiready-cli/issues">github.com/caopengau/aiready-cli/issues</a></li>
     </ul>
 
     <hr/>
