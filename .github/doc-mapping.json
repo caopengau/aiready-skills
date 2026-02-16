@@ -13,5 +13,17 @@
   "troubleshooting": ".github/sub-instructions/troubleshooting.md",
   "landing-deployment": ".github/sub-instructions/landing-deployment.md",
   "file-organization": ".github/copilot-instructions.md#file-organization",
-  "next-steps": ".github/copilot-instructions.md#next-steps"
+  "next-steps": ".github/copilot-instructions.md#next-steps",
+  
+  "python-support": ".github/plans/implementation/PYTHON-SUPPORT.md",
+  "python-integration": ".github/plans/implementation/PYTHON-INTEGRATION-SUMMARY.md",
+  "implementation-history": ".github/plans/implementation/phase1-completion-report.md",
+  "language-expansion": ".github/plans/strategy/LANGUAGE-EXPANSION-STRATEGY.md",
+  "language-expansion-visual": ".github/plans/strategy/language-expansion-visual.md",
+  "blog-series-plan": ".github/plans/strategy/blog-series-plan.md",
+  "monetization-strategy": ".github/plans/strategy/monetization-strategy-visualization.md",
+  "visualization-architecture": ".github/plans/implementation/visualization-architecture.md",
+  "research-findings": ".github/plans/research/UNDERSTANDING-REAL-USAGE.md",
+  "feedback-plan": ".github/plans/research/FEEDBACK-GATHERING-PLAN.md",
+  "tracking-stats": ".github/plans/research/TRACKING-STATS.md"
 }
