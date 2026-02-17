@@ -18,45 +18,42 @@ A modern, responsive landing page for AIReady - tools to optimize your codebase 
 - **Deployment**: AWS (S3 + CloudFront) with SST
 - **Domain**: getaiready.dev
 
-## Quick Start
+## Getting Started
+
+A minimal start: run a scan, then visualize the results.
 
 ```bash
-# Install dependencies
-npm install
+# 1) Run analysis (defaults to JSON output)
+aiready scan .
 
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
+# 2) Visualize the generated report
+aiready visualise
 ```
 
-## Visualize
+Notes:
 
-Generate an interactive visualization from an AIReady report (or run a scan to produce one).
+- `aiready scan` now defaults to JSON output so you can pipe or save reports easily.
+- The visualizer lives in `packages/visualizer` and provides a friendly interactive view of the report.
+- If you prefer npm/pnpm scripts, the repo includes convenience scripts that wrap these commands.
 
-- Run (from the repo root):
-```bash
-# produce a visualization for the current repo and open it
-npm run visualize -- . --open
-# or with pnpm
-pnpm run visualize -- . --open
-```
+## Visualizer
 
-- Options: `--report <report.json>` `--output <out.html>` `--open` (opens in browser).
-- If the report is missing the script runs `npx @aiready/cli scan` to create it. Default output: `packages/visualizer/visualization.html`.
+The Visualizer turns an AIReady JSON report into an interactive graph view. Quick options:
 
-You can also invoke visualization via the `aiready` CLI directly if you have it installed globally. The script will automatically prefer a global `aiready` binary when available, and otherwise use `npx @aiready/cli`.
-
-Examples:
+- Generate a static HTML from a report:
 
 ```bash
-# If you have the CLI installed globally
-aiready visualize . --open
-
-# If you don't have it globally (uses npx)
-npx @aiready/cli visualize . --open
+aiready visualise
 ```
+
+- Start the interactive dev server (devs):
+
+```bash
+cd packages/visualizer
+pnpm dev
+```
+
+The right-hand details panel shows paths relative to the project root for easier reading (hover to see the absolute path).
 
 ## Environment Variables
 
@@ -80,6 +77,7 @@ npx sst dev
 ## Contributing
 
 This is the landing page for AIReady. For contributions to the core tools, visit:
+
 - [@aiready/cli](https://github.com/caopengau/aiready-cli) - Unified CLI for all tools
 - [@aiready/pattern-detect](https://github.com/caopengau/aiready-pattern-detect) - Semantic duplicate detection
 - [@aiready/context-analyzer](https://github.com/caopengau/aiready-context-analyzer) - Context window analysis

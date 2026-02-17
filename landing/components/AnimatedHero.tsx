@@ -165,7 +165,7 @@ export default function AnimatedHero() {
                 transition={{ duration: 2, delay: 1 }}
                 className="text-cyan-400 font-mono text-sm md:text-base overflow-hidden whitespace-nowrap"
               >
-                npx @aiready/cli scan .
+                aiready scan .
               </motion.code>
               <motion.span
                 animate={{ opacity: [1, 0] }}
@@ -175,17 +175,18 @@ export default function AnimatedHero() {
                 |
               </motion.span>
             </div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 3 }}
-              className="text-slate-400 text-xs md:text-sm font-mono space-y-1 pl-4"
-            >
-              <div>✓ Analyzing codebase...</div>
-              <div>✓ Found 42 semantic duplicates</div>
-              <div>✓ Identified 15 optimization opportunities</div>
-              <div className="text-green-400">✓ Report generated successfully!</div>
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 3 }}
+                className="text-slate-400 text-xs md:text-sm font-mono space-y-1 pl-4"
+              >
+                <div>✓ Analyzing codebase...</div>
+                <div>✓ Found 42 semantic duplicates</div>
+                <div>✓ Identified 15 optimization opportunities</div>
+                <div className="text-green-400">✓ Report generated successfully!</div>
+                <div className="text-slate-500 text-xs">Next: <span className="text-cyan-300 font-mono">aiready visualise . --open</span></div>
+              </motion.div>
           </div>
 
           {/* Animated glow effect */}

@@ -90,6 +90,21 @@ export default function HomePage() {
         <AnimatedHero />
       </section>
 
+      {/* Getting Started (anchor for hero CTA) */}
+      <section id="get-started" className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Getting started — two quick commands</h2>
+          <p className="text-slate-600 mb-6">Run a scan to produce a JSON report, then open an interactive visualization of the results.</p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+            <pre className="bg-slate-100 rounded-xl p-4 font-mono text-sm text-slate-800">aiready scan .</pre>
+            <pre className="bg-slate-100 rounded-xl p-4 font-mono text-sm text-slate-800">aiready visualise . --open</pre>
+          </div>
+
+          <p className="text-sm text-slate-500">Notes: <strong>`aiready scan`</strong> now defaults to JSON output so reports are easy to save or pipe. The Visualizer is included in the repo at <code>packages/visualizer</code> and can be run in dev mode with <code>pnpm --filter @aiready/visualizer dev:web</code> or invoked via <code>aiready visualise</code>.</p>
+        </div>
+      </section>
+
       {/* Live Scan Demo Section */}
       <LiveScanDemo />
 
