@@ -597,7 +597,7 @@ export default function DocsPage() {
 
               <h4 className="font-bold text-slate-900 mb-2">Options</h4>
               <ul className="space-y-2 text-slate-700">
-                <li><strong>--report &lt;file&gt;:</strong> Path to an existing report JSON (default: aiready-improvement-report.json)</li>
+                <li><strong>--report &lt;file&gt;:</strong> Path to an existing report JSON. Auto-detects latest report in <code>.aiready/</code> directory (pattern: <code>aiready-report-*.json</code>)</li>
                 <li><strong>--output &lt;file&gt;:</strong> Output HTML path (default: packages/visualizer/visualization.html)</li>
                 <li><strong>--open:</strong> Open the generated visualization in the default browser</li>
               </ul>

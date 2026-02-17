@@ -40,11 +40,6 @@
       "includeNodeModules": false
     }
   },
-  "output": {
-    "format": "console",
-    "directory": ".aiready"
-  }
-  ,
   "visualizer": {
     "groupingDirs": ["landing", "packages"]
   }
