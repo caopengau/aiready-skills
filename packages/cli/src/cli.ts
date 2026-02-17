@@ -381,6 +381,9 @@ EXAMPLES:
         const outputPath = resolveOutputPath(userOutputFile, defaultFilename, resolvedDir);
         const outputData = { ...results, scoring: scoringResult };
         handleJSONOutput(outputData, outputPath, `✅ Report saved to ${outputPath}`);
+        
+        // Warn if graph caps may be exceeded
+        warnIfGraphCapExceeded(outputData, resolvedDir);
       }
     } catch (error) {
       handleCLIError(error, 'Analysis');
@@ -1131,6 +1134,61 @@ program
     return sortedFiles[0].path;
   }
 
+  function warnIfGraphCapExceeded(report: any, dirPath: string) {
+    try {
+      // Use dynamic import and loadConfig to get the raw visualizer config
+      const { loadConfig } = require('@aiready/core');
+      
+      // Sync file system check since we can't easily call loadConfig synchronously
+      const { existsSync, readFileSync } = require('fs');
+      const { resolve } = require('path');
+      
+      let graphConfig = { maxNodes: 400, maxEdges: 600 };
+      
+      // Try to read aiready.json synchronously
+      const configPath = resolve(dirPath, 'aiready.json');
+      if (existsSync(configPath)) {
+        try {
+          const rawConfig = JSON.parse(readFileSync(configPath, 'utf8'));
+          if (rawConfig.visualizer?.graph) {
+            graphConfig = {
+              maxNodes: rawConfig.visualizer.graph.maxNodes ?? graphConfig.maxNodes,
+              maxEdges: rawConfig.visualizer.graph.maxEdges ?? graphConfig.maxEdges,
+            };
+          }
+        } catch (e) {
+          // Silently ignore parse errors and use defaults
+        }
+      }
+      
+      const nodeCount = (report.context?.length || 0) + (report.patterns?.length || 0);
+      const edgeCount = report.context?.reduce((sum: number, ctx: any) => {
+        const relCount = ctx.relatedFiles?.length || 0;
+        const depCount = ctx.dependencies?.length || 0;
+        return sum + relCount + depCount;
+      }, 0) || 0;
+      
+      if (nodeCount > graphConfig.maxNodes || edgeCount > graphConfig.maxEdges) {
+        console.log('');
+        console.log(chalk.yellow(`⚠️  Graph may be truncated at visualization time:`));
+        if (nodeCount > graphConfig.maxNodes) {
+          console.log(chalk.dim(`   • Nodes: ${nodeCount} > limit ${graphConfig.maxNodes}`));
+        }
+        if (edgeCount > graphConfig.maxEdges) {
+          console.log(chalk.dim(`   • Edges: ${edgeCount} > limit ${graphConfig.maxEdges}`));
+        }
+        console.log(chalk.dim(`   To increase limits, add to aiready.json:`));
+        console.log(chalk.dim(`   {`));
+        console.log(chalk.dim(`     "visualizer": {`));
+        console.log(chalk.dim(`       "graph": { "maxNodes": 2000, "maxEdges": 5000 }`));
+        console.log(chalk.dim(`     }`));
+        console.log(chalk.dim(`   }`));
+      }
+    } catch (e) {
+      // Silently fail on config read errors
+    }
+  }
+
   async function handleVisualize(directory: string | undefined, options: any) {
     try {
       const dirPath = resolvePath(process.cwd(), directory || '.');
@@ -1151,6 +1209,28 @@ program
 
       const raw = readFileSync(reportPath, 'utf8');
       const report = JSON.parse(raw);
+
+      // Load config to extract graph caps
+      const configPath = resolvePath(dirPath, 'aiready.json');
+      let graphConfig = { maxNodes: 400, maxEdges: 600 };
+      
+      if (existsSync(configPath)) {
+        try {
+          const rawConfig = JSON.parse(readFileSync(configPath, 'utf8'));
+          if (rawConfig.visualizer?.graph) {
+            graphConfig = {
+              maxNodes: rawConfig.visualizer.graph.maxNodes ?? graphConfig.maxNodes,
+              maxEdges: rawConfig.visualizer.graph.maxEdges ?? graphConfig.maxEdges,
+            };
+          }
+        } catch (e) {
+          // Silently ignore parse errors and use defaults
+        }
+      }
+      
+      // Store config in env for vite middleware to pass to client
+      const envVisualizerConfig = JSON.stringify(graphConfig);
+      process.env.AIREADY_VISUALIZER_CONFIG = envVisualizerConfig;
 
       console.log("Building graph from report...");
       const { GraphBuilder } = await import('@aiready/visualizer/graph');
@@ -1233,7 +1313,11 @@ program
             watchTimeout = setTimeout(copyReportToViz, 100);
           });
 
-          const envForSpawn = { ...process.env, AIREADY_REPORT_PATH: reportPath };
+          const envForSpawn = { 
+            ...process.env, 
+            AIREADY_REPORT_PATH: reportPath,
+            AIREADY_VISUALIZER_CONFIG: envVisualizerConfig 
+          };
           const vite = spawn("pnpm", ["run", "dev:web"], { cwd: spawnCwd, stdio: "inherit", shell: true, env: envForSpawn });
           const onExit = () => {
             try {

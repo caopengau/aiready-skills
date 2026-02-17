@@ -41,6 +41,10 @@
     }
   },
   "visualizer": {
-    "groupingDirs": ["landing", "packages"]
+    "groupingDirs": ["landing", "packages"],
+    "graph": {
+      "maxNodes": 400,
+      "maxEdges": 600
+    }
   }
 }
