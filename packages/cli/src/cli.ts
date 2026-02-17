@@ -1233,7 +1233,8 @@ program
             watchTimeout = setTimeout(copyReportToViz, 100);
           });
 
-          const vite = spawn("pnpm", ["run", "dev:web"], { cwd: spawnCwd, stdio: "inherit", shell: true });
+          const envForSpawn = { ...process.env, AIREADY_REPORT_PATH: reportPath };
+          const vite = spawn("pnpm", ["run", "dev:web"], { cwd: spawnCwd, stdio: "inherit", shell: true, env: envForSpawn });
           const onExit = () => {
             try {
               reportWatcher.close();
