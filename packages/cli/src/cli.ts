@@ -1159,9 +1159,32 @@ program
       if (options.dev) {
         try {
           const { spawn } = await import("child_process");
-          const webDir = resolvePath(dirPath, 'packages/visualizer');
-          const watcher = spawn("node", ["scripts/watch-report.js", reportPath], { cwd: webDir, stdio: "inherit" });
-          const vite = spawn("pnpm", ["run", "dev:web"], { cwd: webDir, stdio: "inherit", shell: true });
+          const monorepoWebDir = resolvePath(dirPath, 'packages/visualizer');
+          let webDir = '';
+          let visualizerAvailable = false;
+          if (existsSync(monorepoWebDir)) {
+            webDir = monorepoWebDir;
+            visualizerAvailable = true;
+          } else {
+            try {
+              const vizPkgPath = require.resolve('@aiready/visualizer/package.json');
+              webDir = resolvePath(vizPkgPath, '..');
+              visualizerAvailable = true;
+            } catch (e) {
+              visualizerAvailable = false;
+            }
+          }
+          const spawnCwd = webDir || process.cwd();
+          const nodeBinCandidate = process.execPath;
+          const nodeBin = existsSync(nodeBinCandidate) ? nodeBinCandidate : 'node';
+          if (!visualizerAvailable) {
+            console.error(chalk.red('❌ Cannot start dev server: @aiready/visualizer not available.'));
+            console.log(chalk.dim('Install @aiready/visualizer in your project or run this command from the monorepo root.'));
+            return;
+          }
+
+          const watcher = spawn(nodeBin, ["scripts/watch-report.js", reportPath], { cwd: spawnCwd, stdio: "inherit" });
+          const vite = spawn("pnpm", ["run", "dev:web"], { cwd: spawnCwd, stdio: "inherit", shell: true });
           const onExit = () => {
             try {
               watcher.kill();
