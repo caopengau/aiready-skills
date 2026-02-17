@@ -20,7 +20,7 @@ import {
   type AIReadyConfig,
   type ToolScoringOutput,
 } from '@aiready/core';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, copyFileSync } from 'fs';
 import { resolve as resolvePath } from 'path';
 import { GraphBuilder } from '@aiready/visualizer/graph';
 import type { GraphData } from '@aiready/visualizer';
@@ -1210,11 +1210,33 @@ program
             return;
           }
 
-          const watcher = spawn(nodeBin, ["scripts/watch-report.js", reportPath], { cwd: spawnCwd, stdio: "inherit" });
+          // Inline report watcher: copy report to web/report-data.json and watch for changes
+          const { watch } = await import('fs');
+          const copyReportToViz = () => {
+            try {
+              const destPath = resolvePath(spawnCwd, 'web', 'report-data.json');
+              copyFileSync(reportPath, destPath);
+              console.log(`📋 Report synced to ${destPath}`);
+            } catch (e) {
+              console.error('Failed to sync report:', e);
+            }
+          };
+          
+          // Initial copy
+          copyReportToViz();
+          
+          // Watch source report for changes
+          let watchTimeout: NodeJS.Timeout | null = null;
+          const reportWatcher = watch(reportPath, () => {
+            // Debounce to avoid multiple copies during file write
+            if (watchTimeout) clearTimeout(watchTimeout);
+            watchTimeout = setTimeout(copyReportToViz, 100);
+          });
+
           const vite = spawn("pnpm", ["run", "dev:web"], { cwd: spawnCwd, stdio: "inherit", shell: true });
           const onExit = () => {
             try {
-              watcher.kill();
+              reportWatcher.close();
             } catch (e) {}
             try {
               vite.kill();
