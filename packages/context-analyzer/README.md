@@ -7,31 +7,48 @@ When AI tools try to help with your code, they need to load files into their con
 ## 🏛️ Architecture
 
 ```
-                           🎯 USER
-                             │
-                             ▼
-                   🎛️  CLI (orchestrator)
-                             │
-                             ▼
-                     🏢 HUB (core)
-                             │
-      ┌──────────────────────┼───────────┬───────────┐
-      ▼                      ▼           ▼           ▼
-  📊 PATTERN          ┌─────────────┐  🔧 CONSIST  📚 DOC
-   DETECT             │ 📦 CONTEXT  │ ⬅ YOU ARE HERE
-   ✅ Ready           │  ANALYZER   │   ENCY        DRIFT
-                      │ ✅ Ready    │  ✅ Ready    🔜 Soon
-                      └─────────────┘
+                    🎯 USER
+                      │
+                      ▼
+            🎛️  CLI (orchestrator)
+                      │
+    ┌─────────────────┴─────────────────┐
+    │                                   │
+    ▼                                   ▼
+┌────────┐                        ┌────────┐
+│🎨 VIS- │                        │ ANALY- │
+│UALIZER │                        │  SIS   │
+│✅ Ready│                        │ SPOKES │
+└────────┘                        └───┬────┘
+    │                                 │
+    │           ┌─────────────────────┼─────────────────────┐
+    │           ▼                     ▼                     ▼
+    │     ┌────────┐           ┌────────┐           ┌────────┐
+    │     │📊 PAT- │           │📦 CON- │           │🔧 CON- │
+    │     │TERN    │           │TEXT    │           │SISTENCY│
+    │     │DETECT  │           │ANALYZER│           │        │
+    │     │        │           │        │           │        │
+    │     │✅ Ready│           │✅ Ready│           │✅ Ready│
+    │     └────────┘           └────────┘           └────────┘
+    │                                 │                     │
+    │                    ← YOU ARE HERE                    │
+    │                                                       │
+    └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+                  🏢 HUB (@aiready/core)
 ```
 
 ## 🌍 Language Support
 
 **Currently Supported (64% market coverage):**
+
 - ✅ **TypeScript** (`.ts`, `.tsx`) - Import chains, context budget, cohesion
 - ✅ **JavaScript** (`.js`, `.jsx`) - Import chains, context budget, cohesion
 - ✅ **Python** (`.py`) - Import chains, context budget, circular deps, cohesion
 
 **Roadmap:**
+
 - 🔜 **Java** (Q3 2026) - Package dependencies, Maven/Gradle analysis
 - 🔜 **Go** (Q4 2026) - Module dependencies, package cohesion
 - 🔜 **Rust** (Q4 2026) - Crate dependencies, module structure
@@ -65,11 +82,13 @@ aiready-context ./src
 ### 🎯 Input & Output
 
 **Input:** Path to your source code directory
+
 ```bash
 aiready-context ./src
 ```
 
 **Output:** Terminal report + optional JSON file (saved to `.aiready/` directory)
+
 ```
 📊 Context Analysis Results
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -130,11 +149,13 @@ Result: AI sees everything, gives complete answers ✅
 | Recommendations | Generic | Rule-based | AI context optimization |
 
 **Recommended Workflow:**
+
 - Use **dependency-cruiser** to enforce architecture rules (blocking)
 - Use **@aiready/context-analyzer** to optimize for AI tools (advisory)
 - Track improvements over time with SaaS tier
 
 **Related AIReady Tools:**
+
 - [**@aiready/cli**](https://www.npmjs.com/package/@aiready/cli) - Unified CLI with all analysis tools
 - [**@aiready/pattern-detect**](https://www.npmjs.com/package/@aiready/pattern-detect) - Semantic duplicate detection
 - [**@aiready/consistency**](https://www.npmjs.com/package/@aiready/consistency) - Consistency checking
@@ -148,11 +169,13 @@ This tool measures four key dimensions that affect how much context AI tools nee
 **What it measures:** Total AI tokens needed to understand a file (file content + all dependencies)
 
 **Why it matters:** AI tools have limited context windows (e.g., 128K tokens). Large context budgets mean:
+
 - AI needs to load more files to understand your code
 - Risk of hitting context limits → incomplete/wrong answers
 - Slower AI responses (more processing time)
 
 **Example:**
+
 ```typescript
 // High context budget (15,000 tokens)
 import { A, B, C } from './deeply/nested/utils'  // +5,000 tokens
@@ -174,12 +197,15 @@ import { X, Y, Z } from './another/chain'       // +8,000 tokens
 **What it measures:** How many layers deep your import chains go
 
 **Why it matters:** Deep import chains create cascading context loads:
+
 ```
 app.ts → service.ts → helper.ts → util.ts → core.ts → base.ts
 ```
+
 AI must load all 6 files just to understand app.ts!
 
 **Example:**
+
 ```typescript
 // Deep chain (depth 8) = AI loads 8+ files
 import { validate } from '../../../utils/validators/user/schema'
@@ -197,10 +223,12 @@ import { validate } from './validators'
 **What it measures:** How related the exports in a file are to each other
 
 **How it's calculated:** Uses Shannon entropy of inferred domains
+
 - 1.0 = Perfect cohesion (all exports are related)
 - 0.0 = Zero cohesion (completely unrelated exports)
 
 **Why it matters:** Low cohesion = "God object" pattern = AI confusion
+
 ```typescript
 // Low cohesion (0.3) - mixing unrelated concerns
 export function validateUser() { }      // User domain
@@ -226,10 +254,12 @@ export interface User { }
 **What it measures:** How scattered a domain/concept is across different directories
 
 **How it's calculated:** `(unique directories - 1) / (total files - 1)`
+
 - 0.0 = No fragmentation (all files in same directory)
 - 1.0 = Maximum fragmentation (each file in different directory)
 
 **Why it matters:** Scattered domains force AI to load many unrelated paths
+
 ```typescript
 // High fragmentation (0.8) - User domain scattered
 src/api/user-routes.ts           // 800 tokens
@@ -270,6 +300,7 @@ These signals are included in the JSON summary (`fragmentedModules` entries) so 
 | **Consolidate scattered files** | ⚠️ May increase | ✅ Reduces | ⚠️ May decrease |
 
 **Best Practice:** Optimize for your use case:
+
 - **Large files with mixed concerns** → Split by domain (improves cohesion + reduces budget)
 - **Scattered single-domain files** → Consolidate (reduces fragmentation)
 - **Large files with high cohesion** → May be OK if under context budget threshold
@@ -350,6 +381,7 @@ aiready-context ./src --max-depth 3 --max-context 5000 --min-cohesion 0.7 --max-
 ```
 
 **What this means:**
+
 - `--max-depth 3`: Flag files with import depth ≥4 (stricter than default 5-7)
 - `--max-context 5000`: Flag files needing 5K+ tokens (catches smaller files)
 - `--min-cohesion 0.7`: Require 70%+ cohesion (stricter about mixed concerns)
@@ -365,6 +397,7 @@ aiready-context ./src --max-depth 10 --max-context 30000 --min-cohesion 0.4 --ma
 ```
 
 **What this means:**
+
 - `--max-depth 10`: Only flag import depth ≥11 (very deep chains)
 - `--max-context 30000`: Only flag files needing 30K+ tokens (only huge files)
 - `--min-cohesion 0.4`: Accept 40%+ cohesion (more lenient about mixed concerns)
@@ -384,6 +417,7 @@ aiready-context ./src --max-depth 10 --max-context 30000 --min-cohesion 0.4 --ma
 ### Common Tuning Scenarios
 
 **Small codebase getting too many warnings?**
+
 ```bash
 aiready-context ./src --max-depth 6 --min-cohesion 0.5
 # Explanation: Allow slightly deeper imports and more mixed concerns
@@ -391,6 +425,7 @@ aiready-context ./src --max-depth 6 --min-cohesion 0.5
 ```
 
 **Large codebase showing too few issues?**
+
 ```bash
 aiready-context ./src --max-depth 5 --max-context 15000
 # Explanation: Be stricter about depth and context to catch more problems
@@ -398,6 +433,7 @@ aiready-context ./src --max-depth 5 --max-context 15000
 ```
 
 **Focus on critical issues only:**
+
 ```bash
 aiready-context ./src --max-depth 8 --max-context 25000 --min-cohesion 0.3
 # Explanation: Very lenient - only show the worst offenders
@@ -405,6 +441,7 @@ aiready-context ./src --max-depth 8 --max-context 25000 --min-cohesion 0.3
 ```
 
 **Preparing for AI refactoring sprint:**
+
 ```bash
 aiready-context ./src --max-depth 4 --max-context 8000 --min-cohesion 0.6 --max-fragmentation 0.5
 # Explanation: Strict on all dimensions to get comprehensive issue list
@@ -412,6 +449,7 @@ aiready-context ./src --max-depth 4 --max-context 8000 --min-cohesion 0.6 --max-
 ```
 
 **Microservices architecture (naturally fragmented):**
+
 ```bash
 aiready-context ./src --max-fragmentation 0.9
 # Explanation: Very lenient on fragmentation (services are meant to be separate)
@@ -614,24 +652,28 @@ for (const result of results) {
 ## 📊 Metrics Explained
 
 ### Import Depth
+
 **What:** Maximum chain length of transitive dependencies  
 **Impact:** Deeper chains = more files to load = higher context cost  
 **Threshold:** >5 is concerning, >8 is critical  
 **Fix:** Flatten dependency tree, use facade pattern, break circular deps
 
 ### Context Budget
+
 **What:** Total tokens AI needs to load to understand this file  
 **Impact:** Higher budget = more expensive AI assistance  
 **Threshold:** >10,000 tokens often hits context limits  
 **Fix:** Split files, reduce dependencies, extract interfaces
 
 ### Fragmentation Score
+
 **What:** How scattered related code is across directories (0-100%)  
 **Impact:** Higher = more files to load for domain understanding  
 **Threshold:** >50% indicates poor organization  
 **Fix:** Consolidate related code into cohesive modules
 
 ### Cohesion Score
+
 **What:** How related exports are within a file (0-100%)  
 **Impact:** Lower = mixed concerns = wasted context  
 **Threshold:** <60% indicates low cohesion  
@@ -657,6 +699,7 @@ for (const result of results) {
 ### Default Exclusions
 
 By default, these patterns are excluded (unless `--include-node-modules` is used):
+
 ```bash
 # Dependencies (excluded by default, override with --include-node-modules)
 **/node_modules/**
@@ -699,29 +742,37 @@ interface ContextAnalyzerOptions {
 ## 🔬 How It Works
 
 ### 1. Dependency Graph Builder
+
 Parses imports and exports to build a complete dependency graph of your codebase.
 
 ### 2. Depth Calculator
+
 Calculates maximum import chain depth using graph traversal, identifying circular dependencies.
 
 ### 3. Semantic Domain Detection
+
 Uses **co-usage patterns** (files imported together) and **type dependencies** (shared types) to automatically identify semantic domains. No configuration needed - the tool discovers relationships from actual code usage.
 
 ### 4. Fragmentation Detector
+
 Groups files by semantic domain and calculates how scattered they are across directories.
 
 ### 5. Cohesion Analyzer
+
 Uses entropy to measure how related exports are within each file (low entropy = high cohesion).
 
 ### 6. Context Budget Calculator
+
 Sums tokens across entire dependency tree to estimate AI context cost for each file.
 
 ## 🎨 Output Formats
 
 ### Console (Default)
+
 Rich formatted output with colors, emojis, and actionable recommendations.
 
 ### JSON
+
 Machine-readable output for CI/CD integration:
 
 ```json
@@ -748,6 +799,7 @@ Machine-readable output for CI/CD integration:
 ```
 
 ### HTML
+
 Shareable report with tables and visualizations. Perfect for stakeholders:
 
 ```bash
@@ -764,6 +816,7 @@ aiready-context ./src --interactive
 ```
 
 Interactive mode:
+
 - Detects frameworks and recommends excludes (e.g., .next, cdk.out)
 - Lets you choose focus areas: frontend, backend, or both
 - Applies configuration without modifying your files
@@ -813,6 +866,7 @@ aiready-patterns src           # Duplicate pattern detection
 ## 💰 SaaS Features (Coming Soon)
 
 ### Free Tier (CLI)
+
 ✅ One-time snapshot analysis  
 ✅ All metrics and recommendations  
 ✅ JSON/HTML export

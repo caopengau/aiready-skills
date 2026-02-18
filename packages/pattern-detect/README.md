@@ -7,21 +7,36 @@ Finds semantically similar but syntactically different code patterns that waste 
 ## 🏛️ Architecture
 
 ```
-                           🎯 USER
-                             │
-                             ▼
-                   🎛️  CLI (orchestrator)
-                             │
-                             ▼
-                     🏢 HUB (core)
-                             │
-      ┌──────────────────────┼───────────┬───────────┐
-      ▼                      ▼           ▼           ▼
-┌─────────────┐      📦 CONTEXT  🔧 CONSIST  📚 DOC
-│ 📊 PATTERN  │ ⬅ YOU ARE HERE   ENCY        DRIFT
-│   DETECT    │       ANALYZER
-│  ✅ Ready   │      ✅ Ready    ✅ Ready    🔜 Soon
-└─────────────┘
+                    🎯 USER
+                      │
+                      ▼
+            🎛️  CLI (orchestrator)
+                      │
+    ┌─────────────────┴─────────────────┐
+    │                                   │
+    ▼                                   ▼
+┌────────┐                        ┌────────┐
+│🎨 VIS- │                        │ ANALY- │
+│UALIZER │                        │  SIS   │
+│✅ Ready│                        │ SPOKES │
+└────────┘                        └───┬────┘
+    │                                 │
+    │           ┌─────────────────────┼─────────────────────┐
+    │           ▼                     ▼                     ▼
+    │     ┌────────┐           ┌────────┐           ┌────────┐
+    │     │📊 PAT- │           │📦 CON- │           │🔧 CON- │
+    │     │TERN    │           │TEXT    │           │SISTENCY│
+    │     │DETECT  │           │ANALYZER│           │        │
+    │     │        │           │        │           │        │
+    │     │✅ Ready│           │✅ Ready│           │✅ Ready│
+    │     └────────┘           └────────┘           └────────┘
+    │           │                     │                     │
+    │           │    ← YOU ARE HERE ──┘                     │
+    │           │                                           │
+    └───────────┴───────────────────────────────────────────┘
+                            │
+                            ▼
+                  🏢 HUB (@aiready/core)
 ```
 
 ## 🌍 Language Support

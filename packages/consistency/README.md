@@ -7,21 +7,36 @@ Helps teams maintain consistent coding practices across their codebase, making i
 ## 🏛️ Architecture
 
 ```
-                           🎯 USER
-                             │
-                             ▼
-                   🎛️  CLI (orchestrator)
-                             │
-                             ▼
-                     🏢 HUB (core)
-                             │
-      ┌──────────────────────┼───────────┬───────────┐
-      ▼                      ▼           ▼           ▼
-  📊 PATTERN          📦 CONTEXT  ┌─────────────┐  📚 DOC
-   DETECT              ANALYZER   │ 🔧 CONSIST  │ ⬅ YOU ARE HERE
-   ✅ Ready           ✅ Ready    │    ENCY     │   DRIFT
-                                  │ ✅ Ready    │  🔜 Soon
-                                  └─────────────┘
+                    🎯 USER
+                      │
+                      ▼
+            🎛️  CLI (orchestrator)
+                      │
+    ┌─────────────────┴─────────────────┐
+    │                                   │
+    ▼                                   ▼
+┌────────┐                        ┌────────┐
+│🎨 VIS- │                        │ ANALY- │
+│UALIZER │                        │  SIS   │
+│✅ Ready│                        │ SPOKES │
+└────────┘                        └───┬────┘
+    │                                 │
+    │           ┌─────────────────────┼─────────────────────┐
+    │           ▼                     ▼                     ▼
+    │     ┌────────┐           ┌────────┐           ┌────────┐
+    │     │📊 PAT- │           │📦 CON- │           │🔧 CON- │
+    │     │TERN    │           │TEXT    │           │SISTENCY│
+    │     │DETECT  │           │ANALYZER│           │        │
+    │     │        │           │        │           │        │
+    │     │✅ Ready│           │✅ Ready│           │✅ Ready│
+    │     └────────┘           └────────┘           └────────┘
+    │                                                       │
+    │                                  ← YOU ARE HERE ──────┘
+    │                                                       │
+    └───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+                  🏢 HUB (@aiready/core)
 ```
 
 ## 🌍 Language Support
