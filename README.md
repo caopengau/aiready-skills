@@ -37,12 +37,10 @@ Mixed-language projects are fully supported - the tool automatically detects and
 
 - **[@aiready/cli](https://www.npmjs.com/package/@aiready/cli)** [![npm](https://img.shields.io/npm/v/@aiready/cli)](https://www.npmjs.com/package/@aiready/cli) - Unified CLI interface for running all analysis tools together or individually
 - **[@aiready/pattern-detect](https://www.npmjs.com/package/@aiready/pattern-detect)** [![npm](https://img.shields.io/npm/v/@aiready/pattern-detect)](https://www.npmjs.com/package/@aiready/pattern-detect) - Detect semantic duplicate patterns that waste AI context window tokens
-- **[@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Analyze context window costs, import depth, cohesion, and fragmentation
- - **[@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Analyze context window costs, import depth, cohesion, and fragmentation
-   • New: structural (co-usage) cohesion signal — complements import-based and domain signals to better capture runtime co-occurrence and coupling.
-   • Defaults: combined enhanced cohesion uses weights (import: 0.5, structural: 0.3, domain: 0.2); weights are configurable via analyzer options.
-   • Tests: unit tests added for structural cohesion behavior (balanced, skewed, and no-data cases).
+- **[@aiready/context-analyzer](https://www.npmjs.com/package/@aiready/context-analyzer)** [![npm](https://img.shields.io/npm/v/@aiready/context-analyzer)](https://www.npmjs.com/package/@aiready/context-analyzer) - Analyze context window costs, import depth, cohesion, and fragmentation. Includes structural (co-usage) cohesion signal with configurable weights (import: 0.5, structural: 0.3, domain: 0.2)
 - **[@aiready/consistency](https://www.npmjs.com/package/@aiready/consistency)** [![npm](https://img.shields.io/npm/v/@aiready/consistency)](https://www.npmjs.com/package/@aiready/consistency) - Check naming conventions and pattern consistency across your codebase
+- **[@aiready/visualizer](https://www.npmjs.com/package/@aiready/visualizer)** [![npm](https://img.shields.io/npm/v/@aiready/visualizer)](https://www.npmjs.com/package/@aiready/visualizer) - Interactive force-directed graph visualization of analysis results; generates standalone HTML reports and includes a React/D3 web app
+- **[@aiready/components](https://www.npmjs.com/package/@aiready/components)** [![npm](https://img.shields.io/npm/v/@aiready/components)](https://www.npmjs.com/package/@aiready/components) - Shared UI component library (shadcn/ui based), D3 charts (ForceDirectedGraph), React hooks, and utilities used across AIReady tools
 
 ### Coming Soon
 
@@ -75,21 +73,22 @@ AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
 │  • File scanning & analysis utilities                          │
 │  • Common types & interfaces                                   │
 │  • No dependencies on spokes                                   │
-└─────┬───────────┬───────────┬───────────┬───────────┬───────────┘
-      │           │           │           │           │
-      ▼           ▼           ▼           ▼           ▼
-┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
-│  📊 PATTERN │  📦 CONTEXT │  🔧 CONSIST │  📚 DOC     │  📋 DEPS    │
-│   DETECT    │   ANALYZER  │   ENCY      │   DRIFT     │   ANALYZER  │
-│             │             │             │             │             │
-│  • Semantic │  • Context  │  • Naming   │  • Doc      │  • Dep      │
-│    duplicates│   budgets   │   rules     │   freshness │   health    │
-│             │             │             │             │             │
-│  ✅ Ready   │  ✅ Ready   │  ✅ Ready   │  🔜 Soon    │  🔜 Soon    │
-└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┘
-   @aiready/     @aiready/     @aiready/     @aiready/     @aiready/
-   pattern-      context-      consistency  doc-drift    deps
-   detect        analyzer
+└──┬──────────┬──────────┬──────────┬──────────┬──────────┬───────┘
+   │          │          │          │          │          │
+   ▼          ▼          ▼          ▼          ▼          ▼
+┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
+│📊 PATTERN│📦 CONTEXT│🔧 CONSIST│🎨 VISUAL │🧩 COMPON │📚 DOC    │
+│  DETECT  │ ANALYZER │  ENCY    │  IZER    │  ENTS    │  DRIFT   │
+│          │          │          │          │          │          │
+│• Semantic│• Context │• Naming  │• Force   │• UI Cmpnts• Doc    │
+│  dupes   │  budgets │  rules   │  graph   │• D3charts│  freshness│
+│          │          │          │• HTML    │• Hooks   │          │
+│✅ Ready  │✅ Ready  │✅ Ready  │  reports │• Utils   │🔜 Soon   │
+│          │          │          │✅ Ready  │✅ Ready  │          │
+└──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+ @aiready/  @aiready/  @aiready/  @aiready/  @aiready/  @aiready/
+ pattern-   context-   consist-   visualizer components doc-drift
+ detect     analyzer   ency
 ```
 
 ### 🎯 Design Benefits
@@ -98,21 +97,6 @@ AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
 - **Independent**: Each spoke focuses on one problem, can be updated separately
 - **Extensible**: Easy to add new languages or analysis types
 - **Clean**: Spokes only depend on core, not each other
-
-### 🌍 Language Support
-
-**Currently Supported (64% market coverage):**
-- ✅ **TypeScript** (`.ts`, `.tsx`)
-- ✅ **JavaScript** (`.js`, `.jsx`)
-- ✅ **Python** (`.py`) - NEW! PEP 8 conventions, import analysis, pattern detection
-
-**Roadmap:**
-- 🔜 **Java** (Q3 2026) - Maven/Gradle, Spring Framework
-- 🔜 **Go** (Q4 2026) - Go modules, concurrency patterns
-- 🔜 **Rust** (Q4 2026) - Cargo, ownership patterns
-- 🔜 **C#** (Q1 2027) - .NET, LINQ patterns
-
-Mixed-language projects are fully supported - the tool automatically detects and analyzes each file type appropriately.
 
 ## 🚀 Quick Start
 
@@ -327,12 +311,15 @@ pnpm dev
 
 ## 🚧 Project Status
 
-AIReady is currently tool-only. The website and hosted SaaS are not live yet. The open-source CLI and packages provide:
-- Pattern detection and context cost analysis
-- Consistency checks (naming and patterns)
-- Unified CLI with JSON/console outputs
+AIReady is live and growing! The open-source CLI and packages provide:
+- ✅ Pattern detection and context cost analysis
+- ✅ Consistency checks (naming and patterns)
+- ✅ Interactive graph visualization (`aiready visualise`)
+- ✅ Shared UI component library with D3 charts
+- ✅ Unified CLI with JSON/console/HTML outputs
+- ✅ [Public website](https://getaiready.dev) with live scan demo and docs
 
-Roadmap (planned, not yet available):
+On the roadmap (planned, not yet available):
 - Historical trend analysis and team benchmarking
 - Custom rule engines and integration APIs
 - Automated fix suggestions and CI/CD integration
