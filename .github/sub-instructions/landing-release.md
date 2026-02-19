@@ -88,12 +88,12 @@ make version-landing-major
 
 This distinction allows clear identification of landing releases in the monorepo while maintaining standard semantic versioning in the public sub-repo.
 
-## Integration with push-all
+## Integration with sync
 
-The `make push-all` command automatically syncs the landing page to the sub-repo:
+The `make sync` command automatically syncs the landing page to the sub-repo:
 
 ```bash
-make push-all
+make sync
 ```
 
 This will:
@@ -206,7 +206,7 @@ pnpm build
 - `make landing-verify`: Check CloudFront status
 - `make landing-logs`: View SST logs
 - `make release-status`: Show all versions
-- `make push-all`: Sync all repos (packages + landing)
+- `make sync`: Sync all repos (packages + landing)
 
 ## Security Note
 

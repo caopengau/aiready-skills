@@ -67,7 +67,7 @@ aws configure --profile aiready
 
 **Key Rules (Never Forget):**
 - ❌ **NEVER** commit directly to spoke repos
-- ✅ **ALWAYS** use `make push-all` after monorepo commits
+- ✅ **ALWAYS** use `make sync` after monorepo commits
 - ✅ **ALWAYS** develop in the monorepo hub
 - ✅ **ALWAYS** check `make release-status` before releases
 
@@ -76,7 +76,7 @@ aws configure --profile aiready
 # After changes in monorepo:
 git add .
 git commit -m "feat: your changes"
-make push-all  # ← This syncs ALL repos automatically
+make sync  # ← This syncs ALL repos automatically
 ```
 
 ## Agent Workflow
@@ -99,7 +99,7 @@ make push-all  # ← This syncs ALL repos automatically
 - **AWS:** Is AWS_PROFILE=aiready set correctly?
 - **AWS:** Did I get explicit user confirmation before deploying?
 - **GIT:** Am I following hub-and-spoke git practices? (Always load git-workflow first!)
-- **GIT:** Should I use `make push-all` or direct git commands?
+- **GIT:** Should I use `make sync` or direct git commands?
 - **GIT:** Is this change in the monorepo or a spoke repo?
 - **RELEASE:** After publishing ANY spoke separately, did I republish CLI? (Required!)
 - **RELEASE:** Am I excluding landing from release-all? (It has separate workflow)
@@ -112,4 +112,4 @@ make push-all  # ← This syncs ALL repos automatically
 - Use Makefiles for all DevOps practices (see devops-best-practices.md)
 - **Web Deployment:** Load `landing-deployment` from doc-mapping.json for Vercel/AWS deployment guides
 - **GIT:** Always load `git-workflow` sub-instructions before git operations
-- **GIT:** Use `make push-all` instead of direct git commands
+- **GIT:** Use `make sync` instead of direct git commands

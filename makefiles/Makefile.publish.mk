@@ -16,7 +16,7 @@ REPO_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 	version-patch version-minor version-major \
         publish-core publish-pattern-detect publish-skills \
         npm-publish-core npm-publish-pattern-detect npm-publish-skills \
-        pull sync-from-spoke push-all deploy push
+        pull sync-from-spoke sync deploy push
 
 # Default owner for GitHub repos
 OWNER ?= caopengau
@@ -172,9 +172,50 @@ sync-from-spoke: ## Sync changes from spoke repo back to monorepo. Usage: make s
 pull: ## Alias for sync-from-spoke. Usage: make pull SPOKE=pattern-detect
 	@$(MAKE) sync-from-spoke SPOKE=$(SPOKE)
 
-# alias for push-all
-push: push-all ## Alias for push-all
-sync: push-all ## Alias for push-all (sync monorepo + all spoke repos)
+push: sync ## Alias for sync
+push-all: sync ## Alias for sync (push monorepo + publish all spokes)
+
+# Sync changes from platform repo back to monorepo
+sync-platform: ## Sync changes from aiready-platform repo back to monorepo
+	@$(call log_step,Syncing changes from aiready-platform back to monorepo...)
+	@url="https://github.com/$(OWNER)/aiready-platform.git"; \
+	remote="aiready-platform"; \
+	branch="main"; \
+	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
+	$(call log_info,Fetching latest from $$remote...); \
+	git fetch "$$remote" "$$branch"; \
+	$(call log_info,Pulling changes into platform/ directory...); \
+	git subtree pull --prefix=platform "$$remote" "$$branch" --squash -m "chore: sync platform from private repo"; \
+	$(call log_success,Synced changes from aiready-platform)
+
+publish-platform: ## Publish platform to GitHub. Usage: make publish-platform [OWNER=username]
+	@$(call log_step,Publishing platform to GitHub...)
+	@url="https://github.com/$(OWNER)/aiready-platform.git"; \
+	remote="aiready-platform"; \
+	branch="publish-platform"; \
+	target_branch="main"; \
+	platform_version=$$(node -p "require('$(REPO_ROOT)/platform/package.json').version" 2>/dev/null || echo "0.1.0"); \
+	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
+	$(call log_info,Remote set: $$remote -> $$url); \
+	git branch -D "$$branch" >/dev/null 2>&1 || true; \
+	$(call log_info,Creating subtree split for platform...); \
+	git subtree split --prefix=platform -b "$$branch" >/dev/null; \
+	$(call log_info,Removing sensitive files from split branch...); \
+	git checkout "$$branch" 2>/dev/null; \
+	if [ -f .env ]; then git rm -f .env >/dev/null 2>&1; fi; \
+	if [ -f .env.local ]; then git rm -f .env.local >/dev/null 2>&1; fi; \
+	if ! git diff --cached --quiet 2>/dev/null; then \
+		git commit -m "chore: remove sensitive files for private repo" >/dev/null 2>&1; \
+	fi; \
+	git checkout $(TARGET_BRANCH) 2>/dev/null; \
+	$(call log_info,Subtree split complete: $$branch); \
+	split_commit=$$(git rev-parse "$$branch"); \
+	git push -f "$$remote" "$$branch:$$target_branch"; \
+	$(call log_success,Synced platform to GitHub repo ($$target_branch)); \
+	platform_tag="v$$platform_version"; \
+	git tag -f "$$platform_tag" "$$split_commit" 2>/dev/null || true; \
+	git push -f "$$remote" "$$platform_tag"; \
+	$(call log_success,Platform tag pushed: $$platform_tag)
 
 # Sync changes from landing repo back to monorepo
 sync-landing: ## Sync changes from aiready-landing repo back to monorepo
@@ -220,7 +261,7 @@ publish-landing: ## Publish landing page to GitHub. Usage: make publish-landing 
 	$(call log_success,Landing tag pushed: $$landing_tag)
 
 # Push to monorepo and all spoke repos
-push-all: ## Push monorepo to origin and sync all spokes to their public repos
+sync: ## Push monorepo to origin and sync all spokes to their public repos
 	@$(call log_step,Pushing to monorepo...)
 	@git push origin $(TARGET_BRANCH)
 	@$(call log_success,Pushed to monorepo)
@@ -235,6 +276,6 @@ push-all: ## Push monorepo to origin and sync all spokes to their public repos
 	@$(MAKE) publish-landing OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR)' || true; \
 	$(call log_success,All spokes and landing page synced to GitHub)
 
-deploy: push-all ## Alias for push-all (push monorepo + publish all spokes)
+deploy: sync ## Alias for sync (push monorepo + publish all spokes)
 	@:-pattern-detect ## Build and publish all packages to npm
 	@$(call log_success,All packages published to npm)
