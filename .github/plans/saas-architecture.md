@@ -22,46 +22,46 @@ Core analysis tools and visualization remain open source (MIT). Revenue comes fr
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js on Vercel)              │
-│  ┌───────────────┐  ┌───────────────┐  ┌────────────────┐  │
-│  │  Dashboard    │  │  Visualizations│  │  Settings      │  │
-│  │  - Trends     │  │  - D3.js graphs│  │  - Thresholds  │  │
-│  │  - Benchmarks │  │  - Heatmaps    │  │  - Integrations│  │
-│  └───────────────┘  └───────────────┘  └────────────────┘  │
+│              Frontend (Next.js on AWS(aiready account))     │
+│  ┌───────────────┐  ┌───────────────┐  ┌────────────────┐   │
+│  │  Dashboard    │  │ Visualizations│  │  Settings      │   │
+│  │  - Trends     │  │ - D3.js graphs│  │  - Thresholds  │   │
+│  │  - Benchmarks │  │ - Heatmaps    │  │  - Integrations│   │
+│  └───────────────┘  └───────────────┘  └────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                               ↓ HTTPS
 ┌─────────────────────────────────────────────────────────────┐
-│                  API Gateway + Lambda (Node.js 20)           │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
-│  │  Auth      │  │  Analysis  │  │  Webhooks  │            │
-│  │  - JWT     │  │  - Upload  │  │  - GitHub  │            │
-│  │  - OAuth   │  │  - Process │  │  - Slack   │            │
-│  └────────────┘  └────────────┘  └────────────┘            │
+│                  API Gateway + Lambda (Node.js 20)          │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
+│  │  Auth      │  │  Analysis  │  │  Webhooks  │             │
+│  │  - JWT     │  │  - Upload  │  │  - GitHub  │             │
+│  │  - OAuth   │  │  - Process │  │  - Slack   │             │
+│  └────────────┘  └────────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│              DynamoDB (Single Table Design)                   │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
-│  │  Users     │  │  Analysis  │  │  Metrics   │            │
-│  │  Teams     │  │  Runs      │  │  Timeseries│            │
-│  │  Repos     │  │  Results   │  │  Recs      │            │
-│  └────────────┘  └────────────┘  └────────────┘            │
-│            ↕ DAX (DynamoDB Accelerator)                      │
+│              DynamoDB (Single Table Design)                 │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
+│  │  Users     │  │  Analysis  │  │  Metrics   │             │
+│  │  Teams     │  │  Runs      │  │  Timeseries│             │
+│  │  Repos     │  │  Results   │  │  Recs      │             │
+│  └────────────┘  └────────────┘  └────────────┘             │
+│            ↕ DAX (DynamoDB Accelerator)                     │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│           Event-Driven Processing (Async)                    │
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
-│  │ EventBridge│  │    SQS     │  │  Lambda    │            │
-│  │ (routing)  │→ │  (queues)  │→ │ (workers)  │            │
-│  └────────────┘  └────────────┘  └────────────┘            │
+│           Event-Driven Processing (Async)                   │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
+│  │ EventBridge│  │    SQS     │  │  Lambda    │             │
+│  │ (routing)  │→ │  (queues)  │→ │ (workers)  │             │
+│  └────────────┘  └────────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                       Storage (S3)                           │
-│  - Raw analysis JSON files                                   │
-│  - Generated reports (HTML/PDF)                              │
-│  - Visualization data (cached)                               │
+│                       Storage (S3)                          │
+│  - Raw analysis JSON files                                  │
+│  - Generated reports (HTML/PDF)                             │
+│  - Visualization data (cached)                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -668,6 +668,7 @@ function hasAccessToPlan(userPlan: string, requiredPlan: string): boolean {
 ### OAuth Integration
 
 **Supported Providers:**
+
 - GitHub (primary — repo access)
 - Google (email-based)
 - Microsoft (enterprise customers)
@@ -792,8 +793,10 @@ Response:
 ## 💰 Pricing Tiers
 
 ### Free Tier
+
 **Price:** $0/month
 **Limits:**
+
 - 1 team
 - 3 repositories
 - 10 analysis runs/month
@@ -804,8 +807,10 @@ Response:
 **Value Prop:** Try before you buy, personal projects
 
 ### Pro Tier
+
 **Price:** $49/month
 **Includes:**
+
 - Everything in Free
 - Unlimited repositories
 - Unlimited analysis runs
@@ -819,8 +824,10 @@ Response:
 **Value Prop:** Teams serious about code quality
 
 ### Enterprise Tier
+
 **Price:** Custom (starts at $499/month)
 **Includes:**
+
 - Everything in Pro
 - Unlimited teams/users
 - Unlimited refactoring plans
@@ -835,6 +842,7 @@ Response:
 **Value Prop:** Large organizations, compliance requirements
 
 ### Add-Ons
+
 - **Extra repositories** (Pro): $5/repo/month
 - **Extended retention** (Pro): $10/month per 90 days
 - **White-label reports** (Enterprise): $100/month
@@ -868,17 +876,20 @@ Total: $14,800 MRR = $177,600 ARR
 ### Customer Acquisition
 
 **Organic:**
+
 - npm package downloads → website
 - GitHub stars/trending
 - Dev.to / Hacker News posts
 - Technical blog (SEO)
 
 **Paid:**
+
 - Google Ads (keywords: "code quality", "AI code tools")
 - LinkedIn sponsored content (targeting CTOs, engineering managers)
 - Conference sponsorships (React Summit, Node Congress)
 
 **Partnerships:**
+
 - GitHub Marketplace listing
 - Copilot plugin marketplace
 - VS Code extension recommendations
@@ -886,28 +897,35 @@ Total: $14,800 MRR = $177,600 ARR
 ### Retention Strategy
 
 **Prevent Churn:**
+
 - Weekly email: "Your code quality improved 12% this week"
 - In-app notifications: "New fragmentation detected"
 - Quarterly business reviews (Enterprise)
 
 **Expansion Revenue:**
+
 - Usage-based pricing for extra repos
 - Upsell: Free → Pro (show locked features)
 - Cross-sell: Pro → Enterprise (team growth triggers)
 
 ## 🚀 Go-to-Market Strategy
 
-### Phase 1: Launch (Months 1-3)
+### Phase 1: Launch (Months 1-3) - ✅ COMPLETED
+
 - ✅ Launch pattern-detect CLI (done)
 - ✅ Launch context-analyzer CLI (done)
-- ✅ Launch consistency CLI (done)
-- 🔜 Build open-source visualizer
+- ✅ Launch consistency CLI (done) - v0.8.22
+- ✅ Build open-source visualizer (done)
+- ✅ Unified CLI with scoring (done) - v0.9.23
+- ✅ Public website with live demo (done)
+- ✅ Blog series on AI Code Debt (done - 5 parts)
 - 🔜 Build MVP SaaS platform (serverless)
 - 🔜 Onboard 50 beta users
 - 🔜 Product Hunt launch
 - 🔜 First paid customer
 
 ### Phase 2: Growth (Months 4-6)
+
 - Launch refactoring plan generator (AI-powered)
 - Add CI/CD integrations
 - 50 Pro subscribers
@@ -915,6 +933,7 @@ Total: $14,800 MRR = $177,600 ARR
 - Content marketing (case studies, blog posts)
 
 ### Phase 3: Scale (Months 7-12)
+
 - Launch team collaboration features
 - Add real-time monitoring
 - 200 Pro subscribers
@@ -1048,14 +1067,16 @@ Total: $14,800 MRR = $177,600 ARR
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **Framework:** Next.js 16 (App Router)
 - **Styling:** Tailwind CSS 4 + shadcn/ui
 - **Charts:** D3.js, Chart.js, Plotly.js
 - **State:** Zustand + TanStack Query
 - **Auth:** NextAuth.js (with JWT)
-- **Hosting:** Vercel
+- **Hosting:** AWS(aiready)
 
 ### Backend (Serverless)
+
 - **Runtime:** Node.js 20+ (Lambda)
 - **API:** API Gateway (REST + WebSocket)
 - **Database:** DynamoDB (single table design)
@@ -1065,7 +1086,8 @@ Total: $14,800 MRR = $177,600 ARR
 - **IaC:** SST (Serverless Stack Toolkit)
 
 ### Infrastructure
-- **Hosting:** Vercel (frontend) + AWS (backend via SST)
+
+- **Hosting:** AWS(aiready) (frontend) + AWS (backend via SST)
 - **CDN:** CloudFront (automatic with S3)
 - **Monitoring:** Sentry (errors) + CloudWatch (metrics) + Plausible (analytics)
 - **Email:** Resend or AWS SES
@@ -1094,6 +1116,7 @@ Total: $14,800 MRR = $177,600 ARR
 ## 📝 Next Steps
 
 ### Immediate (Month 1)
+
 - [ ] Set up Next.js dashboard project with authentication
 - [ ] Design DynamoDB single table schema (done ✅)
 - [ ] Create SST infrastructure stack
@@ -1102,14 +1125,16 @@ Total: $14,800 MRR = $177,600 ARR
 - [ ] Create basic dashboard UI (repo list, run history)
 
 ### Short-term (Months 2-3)
+
 - [ ] Add historical trend charts (query DDB time-series)
 - [ ] Build recommendation system (Lambda processor)
 - [ ] Stripe integration for billing (webhook handler)
 - [ ] Email notifications (SES)
 - [ ] Beta user onboarding flow
-- [ ] Ship open-source visualizer (@aiready/visualizer)
+- [ ] Ship open-source visualizer (@aiready/visualizer) (done ✅)
 
 ### Long-term (Months 4-12)
+
 - [ ] CI/CD integrations (GitHub Actions, GitLab CI)
 - [ ] Real-time WebSocket updates (API Gateway v2)
 - [ ] Team collaboration features
@@ -1119,7 +1144,209 @@ Total: $14,800 MRR = $177,600 ARR
 
 ---
 
-**Status:** Planning complete. Ready for implementation.
-**Strategic Approach:** Open Source + Hosted SaaS (see `docs/monetization-strategy-visualization.md`)
-**Architecture:** Serverless (Lambda + DynamoDB + SST)
-**Target:** $177K ARR Year 1, $840K ARR Year 2, $3.4M ARR Year 3
+## 🤖 Phase 2: AI Consulting SaaS with Human-in-the-Loop Agentic Collaboration
+
+### Strategic Pivot: From Detection to Remediation
+
+**Current State (Phase 1 Complete):**
+- ✅ OSS tools detect AI code debt (patterns, context, consistency)
+- ✅ Unified CLI with AI Readiness scoring
+- ✅ Visualization for understanding problems
+- ❌ Gap: Users must manually fix detected issues
+
+**Phase 2 Vision:**
+> **"AI Code Debt Remediation as a Service"** — A platform where AI agents detect AND fix code debt, with human experts providing oversight, quality assurance, and strategic guidance.
+
+### The Problem We're Solving
+
+**Pain Point:** Teams adopting AI coding tools (Copilot, Cursor, Claude Code) accumulate technical debt faster than they can fix it:
+- 3-5x productivity gains → 10x debt accumulation
+- AI generates semantically similar code with different syntax
+- Context fragmentation makes AI suggestions worse over time
+- Traditional tools (linters, SonarQube) don't detect AI-specific issues
+
+**Market Gap:** No existing solution offers:
+1. AI-specific code debt detection (we have this ✅)
+2. Automated remediation with human oversight
+3. Continuous monitoring + proactive fixes
+4. Expert guidance for architectural decisions
+
+### Product Architecture: Human-in-the-Loop Agentic System
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     AIReady Agentic Platform                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐         │
+│  │  DETECTION   │────▶│  ANALYSIS    │────▶│  PRIORITIZE  │         │
+│  │  AGENTS      │     │  AGENTS      │     │  AGENT       │         │
+│  │              │     │              │     │              │         │
+│  │ • Patterns   │     │ • Impact     │     │ • ROI-based  │         │
+│  │ • Context    │     │ • Risk       │     │ • Effort est │         │
+│  │ • Consistency│     │ • Dependencies│    │ • Auto-sched │         │
+│  └──────────────┘     └──────────────┘     └──────────────┘         │
+│         │                                           │                │
+│         ▼                                           ▼                │
+│  ┌──────────────────────────────────────────────────────────┐       │
+│  │                    HUMAN REVIEW QUEUE                     │       │
+│  │                                                            │       │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │       │
+│  │  │ Expert AI   │  │ Customer    │  │ Platform    │        │       │
+│  │  │ Consultant  │  │ Team        │  │ Auto-approve│        │       │
+│  │  │             │  │             │  │ (low risk)  │        │       │
+│  │  │ $150-300/hr │  │ Self-serve  │  │ Rules-based │        │       │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘        │       │
+│  └──────────────────────────────────────────────────────────┘       │
+│         │                                           │                │
+│         ▼                                           ▼                │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐         │
+│  │  REMEDIATION │────▶│  VALIDATION  │────▶│  DEPLOYMENT  │         │
+│  │  AGENTS      │     │  AGENTS      │     │  OPTIONS     │         │
+│  │              │     │              │     │              │         │
+│  │ • Refactor   │     │ • Test run   │     │ • PR create  │         │
+│  │ • Consolidate│     │ • Type check │     │ • Auto-merge │         │
+│  │ • Rename     │     │ • AI review  │     │ • Schedule   │         │
+│  │ • Restructure│     │ • Human sign │     │ • Rollback   │         │
+│  └──────────────┘     └──────────────┘     └──────────────┘         │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Agent Types & Responsibilities
+
+#### 1. Detection Agents (Already Built ✅)
+- **Pattern-Detect Agent:** Finds semantic duplicates
+- **Context-Analyzer Agent:** Identifies import chain issues
+- **Consistency Agent:** Detects naming/pattern inconsistencies
+
+#### 2. Analysis Agents (New - Phase 2a)
+- **Impact Agent:** Estimates token savings, AI comprehension improvement
+- **Risk Agent:** Assesses change complexity, potential breaking changes
+- **Dependency Agent:** Maps affected files, suggests safe refactoring order
+
+#### 3. Prioritization Agent (New - Phase 2a)
+- **ROI Calculator:** Ranks issues by impact/effort ratio
+- **Effort Estimator:** Predicts time/complexity for each fix
+- **Auto-Scheduler:** Plans remediation sprints
+
+#### 4. Remediation Agents (New - Phase 2b)
+- **Refactor Agent:** Consolidates duplicate code
+- **Rename Agent:** Standardizes naming conventions
+- **Restructure Agent:** Flattens import chains
+- **Documentation Agent:** Updates docs to match code changes
+
+#### 5. Validation Agents (New - Phase 2b)
+- **Test Agent:** Runs test suite, reports failures
+- **Type Agent:** TypeScript type checking
+- **AI-Review Agent:** Asks AI to review changes for correctness
+- **Human Sign-off:** Queues for human approval
+
+### Human-in-the-Loop Model
+
+#### Review Tiers
+
+| Tier | Who | When | SLA | Cost |
+|------|-----|------|-----|------|
+| **Auto** | Platform (rules-based) | Low risk, < 50 lines | Instant | Included |
+| **Team** | Customer's team | Medium risk, any size | Self-serve | Included |
+| **Expert** | AIReady consultant | High risk, architecture | 24-48h | $150-300/hr |
+| **Enterprise** | Dedicated engineer | Critical systems | 4h SLA | Contract |
+
+#### Risk Classification
+
+```typescript
+interface RemediationRisk {
+  level: 'low' | 'medium' | 'high' | 'critical';
+  factors: {
+    linesChanged: number;        // <50: low, 50-200: medium, >200: high
+    filesAffected: number;       // 1-3: low, 4-10: medium, >10: high
+    testCoverage: number;        // >80%: low, 50-80%: medium, <50%: high
+    hasTypeCheck: boolean;       // yes: reduces risk
+    isPublicAPI: boolean;        // yes: increases risk
+    dependencyDepth: number;     // deeper = higher risk
+  };
+  autoApprovalEligible: boolean; // low risk + rules met
+}
+```
+
+### Revenue Model: Consulting + SaaS Hybrid
+
+#### Tier 1: Self-Service Platform ($49-199/mo)
+- AI agents detect issues
+- Auto-remediation for low-risk fixes
+- Team review queue
+- Historical trends
+- 5 AI remediation requests/mo included
+
+#### Tier 2: Expert Review Add-On ($150-300/hr)
+- Human AI consultant reviews complex fixes
+- Architectural guidance
+- Custom remediation strategies
+- Pair programming sessions
+- Training for team
+
+#### Tier 3: Enterprise Managed Service ($2,000-10,000/mo)
+- Dedicated AI transformation engineer
+- Weekly remediation sprints
+- Custom rules and policies
+- Quarterly AI readiness reviews
+- Priority support
+
+### Competitive Differentiation
+
+| Feature | AIReady | SonarQube | Cursor | Copilot |
+|---------|---------|-----------|--------|---------|
+| AI-specific debt detection | ✅ | ❌ | ❌ | ❌ |
+| Semantic duplicate detection | ✅ | ❌ | ❌ | ❌ |
+| Context budget optimization | ✅ | ❌ | ❌ | ❌ |
+| Automated remediation | ✅ | ❌ | Partial | ❌ |
+| Human expert review | ✅ | ❌ | ❌ | ❌ |
+| Continuous monitoring | ✅ | ✅ | ❌ | ❌ |
+| Team benchmarking | ✅ | Partial | ❌ | ❌ |
+
+### Go-to-Market: Phase 2
+
+#### Month 1-2: MVP Agentic Platform
+- [ ] Build remediation agents (consolidate, rename, restructure)
+- [ ] Implement human review queue
+- [ ] Create risk classification system
+- [ ] Auto-PR creation for approved fixes
+
+#### Month 3-4: Expert Network Launch
+- [ ] Recruit 3-5 AI engineering consultants
+- [ ] Build consultant dashboard
+- [ ] Implement billing/time tracking
+- [ ] Launch "AI Code Health Check" service ($499 one-time)
+
+#### Month 5-6: Enterprise Features
+- [ ] Custom remediation policies
+- [ ] Integration with Jira/Linear
+- [ ] Slack/Teams notifications
+- [ ] White-label reports
+
+### Success Metrics
+
+| Metric | Month 3 | Month 6 | Month 12 |
+|--------|---------|---------|----------|
+| Platform MRR | $2,000 | $8,000 | $25,000 |
+| Consulting revenue | $5,000 | $20,000 | $50,000 |
+| Auto-remediations/mo | 100 | 500 | 2,000 |
+| Expert reviews/mo | 10 | 50 | 150 |
+| NPS score | >40 | >50 | >60 |
+
+### Pricing Summary
+
+| Plan | Price | Includes |
+|------|-------|----------|
+| **Developer** | $49/mo | Detection + 5 auto-remediations + trends |
+| **Team** | $199/mo | Above + unlimited auto-remediations + team features |
+| **Expert Review** | $150-300/hr | Human consultant for complex fixes |
+| **Enterprise** | $2,000+/mo | Dedicated engineer + custom policies + SLA |
+
+---
+
+**Status:** Phase 1 complete. Phase 2 planning ready for implementation.
+**Strategic Approach:** Open Source Detection + SaaS Remediation + Expert Consulting
+**Architecture:** Serverless (Lambda + DynamoDB + SST) + Agentic AI
+**Target:** $177K ARR Year 1 (Phase 1), $500K ARR Year 2 (Phase 2), $2M+ ARR Year 3

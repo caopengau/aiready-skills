@@ -1,29 +1,70 @@
 {
-  "project-overview": ".github/copilot-instructions.md#project-overview",
-  "architecture": ".github/copilot-instructions.md#architecture",
-  "git-workflow": ".github/sub-instructions/git-workflow.md",
-  "development-workflow": ".github/sub-instructions/development-workflow.md",
-  "publishing-strategy": ".github/sub-instructions/publishing-strategy.md",
-  "release-workflow": ".github/sub-instructions/publishing-strategy.md",
-  "landing-release": ".github/sub-instructions/landing-release.md",
-  "adding-new-tool": ".github/sub-instructions/adding-new-tool.md",
-  "common-patterns": ".github/sub-instructions/common-patterns.md",
-  "error-handling": ".github/sub-instructions/error-handling-strategy.md",
-  "devops-best-practices": ".github/sub-instructions/devops-best-practices.md",
-  "troubleshooting": ".github/sub-instructions/troubleshooting.md",
-  "landing-deployment": ".github/sub-instructions/landing-deployment.md",
-  "file-organization": ".github/copilot-instructions.md#file-organization",
-  "next-steps": ".github/copilot-instructions.md#next-steps",
+  "_comment": "Hub-and-Spoke Documentation Map - Load relevant context for each topic",
   
-  "python-support": ".github/plans/implementation/PYTHON-SUPPORT.md",
-  "python-integration": ".github/plans/implementation/PYTHON-INTEGRATION-SUMMARY.md",
-  "implementation-history": ".github/plans/implementation/phase1-completion-report.md",
-  "language-expansion": ".github/plans/strategy/LANGUAGE-EXPANSION-STRATEGY.md",
-  "language-expansion-visual": ".github/plans/strategy/language-expansion-visual.md",
-  "blog-series-plan": ".github/plans/strategy/blog-series-plan.md",
-  "monetization-strategy": ".github/plans/strategy/monetization-strategy-visualization.md",
-  "visualization-architecture": ".github/plans/implementation/visualization-architecture.md",
-  "research-findings": ".github/plans/research/UNDERSTANDING-REAL-USAGE.md",
-  "feedback-plan": ".github/plans/research/FEEDBACK-GATHERING-PLAN.md",
-  "tracking-stats": ".github/plans/research/TRACKING-STATS.md"
+  "HUB_DOCS": {
+    "project-overview": ".github/copilot-instructions.md#project-overview",
+    "architecture": ".github/copilot-instructions.md#architecture",
+    "git-workflow": ".github/sub-instructions/git-workflow.md",
+    "development-workflow": ".github/sub-instructions/development-workflow.md"
+  },
+
+  "OSS_SPOKES": {
+    "core": "packages/core/README.md",
+    "cli": "packages/cli/README.md",
+    "pattern-detect": "packages/pattern-detect/README.md",
+    "context-analyzer": "packages/context-analyzer/README.md",
+    "consistency": "packages/consistency/README.md",
+    "visualizer": "packages/visualizer/README.md",
+    "components": "packages/components/README.md",
+    "skills": "packages/skills/README.md"
+  },
+
+  "PLATFORM_DOCS": {
+    "platform-overview": ".github/platform/README.md",
+    "platform-architecture": ".github/platform/architecture.md",
+    "platform-auth": ".github/platform/auth.md",
+    "platform-billing": ".github/platform/billing.md",
+    "platform-api": ".github/platform/api/README.md",
+    "agents-overview": ".github/platform/agents/README.md"
+  },
+
+  "SUB_INSTRUCTIONS": {
+    "publishing-strategy": ".github/sub-instructions/publishing-strategy.md",
+    "landing-release": ".github/sub-instructions/landing-release.md",
+    "landing-deployment": ".github/sub-instructions/landing-deployment.md",
+    "adding-new-tool": ".github/sub-instructions/adding-new-tool.md",
+    "common-patterns": ".github/sub-instructions/common-patterns.md",
+    "error-handling": ".github/sub-instructions/error-handling-strategy.md",
+    "devops-best-practices": ".github/sub-instructions/devops-best-practices.md",
+    "troubleshooting": ".github/sub-instructions/troubleshooting.md"
+  },
+
+  "PLANS": {
+    "saas-architecture": ".github/plans/saas-architecture.md",
+    "scoring-algorithm": ".github/plans/scoring-algorithm.md",
+    "consistency-plan": ".github/plans/consistency-plan.md",
+    "context-analyzer-plan": ".github/plans/context-analyzer-plan.md",
+    "pattern-detect-plan": ".github/plans/pattern-detect-plan.md"
+  },
+
+  "IMPLEMENTATION": {
+    "python-support": ".github/plans/implementation/PYTHON-SUPPORT.md",
+    "python-integration": ".github/plans/implementation/PYTHON-INTEGRATION-SUMMARY.md",
+    "phase1-completion": ".github/plans/implementation/phase1-completion-report.md",
+    "visualization-architecture": ".github/plans/implementation/visualization-architecture.md"
+  },
+
+  "STRATEGY": {
+    "language-expansion": ".github/plans/strategy/LANGUAGE-EXPANSION-STRATEGY.md",
+    "blog-series-plan": ".github/plans/strategy/blog-series-plan.md",
+    "monetization-strategy": ".github/plans/strategy/monetization-strategy-visualization.md"
+  },
+
+  "RESEARCH": {
+    "research-findings": ".github/plans/research/UNDERSTANDING-REAL-USAGE.md",
+    "feedback-plan": ".github/plans/research/FEEDBACK-GATHERING-PLAN.md",
+    "tracking-stats": ".github/plans/research/TRACKING-STATS.md"
+  },
+
+  "_usage": "Load doc-mapping.json and access the relevant section based on task type. HUB_DOCS for core context, OSS_SPOKES for package work, PLATFORM_DOCS for SaaS development."
 }

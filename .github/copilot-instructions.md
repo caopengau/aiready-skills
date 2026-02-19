@@ -8,10 +8,14 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 
 **Packages:**
 - **[@aiready/core](packages/core)** - Shared utilities and types (HUB)
-- **[@aiready/cli](packages/cli)** - Unified CLI interface (HUB)
-- **[@aiready/pattern-detect](packages/pattern-detect)** - Semantic duplicate detection
-- **[@aiready/context-analyzer](packages/context-analyzer)** - Context window cost & dependency fragmentation
-- Future spokes: doc-drift, consistency, deps
+- **[@aiready/cli](packages/cli)** - Unified CLI interface (HUB) - v0.9.23
+- **[@aiready/pattern-detect](packages/pattern-detect)** - Semantic duplicate detection (SPOKE)
+- **[@aiready/context-analyzer](packages/context-analyzer)** - Context window cost & dependency fragmentation (SPOKE)
+- **[@aiready/consistency](packages/consistency)** - Naming conventions and pattern consistency (SPOKE) - v0.8.22
+- **[@aiready/visualizer](packages/visualizer)** - Interactive force-directed graph visualization (SPOKE)
+- **[@aiready/components](packages/components)** - Shared UI component library (SPOKE)
+- **[@aiready/skills](packages/skills)** - Agent skills for AI assistants (SPOKE)
+- Future spokes: doc-drift, deps
 
 ## Architecture: Hub-and-Spoke Pattern
 

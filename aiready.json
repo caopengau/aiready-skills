@@ -7,8 +7,7 @@
       "**/node_modules/**",
       "**/__tests__/**",
       "**/*.test.ts",
-      "**/*.spec.ts",
-      "landing/components/FAQ.tsx"
+      "**/*.spec.ts"
     ]
   },
   "tools": {

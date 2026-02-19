@@ -51,6 +51,8 @@ Mixed-language projects are fully supported - the tool automatically detects and
 
 AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
 
+### Open Source Tools (Free)
+
 ```
                     🎯 USER
                       │
@@ -96,18 +98,24 @@ AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
                     │  • Common types & interfaces    │
                     │  • No dependencies on spokes    │
                     └─────────────────────────────────┘
+```
 
-          ┌──────────┐                       ┌──────────┐
-          │🧩 COMPON │                       │📚 DOC    │
-          │  ENTS    │                       │  DRIFT   │
-          │          │                       │          │
-          │• UI Cmpts│                       │• Doc     │
-          │• D3charts│                       │  freshness│
-          │• Hooks   │                       │          │
-          │✅ Ready  │                       │🔜 Soon   │
-          └──────────┘                       └──────────┘
-          @aiready/                          @aiready/
-          components                          doc-drift
+### Platform (SaaS) - Coming Soon
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    🖥️  PLATFORM (Private SaaS)                  │
+│              Human-in-the-Loop Agentic Remediation              │
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │  Dashboard   │  │ Remediation  │  │   Expert Network     │   │
+│  │  • Trends    │  │  • Auto-fix  │  │   • Human review     │   │
+│  │  • Teams     │  │  • Risk mgmt │  │   • Architecture     │   │
+│  │  • Billing   │  │  • PR create │  │   • Training         │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
+│                                                                  │
+│  📖 Docs: .github/platform/README.md                            │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### 🎯 Design Benefits
@@ -116,6 +124,7 @@ AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
 - **Independent**: Each spoke focuses on one problem, can be updated separately
 - **Extensible**: Easy to add new languages or analysis types
 - **Clean**: Spokes only depend on core, not each other
+- **Monetizable**: OSS detection + SaaS remediation + Expert consulting
 
 ## 🚀 Quick Start
 
@@ -330,7 +339,9 @@ pnpm dev
 
 ## 🚧 Project Status
 
-AIReady is live and growing! The open-source CLI and packages provide:
+### Phase 1: OSS Detection Tools ✅ Complete
+
+The open-source CLI and packages provide:
 - ✅ Pattern detection and context cost analysis
 - ✅ Consistency checks (naming and patterns)
 - ✅ Interactive graph visualization (`aiready visualise`)
@@ -338,10 +349,46 @@ AIReady is live and growing! The open-source CLI and packages provide:
 - ✅ Unified CLI with JSON/console/HTML outputs
 - ✅ [Public website](https://getaiready.dev) with live scan demo and docs
 
-On the roadmap (planned, not yet available):
-- Historical trend analysis and team benchmarking
-- Custom rule engines and integration APIs
-- Automated fix suggestions and CI/CD integration
+### Phase 2: SaaS Platform 🔜 In Planning
+
+On the roadmap:
+- **Private SaaS Platform** - Dashboard, teams, billing
+- **Automated Remediation** - AI agents that fix detected issues
+- **Human-in-the-Loop** - Expert review queue for complex fixes
+- **CI/CD Integration** - GitHub Actions, GitLab CI
+
+See [Platform Documentation](./.github/platform/README.md) for details.
+
+## 📚 Documentation
+
+### Hub-and-Spoke Structure
+
+Documentation follows the same hub-and-spoke pattern as the codebase:
+
+| Section | Location | Purpose |
+|---------|----------|---------|
+| **Hub Docs** | `.github/copilot-instructions.md` | Core context for all tasks |
+| **OSS Spokes** | `packages/*/README.md` | Individual package docs |
+| **Platform** | `.github/platform/` | SaaS platform documentation |
+| **Sub-instructions** | `.github/sub-instructions/` | Workflow guides |
+| **Plans** | `.github/plans/` | Architecture & strategy |
+
+### Quick Links
+
+**For Contributors:**
+- [Development Workflow](./.github/sub-instructions/development-workflow.md)
+- [Adding New Tools](./.github/sub-instructions/adding-new-tool.md)
+- [Git Workflow](./.github/sub-instructions/git-workflow.md)
+- [DevOps Best Practices](./.github/sub-instructions/devops-best-practices.md)
+
+**For Platform Development:**
+- [Platform Overview](./.github/platform/README.md)
+- [Platform Architecture](./.github/platform/architecture.md)
+- [Agent System](./.github/platform/agents/README.md)
+
+**Strategy & Planning:**
+- [SaaS Architecture](./.github/plans/saas-architecture.md)
+- [Monetization Strategy](./.github/plans/strategy/monetization-strategy-visualization.md)
 
 ## 📊 Stats & Analytics
 
