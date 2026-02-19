@@ -25,7 +25,8 @@
     "platform-auth": ".github/platform/auth.md",
     "platform-billing": ".github/platform/billing.md",
     "platform-api": ".github/platform/api/README.md",
-    "agents-overview": ".github/platform/agents/README.md"
+    "agents-overview": ".github/platform/agents/README.md",
+    "components-audit": ".github/platform/components-audit.md"
   },
 
   "SUB_INSTRUCTIONS": {
