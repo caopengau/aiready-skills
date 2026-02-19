@@ -35,6 +35,14 @@ landing/.vercel
 landing/.sst/
 landing/.env
 
+# Platform (Next.js SaaS)
+platform/.next/
+platform/.sst/
+platform/.open-next/
+platform/.env
+platform/.env.local
+platform/.env.*.local
+
 # SST (AWS deployment)
 .sst/
 .open-next/
