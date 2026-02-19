@@ -25,6 +25,30 @@ export { Switch, type SwitchProps } from './components/switch';
 export { Textarea, type TextareaProps } from './components/textarea';
 export { Select, type SelectProps, type SelectOption } from './components/select';
 
+// Code Block
+export { CodeBlock, InlineCode, type CodeBlockProps } from './code-block';
+
+// Navigation
+export { Breadcrumb, type BreadcrumbProps, type BreadcrumbItem } from './navigation';
+
+// Data Display
+export { ScoreBar, ScoreCard, type ScoreBarProps, type ScoreCardProps, type ScoreRating } from './data-display';
+
+// Feedback
+export {
+  LoadingSpinner,
+  LoadingOverlay,
+  ErrorDisplay,
+  EmptyState,
+  type LoadingSpinnerProps,
+  type LoadingOverlayProps,
+  type ErrorDisplayProps,
+  type EmptyStateProps,
+} from './feedback';
+
+// Theme
+export { ThemeProvider, useTheme, type Theme, type EffectiveTheme } from './theme';
+
 // Utils
 export { cn } from './utils/cn';
 export * from './utils/colors';
