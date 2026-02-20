@@ -14,6 +14,9 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 // Initialize S3 client
 const s3 = new S3Client({ region: process.env.AWS_REGION || 'ap-southeast-2' });
 
+// Type assertion for getSignedUrl compatibility
+const s3Client = s3 as any;
+
 const BUCKET_NAME = process.env.S3_BUCKET || 'aiready-platform-analysis';
 
 // Types
@@ -152,7 +155,7 @@ export async function getAnalysisDownloadUrl(key: string, expiresIn = 3600): Pro
     Key: key,
   });
 
-  return getSignedUrl(s3, command, { expiresIn });
+  return getSignedUrl(s3Client, command, { expiresIn });
 }
 
 /**

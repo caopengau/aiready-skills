@@ -1,56 +1,43 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-export default {
-  config() {
+export default $config({
+  app(input) {
     return {
-      name: 'aiready-platform',
-      region: 'ap-southeast-2',
-      profile: 'aiready',
+      name: "aiready-platform",
+      removal: input?.stage === "production" ? "retain" : "remove",
+      home: "aws",
     };
   },
-  stacks(app) {
-    app.stack(function PlatformStack({ stack }) {
-      // DynamoDB Single Table
-      const table = new sst.aws.Dynamo('MainTable', {
-        fields: {
-          PK: 'string',
-          SK: 'string',
-          GSI1PK: 'string',
-          GSI1SK: 'string',
-          GSI2PK: 'string',
-          GSI2SK: 'string',
-        },
-        primaryIndex: { partitionKey: 'PK', sortKey: 'SK' },
-        globalIndexes: {
-          GSI1: { partitionKey: 'GSI1PK', sortKey: 'GSI1SK' },
-          GSI2: { partitionKey: 'GSI2PK', sortKey: 'GSI2SK' },
-        },
-        ttl: 'ttl',
-      });
+  async run() {
+    // S3 Bucket for analysis data
+    const bucket = new sst.aws.Bucket("AnalysisBucket");
 
-      // S3 Bucket for analysis data
-      const bucket = new sst.aws.Bucket('AnalysisBucket', {
-        access: 'private',
-      });
-
-      // Next.js site
-      const site = new sst.aws.Nextjs('Dashboard', {
-        path: '.',
-        environment: {
-          DYNAMO_TABLE: table.name,
-          S3_BUCKET: bucket.name,
-        },
-      });
-
-      // Grant permissions
-      table.bind([site]);
-      bucket.bind([site]);
-
-      stack.addOutputs({
-        SiteUrl: site.url,
-        TableName: table.name,
-        BucketName: bucket.name,
-      });
+    // Next.js site with custom domain
+    const site = new sst.aws.Nextjs("Dashboard", {
+      path: ".",
+      environment: {
+        S3_BUCKET: bucket.name,
+        NEXTAUTH_URL: $app.stage === "production" 
+          ? "https://platform.getaiready.dev" 
+          : "http://localhost:8888",
+        NEXT_PUBLIC_APP_URL: $app.stage === "production"
+          ? "https://platform.getaiready.dev"
+          : "http://localhost:8888",
+        GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID || "",
+        GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
+        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || "",
+      },
+      domain: {
+        name: "platform.getaiready.dev",
+        dns: sst.cloudflare.dns({
+          zone: "50eb7dcadc84c58ab34583742db0b671",
+        }),
+      },
     });
+
+    return {
+      site: site.url,
+      bucketName: bucket.name,
+    };
   },
-};
+});
