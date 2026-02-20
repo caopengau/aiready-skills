@@ -7,6 +7,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'AIReady - AI Code Health Platform',
   description: 'Monitor, analyze, and improve your codebase AI readiness',
+  icons: [
+    { url: '/favicon.svg', type: 'image/svg+xml' },
+    { url: '/file.svg', type: 'image/svg+xml', sizes: '16x16' },
+    { url: '/globe.svg', type: 'image/svg+xml', sizes: '32x32' },
+  ],
 };
 
 export default function RootLayout({
