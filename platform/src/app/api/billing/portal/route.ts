@@ -1,16 +1,31 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
-import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2026-01-28.clover',
-});
+// Lazy-initialize Stripe only when needed
+let stripe: ReturnType<typeof import('stripe').default> | null = null;
+
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    const Stripe = require('stripe');
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2026-01-28.clover',
+    });
+  }
+  return stripe;
+}
 
 export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const stripeClient = getStripe();
+    if (!stripeClient) {
+      return NextResponse.json({ 
+        error: 'Billing not configured. Please add STRIPE_SECRET_KEY to your environment.' 
+      }, { status: 400 });
     }
 
     // For now, return a message that billing is not configured
