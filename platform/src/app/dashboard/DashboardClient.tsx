@@ -1,176 +1,158 @@
 'use client';
 
 import { useState } from 'react';
-import { Repository, Analysis } from '@/lib/db';
+import { signOut } from 'next-auth/react';
+import type { Repository, Analysis } from '@/lib/db';
 
-interface User {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-}
+type RepoWithAnalysis = Repository & { latestAnalysis: Analysis | null };
 
-interface RepoWithAnalysis extends Repository {
-  latestAnalysis: Analysis | null;
-}
-
-interface DashboardClientProps {
-  user: User;
+interface Props {
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
   repos: RepoWithAnalysis[];
   overallScore: number | null;
 }
 
-export default function DashboardClient({ user, repos: initialRepos, overallScore: initialScore }: DashboardClientProps) {
+function scoreColor(score: number | null | undefined): string {
+  if (score == null) return 'text-slate-400';
+  if (score >= 75) return 'text-emerald-600';
+  if (score >= 50) return 'text-amber-500';
+  return 'text-red-500';
+}
+
+function scoreBg(score: number | null | undefined): string {
+  if (score == null) return 'bg-slate-100';
+  if (score >= 75) return 'bg-emerald-50 border-emerald-200';
+  if (score >= 50) return 'bg-amber-50 border-amber-200';
+  return 'bg-red-50 border-red-200';
+}
+
+function scoreLabel(score: number | null | undefined): string {
+  if (score == null) return 'Not analyzed';
+  if (score >= 75) return 'AI-Ready';
+  if (score >= 50) return 'Needs Improvement';
+  return 'Critical Issues';
+}
+
+export default function DashboardClient({ user, repos: initialRepos, overallScore }: Props) {
   const [repos, setRepos] = useState<RepoWithAnalysis[]>(initialRepos);
-  const [overallScore, setOverallScore] = useState<number | null>(initialScore);
   const [showAddRepo, setShowAddRepo] = useState(false);
-  const [showUpload, setShowUpload] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [addRepoForm, setAddRepoForm] = useState({ name: '', url: '', description: '', defaultBranch: 'main' });
+  const [addRepoError, setAddRepoError] = useState<string | null>(null);
+  const [addRepoLoading, setAddRepoLoading] = useState(false);
+  const [uploadingRepoId, setUploadingRepoId] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
-  // Add repository form state
-  const [newRepo, setNewRepo] = useState({
-    name: '',
-    url: '',
-    description: '',
-    defaultBranch: 'main',
-  });
-
-  // Upload form state
-  const [uploadData, setUploadData] = useState('');
-
-  // Handle add repository
-  const handleAddRepo = async (e: React.FormEvent) => {
+  async function handleAddRepo(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setAddRepoError(null);
+    setAddRepoLoading(true);
 
     try {
       const res = await fetch('/api/repos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newRepo),
+        body: JSON.stringify(addRepoForm),
       });
 
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to add repository');
+        setAddRepoError(data.error || 'Failed to add repository');
+        return;
       }
 
-      const { repo } = await res.json();
-      setRepos([...repos, { ...repo, latestAnalysis: null }]);
+      const newRepo: RepoWithAnalysis = { ...data.repo, latestAnalysis: null };
+      setRepos(prev => [newRepo, ...prev]);
       setShowAddRepo(false);
-      setNewRepo({ name: '', url: '', description: '', defaultBranch: 'main' });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add repository');
+      setAddRepoForm({ name: '', url: '', description: '', defaultBranch: 'main' });
+    } catch {
+      setAddRepoError('Network error. Please try again.');
     } finally {
-      setLoading(false);
+      setAddRepoLoading(false);
     }
-  };
+  }
 
-  // Handle delete repository
-  const handleDeleteRepo = async (repoId: string) => {
-    if (!confirm('Are you sure you want to delete this repository?')) return;
+  async function handleDeleteRepo(repoId: string) {
+    if (!confirm('Delete this repository and all its analyses?')) return;
 
-    try {
-      const res = await fetch(`/api/repos?id=${repoId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete repository');
-      setRepos(repos.filter(r => r.id !== repoId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete repository');
+    const res = await fetch(`/api/repos?id=${repoId}`, { method: 'DELETE' });
+    if (res.ok) {
+      setRepos(prev => prev.filter(r => r.id !== repoId));
     }
-  };
+  }
 
-  // Handle upload analysis
-  const handleUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedRepo) {
-      setError('Please select a repository');
-      return;
-    }
+  async function handleUploadAnalysis(repoId: string) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
 
-    setLoading(true);
-    setError(null);
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
 
-    try {
-      const data = JSON.parse(uploadData);
-      const res = await fetch('/api/analysis/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repoId: selectedRepo, data }),
-      });
+      setUploadingRepoId(repoId);
+      setUploadError(null);
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to upload analysis');
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        const res = await fetch('/api/analysis/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ repoId, data }),
+        });
+
+        const result = await res.json();
+        if (!res.ok) {
+          setUploadError(result.error || 'Upload failed');
+          return;
+        }
+
+        // Update repo in list with new analysis
+        setRepos(prev => prev.map(r =>
+          r.id === repoId
+            ? { ...r, latestAnalysis: result.analysis, aiScore: result.analysis.aiScore }
+            : r
+        ));
+      } catch {
+        setUploadError('Invalid JSON file or network error');
+      } finally {
+        setUploadingRepoId(null);
       }
+    };
 
-      const { analysis } = await res.json();
-      
-      // Update repos with new analysis
-      setRepos(repos.map(r => 
-        r.id === selectedRepo 
-          ? { ...r, latestAnalysis: analysis, aiScore: analysis.aiScore, lastAnalysisAt: analysis.timestamp }
-          : r
-      ));
-
-      // Recalculate overall score
-      const updatedRepos = repos.map(r => 
-        r.id === selectedRepo 
-          ? { ...r, aiScore: analysis.aiScore }
-          : r
-      );
-      const scoredRepos = updatedRepos.filter(r => r.aiScore !== undefined);
-      if (scoredRepos.length > 0) {
-        setOverallScore(Math.round(scoredRepos.reduce((sum, r) => sum + (r.aiScore || 0), 0) / scoredRepos.length));
-      }
-
-      setShowUpload(false);
-      setUploadData('');
-      setSelectedRepo(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload analysis');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle sign out
-  const handleSignOut = async () => {
-    await fetch('/api/auth/signout', { method: 'POST' });
-    window.location.href = '/login';
-  };
-
-  // Get score color
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    if (score >= 40) return 'text-orange-600';
-    return 'text-red-600';
-  };
+    input.click();
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 AIReady
-              </h1>
-              <nav className="hidden md:flex items-center gap-6 ml-8">
-                <a href="/dashboard" className="text-sm font-medium text-slate-900">Dashboard</a>
-                <a href="/dashboard/repos" className="text-sm font-medium text-slate-500 hover:text-slate-900">Repositories</a>
-                <a href="/dashboard/analytics" className="text-sm font-medium text-slate-500 hover:text-slate-900">Analytics</a>
+              </span>
+              <nav className="hidden md:flex items-center gap-6 ml-6">
+                <a href="/dashboard" className="text-sm font-medium text-slate-900 border-b-2 border-blue-600 pb-0.5">Dashboard</a>
+                <a href="/docs" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Docs</a>
               </nav>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-600">{user.email}</span>
-              <button 
-                onClick={handleSignOut}
-                className="text-sm text-slate-500 hover:text-slate-700"
+            <div className="flex items-center gap-3">
+              {user.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full" />
+              )}
+              <span className="text-sm text-slate-600 hidden sm:block">{user.name || user.email}</span>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="text-sm text-slate-500 hover:text-slate-700 transition-colors px-3 py-1.5 rounded-md hover:bg-slate-100"
               >
                 Sign out
               </button>
@@ -179,283 +161,181 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-slate-900">
-            Welcome back, {user.name || 'Developer'}!
-          </h2>
-          <p className="text-slate-600 mt-1">
-            Monitor your codebase AI readiness and track improvements over time.
-          </p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Welcome + overall score */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Welcome back, {user.name?.split(' ')[0] || 'Developer'}!
+            </h1>
+            <p className="text-slate-500 mt-1 text-sm">
+              {repos.length === 0
+                ? 'Add your first repository to start tracking AI readiness.'
+                : `Tracking ${repos.length} repositor${repos.length === 1 ? 'y' : 'ies'}`}
+            </p>
+          </div>
+          {overallScore != null && (
+            <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border-2 ${scoreBg(overallScore)}`}>
+              <div className="text-right">
+                <div className={`text-3xl font-black ${scoreColor(overallScore)}`}>{overallScore}</div>
+                <div className="text-xs font-medium text-slate-500 -mt-0.5">/ 100</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Overall AI Score</div>
+                <div className={`text-sm font-medium ${scoreColor(overallScore)}`}>{scoreLabel(overallScore)}</div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Error display */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-            {error}
-            <button onClick={() => setError(null)} className="ml-4 text-red-500 hover:text-red-700">✕</button>
+        {/* Upload error banner */}
+        {uploadError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex justify-between">
+            <span>{uploadError}</span>
+            <button onClick={() => setUploadError(null)} className="ml-4 font-bold">×</button>
           </div>
         )}
 
-        {/* Quick actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl border-2 border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-900">Add Repository</h3>
-              <span className="text-2xl">📁</span>
-            </div>
-            <p className="text-sm text-slate-600 mb-4">
-              Connect a new repository to start tracking AI readiness
-            </p>
-            <button 
+        {/* Repositories section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-slate-900">Repositories</h2>
+            <button
               onClick={() => setShowAddRepo(true)}
-              className="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Add Repository
+              <span className="text-lg leading-none">+</span> Add Repository
             </button>
           </div>
 
-          <div className="bg-white p-6 rounded-xl border-2 border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-900">Upload Analysis</h3>
-              <span className="text-2xl">📊</span>
+          {repos.length === 0 ? (
+            <div className="bg-white rounded-xl border-2 border-dashed border-slate-200 p-12 text-center">
+              <div className="text-5xl mb-4">🚀</div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Get Started with AIReady</h3>
+              <p className="text-slate-500 max-w-md mx-auto mb-6 text-sm">
+                Add a repository, run the CLI, then upload the results to get your AI readiness score.
+              </p>
+              <div className="bg-slate-900 text-slate-300 p-4 rounded-lg text-sm font-mono max-w-lg mx-auto text-left">
+                <div className="mb-1 text-slate-500"># Install and run analysis</div>
+                <div className="text-cyan-400">npx @aiready/cli scan .</div>
+                <div className="mt-2 mb-1 text-slate-500"># Save as JSON</div>
+                <div className="text-cyan-400">npx @aiready/cli scan . --output json &gt; report.json</div>
+              </div>
+              <button
+                onClick={() => setShowAddRepo(true)}
+                className="mt-6 px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Add Your First Repository
+              </button>
             </div>
-            <p className="text-sm text-slate-600 mb-4">
-              Upload CLI results to update your metrics
-            </p>
-            <button 
-              onClick={() => setShowUpload(true)}
-              disabled={repos.length === 0}
-              className="w-full px-4 py-2 border-2 border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:border-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Upload Results
-            </button>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl border-2 border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-900">AI Score</h3>
-              <span className="text-2xl">🎯</span>
-            </div>
-            {overallScore !== null ? (
-              <>
-                <div className={`text-3xl font-black ${getScoreColor(overallScore)} mb-1`}>
-                  {overallScore}/100
-                </div>
-                <p className="text-sm text-slate-600">
-                  Across {repos.filter(r => r.aiScore !== undefined).length} repositor{repos.filter(r => r.aiScore !== undefined).length === 1 ? 'y' : 'ies'}
-                </p>
-              </>
-            ) : (
-              <>
-                <div className="text-3xl font-black text-slate-400 mb-1">
-                  --/100
-                </div>
-                <p className="text-sm text-slate-600">
-                  Run your first analysis to get scored
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Repositories list */}
-        {repos.length > 0 ? (
-          <div className="bg-white rounded-xl border-2 border-slate-200">
-            <div className="p-6 border-b border-slate-200">
-              <h3 className="font-semibold text-slate-900">Your Repositories</h3>
-            </div>
-            <div className="divide-y divide-slate-200">
-              {repos.map((repo) => (
-                <div key={repo.id} className="p-6 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center">
-                      <span className="text-xl">📦</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-slate-900">{repo.name}</h4>
-                      <p className="text-sm text-slate-500">{repo.url}</p>
-                      {repo.description && (
-                        <p className="text-sm text-slate-400 mt-1">{repo.description}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    {repo.aiScore !== undefined ? (
-                      <div className="text-center">
-                        <div className={`text-xl font-bold ${getScoreColor(repo.aiScore)}`}>
-                          {repo.aiScore}
-                        </div>
-                        <div className="text-xs text-slate-500">AI Score</div>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <div className="text-xl font-bold text-slate-300">--</div>
-                        <div className="text-xs text-slate-500">No data</div>
-                      </div>
-                    )}
-                    <div className="text-right">
-                      <div className="text-xs text-slate-400">
-                        {repo.lastAnalysisAt 
-                          ? `Last: ${new Date(repo.lastAnalysisAt).toLocaleDateString()}`
-                          : 'No analysis yet'}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteRepo(repo.id)}
-                      className="text-slate-400 hover:text-red-500"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {repos.map(repo => (
+                <RepoCard
+                  key={repo.id}
+                  repo={repo}
+                  uploading={uploadingRepoId === repo.id}
+                  onUpload={() => handleUploadAnalysis(repo.id)}
+                  onDelete={() => handleDeleteRepo(repo.id)}
+                />
               ))}
             </div>
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl border-2 border-slate-200 p-12 text-center">
-            <div className="text-5xl mb-4">🚀</div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
-              Get Started with AIReady
-            </h3>
-            <p className="text-slate-600 max-w-md mx-auto mb-6">
-              Add a repository and run the CLI to analyze your codebase AI readiness.
-            </p>
-            <div className="bg-slate-900 text-slate-300 p-4 rounded-lg text-sm font-mono max-w-lg mx-auto">
-              <div className="mb-1"># Install and run analysis</div>
-              <div className="text-cyan-400">npx @aiready/cli scan .</div>
-              <div className="mt-2 mb-1"># Upload to platform</div>
-              <div className="text-cyan-400">aiready upload --repo-id YOUR_REPO_ID</div>
+          )}
+        </section>
+
+        {/* CLI quickstart (shown when repos exist but none analyzed) */}
+        {repos.length > 0 && repos.every(r => !r.latestAnalysis) && (
+          <section className="bg-slate-900 rounded-xl p-6 text-white">
+            <h3 className="font-semibold text-lg mb-1">Run your first analysis</h3>
+            <p className="text-slate-400 text-sm mb-4">Generate a report JSON and upload it to see your AI readiness scores.</p>
+            <div className="font-mono text-sm space-y-1">
+              <div>
+                <span className="text-slate-500"># </span>
+                <span className="text-cyan-400">npx @aiready/cli scan . --output json &gt; report.json</span>
+              </div>
+              <div>
+                <span className="text-slate-500"># then upload report.json via the button on your repo card</span>
+              </div>
             </div>
-          </div>
+          </section>
         )}
       </main>
 
       {/* Add Repository Modal */}
       {showAddRepo && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Add Repository</h3>
-            <form onSubmit={handleAddRepo}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                  <input
-                    type="text"
-                    value={newRepo.name}
-                    onChange={(e) => setNewRepo({ ...newRepo, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="my-awesome-project"
-                    required
-                  />
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+          onClick={e => { if (e.target === e.currentTarget) setShowAddRepo(false); }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-900">Add Repository</h3>
+              <button onClick={() => setShowAddRepo(false)} className="text-slate-400 hover:text-slate-600 text-xl leading-none">×</button>
+            </div>
+            <form onSubmit={handleAddRepo} className="px-6 py-5 space-y-4">
+              {addRepoError && (
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                  {addRepoError}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">URL</label>
-                  <input
-                    type="text"
-                    value={newRepo.url}
-                    onChange={(e) => setNewRepo({ ...newRepo, url: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="https://github.com/user/repo"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Description (optional)</label>
-                  <input
-                    type="text"
-                    value={newRepo.description}
-                    onChange={(e) => setNewRepo({ ...newRepo, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="A brief description"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Default Branch</label>
-                  <input
-                    type="text"
-                    value={newRepo.defaultBranch}
-                    onChange={(e) => setNewRepo({ ...newRepo, defaultBranch: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="main"
-                  />
-                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Repository Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="my-awesome-project"
+                  value={addRepoForm.name}
+                  onChange={e => setAddRepoForm(f => ({ ...f, name: e.target.value }))}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
-              <div className="flex gap-3 mt-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Repository URL</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="https://github.com/user/repo"
+                  value={addRepoForm.url}
+                  onChange={e => setAddRepoForm(f => ({ ...f, url: e.target.value }))}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Description <span className="text-slate-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="What does this repo do?"
+                  value={addRepoForm.description}
+                  onChange={e => setAddRepoForm(f => ({ ...f, description: e.target.value }))}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Default Branch</label>
+                <input
+                  type="text"
+                  placeholder="main"
+                  value={addRepoForm.defaultBranch}
+                  onChange={e => setAddRepoForm(f => ({ ...f, defaultBranch: e.target.value }))}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAddRepo(false)}
-                  className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50"
+                  className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  disabled={addRepoLoading}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Adding...' : 'Add Repository'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Upload Analysis Modal */}
-      {showUpload && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg mx-4">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Upload Analysis</h3>
-            <form onSubmit={handleUpload}>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Repository</label>
-                  <select
-                    value={selectedRepo || ''}
-                    onChange={(e) => setSelectedRepo(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  >
-                    <option value="">Select a repository</option>
-                    {repos.map((repo) => (
-                      <option key={repo.id} value={repo.id}>
-                        {repo.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Analysis JSON
-                    <span className="text-slate-400 font-normal ml-2">(paste output from CLI)</span>
-                  </label>
-                  <textarea
-                    value={uploadData}
-                    onChange={(e) => setUploadData(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                    rows={10}
-                    placeholder='{"metadata": {...}, "summary": {...}, "breakdown": {...}}'
-                    required
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => { setShowUpload(false); setUploadData(''); setSelectedRepo(null); }}
-                  className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || !selectedRepo}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {loading ? 'Uploading...' : 'Upload'}
+                  {addRepoLoading ? 'Adding...' : 'Add Repository'}
                 </button>
               </div>
             </form>
@@ -464,4 +344,113 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
       )}
     </div>
   );
+}
+
+function RepoCard({
+  repo,
+  uploading,
+  onUpload,
+  onDelete,
+}: {
+  repo: RepoWithAnalysis;
+  uploading: boolean;
+  onUpload: () => void;
+  onDelete: () => void;
+}) {
+  const score = repo.aiScore;
+  const analysis = repo.latestAnalysis;
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col gap-4 hover:border-slate-300 transition-colors">
+      {/* Repo header */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="font-semibold text-slate-900 truncate">{repo.name}</h3>
+          {repo.description && (
+            <p className="text-xs text-slate-500 mt-0.5 truncate">{repo.description}</p>
+          )}
+          <a
+            href={repo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-500 hover:text-blue-700 mt-0.5 truncate block"
+          >
+            {repo.url}
+          </a>
+        </div>
+        {score != null && (
+          <div className={`flex-shrink-0 text-center px-3 py-1.5 rounded-lg border ${scoreBg(score)}`}>
+            <div className={`text-2xl font-black leading-none ${scoreColor(score)}`}>{score}</div>
+            <div className="text-xs text-slate-400 mt-0.5">/ 100</div>
+          </div>
+        )}
+      </div>
+
+      {/* Breakdown grid */}
+      {analysis?.breakdown && (
+        <div className="grid grid-cols-2 gap-2">
+          {Object.entries(analysis.breakdown).map(([key, val]) => (
+            <BreakdownItem key={key} label={formatBreakdownKey(key)} value={val as number} />
+          ))}
+        </div>
+      )}
+
+      {/* Summary line */}
+      {analysis?.summary && (
+        <div className="flex gap-3 text-xs text-slate-500">
+          <span>{analysis.summary.totalFiles} files</span>
+          {analysis.summary.criticalIssues > 0 && (
+            <span className="text-red-500 font-medium">{analysis.summary.criticalIssues} critical</span>
+          )}
+          {analysis.summary.warnings > 0 && (
+            <span className="text-amber-500">{analysis.summary.warnings} warnings</span>
+          )}
+        </div>
+      )}
+
+      {!analysis && (
+        <p className="text-xs text-slate-400 italic">No analysis yet — upload a report to get scored.</p>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2 pt-1 border-t border-slate-100">
+        <button
+          onClick={onUpload}
+          disabled={uploading}
+          className="flex-1 px-3 py-2 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? 'Uploading...' : analysis ? 'Update Analysis' : 'Upload Analysis'}
+        </button>
+        <button
+          onClick={onDelete}
+          className="px-3 py-2 text-slate-400 hover:text-red-500 hover:bg-red-50 text-xs font-medium rounded-lg transition-colors"
+          title="Delete repository"
+        >
+          Delete
+        </button>
+      </div>
+
+      {repo.lastAnalysisAt && (
+        <p className="text-xs text-slate-400 -mt-2">
+          Last analyzed {new Date(repo.lastAnalysisAt).toLocaleDateString()}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function BreakdownItem({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-slate-50 rounded-lg px-2.5 py-2">
+      <div className={`text-sm font-semibold ${scoreColor(value)}`}>{value}</div>
+      <div className="text-xs text-slate-500 leading-tight">{label}</div>
+    </div>
+  );
+}
+
+function formatBreakdownKey(key: string): string {
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, s => s.toUpperCase())
+    .trim();
 }
