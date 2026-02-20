@@ -6,7 +6,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js 15)                     │
+│                    Frontend (Next.js 16)                     │
 │  ┌───────────────┐  ┌───────────────┐  ┌────────────────┐   │
 │  │  Dashboard    │  │ Remediation   │  │  Settings      │   │
 │  │  - Repos      │  │ - Review Queue│  │  - Team        │   │
@@ -34,7 +34,7 @@
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| **Frontend** | Next.js 15 (App Router) | Dashboard UI |
+| **Frontend** | Next.js 16 (App Router) | Dashboard UI |
 | **Styling** | Tailwind CSS + shadcn/ui | Component library |
 | **Auth** | NextAuth.js | GitHub OAuth, JWT |
 | **API** | API Gateway + Lambda | Serverless REST |
@@ -102,22 +102,26 @@ interface RemediationRequest {
 ## API Endpoints
 
 ### Authentication
+
 - `GET /api/auth/github` - GitHub OAuth redirect
 - `GET /api/auth/callback` - OAuth callback
 - `POST /api/auth/refresh` - Refresh JWT
 
 ### Analysis
+
 - `POST /api/analysis/upload` - Upload CLI results
 - `GET /api/repos/:id/runs` - List runs for repo
 - `GET /api/runs/:id` - Get run details
 
 ### Remediation
+
 - `POST /api/remediation/create` - Create remediation request
 - `GET /api/remediation/queue` - Get review queue
 - `PATCH /api/remediation/:id/approve` - Approve fix
 - `PATCH /api/remediation/:id/reject` - Reject fix
 
 ### Billing
+
 - `POST /api/billing/webhook` - Stripe webhook
 - `GET /api/billing/portal` - Customer portal URL
 

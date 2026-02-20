@@ -5,25 +5,27 @@
  * 
  * PK Patterns:
  *   USER#<userId>           - User record
+ *   TEAM#<teamId>           - Team record
  *   REPO#<repoId>           - Repository record
  *   ANALYSIS#<repoId>       - Analysis records for a repo
+ *   REMEDIATION#<remId>     - Remediation request
  * 
  * SK Patterns:
  *   #METADATA               - Entity metadata
- *   #LIST                   - List entry (for GSI1)
- *   <timestamp>             - Analysis timestamp (sorted)
+ *   #MEMBER#<userId>        - Team membership
+ *   <timestamp>             - Analysis/remediation timestamp (sorted)
  * 
- * GSI1: List all repos for a user
- *   GSI1PK: USER#<userId>
- *   GSI1SK: REPO#<repoId>
+ * GSI1: List all repos for a user / List members for a team
+ *   GSI1PK: USER#<userId> | TEAM#<teamId>
+ *   GSI1SK: REPO#<repoId> | MEMBER#<userId>
  * 
- * GSI2: List all analyses for a repo (most recent first)
- *   GSI2PK: ANALYSIS#<repoId>
+ * GSI2: List all analyses for a repo / List remediations
+ *   GSI2PK: ANALYSIS#<repoId> | REMEDIATION#<repoId>
  *   GSI2SK: <timestamp>
  */
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand, UpdateCommand, DeleteCommand, BatchWriteCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 // Initialize DynamoDB client
 const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'ap-southeast-2' });
@@ -41,12 +43,36 @@ export interface User {
   name?: string;
   image?: string;
   githubId?: string;
+  googleId?: string;
+  teamId?: string;
+  role?: 'owner' | 'admin' | 'member';
   createdAt: string;
   updatedAt: string;
 }
 
+export interface Team {
+  id: string;
+  name: string;
+  slug: string;
+  plan: 'free' | 'pro' | 'enterprise';
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  memberCount: number;
+  repoLimit: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TeamMember {
+  teamId: string;
+  userId: string;
+  role: 'owner' | 'admin' | 'member';
+  joinedAt: string;
+}
+
 export interface Repository {
   id: string;
+  teamId?: string;
   userId: string;
   name: string;
   url: string;
@@ -80,6 +106,23 @@ export interface Analysis {
   createdAt: string;
 }
 
+export interface RemediationRequest {
+  id: string;
+  repoId: string;
+  teamId?: string;
+  userId: string;
+  type: 'consolidation' | 'rename' | 'restructure' | 'refactor';
+  risk: 'low' | 'medium' | 'high' | 'critical';
+  status: 'pending' | 'reviewing' | 'approved' | 'rejected' | 'completed';
+  title: string;
+  description: string;
+  affectedFiles: string[];
+  estimatedSavings: number; // tokens
+  assignedTo?: string; // expert ID
+  createdAt: string;
+  updatedAt: string;
+}
+
 // User operations
 export async function createUser(user: User): Promise<User> {
   const now = new Date().toISOString();
@@ -106,18 +149,186 @@ export async function getUser(userId: string): Promise<User | null> {
   return result.Item ? result.Item as User : null;
 }
 
-export async function getUserByGithubId(githubId: string): Promise<User | null> {
+export async function getUserByEmail(email: string): Promise<User | null> {
   const result = await doc.send(new QueryCommand({
     TableName: TABLE_NAME,
     IndexName: 'GSI1',
-    KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :sk',
+    KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :email',
     ExpressionAttributeValues: {
       ':pk': 'USERS',
-      ':sk': `GITHUB#${githubId}`,
+      ':email': email,
     },
   }));
 
   return result.Items?.[0] as User | null;
+}
+
+export async function updateUser(userId: string, updates: Partial<User>): Promise<void> {
+  const updateExpressions: string[] = [];
+  const expressionAttributeNames: Record<string, string> = {};
+  const expressionAttributeValues: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(updates)) {
+    if (key === 'id') continue;
+    updateExpressions.push(`#${key} = :${key}`);
+    expressionAttributeNames[`#${key}`] = key;
+    expressionAttributeValues[`:${key}`] = value;
+  }
+
+  if (updateExpressions.length === 0) return;
+
+  updateExpressions.push('#updatedAt = :updatedAt');
+  expressionAttributeNames['#updatedAt'] = 'updatedAt';
+  expressionAttributeValues[':updatedAt'] = new Date().toISOString();
+
+  await doc.send(new UpdateCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `USER#${userId}`, SK: '#METADATA' },
+    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+  }));
+}
+
+// Team operations
+export async function createTeam(team: Team, ownerId: string): Promise<Team> {
+  const now = new Date().toISOString();
+  
+  // Create team record
+  const teamItem = {
+    PK: `TEAM#${team.id}`,
+    SK: '#METADATA',
+    GSI1PK: 'TEAMS',
+    GSI1SK: team.slug,
+    ...team,
+    createdAt: team.createdAt || now,
+    updatedAt: now,
+  };
+
+  // Create owner membership
+  const memberItem = {
+    PK: `TEAM#${team.id}`,
+    SK: `#MEMBER#${ownerId}`,
+    GSI1PK: `TEAM#${team.id}`,
+    GSI1SK: `MEMBER#${ownerId}`,
+    teamId: team.id,
+    userId: ownerId,
+    role: 'owner',
+    joinedAt: now,
+  };
+
+  await doc.send(new BatchWriteCommand({
+    TableName: TABLE_NAME,
+    RequestItems: {
+      [TABLE_NAME]: [
+        { PutRequest: { Item: teamItem } },
+        { PutRequest: { Item: memberItem } },
+      ],
+    },
+  }));
+
+  // Update user with teamId
+  await updateUser(ownerId, { teamId: team.id, role: 'owner' });
+
+  return team;
+}
+
+export async function getTeam(teamId: string): Promise<Team | null> {
+  const result = await doc.send(new GetCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `TEAM#${teamId}`, SK: '#METADATA' },
+  }));
+
+  return result.Item ? result.Item as Team : null;
+}
+
+export async function getTeamBySlug(slug: string): Promise<Team | null> {
+  const result = await doc.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: 'GSI1',
+    KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :slug',
+    ExpressionAttributeValues: {
+      ':pk': 'TEAMS',
+      ':slug': slug,
+    },
+  }));
+
+  return result.Items?.[0] as Team | null;
+}
+
+export async function listTeamMembers(teamId: string): Promise<(TeamMember & { user: User })[]> {
+  const result = await doc.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
+    ExpressionAttributeValues: {
+      ':pk': `TEAM#${teamId}`,
+      ':prefix': '#MEMBER#',
+    },
+  }));
+
+  // Fetch user details for each member
+  const members = result.Items || [];
+  const enrichedMembers = await Promise.all(
+    members.map(async (member) => {
+      const user = await getUser(member.userId);
+      return { ...member, user } as TeamMember & { user: User };
+    })
+  );
+
+  return enrichedMembers;
+}
+
+export async function addTeamMember(teamId: string, userId: string, role: 'admin' | 'member' = 'member'): Promise<void> {
+  const now = new Date().toISOString();
+  
+  const memberItem = {
+    PK: `TEAM#${teamId}`,
+    SK: `#MEMBER#${userId}`,
+    GSI1PK: `TEAM#${teamId}`,
+    GSI1SK: `MEMBER#${userId}`,
+    teamId,
+    userId,
+    role,
+    joinedAt: now,
+  };
+
+  await doc.send(new PutCommand({ TableName: TABLE_NAME, Item: memberItem }));
+  await updateUser(userId, { teamId, role });
+}
+
+export async function removeTeamMember(teamId: string, userId: string): Promise<void> {
+  await doc.send(new DeleteCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `TEAM#${teamId}`, SK: `#MEMBER#${userId}` },
+  }));
+  await updateUser(userId, { teamId: undefined, role: undefined });
+}
+
+export async function updateTeam(teamId: string, updates: Partial<Team>): Promise<void> {
+  const updateExpressions: string[] = [];
+  const expressionAttributeNames: Record<string, string> = {};
+  const expressionAttributeValues: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(updates)) {
+    if (key === 'id') continue;
+    updateExpressions.push(`#${key} = :${key}`);
+    expressionAttributeNames[`#${key}`] = key;
+    expressionAttributeValues[`:${key}`] = value;
+  }
+
+  if (updateExpressions.length === 0) return;
+
+  updateExpressions.push('#updatedAt = :updatedAt');
+  expressionAttributeNames['#updatedAt'] = 'updatedAt';
+  expressionAttributeValues[':updatedAt'] = new Date().toISOString();
+
+  await doc.send(new UpdateCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `TEAM#${teamId}`, SK: '#METADATA' },
+    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+  }));
 }
 
 // Repository operations
@@ -126,7 +337,7 @@ export async function createRepository(repo: Repository): Promise<Repository> {
   const item = {
     PK: `REPO#${repo.id}`,
     SK: '#METADATA',
-    GSI1PK: `USER#${repo.userId}`,
+    GSI1PK: repo.teamId ? `TEAM#${repo.teamId}` : `USER#${repo.userId}`,
     GSI1SK: `REPO#${repo.id}`,
     ...repo,
     createdAt: repo.createdAt || now,
@@ -155,7 +366,22 @@ export async function listUserRepositories(userId: string): Promise<Repository[]
       ':pk': `USER#${userId}`,
       ':prefix': 'REPO#',
     },
-    ScanIndexForward: false, // Most recent first
+    ScanIndexForward: false,
+  }));
+
+  return (result.Items || []) as Repository[];
+}
+
+export async function listTeamRepositories(teamId: string): Promise<Repository[]> {
+  const result = await doc.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: 'GSI1',
+    KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+    ExpressionAttributeValues: {
+      ':pk': `TEAM#${teamId}`,
+      ':prefix': 'REPO#',
+    },
+    ScanIndexForward: false,
   }));
 
   return (result.Items || []) as Repository[];
@@ -167,7 +393,7 @@ export async function updateRepository(repoId: string, updates: Partial<Reposito
   const expressionAttributeValues: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(updates)) {
-    if (key === 'id' || key === 'userId') continue; // Don't update keys
+    if (key === 'id' || key === 'userId') continue;
     updateExpressions.push(`#${key} = :${key}`);
     expressionAttributeNames[`#${key}`] = key;
     expressionAttributeValues[`:${key}`] = value;
@@ -237,7 +463,7 @@ export async function listRepositoryAnalyses(repoId: string, limit = 10): Promis
       ':pk': `ANALYSIS#${repoId}`,
     },
     Limit: limit,
-    ScanIndexForward: false, // Most recent first
+    ScanIndexForward: false,
   }));
 
   return (result.Items || []) as Analysis[];
@@ -251,10 +477,96 @@ export async function getLatestAnalysis(repoId: string): Promise<Analysis | null
       ':pk': `ANALYSIS#${repoId}`,
     },
     Limit: 1,
-    ScanIndexForward: false, // Most recent first
+    ScanIndexForward: false,
   }));
 
   return result.Items?.[0] as Analysis | null;
+}
+
+// Remediation operations
+export async function createRemediation(remediation: RemediationRequest): Promise<RemediationRequest> {
+  const now = new Date().toISOString();
+  const item = {
+    PK: `REMEDIATION#${remediation.id}`,
+    SK: '#METADATA',
+    GSI1PK: remediation.teamId ? `TEAM#${remediation.teamId}` : `USER#${remediation.userId}`,
+    GSI1SK: `REMEDIATION#${remediation.id}`,
+    GSI2PK: `REMEDIATION#${remediation.repoId}`,
+    GSI2SK: remediation.createdAt,
+    ...remediation,
+    createdAt: remediation.createdAt || now,
+    updatedAt: now,
+  };
+
+  await doc.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
+  return remediation;
+}
+
+export async function getRemediation(remediationId: string): Promise<RemediationRequest | null> {
+  const result = await doc.send(new GetCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `REMEDIATION#${remediationId}`, SK: '#METADATA' },
+  }));
+
+  return result.Item ? result.Item as RemediationRequest : null;
+}
+
+export async function listRemediations(repoId: string, limit = 20): Promise<RemediationRequest[]> {
+  const result = await doc.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: 'GSI2',
+    KeyConditionExpression: 'GSI2PK = :pk',
+    ExpressionAttributeValues: {
+      ':pk': `REMEDIATION#${repoId}`,
+    },
+    Limit: limit,
+    ScanIndexForward: false,
+  }));
+
+  return (result.Items || []) as RemediationRequest[];
+}
+
+export async function listTeamRemediations(teamId: string, limit = 50): Promise<RemediationRequest[]> {
+  const result = await doc.send(new QueryCommand({
+    TableName: TABLE_NAME,
+    IndexName: 'GSI1',
+    KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+    ExpressionAttributeValues: {
+      ':pk': `TEAM#${teamId}`,
+      ':prefix': 'REMEDIATION#',
+    },
+    Limit: limit,
+    ScanIndexForward: false,
+  }));
+
+  return (result.Items || []) as RemediationRequest[];
+}
+
+export async function updateRemediation(remediationId: string, updates: Partial<RemediationRequest>): Promise<void> {
+  const updateExpressions: string[] = [];
+  const expressionAttributeNames: Record<string, string> = {};
+  const expressionAttributeValues: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(updates)) {
+    if (key === 'id') continue;
+    updateExpressions.push(`#${key} = :${key}`);
+    expressionAttributeNames[`#${key}`] = key;
+    expressionAttributeValues[`:${key}`] = value;
+  }
+
+  if (updateExpressions.length === 0) return;
+
+  updateExpressions.push('#updatedAt = :updatedAt');
+  expressionAttributeNames['#updatedAt'] = 'updatedAt';
+  expressionAttributeValues[':updatedAt'] = new Date().toISOString();
+
+  await doc.send(new UpdateCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `REMEDIATION#${remediationId}`, SK: '#METADATA' },
+    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+  }));
 }
 
 export { doc, TABLE_NAME };

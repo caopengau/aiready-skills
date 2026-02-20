@@ -12,6 +12,35 @@ export default $config({
     // S3 Bucket for analysis data
     const bucket = new sst.aws.Bucket("AnalysisBucket");
 
+    // DynamoDB Table for all entities (Single Table Design)
+    const table = new sst.aws.Dynamo("MainTable", {
+      fields: {
+        PK: "string",
+        SK: "string",
+        GSI1PK: "string",
+        GSI1SK: "string",
+        GSI2PK: "string",
+        GSI2SK: "string",
+      },
+      primaryIndex: { hashKey: "PK", rangeKey: "SK" },
+      globalIndexes: {
+        GSI1: { hashKey: "GSI1PK", rangeKey: "GSI1SK" },
+        GSI2: { hashKey: "GSI2PK", rangeKey: "GSI2SK" },
+      },
+      ttl: {
+        attribute: "ttl",
+        transform: {
+          attribute: "expiresAt",
+          days: 90,
+        },
+      },
+    });
+
+    // SQS Queue for async processing
+    const analysisQueue = new sst.aws.Queue("AnalysisQueue", {
+      visibilityTimeout: 300, // 5 minutes
+    });
+
     // Determine if this is production
     const isProd = $app.stage === "production";
 
@@ -20,6 +49,8 @@ export default $config({
       path: ".",
       environment: {
         S3_BUCKET: bucket.name,
+        DYNAMO_TABLE: table.name,
+        ANALYSIS_QUEUE_URL: analysisQueue.url,
         NEXTAUTH_URL: isProd 
           ? "https://platform.getaiready.dev" 
           : $app.stage === "dev"
@@ -35,6 +66,10 @@ export default $config({
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || "",
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
+        STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
+        STRIPE_PRICE_ID_PRO: process.env.STRIPE_PRICE_ID_PRO || "",
+        STRIPE_PRICE_ID_ENTERPRISE: process.env.STRIPE_PRICE_ID_ENTERPRISE || "",
       },
     };
 
@@ -60,9 +95,23 @@ export default $config({
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
 
+    // Grant permissions
+    bucket.bind([site]);
+    table.bind([site]);
+    analysisQueue.bind([site]);
+
+    // Grant the queue permission to invoke the site
+    analysisQueue.subscribe(site, {
+      filter: {
+        eventType: ["analysis:uploaded", "remediation:requested"],
+      },
+    });
+
     return {
       site: site.url,
       bucketName: bucket.name,
+      tableName: table.name,
+      queueUrl: analysisQueue.url,
     };
   },
 });
