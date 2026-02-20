@@ -19,13 +19,13 @@ export async function PATCH(
       return NextResponse.json({ error: 'Remediation not found' }, { status: 404 });
     }
 
-    // Check if user is owner or team admin
-    if (remediation.userId !== session.user.id && session.user.role !== 'owner' && session.user.role !== 'admin') {
+    // Only allow the remediation owner to approve
+    if (remediation.userId !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
-    const { assignedTo, notes } = body;
+    const { assignedTo } = body;
 
     await updateRemediation(id, {
       status: 'approved',
