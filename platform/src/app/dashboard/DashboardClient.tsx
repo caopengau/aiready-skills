@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { RocketIcon } from '@/components/Icons';
 import type { Repository, Analysis } from '@/lib/db';
 
 type RepoWithAnalysis = Repository & { latestAnalysis: Analysis | null };
@@ -19,16 +21,16 @@ interface Props {
 
 function scoreColor(score: number | null | undefined): string {
   if (score == null) return 'text-slate-400';
-  if (score >= 75) return 'text-emerald-600';
-  if (score >= 50) return 'text-amber-500';
-  return 'text-red-500';
+  if (score >= 75) return 'score-excellent';
+  if (score >= 50) return 'score-good';
+  return 'score-poor';
 }
 
 function scoreBg(score: number | null | undefined): string {
-  if (score == null) return 'bg-slate-100';
-  if (score >= 75) return 'bg-emerald-50 border-emerald-200';
-  if (score >= 50) return 'bg-amber-50 border-amber-200';
-  return 'bg-red-50 border-red-200';
+  if (score == null) return 'bg-slate-800/50 border-slate-700';
+  if (score >= 75) return 'bg-emerald-900/30 border-emerald-500/30';
+  if (score >= 50) return 'bg-amber-900/30 border-amber-500/30';
+  return 'bg-red-900/30 border-red-500/30';
 }
 
 function scoreLabel(score: number | null | undefined): string {
@@ -36,6 +38,13 @@ function scoreLabel(score: number | null | undefined): string {
   if (score >= 75) return 'AI-Ready';
   if (score >= 50) return 'Needs Improvement';
   return 'Critical Issues';
+}
+
+function scoreGlow(score: number | null | undefined): string {
+  if (score == null) return '';
+  if (score >= 75) return 'shadow-emerald-500/20';
+  if (score >= 50) return 'shadow-amber-500/20';
+  return 'shadow-red-500/20';
 }
 
 export default function DashboardClient({ user, repos: initialRepos, overallScore }: Props) {
@@ -113,7 +122,6 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
           return;
         }
 
-        // Update repo in list with new analysis
         setRepos(prev => prev.map(r =>
           r.id === repoId
             ? { ...r, latestAnalysis: result.analysis, aiScore: result.analysis.aiScore }
@@ -130,29 +138,49 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="orb orb-blue w-96 h-96 -top-48 -right-48" style={{ animationDelay: '0s' }} />
+        <div className="orb orb-purple w-80 h-80 bottom-0 -left-40" style={{ animationDelay: '3s' }} />
+      </div>
+      <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="glass sticky top-0 z-20 border-b border-indigo-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-xl font-bold gradient-text"
+              >
                 AIReady
-              </span>
+              </motion.span>
               <nav className="hidden md:flex items-center gap-6 ml-6">
-                <a href="/dashboard" className="text-sm font-medium text-slate-900 border-b-2 border-blue-600 pb-0.5">Dashboard</a>
-                <a href="/docs" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Docs</a>
+                <a href="/dashboard" className="text-sm font-medium text-cyan-400 border-b-2 border-cyan-400 pb-0.5">
+                  Dashboard
+                </a>
+                <a href="/docs" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                  Docs
+                </a>
               </nav>
             </div>
             <div className="flex items-center gap-3">
               {user.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full" />
+                <motion.img
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  src={user.image}
+                  alt={user.name || 'User'}
+                  className="w-8 h-8 rounded-full border-2 border-cyan-500/50"
+                />
               )}
-              <span className="text-sm text-slate-600 hidden sm:block">{user.name || user.email}</span>
+              <span className="text-sm text-slate-300 hidden sm:block">{user.name || user.email}</span>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-sm text-slate-500 hover:text-slate-700 transition-colors px-3 py-1.5 rounded-md hover:bg-slate-100"
+                className="text-sm text-slate-400 hover:text-red-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-500/10"
               >
                 Sign out
               </button>
@@ -161,198 +189,245 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Welcome + overall score */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-white">
               Welcome back, {user.name?.split(' ')[0] || 'Developer'}!
             </h1>
-            <p className="text-slate-500 mt-1 text-sm">
+            <p className="text-slate-400 mt-1">
               {repos.length === 0
                 ? 'Add your first repository to start tracking AI readiness.'
                 : `Tracking ${repos.length} repositor${repos.length === 1 ? 'y' : 'ies'}`}
             </p>
           </div>
           {overallScore != null && (
-            <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border-2 ${scoreBg(overallScore)}`}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className={`flex items-center gap-4 px-6 py-4 rounded-2xl border ${scoreBg(overallScore)} shadow-lg ${scoreGlow(overallScore)}`}
+            >
               <div className="text-right">
-                <div className={`text-3xl font-black ${scoreColor(overallScore)}`}>{overallScore}</div>
-                <div className="text-xs font-medium text-slate-500 -mt-0.5">/ 100</div>
+                <div className={`text-4xl font-black ${scoreColor(overallScore)}`}>{overallScore}</div>
+                <div className="text-xs text-slate-500 -mt-1">/ 100</div>
               </div>
-              <div>
-                <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide">Overall AI Score</div>
-                <div className={`text-sm font-medium ${scoreColor(overallScore)}`}>{scoreLabel(overallScore)}</div>
+              <div className="pl-4 border-l border-slate-700">
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Overall AI Score</div>
+                <div className={`text-sm font-semibold ${scoreColor(overallScore)}`}>{scoreLabel(overallScore)}</div>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
         {/* Upload error banner */}
-        {uploadError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex justify-between">
-            <span>{uploadError}</span>
-            <button onClick={() => setUploadError(null)} className="ml-4 font-bold">×</button>
-          </div>
-        )}
+        <AnimatePresence>
+          {uploadError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-red-900/30 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl flex justify-between items-center"
+            >
+              <span>{uploadError}</span>
+              <button onClick={() => setUploadError(null)} className="ml-4 font-bold text-xl leading-none hover:text-red-100">×</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Repositories section */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-900">Repositories</h2>
-            <button
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-white">Repositories</h2>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowAddRepo(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all"
             >
               <span className="text-lg leading-none">+</span> Add Repository
-            </button>
+            </motion.button>
           </div>
 
           {repos.length === 0 ? (
-            <div className="bg-white rounded-xl border-2 border-dashed border-slate-200 p-12 text-center">
-              <div className="text-5xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Get Started with AIReady</h3>
-              <p className="text-slate-500 max-w-md mx-auto mb-6 text-sm">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-card rounded-2xl p-12 text-center"
+            >
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="mb-6"
+              >
+                <div className="inline-block text-6xl text-slate-50">
+                  <RocketIcon className="w-14 h-14" />
+                </div>
+              </motion.div>
+              <h3 className="text-2xl font-bold text-white mb-3">Get Started with AIReady</h3>
+              <p className="text-slate-400 max-w-md mx-auto mb-8">
                 Add a repository, run the CLI, then upload the results to get your AI readiness score.
               </p>
-              <div className="bg-slate-900 text-slate-300 p-4 rounded-lg text-sm font-mono max-w-lg mx-auto text-left">
-                <div className="mb-1 text-slate-500"># Install and run analysis</div>
-                <div className="text-cyan-400">npx @aiready/cli scan .</div>
-                <div className="mt-2 mb-1 text-slate-500"># Save as JSON</div>
-                <div className="text-cyan-400">npx @aiready/cli scan . --output json &gt; report.json</div>
-              </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowAddRepo(true)}
-                className="mt-6 px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="mt-8 btn-primary"
               >
                 Add Your First Repository
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {repos.map(repo => (
-                <RepoCard
-                  key={repo.id}
-                  repo={repo}
-                  uploading={uploadingRepoId === repo.id}
-                  onUpload={() => handleUploadAnalysis(repo.id)}
-                  onDelete={() => handleDeleteRepo(repo.id)}
-                />
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              <AnimatePresence>
+                {repos.map((repo, index) => (
+                  <RepoCard
+                    key={repo.id}
+                    repo={repo}
+                    index={index}
+                    uploading={uploadingRepoId === repo.id}
+                    onUpload={() => handleUploadAnalysis(repo.id)}
+                    onDelete={() => handleDeleteRepo(repo.id)}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </section>
 
-        {/* CLI quickstart (shown when repos exist but none analyzed) */}
+        {/* CLI quickstart */}
         {repos.length > 0 && repos.every(r => !r.latestAnalysis) && (
-          <section className="bg-slate-900 rounded-xl p-6 text-white">
-            <h3 className="font-semibold text-lg mb-1">Run your first analysis</h3>
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card rounded-2xl p-6"
+          >
+            <h3 className="font-semibold text-lg text-white mb-2">Run your first analysis</h3>
             <p className="text-slate-400 text-sm mb-4">Generate a report JSON and upload it to see your AI readiness scores.</p>
-            <div className="font-mono text-sm space-y-1">
-              <div>
-                <span className="text-slate-500"># </span>
-                <span className="text-cyan-400">npx @aiready/cli scan . --output json &gt; report.json</span>
+            <div className="font-mono text-sm space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500">$</span>
+                <span className="text-cyan-400">npx @aiready/cli scan . --output json{' > '}report.json</span>
               </div>
-              <div>
-                <span className="text-slate-500"># then upload report.json via the button on your repo card</span>
+              <div className="text-slate-500 text-xs">
+                # then upload report.json via the button on your repo card
               </div>
             </div>
-          </section>
+          </motion.section>
         )}
       </main>
 
       {/* Add Repository Modal */}
-      {showAddRepo && (
-        <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
-          onClick={e => { if (e.target === e.currentTarget) setShowAddRepo(false); }}
-        >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
-              <h3 className="text-lg font-semibold text-slate-900">Add Repository</h3>
-              <button onClick={() => setShowAddRepo(false)} className="text-slate-400 hover:text-slate-600 text-xl leading-none">×</button>
-            </div>
-            <form onSubmit={handleAddRepo} className="px-6 py-5 space-y-4">
-              {addRepoError && (
-                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  {addRepoError}
+      <AnimatePresence>
+        {showAddRepo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={e => { if (e.target === e.currentTarget) setShowAddRepo(false); }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="glass-card rounded-2xl shadow-2xl w-full max-w-md"
+            >
+              <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-700/50">
+                <h3 className="text-lg font-semibold text-white">Add Repository</h3>
+                <button onClick={() => setShowAddRepo(false)} className="text-slate-400 hover:text-white text-xl leading-none">×</button>
+              </div>
+              <form onSubmit={handleAddRepo} className="px-6 py-5 space-y-4">
+                {addRepoError && (
+                  <div className="text-sm text-red-400 bg-red-900/30 border border-red-500/30 rounded-lg px-3 py-2">
+                    {addRepoError}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Repository Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="my-awesome-project"
+                    value={addRepoForm.name}
+                    onChange={e => setAddRepoForm(f => ({ ...f, name: e.target.value }))}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  />
                 </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Repository Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="my-awesome-project"
-                  value={addRepoForm.name}
-                  onChange={e => setAddRepoForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Repository URL</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="https://github.com/user/repo"
-                  value={addRepoForm.url}
-                  onChange={e => setAddRepoForm(f => ({ ...f, url: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Description <span className="text-slate-400 font-normal">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="What does this repo do?"
-                  value={addRepoForm.description}
-                  onChange={e => setAddRepoForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Default Branch</label>
-                <input
-                  type="text"
-                  placeholder="main"
-                  value={addRepoForm.defaultBranch}
-                  onChange={e => setAddRepoForm(f => ({ ...f, defaultBranch: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddRepo(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={addRepoLoading}
-                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {addRepoLoading ? 'Adding...' : 'Add Repository'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Repository URL</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://github.com/user/repo"
+                    value={addRepoForm.url}
+                    onChange={e => setAddRepoForm(f => ({ ...f, url: e.target.value }))}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Description <span className="text-slate-500 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="What does this repo do?"
+                    value={addRepoForm.description}
+                    onChange={e => setAddRepoForm(f => ({ ...f, description: e.target.value }))}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Default Branch</label>
+                  <input
+                    type="text"
+                    placeholder="main"
+                    value={addRepoForm.defaultBranch}
+                    onChange={e => setAddRepoForm(f => ({ ...f, defaultBranch: e.target.value }))}
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddRepo(false)}
+                    className="flex-1 px-4 py-2.5 border border-slate-600 text-slate-300 text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={addRepoLoading}
+                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {addRepoLoading ? 'Adding...' : 'Add Repository'}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
 function RepoCard({
   repo,
+  index,
   uploading,
   onUpload,
   onDelete,
 }: {
   repo: RepoWithAnalysis;
+  index: number;
   uploading: boolean;
   onUpload: () => void;
   onDelete: () => void;
@@ -361,27 +436,34 @@ function RepoCard({
   const analysis = repo.latestAnalysis;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col gap-4 hover:border-slate-300 transition-colors">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ delay: index * 0.05 }}
+      whileHover={{ y: -4 }}
+      className="glass-card rounded-2xl p-5 flex flex-col gap-4 card-hover"
+    >
       {/* Repo header */}
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="font-semibold text-slate-900 truncate">{repo.name}</h3>
+          <h3 className="font-semibold text-white truncate text-lg">{repo.name}</h3>
           {repo.description && (
-            <p className="text-xs text-slate-500 mt-0.5 truncate">{repo.description}</p>
+            <p className="text-xs text-slate-400 mt-0.5 truncate">{repo.description}</p>
           )}
           <a
             href={repo.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-blue-500 hover:text-blue-700 mt-0.5 truncate block"
+            className="text-xs text-cyan-400 hover:text-cyan-300 mt-1 truncate block transition-colors"
           >
             {repo.url}
           </a>
         </div>
         {score != null && (
-          <div className={`flex-shrink-0 text-center px-3 py-1.5 rounded-lg border ${scoreBg(score)}`}>
+          <div className={`flex-shrink-0 text-center px-4 py-2 rounded-xl border ${scoreBg(score)} shadow-lg`}>
             <div className={`text-2xl font-black leading-none ${scoreColor(score)}`}>{score}</div>
-            <div className="text-xs text-slate-400 mt-0.5">/ 100</div>
+            <div className="text-xs text-slate-500 mt-0.5">/ 100</div>
           </div>
         )}
       </div>
@@ -397,33 +479,35 @@ function RepoCard({
 
       {/* Summary line */}
       {analysis?.summary && (
-        <div className="flex gap-3 text-xs text-slate-500">
+        <div className="flex gap-4 text-xs text-slate-400">
           <span>{analysis.summary.totalFiles} files</span>
           {analysis.summary.criticalIssues > 0 && (
-            <span className="text-red-500 font-medium">{analysis.summary.criticalIssues} critical</span>
+            <span className="text-red-400 font-medium">{analysis.summary.criticalIssues} critical</span>
           )}
           {analysis.summary.warnings > 0 && (
-            <span className="text-amber-500">{analysis.summary.warnings} warnings</span>
+            <span className="text-amber-400">{analysis.summary.warnings} warnings</span>
           )}
         </div>
       )}
 
       {!analysis && (
-        <p className="text-xs text-slate-400 italic">No analysis yet — upload a report to get scored.</p>
+        <p className="text-xs text-slate-500 italic">No analysis yet — upload a report to get scored.</p>
       )}
 
       {/* Actions */}
-      <div className="flex gap-2 pt-1 border-t border-slate-100">
-        <button
+      <div className="flex gap-2 pt-2 border-t border-slate-700/50">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onUpload}
           disabled={uploading}
-          className="flex-1 px-3 py-2 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-3 py-2.5 bg-cyan-500/10 text-cyan-400 text-xs font-medium rounded-lg hover:bg-cyan-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-cyan-500/30"
         >
           {uploading ? 'Uploading...' : analysis ? 'Update Analysis' : 'Upload Analysis'}
-        </button>
+        </motion.button>
         <button
           onClick={onDelete}
-          className="px-3 py-2 text-slate-400 hover:text-red-500 hover:bg-red-50 text-xs font-medium rounded-lg transition-colors"
+          className="px-3 py-2.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 text-xs font-medium rounded-lg transition-colors border border-transparent hover:border-red-500/30"
           title="Delete repository"
         >
           Delete
@@ -431,19 +515,19 @@ function RepoCard({
       </div>
 
       {repo.lastAnalysisAt && (
-        <p className="text-xs text-slate-400 -mt-2">
+        <p className="text-xs text-slate-500 -mt-1">
           Last analyzed {new Date(repo.lastAnalysisAt).toLocaleDateString()}
         </p>
       )}
-    </div>
+    </motion.div>
   );
 }
 
 function BreakdownItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-slate-50 rounded-lg px-2.5 py-2">
-      <div className={`text-sm font-semibold ${scoreColor(value)}`}>{value}</div>
-      <div className="text-xs text-slate-500 leading-tight">{label}</div>
+    <div className="bg-slate-800/50 rounded-lg px-3 py-2 border border-slate-700/50">
+      <div className={`text-sm font-bold ${scoreColor(value)}`}>{value}</div>
+      <div className="text-xs text-slate-400 leading-tight">{label}</div>
     </div>
   );
 }
