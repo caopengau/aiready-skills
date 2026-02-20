@@ -27,18 +27,6 @@ export default $config({
         GSI1: { hashKey: "GSI1PK", rangeKey: "GSI1SK" },
         GSI2: { hashKey: "GSI2PK", rangeKey: "GSI2SK" },
       },
-      ttl: {
-        attribute: "ttl",
-        transform: {
-          attribute: "expiresAt",
-          days: 90,
-        },
-      },
-    });
-
-    // SQS Queue for async processing
-    const analysisQueue = new sst.aws.Queue("AnalysisQueue", {
-      visibilityTimeout: 300, // 5 minutes
     });
 
     // Determine if this is production
@@ -50,7 +38,6 @@ export default $config({
       environment: {
         S3_BUCKET: bucket.name,
         DYNAMO_TABLE: table.name,
-        ANALYSIS_QUEUE_URL: analysisQueue.url,
         NEXTAUTH_URL: isProd 
           ? "https://platform.getaiready.dev" 
           : $app.stage === "dev"
@@ -95,23 +82,10 @@ export default $config({
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
 
-    // Grant permissions
-    bucket.bind([site]);
-    table.bind([site]);
-    analysisQueue.bind([site]);
-
-    // Grant the queue permission to invoke the site
-    analysisQueue.subscribe(site, {
-      filter: {
-        eventType: ["analysis:uploaded", "remediation:requested"],
-      },
-    });
-
     return {
       site: site.url,
       bucketName: bucket.name,
       tableName: table.name,
-      queueUrl: analysisQueue.url,
     };
   },
 });

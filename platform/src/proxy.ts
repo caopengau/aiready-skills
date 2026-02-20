@@ -29,9 +29,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for session token
-  const sessionToken = request.cookies.get('next-auth.session-token')?.value ||
-    request.cookies.get('__Secure-next-auth.session-token')?.value;
+  // Check for session token (NextAuth v5 uses 'authjs.*' cookie names)
+  const sessionToken = request.cookies.get('authjs.session-token')?.value ||
+    request.cookies.get('__Secure-authjs.session-token')?.value;
 
   // If no session and trying to access protected route, redirect to login
   if (!sessionToken) {
