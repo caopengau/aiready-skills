@@ -946,6 +946,11 @@ export function classifyFile(
     return 'lambda-handler';
   }
   
+  // 4b. Check for data access layer (DAL) files
+  if (isDataAccessFile(node)) {
+    return 'cohesive-module';
+  }
+  
   // 5. Check for email templates (they reference multiple domains but serve one purpose)
   if (isEmailTemplate(node)) {
     return 'email-template';
@@ -982,6 +987,12 @@ export function classifyFile(
   
   // Single domain files are almost always cohesive (even with lower cohesion score)
   if (hasSingleDomain) {
+    return 'cohesive-module';
+  }
+
+  // 10b. Check for shared entity noun despite multi-domain scoring
+  // e.g. getUserReceipts + createPendingReceipt both refer to 'receipt'
+  if (allExportsShareEntityNoun(exports)) {
     return 'cohesive-module';
   }
   
@@ -1171,6 +1182,99 @@ function isUtilityFile(node: DependencyNode): boolean {
 }
 
 /**
+ * Split a camelCase or PascalCase identifier into lowercase tokens.
+ * e.g. getUserReceipts -> ['get', 'user', 'receipts']
+ */
+function splitCamelCase(name: string): string[] {
+  return name
+    .replace(/([A-Z])/g, ' $1')
+    .trim()
+    .toLowerCase()
+    .split(/[\s_-]+/)
+    .filter(Boolean);
+}
+
+/** Common English verbs and adjectives to ignore when extracting entity nouns */
+const SKIP_WORDS = new Set([
+  'get', 'set', 'create', 'update', 'delete', 'fetch', 'save', 'load',
+  'parse', 'format', 'validate', 'convert', 'transform', 'build',
+  'generate', 'render', 'send', 'receive', 'find', 'list', 'add',
+  'remove', 'insert', 'upsert', 'put', 'read', 'write', 'check',
+  'handle', 'process', 'compute', 'calculate', 'init', 'reset', 'clear',
+  'pending', 'active', 'current', 'new', 'old', 'all', 'by', 'with',
+  'from', 'to', 'and', 'or', 'is', 'has', 'in', 'on', 'of', 'the',
+]);
+
+/** Singularize a word simply (strip trailing 's') */
+function simpleSingularize(word: string): string {
+  if (word.endsWith('ies') && word.length > 3) return word.slice(0, -3) + 'y';
+  if (word.endsWith('ses') && word.length > 4) return word.slice(0, -2);
+  if (word.endsWith('s') && word.length > 3) return word.slice(0, -1);
+  return word;
+}
+
+/**
+ * Extract meaningful entity nouns from a camelCase/PascalCase function name.
+ * Strips common verbs/adjectives and singularizes remainder.
+ */
+function extractEntityNouns(name: string): string[] {
+  return splitCamelCase(name)
+    .filter(token => !SKIP_WORDS.has(token) && token.length > 2)
+    .map(simpleSingularize);
+}
+
+/**
+ * Check whether all exports in a file share at least one common entity noun.
+ * This catches DAL patterns like getUserReceipts + createPendingReceipt → both 'receipt'.
+ */
+function allExportsShareEntityNoun(exports: ExportInfo[]): boolean {
+  if (exports.length < 2 || exports.length > 30) return false;
+  
+  const nounSets = exports.map(e => new Set(extractEntityNouns(e.name)));
+  if (nounSets.some(s => s.size === 0)) return false;
+  
+  // Find nouns that appear in ALL exports
+  const [first, ...rest] = nounSets;
+  const commonNouns = Array.from(first).filter(noun =>
+    rest.every(s => s.has(noun))
+  );
+  
+  return commonNouns.length > 0;
+}
+
+/**
+ * Detect if a file is a Data Access Layer (DAL) / repository module.
+ *
+ * Characteristics:
+ * - Named with db, dynamo, database, repository, dao, postgres, mongo patterns
+ * - Or located in /repositories/, /dao/, /data/ directories
+ * - Exports all relate to one data store or entity
+ */
+function isDataAccessFile(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  const dalPatterns = [
+    'dynamo', 'database', 'repository', 'repo', 'dao',
+    'firestore', 'postgres', 'mysql', 'mongo', 'redis',
+    'sqlite', 'supabase', 'prisma',
+  ];
+  
+  const isDalName = dalPatterns.some(p => fileName?.includes(p));
+  
+  const isDalPath = file.toLowerCase().includes('/repositories/') ||
+                    file.toLowerCase().includes('/dao/') ||
+                    file.toLowerCase().includes('/data/');
+  
+  // File with few exports (≤10) that all share a common entity noun
+  const hasDalExportPattern = exports.length >= 1 &&
+    exports.length <= 10 &&
+    allExportsShareEntityNoun(exports);
+  
+  return isDalName || isDalPath || (isDalName && hasDalExportPattern);
+}
+
+/**
  * Detect if a file is a Lambda/API handler
  * 
  * Characteristics:
@@ -1193,10 +1297,11 @@ function isLambdaHandler(node: DependencyNode): boolean {
     fileName?.includes(pattern)
   );
   
-  // Check if file is in a handlers/lambdas/functions directory
+  // Check if file is in a handlers/lambdas/functions/lambda directory
   // Exclude /api/ unless it has handler-specific naming
   const isHandlerPath = file.toLowerCase().includes('/handlers/') || 
                         file.toLowerCase().includes('/lambdas/') ||
+                        file.toLowerCase().includes('/lambda/') ||
                         file.toLowerCase().includes('/functions/');
   
   // Check for typical lambda handler exports (handler, main, etc.)
@@ -1492,56 +1597,49 @@ export function adjustCohesionForClassification(
       // Type definitions centralize types - high cohesion by nature
       return 1;
     case 'utility-module': {
-      // Utility modules serve a functional purpose despite multi-domain
-      // Check if exports have related naming patterns
+      // Utility modules serve a functional purpose despite multi-domain.
+      // Use a floor of 0.75 so related utilities never appear as low-cohesion.
       if (node) {
         const exportNames = node.exports.map(e => e.name.toLowerCase());
         const hasRelatedNames = hasRelatedExportNames(exportNames);
         if (hasRelatedNames) {
-          // Related utility functions = boost cohesion significantly
-          return Math.min(1, baseCohesion + 0.45);
+          return Math.max(0.80, Math.min(1, baseCohesion + 0.45));
         }
       }
-      // Default utility boost
-      return Math.min(1, baseCohesion + 0.35);
+      return Math.max(0.75, Math.min(1, baseCohesion + 0.35));
     }
     case 'service-file': {
-      // Services orchestrate dependencies - this is their purpose
-      // Check for class-based service (methods work together)
+      // Services orchestrate dependencies by design.
+      // Floor at 0.72 so service files are never flagged as low-cohesion.
       if (node?.exports.some(e => e.type === 'class')) {
-        return Math.min(1, baseCohesion + 0.40);
+        return Math.max(0.78, Math.min(1, baseCohesion + 0.40));
       }
-      // Default service boost
-      return Math.min(1, baseCohesion + 0.30);
+      return Math.max(0.72, Math.min(1, baseCohesion + 0.30));
     }
     case 'lambda-handler': {
-      // Lambda handlers have single business purpose
-      // They coordinate multiple services but are entry points
+      // Lambda handlers have single business purpose; floor at 0.75.
       if (node) {
-        // Single entry point = cohesive purpose
         const hasSingleEntry = node.exports.length === 1 || 
           node.exports.some(e => e.name.toLowerCase() === 'handler');
         if (hasSingleEntry) {
-          return Math.min(1, baseCohesion + 0.45);
+          return Math.max(0.80, Math.min(1, baseCohesion + 0.45));
         }
       }
-      return Math.min(1, baseCohesion + 0.35);
+      return Math.max(0.75, Math.min(1, baseCohesion + 0.35));
     }
     case 'email-template': {
-      // Email templates render data from multiple domains
-      // This is structural cohesion (template purpose)
+      // Email templates are structurally cohesive (single rendering purpose); floor at 0.72.
       if (node) {
-        // Check for render/generate functions (template purpose)
         const hasTemplateFunc = node.exports.some(e => 
           e.name.toLowerCase().includes('render') ||
           e.name.toLowerCase().includes('generate') ||
           e.name.toLowerCase().includes('template')
         );
         if (hasTemplateFunc) {
-          return Math.min(1, baseCohesion + 0.40);
+          return Math.max(0.75, Math.min(1, baseCohesion + 0.40));
         }
       }
-      return Math.min(1, baseCohesion + 0.30);
+      return Math.max(0.72, Math.min(1, baseCohesion + 0.30));
     }
     case 'parser-file': {
       // Parsers transform data - single transformation purpose
@@ -1553,10 +1651,10 @@ export function adjustCohesionForClassification(
           e.name.toLowerCase().startsWith('convert')
         );
         if (hasParseFunc) {
-          return Math.min(1, baseCohesion + 0.40);
+          return Math.max(0.75, Math.min(1, baseCohesion + 0.40));
         }
       }
-      return Math.min(1, baseCohesion + 0.30);
+      return Math.max(0.70, Math.min(1, baseCohesion + 0.30));
     }
     case 'nextjs-page':
       // Next.js pages have multiple exports by design (metadata, jsonLd, page component)
@@ -1622,7 +1720,29 @@ function hasRelatedExportNames(exportNames: string[]): boolean {
     const uniquePrefixes = new Set(prefixes);
     if (uniquePrefixes.size === 1) return true;
   }
-  
+
+  // Check for shared entity noun across all exports using camelCase token splitting
+  // e.g. getUserReceipts + createPendingReceipt both contain 'receipt'
+  const nounSets = exportNames.map(name => {
+    const tokens = name
+      .replace(/([A-Z])/g, ' $1')
+      .trim()
+      .toLowerCase()
+      .split(/[\s_-]+/)
+      .filter(Boolean);
+    const skip = new Set(['get','set','create','update','delete','fetch','save','load',
+      'parse','format','validate','convert','transform','build','generate','render',
+      'send','receive','find','list','add','remove','insert','upsert','put','read',
+      'write','check','handle','process','pending','active','current','new','old','all']);
+    const singularize = (w: string) => w.endsWith('s') && w.length > 3 ? w.slice(0,-1) : w;
+    return new Set(tokens.filter(t => !skip.has(t) && t.length > 2).map(singularize));
+  });
+  if (nounSets.length >= 2 && nounSets.every(s => s.size > 0)) {
+    const [first, ...rest] = nounSets;
+    const commonNouns = Array.from(first).filter(n => rest.every(s => s.has(n)));
+    if (commonNouns.length > 0) return true;
+  }
+
   return false;
 }
 

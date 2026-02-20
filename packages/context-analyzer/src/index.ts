@@ -253,7 +253,7 @@ export async function analyzeContext(
 
     const cohesionScore =
       focus === 'cohesion' || focus === 'all'
-        ? calculateCohesion(node.exports, file)
+        ? calculateCohesion(node.exports, file, { coUsageMatrix: graph.coUsageMatrix })
         : 1;
 
     const fragmentationScore = fragmentationMap.get(file) || 0;
