@@ -55,6 +55,7 @@ export type FileClassification =
   | 'lambda-handler'   // Lambda/API handlers with single business purpose
   | 'email-template'   // Email templates/layouts with structural cohesion
   | 'parser-file'      // Parser/transformer files with single transformation purpose
+  | 'nextjs-page'      // Next.js App Router page with SEO/structured data exports
   | 'mixed-concerns'   // Multiple domains, potential refactoring candidate
   | 'unknown';         // Unable to classify
 

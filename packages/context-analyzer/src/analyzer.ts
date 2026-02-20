@@ -966,7 +966,12 @@ export function classifyFile(
     return 'cohesive-module'; // Session files manage state cohesively
   }
   
-  // 9. Check for utility file pattern (multiple domains but utility purpose)
+  // 9. Check for Next.js App Router pages (metadata + faqJsonLd + default export)
+  if (isNextJsPage(node)) {
+    return 'nextjs-page';
+  }
+  
+  // 10. Check for utility file pattern (multiple domains but utility purpose)
   if (isUtilityFile(node)) {
     return 'utility-module';
   }
@@ -1411,6 +1416,54 @@ function isSessionFile(node: DependencyNode): boolean {
 }
 
 /**
+ * Detect if a file is a Next.js App Router page
+ * 
+ * Characteristics:
+ * - Located in /app/ directory (Next.js App Router)
+ * - Named page.tsx or page.ts
+ * - Exports: metadata (SEO), default (page component), and optionally:
+ *   - faqJsonLd, jsonLd (structured data)
+ *   - icon (for tool cards)
+ *   - generateMetadata (dynamic SEO)
+ * 
+ * This is the canonical Next.js pattern for SEO-optimized pages.
+ * Multiple exports are COHESIVE - they all serve the page's purpose.
+ */
+function isNextJsPage(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  
+  const lowerPath = file.toLowerCase();
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  // Must be in /app/ directory (Next.js App Router)
+  const isInAppDir = lowerPath.includes('/app/') || lowerPath.startsWith('app/');
+  
+  // Must be named page.tsx or page.ts
+  const isPageFile = fileName === 'page.tsx' || fileName === 'page.ts';
+  
+  if (!isInAppDir || !isPageFile) {
+    return false;
+  }
+  
+  // Check for Next.js page export patterns
+  const exportNames = exports.map(e => e.name.toLowerCase());
+  
+  // Must have default export (the page component)
+  const hasDefaultExport = exports.some(e => e.type === 'default');
+  
+  // Common Next.js page exports
+  const nextJsExports = ['metadata', 'generatemetadata', 'faqjsonld', 'jsonld', 'icon', 'viewport', 'dynamic'];
+  const hasNextJsExports = exportNames.some(name => 
+    nextJsExports.includes(name) || name.includes('jsonld')
+  );
+  
+  // A Next.js page typically has:
+  // 1. Default export (page component) - required
+  // 2. Metadata or other Next.js-specific exports - optional but indicative
+  return hasDefaultExport || hasNextJsExports;
+}
+
+/**
  * Adjust cohesion score based on file classification.
  * 
  * This reduces false positives by recognizing that certain file types
@@ -1505,6 +1558,10 @@ export function adjustCohesionForClassification(
       }
       return Math.min(1, baseCohesion + 0.30);
     }
+    case 'nextjs-page':
+      // Next.js pages have multiple exports by design (metadata, jsonLd, page component)
+      // All serve the single purpose of rendering an SEO-optimized page
+      return 1;
     case 'cohesive-module':
       // Already recognized as cohesive
       return Math.max(baseCohesion, 0.7);
@@ -1594,6 +1651,7 @@ export function adjustFragmentationForClassification(
     case 'lambda-handler':
     case 'email-template':
     case 'parser-file':
+    case 'nextjs-page':
       // These file types have structural reasons for touching multiple domains
       // Reduce fragmentation significantly
       return baseFragmentation * 0.2;
@@ -1657,6 +1715,11 @@ export function getClassificationRecommendations(
       return [
         'Parser/transformer file detected - handles multiple data sources',
         'Consider documenting input/output schemas',
+      ];
+    case 'nextjs-page':
+      return [
+        'Next.js App Router page detected - metadata/JSON-LD/component pattern is cohesive',
+        'Multiple exports (metadata, faqJsonLd, default) serve single page purpose',
       ];
     case 'mixed-concerns':
       return [

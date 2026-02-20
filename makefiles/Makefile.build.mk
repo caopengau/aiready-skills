@@ -3,7 +3,7 @@
 ###############################################################################
 include makefiles/Makefile.shared.mk
 
-.PHONY: build build-core build-pattern-detect build-skills dev dev-core dev-pattern-detect dev-skills dev-landing graph
+.PHONY: build build-core build-pattern-detect build-skills dev dev-core dev-pattern-detect dev-skills dev-landing dev-platform graph
 
 build: ## Build all packages
 	@$(call log_step,Building all packages...)
@@ -51,10 +51,16 @@ dev-skills: ## Build and validate skills rules
 	@$(call log_success,Skills validated)
 
 landing: dev-landing ## Alias for dev-landing
-dev-landing: ## Start landing page dev server at http://localhost:3000
+dev-landing: ## Start landing page dev server at http://localhost:3333
 	@$(call log_step,Starting landing page dev server...)
-	@echo "$(CYAN)Landing page will be available at: $(GREEN)http://localhost:3000$(NC)"
+	@echo "$(CYAN)Landing page will be available at: $(GREEN)http://localhost:3333$(NC)"
 	@$(PNPM) --filter @aiready/landing dev
+
+platform: dev-platform ## Alias for dev-platform
+dev-platform: ## Start platform dev server at http://localhost:8888
+	@$(call log_step,Starting platform dev server...)
+	@echo "$(CYAN)Platform will be available at: $(GREEN)http://localhost:8888$(NC)"
+	@$(PNPM) --filter @aiready/platform dev
 
 graph: ## Visualize project dependency graph (opens browser)
 	@$(call log_step,Starting Nx graph visualization...)
