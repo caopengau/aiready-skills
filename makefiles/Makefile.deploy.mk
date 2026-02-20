@@ -1,9 +1,10 @@
 # Deployment Automation
-# Deploy landing page and services to AWS
+# Deploy landing page and platform to AWS
 
 include makefiles/Makefile.shared.mk
 
 .PHONY: deploy-landing deploy-landing-prod deploy-landing-remove landing-logs landing-verify landing-cleanup
+.PHONY: deploy-platform deploy-platform-prod deploy-platform-remove platform-logs platform-verify
 
 ##@ Deployment
 
@@ -59,6 +60,80 @@ landing-logs: ## Show landing page logs (requires SST dashboard)
 	@cd landing && \
 		AWS_PROFILE=$(AWS_PROFILE) AWS_REGION=$(AWS_REGION) sst dev
 
+##@ Platform Deployment
+
+deploy-platform: ## Deploy platform to AWS (dev environment)
+	@$(call log_step,Deploying platform to AWS (dev))
+	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
+	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
+	@cd platform && \
+		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
+		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
+		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
+		export GITHUB_CLIENT_ID="$${GITHUB_CLIENT_ID}" && \
+		export GITHUB_CLIENT_SECRET="$${GITHUB_CLIENT_SECRET}" && \
+		export GOOGLE_CLIENT_ID="$${GOOGLE_CLIENT_ID}" && \
+		export GOOGLE_CLIENT_SECRET="$${GOOGLE_CLIENT_SECRET}" && \
+		export NEXTAUTH_SECRET="$${NEXTAUTH_SECRET}" && \
+		pnpm sst:deploy
+	@$(call log_success,Platform deployed to dev)
+	@$(MAKE) platform-verify
+
+deploy-platform-prod: ## Deploy platform to AWS (production)
+	@$(call log_step,Deploying platform to AWS (production))
+	@echo "$(YELLOW)⚠️  Deploying to PRODUCTION$(NC)"
+	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
+	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
+	@cd platform && \
+		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
+		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
+		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
+		export GITHUB_CLIENT_ID="$${GITHUB_CLIENT_ID}" && \
+		export GITHUB_CLIENT_SECRET="$${GITHUB_CLIENT_SECRET}" && \
+		export GOOGLE_CLIENT_ID="$${GOOGLE_CLIENT_ID}" && \
+		export GOOGLE_CLIENT_SECRET="$${GOOGLE_CLIENT_SECRET}" && \
+		export NEXTAUTH_SECRET="$${NEXTAUTH_SECRET}" && \
+		pnpm sst:deploy --stage production
+	@$(call log_success,Platform deployed to production)
+	@echo ""
+	@$(MAKE) platform-verify
+
+platform-verify: ## Verify platform is accessible
+	@$(call log_step,Verifying platform is accessible)
+	@if curl -fsS -o /dev/null https://platform.getaiready.dev >/dev/null 2>&1; then \
+		echo "$(GREEN)✓ Platform is live and responding$(NC)"; \
+		echo "$(CYAN)🌐 URL: https://platform.getaiready.dev$(NC)"; \
+	else \
+		echo "$(YELLOW)⚠️  Platform may still be deploying$(NC)"; \
+		echo "$(CYAN)💡 SST handles invalidation automatically - platform will be live shortly$(NC)"; \
+	fi
+	@echo ""
+
+deploy-platform-remove: ## Remove platform deployment (dev)
+	@$(call log_warning,Removing platform deployment from AWS (dev))
+	@cd platform && \
+		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
+		AWS_PROFILE=$(AWS_PROFILE) pnpm sst:remove
+	@$(call log_success,Platform deployment removed)
+
+platform-logs: ## Show platform logs (requires SST dev mode)
+	@$(call log_step,Opening SST dev mode for logs)
+	@cd platform && \
+		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		AWS_PROFILE=$(AWS_PROFILE) pnpm sst:dev
+
+deploy-platform-status: ## Show current platform deployment status
+	@echo "$(CYAN)📊 Platform Deployment Status$(NC)\n"
+	@cd platform && \
+		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		AWS_PROFILE=$(AWS_PROFILE) pnpm sst:list || \
+		echo "$(YELLOW)No deployments found$(NC)"
+
+##@ General Deployment
+
 deploy-check: ## Check AWS credentials and SST installation
 	@echo "$(CYAN)🔍 Checking deployment prerequisites...$(NC)\n"
 	@echo "$(GREEN)AWS Profile:$(NC) $(AWS_PROFILE)"
@@ -83,6 +158,12 @@ deploy-check: ## Check AWS credentials and SST installation
 	fi
 	@echo ""
 	@$(call log_success,All prerequisites met)
+
+deploy-all: deploy-landing deploy-platform ## Deploy both landing and platform (dev)
+	@$(call log_success,All services deployed to dev)
+
+deploy-all-prod: deploy-landing-prod deploy-platform-prod ## Deploy both landing and platform (production)
+	@$(call log_success,All services deployed to production)
 
 deploy-landing-status: ## Show current deployment status
 	@echo "$(CYAN)📊 Landing Page Deployment Status$(NC)\n"

@@ -1,51 +1,77 @@
-import { signIn } from '@/app/api/auth/[...nextauth]/route';
+import LoginForm from './LoginForm';
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="max-w-md w-full mx-auto">
+    <main className="min-h-screen relative overflow-hidden bg-[#0a0a0f] flex flex-col items-center justify-center p-8">
+      {/* Background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="orb orb-blue w-96 h-96 -top-48 left-1/4" style={{ animationDelay: '0s' }} />
+        <div className="orb orb-cyan w-80 h-80 bottom-0 -right-40" style={{ animationDelay: '2s' }} />
+        <div className="orb orb-purple w-72 h-72 top-1/4 -left-36" style={{ animationDelay: '4s' }} />
+      </div>
+      <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+      <div className="absolute inset-0 bg-radial-glow" />
+
+      {/* Content */}
+      <div className="relative z-10 max-w-md w-full mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black mb-2 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-black mb-3 gradient-text-animated">
             Welcome to AIReady
           </h1>
-          <p className="text-slate-600">
+          <p className="text-slate-400 text-lg">
             Sign in to track your codebase AI readiness
           </p>
         </div>
 
-        <div className="bg-white p-8 rounded-2xl border-2 border-slate-200 shadow-lg">
-          <form
-            action={async () => {
-              'use server';
-              await signIn('github', { redirectTo: '/dashboard' });
-            }}
-          >
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors"
-            >
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"
-                />
-              </svg>
-              Continue with GitHub
-            </button>
-          </form>
+        <div className="glass-card p-8 rounded-2xl">
+          <LoginForm />
 
-          <p className="mt-6 text-center text-sm text-slate-500">
-            By signing in, you agree to our Terms of Service and Privacy Policy
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-transparent text-slate-500">secure authentication</span>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-slate-500">
+            By signing in, you agree to our{' '}
+            <a href="/terms" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+              Privacy Policy
+            </a>
           </p>
         </div>
 
-        <p className="mt-8 text-center text-sm text-slate-500">
-          New to AIReady?{' '}
-          <a href="/" className="text-blue-600 hover:underline">
-            Learn more
-          </a>
-        </p>
+        <div className="mt-8 text-center">
+          <p className="text-sm text-slate-500">
+            New to AIReady?{' '}
+            <a href="/" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
+              Learn more
+            </a>
+          </p>
+        </div>
+
+        {/* Features preview */}
+        <div className="mt-12 grid grid-cols-3 gap-4">
+          {[
+            { icon: '📊', label: 'Track Trends' },
+            { icon: '🎯', label: 'Benchmark' },
+            { icon: '🤖', label: 'AI Insights' },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="text-center p-4 rounded-xl bg-slate-800/30 border border-slate-700/50"
+            >
+              <div className="text-2xl mb-2">{item.icon}</div>
+              <div className="text-xs text-slate-400">{item.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );
