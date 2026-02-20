@@ -911,6 +911,11 @@ function calculateDomainCohesion(exports: ExportInfo[]): number {
  * - barrel-export: Re-exports from other modules (index.ts files)
  * - type-definition: Primarily type/interface definitions
  * - cohesive-module: Single domain, high cohesion (acceptable large files)
+ * - utility-module: Utility/helper files with cohesive purpose despite multi-domain
+ * - service-file: Service files orchestrating multiple dependencies
+ * - lambda-handler: Lambda/API handlers with single business purpose
+ * - email-template: Email templates/layouts with structural cohesion
+ * - parser-file: Parser/transformer files with single transformation purpose
  * - mixed-concerns: Multiple domains, potential refactoring candidate
  * - unknown: Unable to classify
  */
@@ -936,22 +941,46 @@ export function classifyFile(
     return 'cohesive-module'; // Treat as cohesive since it's intentional
   }
   
-  // 4. Check for cohesive module (single domain + reasonable cohesion)
+  // 4. Check for lambda handlers FIRST (they often look like mixed concerns)
+  if (isLambdaHandler(node)) {
+    return 'lambda-handler';
+  }
+  
+  // 5. Check for email templates (they reference multiple domains but serve one purpose)
+  if (isEmailTemplate(node)) {
+    return 'email-template';
+  }
+  
+  // 6. Check for parser/transformer files
+  if (isParserFile(node)) {
+    return 'parser-file';
+  }
+  
+  // 7. Check for service files
+  if (isServiceFile(node)) {
+    return 'service-file';
+  }
+  
+  // 8. Check for session/state management files
+  if (isSessionFile(node)) {
+    return 'cohesive-module'; // Session files manage state cohesively
+  }
+  
+  // 9. Check for utility file pattern (multiple domains but utility purpose)
+  if (isUtilityFile(node)) {
+    return 'utility-module';
+  }
+  
+  // 10. Check for cohesive module (single domain + reasonable cohesion)
   const uniqueDomains = domains.filter(d => d !== 'unknown');
   const hasSingleDomain = uniqueDomains.length <= 1;
-  const hasReasonableCohesion = cohesionScore >= 0.5; // Lowered threshold
   
   // Single domain files are almost always cohesive (even with lower cohesion score)
   if (hasSingleDomain) {
     return 'cohesive-module';
   }
   
-  // 5. Check for utility file pattern (multiple domains but utility purpose)
-  if (isUtilityFile(node)) {
-    return 'cohesive-module'; // Utilities often have mixed imports by design
-  }
-  
-  // 6. Check for mixed concerns (multiple domains + low cohesion)
+  // 11. Check for mixed concerns (multiple domains + low cohesion)
   const hasMultipleDomains = uniqueDomains.length > 1;
   const hasLowCohesion = cohesionScore < 0.4; // Lowered threshold
   
@@ -959,7 +988,7 @@ export function classifyFile(
     return 'mixed-concerns';
   }
   
-  // 7. Default to cohesive-module for files with reasonable cohesion
+  // 12. Default to cohesive-module for files with reasonable cohesion
   // This reduces false positives for legitimate files
   if (cohesionScore >= 0.5) {
     return 'cohesive-module';
@@ -1019,6 +1048,7 @@ function isBarrelExport(node: DependencyNode): boolean {
  * - Mostly type/interface exports
  * - Little to no runtime code
  * - Often named *.d.ts or types.ts
+ * - Located in /types/, /typings/, or @types directories
  */
 function isTypeDefinitionFile(node: DependencyNode): boolean {
   const { file, exports } = node;
@@ -1027,6 +1057,14 @@ function isTypeDefinitionFile(node: DependencyNode): boolean {
   const fileName = file.split('/').pop()?.toLowerCase();
   const isTypesFile = fileName?.includes('types') || fileName?.includes('.d.ts') ||
                       fileName === 'types.ts' || fileName === 'interfaces.ts';
+  
+  // Check if file is in a types directory (path-based detection)
+  const lowerPath = file.toLowerCase();
+  const isTypesPath = lowerPath.includes('/types/') || 
+                      lowerPath.includes('/typings/') ||
+                      lowerPath.includes('/@types/') ||
+                      lowerPath.startsWith('types/') ||
+                      lowerPath.startsWith('typings/');
   
   // Count type exports vs other exports
   const typeExports = exports.filter(e => e.type === 'type' || e.type === 'interface');
@@ -1037,7 +1075,13 @@ function isTypeDefinitionFile(node: DependencyNode): boolean {
                       typeExports.length > runtimeExports.length &&
                       typeExports.length / exports.length > 0.7;
   
-  return isTypesFile || mostlyTypes;
+  // Pure type files (only type/interface exports, no runtime code)
+  const pureTypeFile = exports.length > 0 && typeExports.length === exports.length;
+  
+  // Empty export file in types directory (might just be re-exports)
+  const emptyOrReExportInTypesDir = isTypesPath && exports.length === 0;
+  
+  return isTypesFile || isTypesPath || mostlyTypes || pureTypeFile || emptyOrReExportInTypesDir;
 }
 
 /**
@@ -1095,8 +1139,8 @@ function isUtilityFile(node: DependencyNode): boolean {
   // Check filename patterns for utility files
   const utilityPatterns = [
     'util', 'utility', 'utilities', 'helper', 'helpers',
-    'common', 'shared', 'lib', 'toolbox', 'toolkit',
-    '.util.', '-util.', '_util.',
+    'common', 'shared', 'toolbox', 'toolkit',
+    '.util.', '-util.', '_util.', '-utils.', '.utils.',
   ];
   
   const isUtilityName = utilityPatterns.some(pattern => 
@@ -1106,15 +1150,423 @@ function isUtilityFile(node: DependencyNode): boolean {
   // Check if file is in a utils/helpers directory
   const isUtilityPath = file.toLowerCase().includes('/utils/') || 
                         file.toLowerCase().includes('/helpers/') ||
-                        file.toLowerCase().includes('/lib/') ||
-                        file.toLowerCase().includes('/common/');
+                        file.toLowerCase().includes('/common/') ||
+                        file.toLowerCase().endsWith('-utils.ts') ||
+                        file.toLowerCase().endsWith('-util.ts') ||
+                        file.toLowerCase().endsWith('-helper.ts') ||
+                        file.toLowerCase().endsWith('-helpers.ts');
   
-  // Check if file has many small utility-like exports
-  const hasManySmallExports = exports.length >= 3 && exports.every(e => 
-    e.type === 'function' || e.type === 'const'
+  // Only consider many small exports as utility pattern if also in utility-like path
+  // This prevents false positives for regular modules with many functions
+  const hasManySmallExportsInUtilityContext = exports.length >= 3 && 
+    exports.every(e => e.type === 'function' || e.type === 'const') &&
+    (isUtilityName || isUtilityPath);
+  
+  return isUtilityName || isUtilityPath || hasManySmallExportsInUtilityContext;
+}
+
+/**
+ * Detect if a file is a Lambda/API handler
+ * 
+ * Characteristics:
+ * - Named with handler patterns or in handler directories
+ * - Single entry point (handler function)
+ * - Coordinates multiple services but has single business purpose
+ */
+function isLambdaHandler(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  // Check filename patterns for lambda handlers
+  const handlerPatterns = [
+    'handler', '.handler.', '-handler.',
+    'lambda', '.lambda.', '-lambda.',
+  ];
+  
+  const isHandlerName = handlerPatterns.some(pattern => 
+    fileName?.includes(pattern)
   );
   
-  return isUtilityName || isUtilityPath || hasManySmallExports;
+  // Check if file is in a handlers/lambdas/functions directory
+  // Exclude /api/ unless it has handler-specific naming
+  const isHandlerPath = file.toLowerCase().includes('/handlers/') || 
+                        file.toLowerCase().includes('/lambdas/') ||
+                        file.toLowerCase().includes('/functions/');
+  
+  // Check for typical lambda handler exports (handler, main, etc.)
+  const hasHandlerExport = exports.some(e => 
+    e.name.toLowerCase() === 'handler' ||
+    e.name.toLowerCase() === 'main' ||
+    e.name.toLowerCase() === 'lambdahandler' ||
+    e.name.toLowerCase().endsWith('handler')
+  );
+  
+  // Only consider single export as lambda handler if it's in a handler-like context
+  // (either in handler directory OR has handler naming)
+  const hasSingleEntryInHandlerContext = exports.length === 1 && 
+    (exports[0].type === 'function' || exports[0].name === 'default') &&
+    (isHandlerPath || isHandlerName);
+  
+  return isHandlerName || isHandlerPath || hasHandlerExport || hasSingleEntryInHandlerContext;
+}
+
+/**
+ * Detect if a file is a service file
+ * 
+ * Characteristics:
+ * - Named with service pattern
+ * - Often a class or object with multiple methods
+ * - Orchestrates multiple dependencies but serves single purpose
+ */
+function isServiceFile(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  // Check filename patterns for service files
+  const servicePatterns = [
+    'service', '.service.', '-service.', '_service.',
+  ];
+  
+  const isServiceName = servicePatterns.some(pattern => 
+    fileName?.includes(pattern)
+  );
+  
+  // Check if file is in a services directory
+  const isServicePath = file.toLowerCase().includes('/services/');
+  
+  // Check for service-like exports (class with "Service" in the name)
+  const hasServiceNamedExport = exports.some(e => 
+    e.name.toLowerCase().includes('service') ||
+    e.name.toLowerCase().endsWith('service')
+  );
+  
+  // Check for typical service pattern (class export with service in name)
+  const hasClassExport = exports.some(e => e.type === 'class');
+  
+  // Service files need either:
+  // 1. Service in filename/path, OR
+  // 2. Class with "Service" in the class name
+  return isServiceName || isServicePath || (hasServiceNamedExport && hasClassExport);
+}
+
+/**
+ * Detect if a file is an email template/layout
+ * 
+ * Characteristics:
+ * - Named with email/template patterns
+ * - Contains render/template logic
+ * - References multiple domains (user, order, product) but serves single template purpose
+ */
+function isEmailTemplate(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  // Check filename patterns for email templates (more specific patterns)
+  const emailTemplatePatterns = [
+    '-email-', '.email.', '_email_',
+    '-template', '.template.', '_template',
+    '-mail.', '.mail.',
+  ];
+  
+  const isEmailTemplateName = emailTemplatePatterns.some(pattern => 
+    fileName?.includes(pattern)
+  );
+  
+  // Specific template file names
+  const isSpecificTemplateName = 
+    fileName?.includes('receipt') ||
+    fileName?.includes('invoice-email') ||
+    fileName?.includes('welcome-email') ||
+    fileName?.includes('notification-email') ||
+    fileName?.includes('writer') && fileName.includes('receipt');
+  
+  // Check if file is in emails/templates directory (high confidence)
+  const isEmailPath = file.toLowerCase().includes('/emails/') || 
+                      file.toLowerCase().includes('/mail/') ||
+                      file.toLowerCase().includes('/notifications/');
+  
+  // Check for template patterns (function that returns string/HTML)
+  // More specific: must have render/generate in the function name
+  const hasTemplateFunction = exports.some(e => 
+    e.type === 'function' && (
+      e.name.toLowerCase().startsWith('render') ||
+      e.name.toLowerCase().startsWith('generate') ||
+      (e.name.toLowerCase().includes('template') && e.name.toLowerCase().includes('email'))
+    )
+  );
+  
+  // Check for email-related exports (but not service classes)
+  const hasEmailExport = exports.some(e => 
+    (e.name.toLowerCase().includes('template') && e.type === 'function') ||
+    (e.name.toLowerCase().includes('render') && e.type === 'function') ||
+    (e.name.toLowerCase().includes('email') && e.type !== 'class')
+  );
+  
+  // Require path-based match OR combination of name and export patterns
+  return isEmailPath || isEmailTemplateName || isSpecificTemplateName || 
+         (hasTemplateFunction && hasEmailExport);
+}
+
+/**
+ * Detect if a file is a parser/transformer
+ * 
+ * Characteristics:
+ * - Named with parser/transform patterns
+ * - Contains parse/transform logic
+ * - Single transformation purpose despite touching multiple domains
+ */
+function isParserFile(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  // Check filename patterns for parser files
+  const parserPatterns = [
+    'parser', '.parser.', '-parser.', '_parser.',
+    'transform', '.transform.', '-transform.',
+    'converter', '.converter.', '-converter.',
+    'mapper', '.mapper.', '-mapper.',
+    'serializer', '.serializer.',
+    'deterministic', // For base-parser-deterministic.ts pattern
+  ];
+  
+  const isParserName = parserPatterns.some(pattern => 
+    fileName?.includes(pattern)
+  );
+  
+  // Check if file is in parsers/transformers directory
+  const isParserPath = file.toLowerCase().includes('/parsers/') || 
+                       file.toLowerCase().includes('/transformers/') ||
+                       file.toLowerCase().includes('/converters/') ||
+                       file.toLowerCase().includes('/mappers/');
+  
+  // Check for parser-related exports
+  const hasParserExport = exports.some(e => 
+    e.name.toLowerCase().includes('parse') ||
+    e.name.toLowerCase().includes('transform') ||
+    e.name.toLowerCase().includes('convert') ||
+    e.name.toLowerCase().includes('map') ||
+    e.name.toLowerCase().includes('serialize') ||
+    e.name.toLowerCase().includes('deserialize')
+  );
+  
+  // Check for function patterns typical of parsers
+  const hasParseFunction = exports.some(e => 
+    e.type === 'function' && (
+      e.name.toLowerCase().startsWith('parse') ||
+      e.name.toLowerCase().startsWith('transform') ||
+      e.name.toLowerCase().startsWith('convert') ||
+      e.name.toLowerCase().startsWith('map') ||
+      e.name.toLowerCase().startsWith('extract')
+    )
+  );
+  
+  return isParserName || isParserPath || hasParserExport || hasParseFunction;
+}
+
+/**
+ * Detect if a file is a session/state management file
+ * 
+ * Characteristics:
+ * - Named with session/state patterns
+ * - Manages state across operations
+ * - Single purpose despite potentially touching multiple domains
+ */
+function isSessionFile(node: DependencyNode): boolean {
+  const { file, exports } = node;
+  
+  const fileName = file.split('/').pop()?.toLowerCase();
+  
+  // Check filename patterns for session files
+  const sessionPatterns = [
+    'session', '.session.', '-session.',
+    'state', '.state.', '-state.',
+    'context', '.context.', '-context.',
+    'store', '.store.', '-store.',
+  ];
+  
+  const isSessionName = sessionPatterns.some(pattern => 
+    fileName?.includes(pattern)
+  );
+  
+  // Check if file is in sessions/state directory
+  const isSessionPath = file.toLowerCase().includes('/sessions/') || 
+                        file.toLowerCase().includes('/state/') ||
+                        file.toLowerCase().includes('/context/') ||
+                        file.toLowerCase().includes('/store/');
+  
+  // Check for session-related exports
+  const hasSessionExport = exports.some(e => 
+    e.name.toLowerCase().includes('session') ||
+    e.name.toLowerCase().includes('state') ||
+    e.name.toLowerCase().includes('context') ||
+    e.name.toLowerCase().includes('manager') ||
+    e.name.toLowerCase().includes('store')
+  );
+  
+  return isSessionName || isSessionPath || hasSessionExport;
+}
+
+/**
+ * Adjust cohesion score based on file classification.
+ * 
+ * This reduces false positives by recognizing that certain file types
+ * have inherently different cohesion patterns:
+ * - Utility modules may touch multiple domains but serve one purpose
+ * - Service files orchestrate multiple dependencies
+ * - Lambda handlers coordinate multiple services
+ * - Email templates reference multiple domains for rendering
+ * - Parser files transform data across domains
+ * 
+ * @param baseCohesion - The calculated cohesion score (0-1)
+ * @param classification - The file classification
+ * @param node - Optional node for additional heuristics
+ * @returns Adjusted cohesion score (0-1)
+ */
+export function adjustCohesionForClassification(
+  baseCohesion: number,
+  classification: FileClassification,
+  node?: DependencyNode
+): number {
+  switch (classification) {
+    case 'barrel-export':
+      // Barrel exports re-export from multiple modules by design
+      return 1;
+    case 'type-definition':
+      // Type definitions centralize types - high cohesion by nature
+      return 1;
+    case 'utility-module': {
+      // Utility modules serve a functional purpose despite multi-domain
+      // Check if exports have related naming patterns
+      if (node) {
+        const exportNames = node.exports.map(e => e.name.toLowerCase());
+        const hasRelatedNames = hasRelatedExportNames(exportNames);
+        if (hasRelatedNames) {
+          // Related utility functions = boost cohesion significantly
+          return Math.min(1, baseCohesion + 0.45);
+        }
+      }
+      // Default utility boost
+      return Math.min(1, baseCohesion + 0.35);
+    }
+    case 'service-file': {
+      // Services orchestrate dependencies - this is their purpose
+      // Check for class-based service (methods work together)
+      if (node?.exports.some(e => e.type === 'class')) {
+        return Math.min(1, baseCohesion + 0.40);
+      }
+      // Default service boost
+      return Math.min(1, baseCohesion + 0.30);
+    }
+    case 'lambda-handler': {
+      // Lambda handlers have single business purpose
+      // They coordinate multiple services but are entry points
+      if (node) {
+        // Single entry point = cohesive purpose
+        const hasSingleEntry = node.exports.length === 1 || 
+          node.exports.some(e => e.name.toLowerCase() === 'handler');
+        if (hasSingleEntry) {
+          return Math.min(1, baseCohesion + 0.45);
+        }
+      }
+      return Math.min(1, baseCohesion + 0.35);
+    }
+    case 'email-template': {
+      // Email templates render data from multiple domains
+      // This is structural cohesion (template purpose)
+      if (node) {
+        // Check for render/generate functions (template purpose)
+        const hasTemplateFunc = node.exports.some(e => 
+          e.name.toLowerCase().includes('render') ||
+          e.name.toLowerCase().includes('generate') ||
+          e.name.toLowerCase().includes('template')
+        );
+        if (hasTemplateFunc) {
+          return Math.min(1, baseCohesion + 0.40);
+        }
+      }
+      return Math.min(1, baseCohesion + 0.30);
+    }
+    case 'parser-file': {
+      // Parsers transform data - single transformation purpose
+      if (node) {
+        // Check for parse/transform functions
+        const hasParseFunc = node.exports.some(e => 
+          e.name.toLowerCase().startsWith('parse') ||
+          e.name.toLowerCase().startsWith('transform') ||
+          e.name.toLowerCase().startsWith('convert')
+        );
+        if (hasParseFunc) {
+          return Math.min(1, baseCohesion + 0.40);
+        }
+      }
+      return Math.min(1, baseCohesion + 0.30);
+    }
+    case 'cohesive-module':
+      // Already recognized as cohesive
+      return Math.max(baseCohesion, 0.7);
+    case 'mixed-concerns':
+      // Keep original score - this is a real issue
+      return baseCohesion;
+    default:
+      // Unknown - give benefit of doubt with small boost
+      return Math.min(1, baseCohesion + 0.10);
+  }
+}
+
+/**
+ * Check if export names suggest related functionality
+ * 
+ * Examples of related patterns:
+ * - formatDate, parseDate, validateDate (date utilities)
+ * - getUser, saveUser, deleteUser (user utilities)
+ * - DynamoDB, S3, SQS (AWS utilities)
+ */
+function hasRelatedExportNames(exportNames: string[]): boolean {
+  if (exportNames.length < 2) return true;
+  
+  // Extract common prefixes/suffixes
+  const stems = new Set<string>();
+  const domains = new Set<string>();
+  
+  for (const name of exportNames) {
+    // Check for common verb prefixes
+    const verbs = ['get', 'set', 'create', 'update', 'delete', 'fetch', 'save', 'load', 'parse', 'format', 'validate', 'convert', 'transform', 'build', 'generate', 'render', 'send', 'receive'];
+    for (const verb of verbs) {
+      if (name.startsWith(verb) && name.length > verb.length) {
+        stems.add(name.slice(verb.length).toLowerCase());
+      }
+    }
+    
+    // Check for domain suffixes (User, Order, etc.)
+    const domainPatterns = ['user', 'order', 'product', 'session', 'email', 'file', 'db', 's3', 'dynamo', 'api', 'config'];
+    for (const domain of domainPatterns) {
+      if (name.includes(domain)) {
+        domains.add(domain);
+      }
+    }
+  }
+  
+  // If exports share common stems or domains, they're related
+  if (stems.size === 1 && exportNames.length >= 2) return true;
+  if (domains.size === 1 && exportNames.length >= 2) return true;
+  
+  // Check for utilities with same service prefix (e.g., dynamodbGet, dynamodbPut)
+  const prefixes = exportNames.map(name => {
+    // Extract prefix before first capital letter or common separator
+    const match = name.match(/^([a-z]+)/);
+    return match ? match[1] : '';
+  }).filter(p => p.length >= 3);
+  
+  if (prefixes.length >= 2) {
+    const uniquePrefixes = new Set(prefixes);
+    if (uniquePrefixes.size === 1) return true;
+  }
+  
+  return false;
 }
 
 /**
@@ -1124,6 +1576,7 @@ function isUtilityFile(node: DependencyNode): boolean {
  * - Ignoring fragmentation for barrel exports (they're meant to aggregate)
  * - Ignoring fragmentation for type definitions (centralized types are good)
  * - Reducing fragmentation for cohesive modules (large but focused is OK)
+ * - Reducing fragmentation for utility/service/handler/template files
  */
 export function adjustFragmentationForClassification(
   baseFragmentation: number,
@@ -1136,6 +1589,14 @@ export function adjustFragmentationForClassification(
     case 'type-definition':
       // Centralized type definitions are good practice - no fragmentation
       return 0;
+    case 'utility-module':
+    case 'service-file':
+    case 'lambda-handler':
+    case 'email-template':
+    case 'parser-file':
+      // These file types have structural reasons for touching multiple domains
+      // Reduce fragmentation significantly
+      return baseFragmentation * 0.2;
     case 'cohesive-module':
       // Cohesive modules get a significant discount
       return baseFragmentation * 0.3;
@@ -1171,6 +1632,31 @@ export function getClassificationRecommendations(
       return [
         'Module has good cohesion despite its size',
         'Consider documenting the module boundaries for AI assistants',
+      ];
+    case 'utility-module':
+      return [
+        'Utility module detected - multiple domains are acceptable here',
+        'Consider grouping related utilities by prefix or domain for better discoverability',
+      ];
+    case 'service-file':
+      return [
+        'Service file detected - orchestration of multiple dependencies is expected',
+        'Consider documenting service boundaries and dependencies',
+      ];
+    case 'lambda-handler':
+      return [
+        'Lambda handler detected - coordination of services is expected',
+        'Ensure handler has clear single responsibility',
+      ];
+    case 'email-template':
+      return [
+        'Email template detected - references multiple domains for rendering',
+        'Template structure is cohesive by design',
+      ];
+    case 'parser-file':
+      return [
+        'Parser/transformer file detected - handles multiple data sources',
+        'Consider documenting input/output schemas',
       ];
     case 'mixed-concerns':
       return [

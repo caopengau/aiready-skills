@@ -12,6 +12,7 @@ import {
   calculatePathEntropy,
   calculateDirectoryDistance,
   classifyFile,
+  adjustCohesionForClassification,
   adjustFragmentationForClassification,
   getClassificationRecommendations,
 } from './analyzer';
@@ -289,6 +290,13 @@ export async function analyzeContext(
     // Classify the file to help distinguish real issues from false positives
     const fileClassification = classifyFile(node, cohesionScore, domains);
     
+    // Adjust cohesion based on classification (utility/service/handler files get boosted)
+    const adjustedCohesionScore = adjustCohesionForClassification(
+      cohesionScore,
+      fileClassification,
+      node
+    );
+    
     // Adjust fragmentation based on classification
     const adjustedFragmentationScore = adjustFragmentationForClassification(
       fragmentationScore,
@@ -302,7 +310,7 @@ export async function analyzeContext(
       issues
     );
 
-    // Re-analyze issues with adjusted fragmentation
+    // Re-analyze issues with adjusted cohesion and fragmentation
     const {
       severity: adjustedSeverity,
       issues: adjustedIssues,
@@ -312,7 +320,7 @@ export async function analyzeContext(
       file,
       importDepth,
       contextBudget,
-      cohesionScore,
+      cohesionScore: adjustedCohesionScore, // Use adjusted cohesion
       fragmentationScore: adjustedFragmentationScore,
       maxDepth,
       maxContextBudget,
@@ -329,7 +337,7 @@ export async function analyzeContext(
       dependencyCount: dependencyList.length,
       dependencyList,
       circularDeps: circularDeps.filter((cycle) => cycle.includes(file)),
-      cohesionScore,
+      cohesionScore: adjustedCohesionScore, // Report adjusted cohesion
       domains,
       exportCount: node.exports.length,
       contextBudget,
