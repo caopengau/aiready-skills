@@ -218,7 +218,6 @@ export async function createTeam(team: Team, ownerId: string): Promise<Team> {
   };
 
   await doc.send(new BatchWriteCommand({
-    TableName: TABLE_NAME,
     RequestItems: {
       [TABLE_NAME]: [
         { PutRequest: { Item: teamItem } },
