@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateTeam } from '@/lib/db';
+import Stripe from 'stripe';
 
 // Lazy-initialize Stripe only when needed
-let stripe: ReturnType<typeof import('stripe').default> | null = null;
+let stripe: Stripe | null = null;
 
-function getStripe() {
+function getStripe(): Stripe | null {
   if (!stripe && process.env.STRIPE_SECRET_KEY) {
-    const Stripe = require('stripe');
     stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2026-01-28.clover',
     });
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
     // Verify webhook signature
-    let event: ReturnType<typeof stripeClient.webhooks.constructEvent>;
+    let event: Stripe.Event;
     try {
       event = stripeClient.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
