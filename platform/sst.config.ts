@@ -13,7 +13,11 @@ export default $config({
     const bucket = new sst.aws.Bucket("AnalysisBucket");
 
     // SES Configuration for transactional emails (magic links, notifications)
-    const sesDomain = "getaiready.dev";
+    // Dev uses subdomain to avoid conflicts with production
+    // Production: noreply@getaiready.dev
+    // Dev: noreply@dev.getaiready.dev
+    const isProd = $app.stage === "production";
+    const sesDomain = isProd ? "getaiready.dev" : "dev.getaiready.dev";
     
     // Create SES domain identity with DKIM
     const sesIdentity = new aws.ses.DomainIdentity("SesDomain", {
@@ -84,9 +88,6 @@ export default $config({
         GSI2: { hashKey: "GSI2PK", rangeKey: "GSI2SK" },
       },
     });
-
-    // Determine if this is production
-    const isProd = $app.stage === "production";
 
     // Next.js site configuration
     const siteConfig: sst.aws.NextjsArgs = {

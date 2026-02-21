@@ -147,17 +147,44 @@ NEXTAUTH_URL=http://localhost:3000
 
 ### AWS SES Setup (Automated via SST)
 
-SST automatically configures Cloudflare DNS for SES verification:
+SST automatically configures Cloudflare DNS for SES verification.
+
+**Dev vs Production:**
+
+| Environment | SES Domain | From Email | Site URL |
+|-------------|------------|------------|----------|
+| Dev | `dev.getaiready.dev` | `noreply@dev.getaiready.dev` | `dev.platform.getaiready.dev` |
+| Production | `getaiready.dev` | `noreply@getaiready.dev` | `platform.getaiready.dev` |
 
 **DNS Records Created Automatically:**
+
+Each environment gets its own set of DNS records:
+
 | Type | Name | Value | Purpose |
 |------|------|-------|---------|
-| CNAME | `{token}._domainkey.getaiready.dev` | `{token}.dkim.amazonses.com` | DKIM signing (3 records) |
-| TXT | `getaiready.dev` | `v=spf1 include:amazonses.com ~all` | SPF authorization |
-| TXT | `_dmarc.getaiready.dev` | `v=DMARC1; p=quarantine; ...` | DMARC policy |
+| CNAME (x3) | `{token}._domainkey.{domain}` | `{token}.dkim.amazonses.com` | DKIM signing |
+| TXT | `{domain}` | `v=spf1 include:amazonses.com ~all` | SPF authorization |
+| TXT | `_dmarc.{domain}` | `v=DMARC1; p=quarantine; ...` | DMARC policy |
+
+**Deploy Commands:**
+
+```bash
+# Deploy to Dev (default)
+make deploy-platform
+
+# Deploy to Production
+make deploy-platform-prod
+
+# Deploy both landing + platform
+make deploy-all          # Dev
+make deploy-all-prod     # Production
+
+# Check deployment status
+make deploy-platform-status
+```
 
 **Prerequisites:**
-1. Set `CLOUDFLARE_ZONE_ID` environment variable (already set)
+1. Set `CLOUDFLARE_ZONE_ID` environment variable
 2. Set `CLOUDFLARE_API_TOKEN` for DNS management
 3. Run `sst deploy` - DNS records are created automatically
 
