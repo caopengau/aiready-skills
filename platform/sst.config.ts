@@ -60,11 +60,17 @@ export default $config({
       },
     };
 
-    // Add custom domain configuration only for production
-    // Dev stages use auto-generated CloudFront URLs
+    // Add custom domain configuration for all stages
     if (isProd) {
       siteConfig.domain = {
         name: "platform.getaiready.dev",
+        dns: sst.cloudflare.dns({
+          zone: "50eb7dcadc84c58ab34583742db0b671",
+        }),
+      };
+    } else if ($app.stage === "dev") {
+      siteConfig.domain = {
+        name: "dev.platform.getaiready.dev",
         dns: sst.cloudflare.dns({
           zone: "50eb7dcadc84c58ab34583742db0b671",
         }),
