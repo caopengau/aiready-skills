@@ -61,20 +61,11 @@ export default $config({
     };
 
     // Add custom domain configuration for all stages
+    // DNS records will need to be added manually to Cloudflare
     if (isProd) {
-      siteConfig.domain = {
-        name: "platform.getaiready.dev",
-        dns: sst.cloudflare.dns({
-          zone: "50eb7dcadc84c58ab34583742db0b671",
-        }),
-      };
+      siteConfig.domain = "platform.getaiready.dev";
     } else if ($app.stage === "dev") {
-      siteConfig.domain = {
-        name: "dev.platform.getaiready.dev",
-        dns: sst.cloudflare.dns({
-          zone: "50eb7dcadc84c58ab34583742db0b671",
-        }),
-      };
+      siteConfig.domain = "dev.platform.getaiready.dev";
     }
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
