@@ -43,7 +43,8 @@ export default $config({
       environment: {
         S3_BUCKET: bucket.name,
         DYNAMO_TABLE: table.name,
-        NEXTAUTH_URL: isProd 
+        // NextAuth v5 uses AUTH_URL and AUTH_SECRET
+        AUTH_URL: isProd 
           ? "https://platform.getaiready.dev" 
           : $app.stage === "dev"
             ? "https://dev.platform.getaiready.dev"
@@ -57,7 +58,7 @@ export default $config({
         GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET || "",
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || "",
+        AUTH_SECRET: process.env.AUTH_SECRET || "",
         STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
         STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
         STRIPE_PRICE_ID_PRO: process.env.STRIPE_PRICE_ID_PRO || "",
