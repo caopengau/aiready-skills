@@ -12,6 +12,18 @@ export default $config({
     // S3 Bucket for analysis data
     const bucket = new sst.aws.Bucket("AnalysisBucket");
 
+    // SES Configuration for transactional emails (magic links, notifications)
+    // Note: SES requires domain verification in AWS Console first
+    // Go to AWS SES Console → Verified Identities → Create Identity
+    const sesDomain = $app.stage === "production" 
+      ? "getaiready.dev" 
+      : "getaiready.dev"; // Use same domain for dev (can use subdomain)
+    
+    // SES email identity (must be verified in AWS Console before deploying)
+    const emailIdentity = new aws.ses.EmailIdentity("DomainIdentity", {
+      emailIdentity: sesDomain,
+    });
+
     // DynamoDB Table for all entities (Single Table Design)
     const table = new sst.aws.Dynamo("MainTable", {
       fields: {
@@ -57,6 +69,8 @@ export default $config({
         STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
         STRIPE_PRICE_ID_PRO: process.env.STRIPE_PRICE_ID_PRO || "",
         STRIPE_PRICE_ID_ENTERPRISE: process.env.STRIPE_PRICE_ID_ENTERPRISE || "",
+        SES_DOMAIN: sesDomain,
+        SES_FROM_EMAIL: `noreply@${sesDomain}`,
       },
     };
 

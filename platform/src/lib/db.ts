@@ -125,6 +125,14 @@ export interface RemediationRequest {
   updatedAt: string;
 }
 
+export interface MagicLinkToken {
+  token: string;
+  email: string;
+  expiresAt: string;
+  used: boolean;
+  createdAt: string;
+}
+
 // User operations
 export async function createUser(user: User): Promise<User> {
   const now = new Date().toISOString();
@@ -567,6 +575,41 @@ export async function updateRemediation(remediationId: string, updates: Partial<
     UpdateExpression: `SET ${updateExpressions.join(', ')}`,
     ExpressionAttributeNames: expressionAttributeNames,
     ExpressionAttributeValues: expressionAttributeValues,
+  }));
+}
+
+// Magic Link Token operations
+export async function createMagicLinkToken(token: MagicLinkToken): Promise<MagicLinkToken> {
+  const now = new Date().toISOString();
+  const item = {
+    PK: `MAGICLINK#${token.token}`,
+    SK: '#METADATA',
+    email: token.email,
+    expiresAt: token.expiresAt,
+    used: false,
+    createdAt: now,
+  };
+
+  await doc.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
+  return token;
+}
+
+export async function getMagicLinkToken(token: string): Promise<MagicLinkToken | null> {
+  const result = await doc.send(new GetCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `MAGICLINK#${token}`, SK: '#METADATA' },
+  }));
+
+  return result.Item ? result.Item as MagicLinkToken : null;
+}
+
+export async function markMagicLinkUsed(token: string): Promise<void> {
+  await doc.send(new UpdateCommand({
+    TableName: TABLE_NAME,
+    Key: { PK: `MAGICLINK#${token}`, SK: '#METADATA' },
+    UpdateExpression: 'SET #used = :used',
+    ExpressionAttributeNames: { '#used': 'used' },
+    ExpressionAttributeValues: { ':used': true },
   }));
 }
 

@@ -28,6 +28,7 @@ export const authConfig: NextAuthConfig = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     Credentials({
+      id: 'credentials',
       name: 'Email',
       credentials: {
         email: { label: 'Email', type: 'email', placeholder: 'name@example.com' },
@@ -48,6 +49,33 @@ export const authConfig: NextAuthConfig = {
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
         if (!isValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
+      },
+    }),
+    Credentials({
+      id: 'magic-link',
+      name: 'Magic Link',
+      credentials: {
+        userId: { label: 'User ID', type: 'text' },
+        email: { label: 'Email', type: 'email' },
+      },
+      async authorize(credentials) {
+        // This is called after magic link verification
+        // The userId and email are passed from the verify page
+        if (!credentials?.userId || !credentials?.email) {
+          return null;
+        }
+
+        const user = await getUserByEmail(credentials.email as string);
+        if (!user || user.id !== credentials.userId) {
           return null;
         }
 

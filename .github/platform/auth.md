@@ -18,7 +18,7 @@ This document covers OAuth login flows, token/session lifecycle, and security co
 | **GitHub OAuth** | ✅ Implemented | Primary sign-in for developers | GitHub → Authorize → Session |
 | **Google OAuth** | ✅ Implemented | Convenience for users with Google accounts | Google → Authorize → Session |
 | **Email/Password** | ✅ Implemented | Traditional login | Email + Password → Verify → Session |
-| **Magic Link** | 🔜 Planned | Passwordless option | Email → Link → Verify → Session |
+| **Magic Link** | ✅ Implemented | Passwordless option | Email → Link → Verify → Session |
 
 ---
 
@@ -112,19 +112,48 @@ NEXTAUTH_URL=http://localhost:3000
 
 ---
 
-## Planned Authentication Methods
+## Magic Link Flow
 
-### Magic Link (Coming Soon)
+### Request Magic Link
 
 ```
 1. User enters email on /login
-2. Client POSTs to /api/auth/signin
-3. Server creates short-lived auth token (15 min TTL)
-4. Server sends magic link via SES: https://app.example.com/auth/verify?token=xxx
-5. User clicks link
-6. Server validates token, creates session
-7. Server sets HTTP-only cookie, redirects to dashboard
+2. Client POSTs to /api/auth/magic-link
+3. Server checks if user exists (creates if not)
+4. Server generates token (UUID)
+5. Server stores token in DynamoDB with 15 min TTL
+6. Server sends magic link via AWS SES
+7. Returns success message
 ```
+
+### Verify Magic Link
+
+```
+1. User clicks link: /auth/verify?token=xxx
+2. Client POSTs token to /api/auth/verify
+3. Server validates token (exists, not used, not expired)
+4. Server marks token as used
+5. Server returns user info
+6. Client calls signIn('magic-link') to create session
+7. Redirects to /dashboard
+```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/magic-link` | POST | Request magic link email |
+| `/api/auth/verify` | POST | Verify magic link token |
+
+### AWS SES Setup
+
+Before deploying, verify your domain in AWS SES:
+
+1. Go to AWS SES Console → Verified Identities
+2. Create Identity → Domain → `getaiready.dev`
+3. Add required DNS records (DKIM, SPF)
+4. Wait for verification
+5. For production, request sending limit increase
 
 ---
 
