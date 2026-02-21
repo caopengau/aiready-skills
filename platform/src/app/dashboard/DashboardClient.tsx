@@ -158,7 +158,7 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
                 className="flex items-center"
               >
                 <Image
-                  src="/logo-text-transparent.png"
+                  src="/logo-text-transparent-dark-theme.png"
                   alt="AIReady"
                   width={140}
                   height={40}
