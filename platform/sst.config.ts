@@ -60,12 +60,23 @@ export default $config({
       },
     };
 
-    // Custom domain configuration disabled - requires Route53 hosted zone
-    // To enable custom domains:
-    // 1. Create Route53 hosted zone for getaiready.dev, OR
-    // 2. Configure Cloudflare credentials (CLOUDFLARE_API_TOKEN)
-    // 
-    // For now, sites use auto-generated CloudFront URLs
+    // Add custom domain configuration for all stages
+    // Requires CLOUDFLARE_API_TOKEN in environment
+    if (isProd) {
+      siteConfig.domain = {
+        name: "platform.getaiready.dev",
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
+        }),
+      };
+    } else if ($app.stage === "dev") {
+      siteConfig.domain = {
+        name: "dev.platform.getaiready.dev",
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
+        }),
+      };
+    }
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
 
