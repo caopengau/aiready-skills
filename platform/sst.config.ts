@@ -41,7 +41,7 @@ export default $config({
     const siteConfig: sst.aws.NextjsArgs = {
       path: ".",
       dev: {
-        command: "npm run dev:next",
+        command: "pnpm run dev:next",
         autostart: true,
       },
       environment: {
