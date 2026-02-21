@@ -17,7 +17,7 @@ export default $config({
     // or via a separate Pulumi Cloudflare provider setup
     // Dev: noreply@dev.getaiready.dev (subdomain)
     // Production: noreply@getaiready.dev
-    const isProd = $app.stage === "production";
+    const isProd = $app.stage === "prod" || $app.stage === "production";
     const sesDomain = isProd ? "getaiready.dev" : "dev.getaiready.dev";
 
     // DynamoDB Table for all entities (Single Table Design)
