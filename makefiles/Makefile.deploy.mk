@@ -67,8 +67,8 @@ deploy-platform: ## Deploy platform to AWS (dev environment)
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
 	@cd platform && \
 		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
-		# Allow overriding the platform URL used for verification (default kept for backward-compat)
-		export PLATFORM_URL=$${PLATFORM_URL:-https://platform.getaiready.dev} && \
+		# Allow overriding the platform app URL used for verification (reuse existing env var)
+		export NEXT_PUBLIC_APP_URL=$${NEXT_PUBLIC_APP_URL:-https://platform.getaiready.dev} && \
 		AWS_PROFILE=$(AWS_PROFILE) pnpm run deploy
 	@$(call log_success,Platform deployed to dev)
 	@$(MAKE) platform-verify
@@ -85,10 +85,10 @@ deploy-platform-prod: ## Deploy platform to AWS (production)
 
 platform-verify: ## Verify platform is accessible
 	@$(call log_step,Verifying platform is accessible)
-	@PLATFORM_URL=$${PLATFORM_URL:-https://platform.getaiready.dev}; \
-	if curl -fsS -o /dev/null "$$PLATFORM_URL" >/dev/null 2>&1; then \
+	@APP_URL=$${NEXT_PUBLIC_APP_URL:-https://platform.getaiready.dev}; \
+	if curl -fsS -o /dev/null "$$APP_URL" >/dev/null 2>&1; then \
 		echo "$(GREEN)✓ Platform is live and responding$(NC)"; \
-		echo "$(CYAN)🌐 URL: $$PLATFORM_URL$(NC)"; \
+		echo "$(CYAN)🌐 URL: $$APP_URL$(NC)"; \
 	else \
 		echo "$(YELLOW)⚠️  Platform may still be deploying$(NC)"; \
 		echo "$(CYAN)💡 SST handles invalidation automatically - platform will be live shortly$(NC)"; \
