@@ -62,7 +62,8 @@ dev-platform: ## Start platform dev server (SST dev with live AWS resources)
 	@$(call log_step,Starting platform dev server with SST...)
 	@echo "$(CYAN)Using AWS profile: $(GREEN)aiready$(NC)"
 	@echo "$(CYAN)Platform will be available at: $(GREEN)http://localhost:8888$(NC)"
-	@AWS_PROFILE=aiready $(PNPM) --filter @aiready/platform dev
+	@# Clear npm configs that might leak from pnpm/make environment to avoid warnings/issues
+	@AWS_PROFILE=aiready env -u npm_config_user_agent -u npm_config_npm_version -u npm_execpath $(PNPM) --filter @aiready/platform dev
 
 graph: ## Visualize project dependency graph (opens browser)
 	@$(call log_step,Starting Nx graph visualization...)
