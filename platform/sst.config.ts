@@ -40,6 +40,10 @@ export default $config({
     // Next.js site configuration
     const siteConfig: sst.aws.NextjsArgs = {
       path: ".",
+      dev: {
+        command: "npm run dev:next",
+        autostart: true,
+      },
       environment: {
         S3_BUCKET: bucket.name,
         DYNAMO_TABLE: table.name,
