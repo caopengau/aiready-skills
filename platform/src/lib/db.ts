@@ -44,6 +44,8 @@ export interface User {
   image?: string;
   githubId?: string;
   googleId?: string;
+  passwordHash?: string;
+  emailVerified?: string;
   teamId?: string;
   role?: 'owner' | 'admin' | 'member';
   createdAt: string;

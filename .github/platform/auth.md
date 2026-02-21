@@ -17,7 +17,7 @@ This document covers OAuth login flows, token/session lifecycle, and security co
 |--------|--------|----------|------|
 | **GitHub OAuth** | ✅ Implemented | Primary sign-in for developers | GitHub → Authorize → Session |
 | **Google OAuth** | ✅ Implemented | Convenience for users with Google accounts | Google → Authorize → Session |
-| **Email/Password** | 🔜 Planned | Traditional login | Email + Password → Verify → Session |
+| **Email/Password** | ✅ Implemented | Traditional login | Email + Password → Verify → Session |
 | **Magic Link** | 🔜 Planned | Passwordless option | Email → Link → Verify → Session |
 
 ---
@@ -77,16 +77,42 @@ NEXTAUTH_URL=http://localhost:3000
 
 ---
 
-## Planned Authentication Methods
+## Email/Password Flow
 
-### Email/Password (Coming Soon)
+### Registration
+
+```
+1. User enters email + password + name on /register
+2. Client POSTs to /api/auth/register
+3. Server validates input (email format, password strength)
+4. Server checks if email already exists
+5. Server hashes password with bcrypt (12 rounds)
+6. Server creates user in DynamoDB with passwordHash
+7. Returns success, user can now sign in
+```
+
+### Login
 
 ```
 1. User enters email + password on /login
-2. Server validates credentials against hashed password in DynamoDB
-3. Server creates session, sets cookie
+2. NextAuth Credentials provider validates:
+   - Fetches user by email from DynamoDB
+   - Compares password with stored hash
+3. If valid, creates session, sets cookie
 4. Redirects to /dashboard
 ```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/auth/register` | POST | Create new account |
+| `/api/auth/signin` | POST | Sign in (NextAuth) |
+| `/api/auth/signout` | POST | Sign out (NextAuth) |
+
+---
+
+## Planned Authentication Methods
 
 ### Magic Link (Coming Soon)
 
