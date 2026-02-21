@@ -8,8 +8,20 @@ import SemanticDuplicateDetection from './semantic-duplicate-detection';
 import semanticDuplicateDetectionMeta from './semantic-duplicate-detection.meta';
 import HiddenCostImportChains from './hidden-cost-import-chains';
 import hiddenCostImportChainsMeta from './hidden-cost-import-chains.meta';
+import VisualizingInvisible from './visualizing-invisible';
+import visualizingInvisibleMeta from './visualizing-invisible.meta';
 
 export const posts = [
+  {
+    slug: visualizingInvisibleMeta.slug,
+    title: visualizingInvisibleMeta.title,
+    date: visualizingInvisibleMeta.date,
+    excerpt: visualizingInvisibleMeta.excerpt,
+    author: visualizingInvisibleMeta.author,
+    tags: visualizingInvisibleMeta.tags || [],
+    readingTime: visualizingInvisibleMeta.readingTime,
+    Content: VisualizingInvisible,
+  },
   {
     slug: invisibleCodebaseMeta.slug,
     title: invisibleCodebaseMeta.title,
