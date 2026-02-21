@@ -29,10 +29,11 @@ build-pattern-detect: ## Build pattern-detect package only
 	@$(PNPM) $(SILENT_PNPM) --filter @aiready/pattern-detect build
 	@$(call log_success,Pattern-detect package built)
 
-dev: ## Start development mode (watch) for all packages
+dev: ## Start development mode (watch) for all packages (excludes platform — use make dev-platform separately)
 	@$(call log_step,Starting development mode with watch...)
+	@echo "$(CYAN)💡 To start the platform, run: $(GREEN)make dev-platform$(NC)"
 	@if command -v turbo >/dev/null 2>&1; then \
-		turbo run dev; \
+		turbo run dev --filter=!@aiready/platform; \
 	else \
 		$(PNPM) run dev; \
 	fi

@@ -10,7 +10,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "dev": "turbo run dev --concurrency 11",
+    "dev": "turbo run dev --filter=!@aiready/platform --concurrency 11",
     "clean": "turbo run clean && rm -rf node_modules",
     "consume-reports": "node ./scripts/consume-aiready-reports.js",
     "graph": "nx graph",
