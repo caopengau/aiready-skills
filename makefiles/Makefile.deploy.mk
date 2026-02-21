@@ -65,18 +65,9 @@ landing-logs: ## Show landing page logs (requires SST dashboard)
 deploy-platform: ## Deploy platform to AWS (dev environment)
 	@$(call log_step,Deploying platform to AWS (dev))
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
-	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
 	@cd platform && \
-		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
-		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
-		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
-		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
-		export GITHUB_CLIENT_ID="$${GITHUB_CLIENT_ID}" && \
-		export GITHUB_CLIENT_SECRET="$${GITHUB_CLIENT_SECRET}" && \
-		export GOOGLE_CLIENT_ID="$${GOOGLE_CLIENT_ID}" && \
-		export GOOGLE_CLIENT_SECRET="$${GOOGLE_CLIENT_SECRET}" && \
-		export NEXTAUTH_SECRET="$${NEXTAUTH_SECRET}" && \
-		pnpm sst:deploy
+		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
+		AWS_PROFILE=$(AWS_PROFILE) pnpm run deploy
 	@$(call log_success,Platform deployed to dev)
 	@$(MAKE) platform-verify
 
@@ -84,20 +75,10 @@ deploy-platform-prod: ## Deploy platform to AWS (production)
 	@$(call log_step,Deploying platform to AWS (production))
 	@echo "$(YELLOW)⚠️  Deploying to PRODUCTION$(NC)"
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
-	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
 	@cd platform && \
-		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
-		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
-		export AWS_REGION=$${AWS_REGION:-$(AWS_REGION)} && \
-		export CLOUDFLARE_API_TOKEN="$${CLOUDFLARE_API_TOKEN}" && \
-		export GITHUB_CLIENT_ID="$${GITHUB_CLIENT_ID}" && \
-		export GITHUB_CLIENT_SECRET="$${GITHUB_CLIENT_SECRET}" && \
-		export GOOGLE_CLIENT_ID="$${GOOGLE_CLIENT_ID}" && \
-		export GOOGLE_CLIENT_SECRET="$${GOOGLE_CLIENT_SECRET}" && \
-		export NEXTAUTH_SECRET="$${NEXTAUTH_SECRET}" && \
-		pnpm sst:deploy --stage production
+		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
+		AWS_PROFILE=$(AWS_PROFILE) pnpm run deploy:prod
 	@$(call log_success,Platform deployed to production)
-	@echo ""
 	@$(MAKE) platform-verify
 
 platform-verify: ## Verify platform is accessible

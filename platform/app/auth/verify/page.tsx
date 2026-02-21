@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { signIn } from 'next-auth';
+import { signIn } from 'next-auth/react';
 
 function VerifyContent() {
   const searchParams = useSearchParams();
