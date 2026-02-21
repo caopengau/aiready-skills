@@ -8,7 +8,7 @@ export default function LoginForm() {
       {/* GitHub Sign In - Primary */}
       <button
         onClick={() => signIn('github', { redirectTo: '/dashboard' })}
-        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white font-bold rounded-xl border border-slate-600 hover:border-slate-500 transition-all hover:shadow-lg hover:shadow-blue-500/20"
+        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white font-bold rounded-xl border border-slate-600 hover:border-slate-500 transition-all hover:shadow-lg hover:shadow-blue-500/20 cursor-pointer"
       >
         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
           <path
@@ -23,7 +23,7 @@ export default function LoginForm() {
       {/* Google Sign In */}
       <button
         onClick={() => signIn('google', { redirectTo: '/dashboard' })}
-        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-slate-900 font-bold rounded-xl border border-slate-300 hover:border-slate-400 transition-all hover:shadow-lg hover:shadow-white/10"
+        className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-slate-900 font-bold rounded-xl border border-slate-300 hover:border-slate-400 transition-all hover:shadow-lg hover:shadow-white/10 cursor-pointer"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path

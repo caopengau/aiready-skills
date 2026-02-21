@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RocketIcon } from '@/components/Icons';
@@ -151,13 +152,20 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-xl font-bold gradient-text"
+                className="flex items-center"
               >
-                AIReady
-              </motion.span>
+                <Image
+                  src="/logo-text-transparent.png"
+                  alt="AIReady"
+                  width={140}
+                  height={40}
+                  className="h-8 w-auto"
+                  priority
+                />
+              </motion.div>
               <nav className="hidden md:flex items-center gap-6 ml-6">
                 <a href="/dashboard" className="text-sm font-medium text-cyan-400 border-b-2 border-cyan-400 pb-0.5">
                   Dashboard
