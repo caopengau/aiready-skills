@@ -16,11 +16,13 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 1: "The AI Code Debt Tsunami is Here (And We're Not Ready)"
+
 **Status:** 🔜 Next  
 **Hook:** The tech debt paradox of AI-assisted development  
 **Target Length:** 1,200-1,500 words
 
 ### Key Points
+
 - AI code generation promises 10x productivity, but creates hidden debt
 - The four horsemen of AI code debt:
   1. Knowledge cutoff gaps (outdated patterns)
@@ -32,6 +34,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 - Personal story: What you observed building receiptclaimer
 
 ### Structure
+
 1. Opening: Provocative stat or scenario
 2. The paradox: Speed vs quality
 3. Four problems explained with examples
@@ -44,11 +47,13 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 2: "Why Your Codebase is Invisible to AI (And What to Do About It)"
+
 **Status:** 📝 Planned  
 **Hook:** AI can write code but can't see your patterns  
 **Target Length:** 1,500-1,800 words
 
 ### Key Points
+
 - The context window crisis: Why AI keeps reinventing your patterns
 - **Semantic duplicates** - Same logic, different syntax (show real examples from pattern-detect)
 - **Fragmentation cost** - Concrete example: 8 files vs 2 files = 12,450 tokens vs 2,100 tokens
@@ -57,6 +62,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 - Case study preview: receiptclaimer before/after metrics
 
 ### Structure
+
 1. Opening: Show AI repeating a pattern it already created
 2. Why this happens (context limitations)
 3. Three manifestations of invisibility
@@ -69,11 +75,13 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 3: "Building AIReady: Metrics That Actually Matter"
+
 **Status:** 📝 Planned  
 **Hook:** Traditional metrics were built for human reviewers, not AI consumers  
 **Target Length:** 1,800-2,000 words (technical deep dive)
 
 ### Key Points
+
 - Why existing tools (madge, dependency-cruiser) solve different problems
 - The three dimensions of AI-readiness:
   1. **Semantic similarity** (pattern-detect) - Jaccard on AST tokens
@@ -84,6 +92,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 - Open source + configurable = teams can customize for their context
 
 ### Structure
+
 1. Opening: Compare traditional vs AI metrics
 2. Design philosophy
 3. Deep dive on each dimension
@@ -96,11 +105,13 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 4: "Deep Dive: Semantic Duplicate Detection"
+
 **Status:** ✅ Published (Feb 7, 2026)  
 **Hook:** Your AI keeps rewriting the same validation logic in 5 different ways  
 **Target Length:** 2,000-2,200 words (most technical)
 
 ### Key Points
+
 - Technical breakdown of @aiready/pattern-detect
 - How Jaccard similarity works on AST tokens (with diagrams)
 - Pattern classification: API handlers, validators, utilities
@@ -111,6 +122,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 - Integration with CI/CD
 
 ### Structure
+
 1. Opening: Show concrete duplicate example
 2. The problem space (why traditional tools miss this)
 3. Technical approach explained
@@ -123,11 +135,13 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ---
 
 ## Part 5: "The Hidden Cost of Import Chains"
+
 **Status:** ✅ Published (Feb 15, 2026)  
 **Hook:** Every import you add costs AI tokens you don't see  
 **Target Length:** 1,800-2,000 words
 
 ### Key Points
+
 - Technical breakdown of @aiready/context-analyzer
 - Deep import chains: Cascading context costs
 - Domain fragmentation: User logic scattered across 8+ files
@@ -138,6 +152,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 - How to reorganize without breaking everything
 
 ### Structure
+
 1. Opening: Visualize token cost of a simple file
 2. Four metrics explained
 3. Real refactoring examples
@@ -149,42 +164,44 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 
 ---
 
-## Part 6: "Scaling AI-Ready Development: The receiptclaimer Story"
-**Status:** 📝 Planned  
-**Hook:** A case study in eating your own dog food  
-**Target Length:** 2,000-2,500 words (comprehensive case study)
+## Part 6: "Visualizing the Invisible: Seeing the Shape of AI Code Debt"
+
+**Status:** 📝 Planned
+**Hook:** You can't fix what you can't see. Why text-based metrics aren't enough.
+**Target Length:** 1,800-2,000 words
 
 ### Key Points
-- receiptclaimer context: Fast-growing SaaS, AI-assisted development
-- The pain points that triggered building aiready
-- Implementation timeline (week-by-week improvements)
-- **Quantified results:**
-  - Semantic duplicates: 23 → 3 (-87%)
-  - Average context budget: 12,000 → 4,500 tokens (-62%)
-  - Consistency score: 45% → 89%
-  - AI response quality improvements (subjective but measurable)
-  - Developer velocity impact
-- Team adoption challenges and wins
-- ROI calculation: Time saved vs time invested
+
+- The limitation of lists and logs: Why "15 duplicates" doesn't hit as hard as seeing a red cluster.
+- **The AIReady Visualizer:** Converting static analysis into a force-directed graph.
+- **Visual Patterns of Debt:**
+  - **The Hairball:** Tightly coupled modules that confuse AI context.
+  - **Islands:** Orphaned code that hasn't been touched in months (and likely hallucinates).
+  - **Bridges:** Crucial files that everything depends on (high risk).
+- How visualization bridges the gap between "Vibe Coding" and Engineering Management.
+- Interactive demo walkthrough (video clips).
 
 ### Structure
-1. Opening: The moment we realized we had a problem
-2. Initial state (metrics)
-3. Week-by-week journey
-4. Final state (metrics)
-5. Lessons learned
 
-**Audience:** Founders, CTOs, product teams  
-**SEO Focus:** Case study, startup development, SaaS development, AI tools
+1. The problem with current tooling (lines of text).
+2. Introducing the Visualizer (force-directed graphs).
+3. "The Shape of Debt" - Case studies of what bad patterns *look* like.
+4. How to use it for architectural reviews.
+5. Setup for Part 7: Now that we can see it, where do we go next?
+
+**Audience:** Architects, Tech Leads, Visual Learners
+**SEO Focus:** Software visualization, codebase mapping, dependency graphs, force-directed graph
 
 ---
 
 ## Part 7: "The Future is Human-Friendly Code (For AI and Humans)"
+
 **Status:** 📝 Planned  
 **Hook:** Making code AI-ready makes it better for everyone  
 **Target Length:** 1,500-1,800 words (visionary/inspirational)
 
 ### Key Points
+
 - The convergence: AI-optimized code = cleaner code
 - Emerging patterns: How successful teams structure AI-friendly repos
 - The roadmap: doc-drift, dependency health, consistency improvements
@@ -198,6 +215,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 - Community building: How to contribute
 
 ### Structure
+
 1. Opening: Look back at the journey
 2. The bigger picture (industry shift)
 3. What's next for aiready (roadmap)
@@ -213,31 +231,38 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 ## Publishing Strategy
 
 ### Timing
+
 - **Frequency:** One post every 1-2 weeks
 - **Best Days:** Tuesday-Thursday (Medium engagement peak)
 - **Time:** Morning (8-10am PT)
 
 ### Distribution
+
 - **Primary:** Medium (personal publication)
 - **Cross-post:** Dev.to, Hashnode
 - **Promotion:** Twitter, LinkedIn, Hacker News (for Part 1, 3, 6)
 - **Communities:** r/programming, r/machinelearning, AI Discord servers
 
 ### Engagement Tactics
+
 Each post should include:
+
 - **Interactive CTA:** "Run aiready on your repo and share results"
 - **Discussion prompt:** "What AI code problems do YOU face?"
 - **Social proof:** GitHub stars, user testimonials (as they come)
 - **Limited offer:** "First 10 commenters get free aiready analysis" (Part 1 only)
 
 ### Cross-Promotion
+
 - Each post links to GitHub repo with "Try it now" CTA
 - Include receiptclaimer link in author bio
 - Share code snippets as standalone tweets/LinkedIn posts
 - Create diagrams/charts that are shareable as Twitter/LinkedIn images
 
 ### SEO Strategy
+
 **Primary Keywords:**
+
 - AI code quality
 - AI tech debt
 - Semantic code analysis
@@ -247,6 +272,7 @@ Each post should include:
 - Refactoring tools
 
 **Long-tail Keywords:**
+
 - "How to measure AI code quality"
 - "Reduce AI token costs in codebase"
 - "Semantic duplicate detection tools"
@@ -257,6 +283,7 @@ Each post should include:
 ## Supporting Materials Needed
 
 ### Diagrams (Create with Excalidraw/Mermaid)
+
 1. **Token cost visualization** - Before/after comparison
 2. **Jaccard similarity illustration** - How it works
 3. **Architecture diagram** - Hub-and-spoke pattern
@@ -265,23 +292,27 @@ Each post should include:
 6. **Future roadmap diagram** - Visualization features as teaser (Part 7)
 
 ### Code Examples
+
 1. **Semantic duplicates** - 2-3 real examples (anonymized from receiptclaimer)
 2. **Context budget** - Simple file with deep imports
 3. **Consistency issues** - Mixed patterns in same codebase
 4. **Refactoring wins** - Before/after code snippets
 
 ### Screenshots
+
 1. **CLI output** - Each tool's terminal output
 2. **JSON reports** - Formatted with syntax highlighting
 3. **GitHub Actions** - CI/CD integration example
 
 ### Data Visualizations
+
 1. **receiptclaimer timeline** - Metrics improvement over weeks
 2. **Comparison chart** - aiready vs traditional tools (table format)
 3. **ROI calculation** - Time investment vs savings
 4. **Roadmap visualization** - Future features including visualization (Part 7)
 
 ### Video/GIFs (Optional but High Impact)
+
 1. **Tool demo** - Running aiready scan on sample repo
 2. **Before/after walkthrough** - Refactoring session
 
@@ -290,12 +321,14 @@ Each post should include:
 ## Success Metrics
 
 ### Per Post
+
 - **Views:** 500+ (Part 1), 300+ (subsequent)
 - **Read ratio:** >40%
 - **Engagement:** 20+ claps, 5+ comments
 - **CTR to GitHub:** >10%
 
 ### Series Overall
+
 - **GitHub stars:** +200 during series
 - **NPM downloads:** 2x growth
 - **Community:** 50+ contributors/issue reporters
@@ -303,6 +336,7 @@ Each post should include:
 - **Visualization tool interest:** Track inquiries after Part 7 teaser
 
 ### Long-term
+
 - **SEO ranking:** Top 10 for primary keywords within 6 months
 - **Backlinks:** 10+ quality backlinks from dev blogs
 - **Speaking opportunities:** Conference submissions based on content
@@ -331,19 +365,22 @@ Each post should include:
 ### Roadmap Alignment & Strategic Sequencing
 
 **Publishing Strategy Decision:**
+
 - **Keep momentum** with Posts 4-6 using EXISTING features (semantic duplicates, context-analyzer, receiptclaimer case study)
 - **Part 7** teases visualization as future work - honest about roadmap
 - **After series completion:** Build visualization, then potentially launch new blog series or update
 
 **Why this approach:**
+
 1. **Authenticity:** Only write about features that exist and work
 2. **Momentum:** Posts 1-3 published, can continue immediately
 3. **Credibility:** Show real code, real results, real impact
 4. **Strategic:** Part 7 teaser validates market interest before building
 
 **Development Priority AFTER blog series:**
+
 1. **Complete current series** with existing tools (Parts 4-7)
-2. **Build visualization framework** using G6 (https://g6.antv.antgroup.com/)
+2. **Build visualization framework** using G6 (<https://g6.antv.antgroup.com/>)
    - Interactive graphs for codebase state
    - Hotspot maps showing issue clusters
    - Dependency visualization with context costs
@@ -353,6 +390,6 @@ Each post should include:
    - Live demos and real screenshots
    - User testimonials from beta testing
 
-**Posts 1-5 Status:** Published ✅  
-**Current Focus:** Part 6 draft (receiptclaimer Case Study - comprehensive results)  
-**Visualization:** Future work - Part 7 teases it, build after series completion
+**Posts 1-5 Status:** Published ✅
+**Current Focus:** Part 6 draft (Visualizer deep dive)
+**Visualization:** Now a core feature being showcased in Part 6

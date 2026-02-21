@@ -62,6 +62,14 @@ landing-logs: ## Show landing page logs (requires SST dashboard)
 
 ##@ Platform Deployment
 
+dev-platform-local: ## Start platform dev server locally (SST dev --stage local)
+	@$(call log_step,Starting platform dev server locally)
+	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
+	@echo "$(CYAN)Platform will be available at: http://localhost:8888$(NC)"
+	@cd platform && \
+		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
+		AWS_PROFILE=$(AWS_PROFILE) pnpm run dev
+
 deploy-platform: ## Deploy platform to AWS (dev environment)
 	@$(call log_step,Deploying platform to AWS (dev))
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"

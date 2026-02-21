@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "sst dev --stage dev",
+    "dev": "sst dev --stage local",
     "dev:next": "next dev -p 8888",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "deploy": "sst deploy --stage dev",
-    "deploy:prod": "sst deploy --stage production",
-    "remove": "sst remove --stage dev"
+    "deploy:prod": "sst deploy --stage prod",
+    "remove": "sst remove --stage dev",
+    "remove:local": "sst remove --stage local"
   },
   "dependencies": {
     "@aiready/components": "workspace:*",
