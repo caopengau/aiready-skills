@@ -66,9 +66,8 @@ deploy-platform: ## Deploy platform to AWS (dev environment)
 	@$(call log_step,Deploying platform to AWS (dev))
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
 	@cd platform && \
-		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
-		# Allow overriding the platform app URL used for verification (reuse existing env var)
-		export NEXT_PUBLIC_APP_URL=$${NEXT_PUBLIC_APP_URL:-https://platform.getaiready.dev} && \
+		[ -f .env.dev ] && set -a && . ./.env.dev && set +a || true && \
+		export NEXT_PUBLIC_APP_URL=$${NEXT_PUBLIC_APP_URL:-https://dev.platform.getaiready.dev} && \
 		AWS_PROFILE=$(AWS_PROFILE) pnpm run deploy
 	@$(call log_success,Platform deployed to dev)
 	@$(MAKE) platform-verify
@@ -78,7 +77,7 @@ deploy-platform-prod: ## Deploy platform to AWS (production)
 	@echo "$(YELLOW)⚠️  Deploying to PRODUCTION$(NC)"
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
 	@cd platform && \
-		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
+		[ -f .env.prod ] && set -a && . ./.env.prod && set +a || true && \
 		AWS_PROFILE=$(AWS_PROFILE) pnpm run deploy:prod
 	@$(call log_success,Platform deployed to production)
 	@$(MAKE) platform-verify
@@ -98,7 +97,7 @@ platform-verify: ## Verify platform is accessible
 deploy-platform-remove: ## Remove platform deployment (dev)
 	@$(call log_warning,Removing platform deployment from AWS (dev))
 	@cd platform && \
-		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		set -a && [ -f .env.dev ] && . ./.env.dev || true && set +a && \
 		export AWS_PROFILE=$${AWS_PROFILE:-$(AWS_PROFILE)} && \
 		AWS_PROFILE=$(AWS_PROFILE) pnpm sst:remove
 	@$(call log_success,Platform deployment removed)
@@ -106,13 +105,13 @@ deploy-platform-remove: ## Remove platform deployment (dev)
 platform-logs: ## Show platform logs (requires SST dev mode)
 	@$(call log_step,Opening SST dev mode for logs)
 	@cd platform && \
-		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		set -a && [ -f .env.dev ] && . ./.env.dev || true && set +a && \
 		AWS_PROFILE=$(AWS_PROFILE) pnpm sst:dev
 
 deploy-platform-status: ## Show current platform deployment status
 	@echo "$(CYAN)📊 Platform Deployment Status$(NC)\n"
 	@cd platform && \
-		set -a && [ -f .env.local ] && . ./.env.local || true && set +a && \
+		set -a && [ -f .env.dev ] && . ./.env.dev || true && set +a && \
 		AWS_PROFILE=$(AWS_PROFILE) pnpm sst:list || \
 		echo "$(YELLOW)No deployments found$(NC)"
 

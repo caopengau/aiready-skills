@@ -48,11 +48,12 @@ export default $config({
         S3_BUCKET: bucket.name,
         DYNAMO_TABLE: table.name,
         // NextAuth v5 uses AUTH_URL and AUTH_SECRET
-        AUTH_URL: isProd 
+        // For SST dev mode, use localhost; for deployed stages use the actual URL
+        AUTH_URL: process.env.AUTH_URL || (isProd 
           ? "https://platform.getaiready.dev" 
           : $app.stage === "dev"
             ? "https://dev.platform.getaiready.dev"
-            : `https://${$app.stage}.platform.getaiready.dev`,
+            : `https://${$app.stage}.platform.getaiready.dev`),
         NEXT_PUBLIC_APP_URL: isProd
           ? "https://platform.getaiready.dev"
           : $app.stage === "dev"
