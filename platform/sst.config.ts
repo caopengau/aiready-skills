@@ -60,13 +60,12 @@ export default $config({
       },
     };
 
-    // Add custom domain configuration for all stages
-    // DNS records will need to be added manually to Cloudflare
-    if (isProd) {
-      siteConfig.domain = "platform.getaiready.dev";
-    } else if ($app.stage === "dev") {
-      siteConfig.domain = "dev.platform.getaiready.dev";
-    }
+    // Custom domain configuration disabled - requires Route53 hosted zone
+    // To enable custom domains:
+    // 1. Create Route53 hosted zone for getaiready.dev, OR
+    // 2. Configure Cloudflare credentials (CLOUDFLARE_API_TOKEN)
+    // 
+    // For now, sites use auto-generated CloudFront URLs
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
 
