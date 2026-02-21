@@ -58,11 +58,13 @@ dev-landing: ## Start landing page dev server at http://localhost:3333
 	@$(PNPM) --filter @aiready/landing dev
 
 platform: dev-platform ## Alias for dev-platform
-dev-platform: ## Start platform dev server (SST dev with live AWS resources)
+dev-platform: ## Start platform dev server locally (SST dev --stage local)
 	@$(call log_step,Starting platform dev server with SST...)
 	@echo "$(CYAN)Using AWS profile: $(GREEN)aiready$(NC)"
 	@echo "$(CYAN)Platform will be available at: $(GREEN)http://localhost:8888$(NC)"
-	@AWS_PROFILE=aiready $(PNPM) --filter @aiready/platform dev
+	@cd platform && \
+		[ -f .env.local ] && set -a && . ./.env.local && set +a || true && \
+		AWS_PROFILE=aiready $(PNPM) dev
 
 graph: ## Visualize project dependency graph (opens browser)
 	@$(call log_step,Starting Nx graph visualization...)
