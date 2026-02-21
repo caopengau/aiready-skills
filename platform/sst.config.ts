@@ -13,16 +13,60 @@ export default $config({
     const bucket = new sst.aws.Bucket("AnalysisBucket");
 
     // SES Configuration for transactional emails (magic links, notifications)
-    // Note: SES requires domain verification in AWS Console first
-    // Go to AWS SES Console → Verified Identities → Create Identity
-    const sesDomain = $app.stage === "production" 
-      ? "getaiready.dev" 
-      : "getaiready.dev"; // Use same domain for dev (can use subdomain)
+    const sesDomain = "getaiready.dev";
     
-    // SES email identity (must be verified in AWS Console before deploying)
-    const emailIdentity = new aws.ses.EmailIdentity("DomainIdentity", {
-      emailIdentity: sesDomain,
+    // Create SES domain identity with DKIM
+    const sesIdentity = new aws.ses.DomainIdentity("SesDomain", {
+      domain: sesDomain,
     });
+
+    // Get DKIM tokens from SES for domain verification
+    const dkimTokens = aws.ses.getDomainDkimOutput({
+      domain: sesDomain,
+    });
+
+    // Get Cloudflare Zone ID from environment or use default
+    const cloudflareZoneId = process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671";
+
+    // Create DKIM CNAME records in Cloudflare for SES verification
+    // These records allow SES to sign emails for your domain
+    dkimTokens.dkimTokens.apply((tokens) => {
+      return tokens.map((token, index) => {
+        return new aws.cloudflare.Record(`DkimRecord${index}`, {
+          zoneId: cloudflareZoneId,
+          name: `${token}._domainkey.${sesDomain}`,
+          type: "CNAME",
+          value: `${token}.dkim.amazonses.com`,
+          ttl: 3600,
+          proxied: false, // DKIM records must not be proxied
+        });
+      });
+    });
+
+    // Create SPF TXT record for email sending authorization
+    new aws.cloudflare.Record("SpfRecord", {
+      zoneId: cloudflareZoneId,
+      name: sesDomain,
+      type: "TXT",
+      value: "v=spf1 include:amazonses.com ~all",
+      ttl: 3600,
+      proxied: false,
+    });
+
+    // Create DMARC record for email authentication policy
+    new aws.cloudflare.Record("DmarcRecord", {
+      zoneId: cloudflareZoneId,
+      name: `_dmarc.${sesDomain}`,
+      type: "TXT",
+      value: "v=DMARC1; p=quarantine; rua=mailto:dmarc@getaiready.dev; pct=100; adkim=s; aspf=s",
+      ttl: 3600,
+      proxied: false,
+    });
+
+    // Verify the domain identity (SES will check DNS records)
+    const sesVerification = new aws.ses.DomainIdentityVerification("SesVerification", {
+      domain: sesIdentity.id,
+    }, { dependsOn: [sesIdentity] });
 
     // DynamoDB Table for all entities (Single Table Design)
     const table = new sst.aws.Dynamo("MainTable", {

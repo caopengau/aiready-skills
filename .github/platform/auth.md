@@ -145,15 +145,25 @@ NEXTAUTH_URL=http://localhost:3000
 | `/api/auth/magic-link` | POST | Request magic link email |
 | `/api/auth/verify` | POST | Verify magic link token |
 
-### AWS SES Setup
+### AWS SES Setup (Automated via SST)
 
-Before deploying, verify your domain in AWS SES:
+SST automatically configures Cloudflare DNS for SES verification:
 
-1. Go to AWS SES Console → Verified Identities
-2. Create Identity → Domain → `getaiready.dev`
-3. Add required DNS records (DKIM, SPF)
-4. Wait for verification
-5. For production, request sending limit increase
+**DNS Records Created Automatically:**
+| Type | Name | Value | Purpose |
+|------|------|-------|---------|
+| CNAME | `{token}._domainkey.getaiready.dev` | `{token}.dkim.amazonses.com` | DKIM signing (3 records) |
+| TXT | `getaiready.dev` | `v=spf1 include:amazonses.com ~all` | SPF authorization |
+| TXT | `_dmarc.getaiready.dev` | `v=DMARC1; p=quarantine; ...` | DMARC policy |
+
+**Prerequisites:**
+1. Set `CLOUDFLARE_ZONE_ID` environment variable (already set)
+2. Set `CLOUDFLARE_API_TOKEN` for DNS management
+3. Run `sst deploy` - DNS records are created automatically
+
+**Manual Steps:**
+1. For production: Request SES sending limit increase from AWS Support
+2. Monitor DMARC reports at `dmarc@getaiready.dev`
 
 ---
 
