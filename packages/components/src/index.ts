@@ -53,6 +53,7 @@ export { ThemeProvider, useTheme, type Theme, type EffectiveTheme } from './them
 export { cn } from './utils/cn';
 export * from './utils/colors';
 export * from './utils/formatters';
+export * from './utils/score';
 
 // Hooks
 export { useDebounce } from './hooks/useDebounce';

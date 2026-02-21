@@ -371,9 +371,9 @@ export function calculatePathEntropy(files: string[]): number {
 
   const total = counts.reduce((s, v) => s + v, 0);
   let entropy = 0;
-  for (const c of counts) {
-    const p = c / total;
-    entropy -= p * Math.log2(p);
+  for (const count of counts) {
+    const prob = count / total;
+    entropy -= prob * Math.log2(prob);
   }
 
   const maxEntropy = Math.log2(counts.length);
@@ -826,8 +826,8 @@ export function calculateStructuralCohesionFromCoUsage(
 
   // Calculate entropy
   let entropy = 0;
-  for (const p of probs) {
-    entropy -= p * Math.log2(p);
+  for (const prob of probs) {
+    entropy -= prob * Math.log2(prob);
   }
 
   const maxEntropy = Math.log2(probs.length);
@@ -892,10 +892,10 @@ function calculateDomainCohesion(exports: ExportInfo[]): number {
   const total = domains.length;
   let entropy = 0;
 
-  for (const count of domainCounts.values()) {
-    const p = count / total;
-    if (p > 0) {
-      entropy -= p * Math.log2(p);
+  for (const domainCount of domainCounts.values()) {
+    const prob = domainCount / total;
+    if (prob > 0) {
+      entropy -= prob * Math.log2(prob);
     }
   }
 

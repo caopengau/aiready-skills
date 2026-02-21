@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RocketIcon } from '@/components/Icons';
+import { scoreColor, scoreBg, scoreGlow, scoreLabel } from '@aiready/components';
 import type { Repository, Analysis } from '@/lib/db';
 
 type RepoWithAnalysis = Repository & { latestAnalysis: Analysis | null };
@@ -18,34 +19,6 @@ interface Props {
   };
   repos: RepoWithAnalysis[];
   overallScore: number | null;
-}
-
-function scoreColor(score: number | null | undefined): string {
-  if (score == null) return 'text-slate-400';
-  if (score >= 75) return 'score-excellent';
-  if (score >= 50) return 'score-good';
-  return 'score-poor';
-}
-
-function scoreBg(score: number | null | undefined): string {
-  if (score == null) return 'bg-slate-800/50 border-slate-700';
-  if (score >= 75) return 'bg-emerald-900/30 border-emerald-500/30';
-  if (score >= 50) return 'bg-amber-900/30 border-amber-500/30';
-  return 'bg-red-900/30 border-red-500/30';
-}
-
-function scoreLabel(score: number | null | undefined): string {
-  if (score == null) return 'Not analyzed';
-  if (score >= 75) return 'AI-Ready';
-  if (score >= 50) return 'Needs Improvement';
-  return 'Critical Issues';
-}
-
-function scoreGlow(score: number | null | undefined): string {
-  if (score == null) return '';
-  if (score >= 75) return 'shadow-emerald-500/20';
-  if (score >= 50) return 'shadow-amber-500/20';
-  return 'shadow-red-500/20';
 }
 
 export default function DashboardClient({ user, repos: initialRepos, overallScore }: Props) {

@@ -1,5 +1,6 @@
 'use client';
 
+import { getRating as getCoreRating } from '@aiready/core';
 import { cn } from '../utils/cn';
 
 export type ScoreRating = 'excellent' | 'good' | 'fair' | 'needs-work' | 'critical';
@@ -21,12 +22,17 @@ const ratingConfig: Record<ScoreRating, { color: string; bgColor: string; label:
   critical: { color: 'bg-red-500', bgColor: 'bg-red-100', label: 'Critical' },
 };
 
+// Convert Title Case rating from core to lowercase for component use
 function getRating(score: number): ScoreRating {
-  if (score >= 90) return 'excellent';
-  if (score >= 75) return 'good';
-  if (score >= 60) return 'fair';
-  if (score >= 40) return 'needs-work';
-  return 'critical';
+  const coreRating = getCoreRating(score);
+  const ratingMap: Record<string, ScoreRating> = {
+    'Excellent': 'excellent',
+    'Good': 'good',
+    'Fair': 'fair',
+    'Needs Work': 'needs-work',
+    'Critical': 'critical',
+  };
+  return ratingMap[coreRating] || 'critical';
 }
 
 const sizeConfig = {

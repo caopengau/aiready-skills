@@ -128,8 +128,8 @@ export const ForceDirectedGraph = forwardRef<ForceDirectedGraphHandle, ForceDire
   const nodes = React.useMemo(() => {
     if (!initialNodes || !initialNodes.length) return initialNodes;
     
-    const cx = width / 2;
-    const cy = height / 2;
+    const centerX = width / 2;
+    const centerY = height / 2;
     
     // For force layout, use random positions but don't animate
     if (layout === 'force') {
@@ -145,8 +145,8 @@ export const ForceDirectedGraph = forwardRef<ForceDirectedGraphHandle, ForceDire
       const radius = Math.min(width, height) * 0.35;
       return initialNodes.map((n: any, i: number) => ({
         ...n,
-        x: cx + Math.cos((2 * Math.PI * i) / initialNodes.length) * radius,
-        y: cy + Math.sin((2 * Math.PI * i) / initialNodes.length) * radius,
+        x: centerX + Math.cos((2 * Math.PI * i) / initialNodes.length) * radius,
+        y: centerY + Math.sin((2 * Math.PI * i) / initialNodes.length) * radius,
       }));
     }
     
@@ -188,16 +188,16 @@ export const ForceDirectedGraph = forwardRef<ForceDirectedGraphHandle, ForceDire
     if (!nodes || nodes.length === 0) return;
     
     const applyLayout = () => {
-      const cx = width / 2;
-      const cy = height / 2;
+      const centerX = width / 2;
+      const centerY = height / 2;
       
       if (layout === 'circular') {
         // Place all nodes in a circle
         const radius = Math.min(width, height) * 0.35;
         nodes.forEach((node, i) => {
           const angle = (2 * Math.PI * i) / nodes.length;
-          node.fx = cx + Math.cos(angle) * radius;
-          node.fy = cy + Math.sin(angle) * radius;
+          node.fx = centerX + Math.cos(angle) * radius;
+          node.fy = centerY + Math.sin(angle) * radius;
         });
       } else if (layout === 'hierarchical') {
         // Place packages in rows, files within packages in columns
