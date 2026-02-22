@@ -24,20 +24,35 @@
 ## Pro — $49/month
 
 **Includes everything in Free, plus:**
-- Unlimited repositories
+- 10 repositories
 - Unlimited analysis runs
 - 90-day data retention
 - Historical trends & charts
-- Team benchmarking (compare against similar repos)
 - 5 AI-generated refactoring plans/month
 - Slack/Discord webhooks
 - Email support
 
-**Value prop:** Teams serious about maintaining AI-friendly code quality.
+**Value prop:** Individual developers and small projects serious about AI-friendly code quality.
 
 ---
 
-## Enterprise — Custom (starts at $499/month)
+## Team — $99/month
+
+**Includes everything in Pro, plus:**
+- Unlimited repositories
+- Unlimited team members
+- Team benchmarking (compare against similar repos)
+- 20 AI-generated refactoring plans/month
+- CI/CD integration (GitHub Actions, GitLab CI)
+- **PR Gatekeeper Mode** — Block merges that break your AI context budget
+- Team dashboard with aggregated metrics
+- Priority email support
+
+**Value prop:** Self-serve team plan with CI/CD gatekeeper — avoid the procurement nightmare while getting enterprise-grade protection.
+
+---
+
+## Enterprise — Custom (starts at $299/month)
 
 **Includes everything in Pro, plus:**
 - Unlimited teams/users
@@ -78,20 +93,24 @@ Available to Pro and Enterprise customers.
 
 ## Plan Comparison
 
-| Feature | Free | Pro | Enterprise |
-|---------|------|-----|------------|
-| Teams | 1 | 1 | Unlimited |
-| Repositories | 3 | Unlimited | Unlimited |
-| Runs/month | 10 | Unlimited | Unlimited |
-| Data retention | 7 days | 90 days | 1 year+ |
-| Historical trends | ❌ | ✅ | ✅ |
-| Team benchmarking | ❌ | ✅ | ✅ |
-| AI refactoring plans | ❌ | 5/mo | Unlimited |
-| CI/CD integration | ❌ | ❌ | ✅ |
-| Custom rules | ❌ | ❌ | ✅ |
-| API access | ❌ | ❌ | ✅ |
-| SLA support | ❌ | Email | 4h SLA |
-| SSO | ❌ | ❌ | ✅ |
+| Feature | Free | Pro | Team | Enterprise |
+|---------|------|-----|------|------------|
+| Price | $0 | $49/mo | $99/mo | $299+/mo |
+| Teams | 1 | 1 | 1 | Unlimited |
+| Team members | 1 | 1 | Unlimited | Unlimited |
+| Repositories | 3 | 10 | Unlimited | Unlimited |
+| Runs/month | 10 | Unlimited | Unlimited | Unlimited |
+| Data retention | 7 days | 90 days | 90 days | 1 year+ |
+| Historical trends | ❌ | ✅ | ✅ | ✅ |
+| Team benchmarking | ❌ | ❌ | ✅ | ✅ |
+| AI refactoring plans | ❌ | 5/mo | 20/mo | Unlimited |
+| CI/CD integration | ❌ | ❌ | ✅ | ✅ |
+| **PR Gatekeeper** | ❌ | ❌ | ✅ | ✅ |
+| Custom rules | ❌ | ❌ | ❌ | ✅ |
+| API access | ❌ | ❌ | ❌ | ✅ |
+| SLA support | ❌ | Email | 24h | 4h |
+| SSO | ❌ | ❌ | ❌ | ✅ |
+| Dedicated account manager | ❌ | ❌ | ❌ | ✅ |
 
 ---
 
@@ -100,10 +119,10 @@ Available to Pro and Enterprise customers.
 Plan hierarchy enforced at the Lambda middleware layer (see [auth.md](./auth.md)):
 
 ```typescript
-const planHierarchy = { free: 0, pro: 1, enterprise: 2 };
+const planHierarchy = { free: 0, pro: 1, team: 2, enterprise: 3 };
 
-// Usage: require Pro or above
-await withAuth(event, 'pro');
+// Usage: require Team or above for CI/CD gatekeeper
+await withAuth(event, 'team');
 ```
 
 Limit enforcement happens in individual Lambda handlers by checking JWT `plan` + querying subscription record.

@@ -9,8 +9,9 @@ The AIReady Platform extends the open-source CLI tools with a hosted SaaS layer:
 | Tier | What it adds | Price |
 |------|-------------|-------|
 | **Free CLI** | Open source detection + local visualization | $0 |
-| **Pro SaaS** | Historical trends, benchmarks, recommendations | $49/mo |
-| **Enterprise** | CI/CD integration, team analytics, custom rules | Custom |
+| **Pro SaaS** | Historical trends, 10 repos, individual use | $49/mo |
+| **Team SaaS** | CI/CD gatekeeper, unlimited repos, team analytics | $99/mo |
+| **Enterprise** | Custom rules, SSO, dedicated support | $299+/mo |
 | **Expert Review** | Human consultant for complex remediations | $150-300/hr |
 
 **Strategic approach:** Core analysis tools remain open source (MIT). Revenue comes from the hosted platform.

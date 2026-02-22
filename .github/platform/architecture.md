@@ -237,3 +237,72 @@ pnpm run deploy:prod      # → sst deploy --stage prod
 # Tear down dev
 pnpm run remove
 ```
+
+---
+
+## Strategic Architecture Decisions
+
+### ❌ No DAX (DynamoDB Accelerator) — Yet
+
+**Decision:** Do not start with DAX. DynamoDB's sub-10ms latency is sufficient for dashboard use cases.
+
+**Rationale:**
+- DAX adds ~$40/mo minimum cost
+- Significant operational complexity
+- Dashboard use case doesn't require microsecond latency
+- Wait until thousands of concurrent users before considering
+
+**When to reconsider:**
+- User base exceeds 5,000 daily active users
+- Latency complaints from Enterprise customers
+- Real-time collaboration features require faster reads
+
+### ⚠️ Lambda Concurrency Planning
+
+**Risk:** Enterprise client suddenly uploads 500 repos at once → throttling
+
+**Mitigation:**
+1. Set reserved concurrency on processing Lambda (e.g., 50)
+2. Use SQS queue for repo processing (built-in backpressure)
+3. Implement batch processing (max 10 repos per invocation)
+4. Add throttling alerts to CloudWatch
+
+**Implementation:**
+```typescript
+// sst.config.ts
+const processingLambda = sst.aws.Function('ProcessRepos', {
+  handler: 'src/handlers/process-repos.handler',
+  timeout: 300,
+  memory: 1024,
+  reservedConcurrency: 50, // Prevent cascade failures
+});
+```
+
+### ✅ Serverless as Competitive Advantage
+
+**Strategic Insight:** "Cost at 0 users" being $0 allows survival through the "Trough of Sorrow" (Month 7 plateau).
+
+**Cost Projection (Monthly):**
+
+| Users | DynamoDB | Lambda | S3 | CloudFront | Total |
+|-------|----------|--------|-----|------------|-------|
+| 0 | $0 | $0 | $0 | $1 | ~$1 |
+| 100 | $5 | $10 | $2 | $5 | ~$22 |
+| 1,000 | $25 | $50 | $10 | $20 | ~$105 |
+| 10,000 | $150 | $300 | $50 | $100 | ~$600 |
+
+**Compare to:** Traditional server (~$200-500/mo regardless of usage)
+
+---
+
+## Decisions Log
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-01 | Serverless (Lambda + DynamoDB) over Express + PostgreSQL | ~90% cost savings at low user counts, zero ops burden |
+| 2026-01 | Single-table DynamoDB design | Eliminates JOINs, serves all 15 access patterns from one table |
+| 2026-01 | SST for IaC | Already in use for landing, consistent toolchain |
+| 2026-02 | Phase 2 = agentic remediation + consulting hybrid | Closes gap between detection and fix; unique market position |
+| 2026-02 | No DAX at launch | Adds $40/mo minimum; DynamoDB latency sufficient for dashboards |
+| 2026-02 | Lambda reserved concurrency = 50 | Prevent cascade failures when Enterprise uploads many repos |
+```

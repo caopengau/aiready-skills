@@ -4,15 +4,36 @@
 
 ---
 
-## Year 1 Target Metrics
+## Realistic Revenue Projections
 
-| Metric | Month 3 | Month 6 | Month 12 |
+Based on market analysis and solo founder constraints, here's a grounded timeline:
+
+| Phase | Timeline | Realistic Goal | Focus Area |
+|-------|----------|----------------|------------|
+| **The Grind** | Months 1–4 | 500 Free / 5 Pro ($245 MRR) | Bug fixes, SEO, Product-Market Fit |
+| **The Validation** | Months 5–9 | 2,000 Free / 30 Pro / 2 Team ($1.6k MRR) | First Team pilots, CI/CD integration |
+| **The Breakout** | Months 10–18 | 5,000 Free / 100 Pro / 10 Team ($5.9k MRR) | Scaling organic growth, automating support |
+
+### Key Insight: "Trough of Sorrow"
+Most solo SaaS products hit a growth plateau around Month 7. The "compound interest" of SEO and word-of-mouth typically kicks in around Month 12-18.
+
+### Path to "Senior Dev Salary" ($15k/mo)
+- **Timeline:** 18–24 months (not 12)
+- **Requires:** ~150 Pro + ~50 Team + 2 Enterprise customers
+- **MRR breakdown:** $7,350 Pro + $4,950 Team + $1,000+ Enterprise
+
+---
+
+## Year 1 Target Metrics (Grounded)
+
+| Metric | Month 4 | Month 9 | Month 12 |
 |--------|---------|---------|----------|
-| Free users | 500 | 2,000 | 10,000 |
-| Pro subscribers | 15 | 50 | 200 |
-| Enterprise deals | 0 | 2 | 10 |
-| MRR | $735 | $3,450 | $14,800 |
-| ARR | $8,820 | $41,400 | $177,600 |
+| Free users | 500 | 2,000 | 5,000 |
+| Pro subscribers | 5 | 30 | 80 |
+| Team subscribers | 0 | 5 | 15 |
+| Enterprise deals | 0 | 0 | 1-2 |
+| MRR | $245 | $2,000 | $5,500 |
+| ARR | $2,940 | $24,000 | $66,000 |
 
 ---
 

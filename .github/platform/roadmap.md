@@ -6,12 +6,28 @@
 
 ## Immediate — Month 1 (MVP SaaS)
 
+### CI/CD Gatekeeper (Strategic Priority)
+- [x] Add `--ci` flag to CLI for GitHub Actions integration
+- [x] Add `--fail-on` option for granular control (critical, major, any)
+- [x] Output GitHub Actions annotations for PR checks
+- [x] Block PRs that don't meet threshold with remediation steps
+- [ ] Create GitHub Action marketplace action (aiready-action)
+- [ ] Add GitLab CI template
+
+### Pricing & Plans (Strategic Update)
+- [x] Add Team plan at $99/mo (self-serve, avoids Enterprise procurement)
+- [x] Move CI/CD integration from Enterprise to Team plan
+- [x] Update plan comparison table
+- [ ] Update Stripe products/prices in platform
+- [ ] Update billing middleware for `team` plan level
+
 ### Infrastructure & Data
 - [ ] Create SST project in `platform/` (see [data-model.md](./data-model.md) for full SST definition)
 - [ ] Provision DynamoDB single table (`aiready-saas`) with GSI1, GSI2, TTL
 - [ ] Provision S3 bucket for raw analysis JSON
 - [ ] Set up EventBridge bus + SQS queues
 - [ ] Configure CloudWatch monitoring + Sentry
+- [ ] Set Lambda reserved concurrency (50) for Enterprise scale
 
 ### Auth
 - [ ] Implement GitHub OAuth with NextAuth.js (see [auth.md](./auth.md))
