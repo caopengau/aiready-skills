@@ -142,14 +142,14 @@ const Post = () => (
     <p>The visualizer ships as part of the unified <code>@aiready/cli</code>. Three commands gets you a full interactive graph:</p>
 
     <div className="my-6">
-      <CodeBlock language="bash" code={`# 1. Scan your codebase
+      <CodeBlock lang="bash">{`# 1. Scan your codebase
 npx aiready analyze
 
 # 2. Start the interactive visualizer
 npx aiready visualise
 
 # 3. Export a shareable static report
-npx aiready visualise --output report.html`} />
+npx aiready visualise --output report.html`}</CodeBlock>
     </div>
 
     <div className="my-8 max-w-3xl mx-auto">
