@@ -46,7 +46,9 @@
 - [ ] Show "expires in X days" in dashboard
 
 ### Priority 1D: Analysis History
-- [ ] GET /api/repos/:repoId/runs endpoint
+- [x] GET /api/analysis/upload endpoint with history
+- [x] Include expiry info (daysUntilExpiry)
+- [x] Return limits info with each response
 - [ ] Display run history on repo detail page
 - [ ] Compare scores across runs
 
@@ -55,14 +57,17 @@
 ## 🔨 Week 3-4: Improve User Experience
 
 ### Priority 2A: Dashboard Charts
-- [ ] Score breakdown pie chart
-- [ ] Tool scores bar chart
-- [ ] Issue severity distribution
+- [x] Limits banner showing repos and runs remaining
+- [x] Free plan label with upgrade link
+- [ ] Score breakdown pie chart (deferred)
+- [ ] Tool scores bar chart (deferred)
 
 ### Priority 2B: Email Notifications
-- [ ] Send "Analysis complete" email via SES
-- [ ] Include score summary in email
-- [ ] Link to dashboard
+- [x] Create email.ts with SES integration
+- [x] Send "Analysis complete" email via SES
+- [x] Include score summary in email
+- [x] Link to dashboard
+- [x] Welcome email template
 
 ### Priority 2C: Error Handling
 - [ ] Better error messages for common issues
