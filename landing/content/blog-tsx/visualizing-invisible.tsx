@@ -6,6 +6,10 @@ const Post = () => (
   <>
     <blockquote>Part 6 of "The AI Code Debt Tsunami" series</blockquote>
 
+    <div className="my-8 max-w-4xl mx-auto">
+      <img src="/series-6-visualise-invisible-debt.png" alt="Visualizing the Invisible - cover" className="w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800" />
+    </div>
+
     <p>
       When we talk about technical debt, we usually talk about lists. A linter report with 450 warnings. A backlog with 32 "refactoring" tickets. A SonarQube dashboard showing 15% duplication.
     </p>
@@ -146,6 +150,11 @@ npx aiready visualise
 
 # 3. Export a shareable static report
 npx aiready visualise --output report.html`} />
+    </div>
+
+    <div className="my-8 max-w-3xl mx-auto">
+      <img src="/example-visualisation.png" alt="Example AIReady visualisation" className="w-full rounded-lg shadow-md" />
+      <p className="text-center text-sm text-slate-500 mt-3 italic">Example visualiser output highlighting clusters and token-cost overlays.</p>
     </div>
 
     <p>The output gives you:</p>
