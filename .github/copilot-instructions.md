@@ -6,16 +6,33 @@
 
 AIReady is a monorepo with tools for assessing AI-readiness and improving AI leverage. It helps teams prepare repositories for better AI adoption by detecting issues that confuse AI models and identifying context fragmentation.
 
-**Packages:**
-- **[@aiready/core](packages/core)** - Shared utilities and types (HUB)
-- **[@aiready/cli](packages/cli)** - Unified CLI interface (HUB) - v0.9.23
-- **[@aiready/pattern-detect](packages/pattern-detect)** - Semantic duplicate detection (SPOKE)
-- **[@aiready/context-analyzer](packages/context-analyzer)** - Context window cost & dependency fragmentation (SPOKE)
-- **[@aiready/consistency](packages/consistency)** - Naming conventions and pattern consistency (SPOKE) - v0.8.22
-- **[@aiready/visualizer](packages/visualizer)** - Interactive force-directed graph visualization (SPOKE)
-- **[@aiready/components](packages/components)** - Shared UI component library (SPOKE)
-- **[@aiready/skills](packages/skills)** - Agent skills for AI assistants (SPOKE)
-- Future spokes: doc-drift, deps
+### Packages (all in `packages/` directory)
+
+**Hubs:**
+- **[@aiready/core](packages/core)** - Shared utilities and types (HUB) - v0.9.22
+- **[@aiready/cli](packages/cli)** - Unified CLI interface (HUB) - v0.9.26
+
+**Spokes:**
+- **[@aiready/pattern-detect](packages/pattern-detect)** - Semantic duplicate detection - v0.11.22
+- **[@aiready/context-analyzer](packages/context-analyzer)** - Context window cost & dependency fragmentation - v0.9.26
+- **[@aiready/consistency](packages/consistency)** - Naming conventions and pattern consistency - v0.8.22
+- **[@aiready/visualizer](packages/visualizer)** - Interactive force-directed graph visualization - v0.1.28
+- **[@aiready/components](packages/components)** - Shared UI component library - v0.1.22
+- **[@aiready/skills](packages/skills)** - Agent skills for AI assistants - v0.1.0
+
+**Extension:**
+- **[aiready](packages/vscode-extension)** - VS Code extension - v0.3.5
+
+### Distribution Channels
+
+- **[action-marketplace/](action-marketplace)** - GitHub Action for CI/CD integration - v1.0.0
+- **[docker/](docker)** - Docker images (Dockerfile, Dockerfile.slim)
+- **[homebrew/](homebrew)** - Homebrew formula (aiready.rb)
+
+### Other Directories
+
+- **[landing/](landing)** - Marketing website (getaiready.dev)
+- **[platform/](platform)** - Platform backend services
 
 ## Architecture: Hub-and-Spoke Pattern
 
@@ -79,6 +96,36 @@ git commit -m "feat: your changes"
 make sync  # ← This syncs ALL repos automatically
 ```
 
+## Publishing & Distribution
+
+### Make Commands for Publishing
+```bash
+make help                    # Show all available commands
+make publish-vscode          # Publish VS Code extension (requires VSCE_PAT)
+make vscode-publish          # Alias for vscode-publish
+make npm-publish SPOKE=core  # Publish individual npm package
+make sync                    # Sync all spokes to GitHub repos
+```
+
+### VS Code Extension
+- Location: `packages/vscode-extension/`
+- Publisher: `pengcao`
+- Requires `VSCE_PAT` in `packages/vscode-extension/.env`
+- Market: https://marketplace.visualstudio.com/items?itemName=pengcao.aiready
+
+### GitHub Action
+- Location: `action-marketplace/`
+- Published automatically via GitHub release workflow
+- Market: https://github.com/marketplace/actions/aiready-action
+
+### Docker
+- Images: `aiready/cli` (Docker Hub), `ghcr.io/caopengau/aiready/cli`
+- Build: `docker build -f docker/Dockerfile -t aiready/cli .`
+
+### Homebrew
+- Formula: `homebrew/aiready.rb`
+- Install: `brew install caopengau/aiready/aiready`
+
 ## Agent Workflow
 
 1. **Load Context:** Use doc-mapping.json to load relevant sub-instructions based on task (e.g., development-workflow.md for coding, adding-new-tool.md for new spokes, devops-best-practices.md for DevOps). Run `make help` to understand available curated commands.
@@ -103,6 +150,7 @@ make sync  # ← This syncs ALL repos automatically
 - **GIT:** Is this change in the monorepo or a spoke repo?
 - **RELEASE:** After publishing ANY spoke separately, did I republish CLI? (Required!)
 - **RELEASE:** Am I excluding landing from release-all? (It has separate workflow)
+- **PUBLISH:** For VS Code extension, is VSCE_PAT set in packages/vscode-extension/.env?
 
 ## Getting Help
 
@@ -113,3 +161,4 @@ make sync  # ← This syncs ALL repos automatically
 - **Web Deployment:** Load `landing-deployment` from doc-mapping.json for Vercel/AWS deployment guides
 - **GIT:** Always load `git-workflow` sub-instructions before git operations
 - **GIT:** Use `make sync` instead of direct git commands
+- **Publishing:** Use `make publish-*` commands instead of manual publishing
