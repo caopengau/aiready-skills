@@ -1,16 +1,41 @@
-# AIReady Platform Documentation
+# AIReady Platform
 
-> Private SaaS platform for AI Code Debt Remediation with Human-in-the-Loop Agentic Collaboration
+> **Hub doc — start here.** Private SaaS platform for AI Code Debt Remediation with Human-in-the-Loop Agentic Collaboration.
 
-## Overview
+## Product Overview
 
-The AIReady Platform extends our open-source detection tools with:
-- **Automated Remediation**: AI agents that fix detected issues
-- **Human Oversight**: Expert review queue for complex fixes
-- **Continuous Monitoring**: Historical trends and proactive alerts
-- **Team Collaboration**: Shared dashboards and remediation workflows
+The AIReady Platform extends the open-source CLI tools with a hosted SaaS layer:
 
-## Architecture
+| Tier | What it adds | Price |
+|------|-------------|-------|
+| **Free CLI** | Open source detection + local visualization | $0 |
+| **Pro SaaS** | Historical trends, benchmarks, recommendations | $49/mo |
+| **Enterprise** | CI/CD integration, team analytics, custom rules | Custom |
+| **Expert Review** | Human consultant for complex remediations | $150-300/hr |
+
+**Strategic approach:** Core analysis tools remain open source (MIT). Revenue comes from the hosted platform.
+
+---
+
+## Spoke Documents
+
+| Doc | What it covers |
+|-----|-----------------|
+| [architecture.md](./architecture.md) | System components, data flow, serverless rationale, cost comparison |
+| [data-model.md](./data-model.md) | DynamoDB single-table design, access patterns, entity schemas, TTL, query examples, SST infra |
+| [auth.md](./auth.md) | OAuth flow, JWT lifecycle, plan-gating middleware |
+| [api.md](./api.md) | All API endpoints with request/response shapes |
+| [pricing.md](./pricing.md) | Tier limits, add-ons, value props |
+| [revenue.md](./revenue.md) | Target metrics, conversion funnel, acquisition, retention, go-to-market phases |
+| [ui-wireframes.md](./ui-wireframes.md) | Dashboard, repo detail, and consistency analysis wireframes |
+| [phase2-agentic.md](./phase2-agentic.md) | Agentic remediation platform, human-in-the-loop model, consulting revenue |
+| [roadmap.md](./roadmap.md) | Immediate, short-term, and long-term implementation tasks |
+| [agents/](./agents/) | Agent system detail (detection, analysis, remediation, validation) |
+| [components-audit.md](./components-audit.md) | Shared UI component inventory and design system status |
+
+---
+
+## Platform Code Layout
 
 ```
 platform/
@@ -22,18 +47,8 @@ platform/
 │   ├── auth.ts        # NextAuth.js configuration
 │   ├── billing.ts     # Stripe integration
 │   └── db.ts          # DynamoDB client
-└── sst.config.ts      # AWS infrastructure
+└── sst.config.ts      # AWS infrastructure (see data-model.md for full definition)
 ```
-
-## Documentation Index
-
-| Document | Purpose |
-|----------|---------|
-| [architecture.md](./architecture.md) | Technical architecture, data models, API design |
-| [auth.md](./auth.md) | Authentication flow, OAuth, JWT handling |
-| [billing.md](./billing.md) | Stripe integration, subscription management |
-| [agents/](./agents/) | Agentic system documentation |
-| [api/](./api/) | API endpoints and webhooks |
 
 ## Quick Start
 
@@ -48,8 +63,13 @@ pnpm --filter platform dev
 cd platform && pnpm sst deploy --stage development
 ```
 
+## Current Status
+
+- **Phase 1:** ✅ Complete — CLI tools, visualizer, unified scoring, landing site, blog
+- **Phase 2:** 🔜 SaaS MVP + agentic remediation platform (see [roadmap.md](./roadmap.md))
+
 ## Related Docs
 
-- [OSS Tools](../copilot-instructions.md) - Open source packages
-- [Development Workflow](../sub-instructions/development-workflow.md) - Contributing guide
-- [SaaS Architecture](../plans/saas-architecture.md) - Full architecture specification
+- [OSS Tools](../copilot-instructions.md) — Open source packages
+- [Development Workflow](../sub-instructions/development-workflow.md) — Contributing guide
+- [Plans](../plans/) — Other planning documents

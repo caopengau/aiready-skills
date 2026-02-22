@@ -2,12 +2,15 @@
 
 This document covers OAuth login flows, token/session lifecycle, and security considerations.
 
+> **Library:** `next-auth@5.0.0-beta.25` (NextAuth v5 — beta API, not v4)
+
 ---
 
 ## Overview
 
-- **Primary sign-in:** OAuth (GitHub, Google)
-- **Session management:** Secure HTTP-only cookies with JWT tokens via NextAuth.js
+- **Primary sign-in:** OAuth (GitHub, Google) + Email/Password + Magic Link
+- **Session management:** Secure HTTP-only cookies with JWT tokens via NextAuth v5
+- **Config files:** `platform/src/lib/auth.config.ts`, `platform/src/lib/auth.ts`
 
 ---
 
@@ -67,7 +70,7 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # NextAuth
 NEXTAUTH_SECRET=your-secret-key
-NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:8888
 ```
 
 ### Setting up OAuth Providers
@@ -204,30 +207,28 @@ make deploy-platform-status
 
 ---
 
-## Session Cookie Structure
+## Session Shape (NextAuth v5 JWT)
 
 ```typescript
-interface SessionCookie {
-  userId: string;
-  email: string;
-  role: 'resident' | 'manager' | 'handyman' | 'admin';
-  companyId: string;
-  buildingIds: string[];  // For multi-building managers
-  iat: number;            // Issued at
-  exp: number;            // Expiration
+// Available via getServerSession() or useSession()
+interface Session {
+  user: {
+    id: string;       // DynamoDB User id (stored in JWT callback)
+    email: string;
+    name: string;
+    image: string;
+  };
+  expires: string;  // ISO timestamp
 }
 ```
 
+The `user.id` is populated in the JWT `callback` in `auth.config.ts` and forwarded into the session.
+
 ---
 
-## Role-Based Redirects After Login
+## Redirect After Login
 
-| Role | Redirect To |
-|------|-------------|
-| Resident | `/app/resident` |
-| Manager | `/app/manager` |
-| Handyman | `/app/handyman` |
-| Admin | `/app/admin` |
+All authenticated users land at `/dashboard` after sign-in, regardless of provider.
 
 ---
 

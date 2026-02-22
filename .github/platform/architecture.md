@@ -6,159 +6,234 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js 16)                     │
+│         Next.js 16 App (SST v3 → AWS Lambda@Edge)          │
 │  ┌───────────────┐  ┌───────────────┐  ┌────────────────┐   │
-│  │  Dashboard    │  │ Remediation   │  │  Settings      │   │
-│  │  - Repos      │  │ - Review Queue│  │  - Team        │   │
-│  │  - Runs       │  │ - Risk Score  │  │  - Billing     │   │
-│  │  - Trends     │  │ - Approve/Rej │  │  - Integrations│   │
+│  │  Dashboard    │  │ Visualizations│  │  Settings      │   │
+│  │  - Repos      │  │ - Score charts│  │  - Team        │   │
+│  │  - Analyses   │  │ - Breakdowns  │  │  - Billing     │   │
 │  └───────────────┘  └───────────────┘  └────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-                              ↓ HTTPS
-┌─────────────────────────────────────────────────────────────┐
-│                  API Gateway + Lambda                        │
+│                                                             │
+│  App Router API Routes (src/app/api/)                       │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
-│  │  Auth      │  │  Analysis  │  │  Remediate │             │
-│  │  - GitHub  │  │  - Upload  │  │  - Create  │             │
-│  │  - JWT     │  │  - Process │  │  - Approve │             │
+│  │  Auth      │  │  Analysis  │  │ Remediation│             │
+│  │  NextAuth  │  │  - Upload  │  │  - CRUD    │             │
+│  │  v5        │  │  - List    │  │  - Review  │             │
 │  └────────────┘  └────────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
-                              ↓
+                           ↓
 ┌─────────────────────────────────────────────────────────────┐
 │              DynamoDB (Single Table Design)                 │
-│  See: .github/plans/saas-architecture.md#dynamodb          │
+│  Table: aiready-platform   Billing: PAY_PER_REQUEST         │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
+│  │  Users     │  │  Analyses  │  │Remediations│             │
+│  │  Teams     │  │  + S3 keys │  │  Requests  │             │
+│  │  Repos     │  │            │  │            │             │
+│  └────────────┘  └────────────┘  └────────────┘             │
+└─────────────────────────────────────────────────────────────┘
+                           ↓
+┌─────────────────────────────────────────────────────────────┐
+│                   Storage (S3)                              │
+│  Key: analyses/<userId>/<repoId>/<timestamp>.json           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Tech Stack
+## Data Flow
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | Next.js 16 (App Router) | Dashboard UI |
-| **Styling** | Tailwind CSS + shadcn/ui | Component library |
-| **Auth** | NextAuth.js | GitHub OAuth, JWT |
-| **API** | API Gateway + Lambda | Serverless REST |
-| **Database** | DynamoDB | Single-table design |
-| **Storage** | S3 | Analysis JSON files |
-| **Queue** | SQS + EventBridge | Async processing |
-| **IaC** | SST | Infrastructure as Code |
-| **Payments** | Stripe | Subscriptions |
+```
+CLI Tool (Local)
+    ↓ aiready analyze + aiready upload (planned)
+    ↓ POST /api/analysis/upload  { repoId, data: AnalysisData }
+        ↓
+    Next.js API Route (upload/route.ts)
+        ↓ verify session (NextAuth)
+        ↓ verify repo ownership (DynamoDB)
+        ↓ store raw JSON → S3  analyses/<userId>/<repoId>/<ts>.json
+        ↓ write Analysis record → DynamoDB  PK: ANALYSIS#<repoId>
+        ↓ update repo.aiScore + repo.lastAnalysisAt
+            ↓
+        Response: { analysisId, aiScore, breakdown, summary }
+            ↓
+        Dashboard re-fetches via TanStack Query
+```
 
-## Key Entities
+> **Planned (Phase 2):** EventBridge/SQS async processing for trends, benchmarks, notifications.
 
-### Core Entities
+## Tech Stack (Actual)
+
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| **Framework** | Next.js 16 (App Router) | Deployed as `sst.aws.Nextjs` |
+| **Styling** | Tailwind CSS v4 | No shadcn/ui yet (planned) |
+| **Auth** | NextAuth v5 (`next-auth@beta`) | GitHub, Google, Email+Password, Magic Link |
+| **State** | TanStack Query + Zustand | In dependencies, dashboard uses server components |
+| **API** | Next.js App Router API routes | `src/app/api/` — no separate Lambda functions |
+| **Database** | DynamoDB (`sst.aws.Dynamo`) | Single-table, PAY_PER_REQUEST |
+| **Storage** | S3 (`sst.aws.Bucket`) | Raw analysis JSON |
+| **IaC** | SST v3 | `sst.config.ts` uses `$config`, `sst.aws.*` |
+| **DNS** | Cloudflare + CloudFront | Managed via SST Cloudflare provider |
+| **Payments** | Stripe v20 | Webhook + portal (portal is a stub currently) |
+| **Email** | AWS SES | Magic link emails implemented |
+
+## Deployment URLs
+
+| Stage | URL | Command |
+|-------|-----|---------|
+| **local** | `http://localhost:8888` | `pnpm run dev` (SST dev mode) |
+| **dev** | `https://dev.platform.getaiready.dev` | `pnpm run deploy` |
+| **prod** | `https://platform.getaiready.dev` | `pnpm run deploy:prod` |
+
+## Key Entities (Actual Types)
 
 ```typescript
-// User
+// src/lib/db.ts — actual implemented types
+
 interface User {
   id: string;
   email: string;
-  name: string;
-  avatarUrl?: string;
-  teams: TeamMembership[];
+  name?: string;
+  image?: string;
+  githubId?: string;
+  googleId?: string;
+  passwordHash?: string;    // for email/password auth
+  emailVerified?: string;
+  teamId?: string;
+  role?: 'owner' | 'admin' | 'member';
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Team
 interface Team {
   id: string;
   name: string;
   slug: string;
   plan: 'free' | 'pro' | 'enterprise';
-  members: TeamMember[];
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  memberCount: number;
+  repoLimit: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Repository
 interface Repository {
   id: string;
-  teamId: string;
+  teamId?: string;
+  userId: string;          // owner (individuals don't need a team)
   name: string;
-  gitUrl: string;
+  url: string;
+  description?: string;
   defaultBranch: string;
+  lastAnalysisAt?: string;
+  aiScore?: number;        // cached from latest analysis
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Analysis Run
-interface AnalysisRun {
+interface Analysis {
   id: string;
   repoId: string;
-  tool: 'pattern-detect' | 'context-analyzer' | 'consistency';
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  summary: AnalysisSummary;
-  rawDataUrl: string; // S3 URL
+  userId: string;
+  timestamp: string;
+  aiScore: number;
+  breakdown: {
+    semanticDuplicates: number;     // 0-100
+    contextFragmentation: number;
+    namingConsistency: number;
+    documentationHealth: number;
+  };
+  rawKey: string;  // S3 object key
+  summary: { totalFiles: number; totalIssues: number; criticalIssues: number; warnings: number };
+  createdAt: string;
 }
 
-// Remediation Request
 interface RemediationRequest {
   id: string;
-  runId: string;
+  repoId: string;
+  teamId?: string;
+  userId: string;
   type: 'consolidation' | 'rename' | 'restructure' | 'refactor';
   risk: 'low' | 'medium' | 'high' | 'critical';
   status: 'pending' | 'reviewing' | 'approved' | 'rejected' | 'completed';
+  title: string;
+  description: string;
   affectedFiles: string[];
   estimatedSavings: number; // tokens
-  assignedTo?: string; // expert ID
+  assignedTo?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 ```
 
-## API Endpoints
+## API Routes (Actual)
 
-### Authentication
+All routes are Next.js App Router handlers in `platform/src/app/api/`.
 
-- `GET /api/auth/github` - GitHub OAuth redirect
-- `GET /api/auth/callback` - OAuth callback
-- `POST /api/auth/refresh` - Refresh JWT
-
-### Analysis
-
-- `POST /api/analysis/upload` - Upload CLI results
-- `GET /api/repos/:id/runs` - List runs for repo
-- `GET /api/runs/:id` - Get run details
-
-### Remediation
-
-- `POST /api/remediation/create` - Create remediation request
-- `GET /api/remediation/queue` - Get review queue
-- `PATCH /api/remediation/:id/approve` - Approve fix
-- `PATCH /api/remediation/:id/reject` - Reject fix
-
-### Billing
-
-- `POST /api/billing/webhook` - Stripe webhook
-- `GET /api/billing/portal` - Customer portal URL
+| Route | Methods | Status |
+|-------|---------|--------|
+| `/api/auth/[...nextauth]` | GET, POST | ✅ NextAuth v5 |
+| `/api/auth/register` | POST | ✅ Email/password registration |
+| `/api/auth/magic-link` | POST | ✅ Send magic link |
+| `/api/auth/verify` | POST | ✅ Verify magic link token |
+| `/api/repos` | GET, POST, DELETE | ✅ List / create / delete repos |
+| `/api/analysis/upload` | POST | ✅ Upload + store analysis |
+| `/api/remediation` | GET, POST | ✅ List / create remediations |
+| `/api/remediation/[id]` | PATCH | ✅ Update remediation status |
+| `/api/billing/webhook` | POST | ✅ Stripe webhook |
+| `/api/billing/portal` | GET | ⚠️ Stub (returns "not configured") |
 
 ## Environment Variables
 
 ```bash
-# Auth
-NEXTAUTH_SECRET=xxx
-NEXTAUTH_URL=http://localhost:3000
+# .env.local (see .env.example)
+
+# NextAuth v5
+AUTH_URL=http://localhost:8888
+AUTH_SECRET=xxx
+
+# OAuth
 GITHUB_CLIENT_ID=xxx
 GITHUB_CLIENT_SECRET=xxx
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
 
-# AWS
+# AWS (injected by SST in deployed stages)
 AWS_REGION=ap-southeast-2
-DYNAMODB_TABLE_NAME=aiready-platform
+DYNAMO_TABLE=aiready-platform-<stage>-MainTable-xxx
+S3_BUCKET=aiready-platform-<stage>-AnalysisBucket-xxx
 
 # Stripe
 STRIPE_SECRET_KEY=xxx
 STRIPE_WEBHOOK_SECRET=xxx
+STRIPE_PRICE_ID_PRO=xxx
+STRIPE_PRICE_ID_ENTERPRISE=xxx
+
+# SES
+SES_DOMAIN=dev.getaiready.dev         # dev
+SES_FROM_EMAIL=noreply@dev.getaiready.dev
 
 # App
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_APP_URL=http://localhost:8888
+
+# Cloudflare (for SST deployment)
+CLOUDFLARE_API_TOKEN=xxx
+CLOUDFLARE_ZONE_ID=50eb7dcadc84c58ab34583742db0b671
 ```
 
 ## Deployment
 
 ```bash
-# Development
-pnpm sst deploy --stage development
+# Local dev (SST tunnel + Next.js on :8888)
+pnpm run dev
 
-# Production
-pnpm sst deploy --stage production
+# Next.js only (no SST, needs manual env vars)
+pnpm run dev:next
+
+# Deploy to dev stage
+pnpm run deploy           # → sst deploy --stage dev
+
+# Deploy to production
+pnpm run deploy:prod      # → sst deploy --stage prod
+
+# Tear down dev
+pnpm run remove
 ```
-
-## Related Docs
-
-- [Auth Flow](./auth.md)
-- [Billing Integration](./billing.md)
-- [API Reference](./api/README.md)
-- [Agent System](./agents/README.md)

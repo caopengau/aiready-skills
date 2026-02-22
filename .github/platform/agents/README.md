@@ -107,6 +107,7 @@ interface RemediationRisk {
 ## Implementation Order
 
 ### Phase 2a (Weeks 1-3)
+
 1. [ ] Impact Agent
 2. [ ] Risk Agent
 3. [ ] Dependency Agent
@@ -114,17 +115,19 @@ interface RemediationRisk {
 5. [ ] Effort Estimator
 
 ### Phase 2b (Weeks 4-6)
-6. [ ] Refactor Agent (consolidation)
-7. [ ] Rename Agent (naming standards)
-8. [ ] Test Agent (validation)
-9. [ ] Type Agent (TypeScript)
-10. [ ] Human review queue UI
+
+1. [ ] Refactor Agent (consolidation)
+2. [ ] Rename Agent (naming standards)
+3. [ ] Test Agent (validation)
+4. [ ] Type Agent (TypeScript)
+5. [ ] Human review queue UI
 
 ### Phase 2c (Weeks 7-8)
-11. [ ] Restructure Agent (import chains)
-12. [ ] AI-Review Agent
-13. [ ] Auto-PR creation
-14. [ ] Auto-merge for low risk
+
+1 ] Restructure Agent (import chains)
+2. [ ] AI-Review Agent
+3. [ ] Auto-PR creation
+4. [ ] Auto-merge for low risk
 
 ## Related Docs
 
