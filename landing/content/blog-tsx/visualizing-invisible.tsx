@@ -40,7 +40,7 @@ const Post = () => (
 
     <h3>1. The Hairball (Tightly Coupled Modules)</h3>
 
-    <img src="/images/hairball.png" alt="The Hairball Pattern - A dense cluster of interconnected nodes" className="w-full rounded-lg shadow-md my-4" />
+    <img src="/hairball-pattern.jpg" alt="The Hairball Pattern - A dense cluster of interconnected nodes" className="w-full rounded-lg shadow-md my-4" />
 
     <p>
       <strong>What it looks like:</strong> A dense, tangled mess of nodes where everything imports everything else. There are no clear layers or boundaries.
@@ -56,7 +56,7 @@ const Post = () => (
 
     <h3>2. The Orphans (Islands of Dead Code)</h3>
 
-    <img src="/images/orphans.png" alt="The Orphans Pattern - Disconnected clusters of nodes" className="w-full rounded-lg shadow-md my-4" />
+    <img src="/orphans-pattern.jpg" alt="The Orphans Pattern - Disconnected clusters of nodes" className="w-full rounded-lg shadow-md my-4" />
 
     <p>
       <strong>What it looks like:</strong> Small clusters or individual nodes floating completely separate from the main application graph.
@@ -72,7 +72,7 @@ const Post = () => (
 
     <h3>3. The Butterflies (High Fan-In/Fan-Out)</h3>
 
-    <img src="/images/butterflies.png" alt="The Butterflies Pattern - A central node with many connections" className="w-full rounded-lg shadow-md my-4" />
+    <img src="/butterflies-pattern.jpg" alt="The Butterflies Pattern - A central node with many connections" className="w-full rounded-lg shadow-md my-4" />
 
     <p>
       <strong>What it looks like:</strong> A single node with massive connections radiating out (high fan-out) or pointing in (high fan-in). Often seen in files named <code>utils/index.ts</code> or <code>types/common.ts</code>.
