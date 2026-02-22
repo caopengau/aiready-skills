@@ -23,20 +23,26 @@
 
 ---
 
-### 2. Team Plan at $99/mo (Self-Serve)
+### 2. MVP Launch: Free Tier Only (Updated Strategy)
 
-**Problem:** Enterprise deals require SOC2, security questionnaires, procurement cycles — difficult for solo founder.
+**Problem:** Billing complexity creates friction for initial users. Solo founder needs to validate product-market fit before investing in payment infrastructure.
 
-**Solution:** Create a "Team" plan at $99/mo that includes CI/CD integration without the Enterprise overhead.
+**Solution:** Launch with Free tier only. Mark Pro, Team, and Enterprise as "Coming Soon". Gather users and feedback before monetizing.
 
 **Implementation:**
-- ✅ Added Team tier in pricing.md
-- ✅ Moved CI/CD integration from Enterprise to Team
-- ✅ Updated plan comparison table
-- 🔜 Update Stripe products/prices
-- 🔜 Update billing middleware
+- ✅ Added `MVP_FREE_ONLY = true` flag in plans.ts
+- ✅ Updated pricing.md with "Available Now" / "Coming Soon" labels
+- ✅ Updated middleware to show friendly "coming soon" messages
+- ✅ All users default to free plan (3 repos, 10 runs/month)
+- 🔜 Set `MVP_FREE_ONLY = false` when ready for paid tiers
 
-**Value Prop:** "Self-serve team plan with CI/CD gatekeeper — avoid the procurement nightmare"
+**Value Prop:** "Get started immediately — no credit card required"
+
+**When to Enable Paid Tiers:**
+1. 500+ active free users
+2. Clear demand signal (users hitting limits)
+3. Stripe products/prices configured
+4. Payment flow tested
 
 ---
 
@@ -119,17 +125,29 @@ Large players (SonarQube, Snyk, GitHub Advanced Security) will likely add "AI Co
 - [x] Update revenue projections to grounded timeline
 - [x] Document architecture decisions (no DAX, Lambda concurrency)
 - [x] Update roadmap with new priorities
+- [x] Create GitHub Action marketplace action (aiready-action)
+- [x] Add GitLab CI template
+- [x] Deploy platform to dev
+- [x] Add Lambda reserved concurrency
+- [x] Plan-gating middleware
+- [x] **MVP Free tier launch** — All paid plans "Coming Soon"
 
-### Next Priority
-- [ ] Create GitHub Action marketplace action
-- [ ] Update Stripe products for Team tier
+### Next Priority (Post-MVP)
+- [ ] Onboard beta users
+- [ ] Historical trend charts
+- [ ] EventBridge/SQS for async processing
 - [ ] Improve CLI output formatting
-- [ ] Add SaaS upsell messaging in CLI
+
+### When Ready for Paid Tiers
+- [ ] Set `MVP_FREE_ONLY = false`
+- [ ] Create Stripe products/prices
+- [ ] Test payment flow
+- [ ] Update upgrade prompts
 
 ### Backlog
-- [ ] GitLab CI template
 - [ ] "State of AI-Readiness" annual report
 - [ ] Aggregate benchmarking pipeline
+- [ ] CloudWatch/Sentry monitoring
 
 ---
 

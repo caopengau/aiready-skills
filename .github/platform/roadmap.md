@@ -14,12 +14,14 @@
 - [x] Create GitHub Action marketplace action (aiready-action)
 - [x] Add GitLab CI template
 
-### Pricing & Plans (Strategic Update)
-- [x] Add Team plan at $99/mo (self-serve, avoids Enterprise procurement)
-- [x] Move CI/CD integration from Enterprise to Team plan
+### Pricing & Plans (MVP Launch Strategy)
+- [x] Launch with Free tier only (no billing required)
+- [x] Mark Pro, Team, Enterprise as "Coming Soon"
+- [x] Add MVP_FREE_ONLY flag for easy toggle
 - [x] Update plan comparison table
-- [x] Update billing middleware for `team` plan level
-- [ ] Create Stripe products/prices for Team tier (manual setup in Stripe dashboard)
+- [x] Plan-gating middleware with "coming soon" messages
+- [ ] Create Stripe products/prices (deferred until paid tier launch)
+- [ ] Set MVP_FREE_ONLY = false when ready for paid tiers
 
 ### Infrastructure & Data
 - [x] Create SST project in `platform/` (see [data-model.md](./data-model.md) for full SST definition)
@@ -122,3 +124,4 @@
 | 2026-01 | Single-table DynamoDB design | Eliminates JOINs, serves all 15 access patterns from one table |
 | 2026-01 | SST for IaC | Already in use for landing, consistent toolchain |
 | 2026-02 | Phase 2 = agentic remediation + consulting hybrid | Closes gap between detection and fix; unique market position |
+| 2026-02 | MVP launch with Free tier only | Remove friction for initial users, defer billing complexity, gather feedback before monetizing |
