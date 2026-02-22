@@ -18,31 +18,31 @@
 - [x] Add Team plan at $99/mo (self-serve, avoids Enterprise procurement)
 - [x] Move CI/CD integration from Enterprise to Team plan
 - [x] Update plan comparison table
-- [ ] Update Stripe products/prices in platform
-- [ ] Update billing middleware for `team` plan level
+- [x] Update billing middleware for `team` plan level
+- [ ] Create Stripe products/prices for Team tier (manual setup in Stripe dashboard)
 
 ### Infrastructure & Data
-- [ ] Create SST project in `platform/` (see [data-model.md](./data-model.md) for full SST definition)
-- [ ] Provision DynamoDB single table (`aiready-saas`) with GSI1, GSI2, TTL
-- [ ] Provision S3 bucket for raw analysis JSON
-- [ ] Set up EventBridge bus + SQS queues
+- [x] Create SST project in `platform/` (see [data-model.md](./data-model.md) for full SST definition)
+- [x] Provision DynamoDB single table (`aiready-platform`) with GSI1, GSI2, TTL
+- [x] Provision S3 bucket for raw analysis JSON
+- [ ] Set up EventBridge bus + SQS queues (for async processing)
 - [ ] Configure CloudWatch monitoring + Sentry
 - [ ] Set Lambda reserved concurrency (50) for Enterprise scale
 
 ### Auth
-- [ ] Implement GitHub OAuth with NextAuth.js (see [auth.md](./auth.md))
-- [ ] JWT issuance + refresh Lambda
-- [ ] Plan-gating middleware (`withAuth`)
+- [x] Implement GitHub OAuth with NextAuth.js (see [auth.md](./auth.md))
+- [x] JWT issuance + refresh (via NextAuth v5)
+- [ ] Plan-gating middleware (`withAuth`) — needs plan enforcement
 
 ### Analysis Pipeline
-- [ ] `POST /analysis/upload` Lambda — validate, store in S3, write DDB run record, emit event
+- [x] `POST /analysis/upload` API route — validate, store in S3, write DDB run record
 - [ ] Processing Lambda — extract metrics, compute trends, write daily metric records
 - [ ] `GET /repos/:repoId/runs` + `GET /runs/:runId` endpoints
 
 ### Dashboard UI
-- [ ] Basic repo list page (connect to teams + repos APIs)
-- [ ] Run history list per repo
-- [ ] Single run detail view (JSON summary, file breakdown)
+- [x] Basic repo list page (connect to teams + repos APIs)
+- [x] Run history list per repo
+- [x] Single run detail view (JSON summary, file breakdown)
 
 ---
 
