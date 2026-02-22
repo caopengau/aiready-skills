@@ -89,7 +89,7 @@ export function CTA() {
                     <div className="w-3 h-3 rounded-full bg-green-500" />
                   </div>
                   <code className="text-green-400 font-mono text-lg">
-                    npx @aiready/cli scan .
+                    npx @aiready/cli scan
                   </code>
                 </motion.div>
               )}

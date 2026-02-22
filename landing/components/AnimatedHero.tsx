@@ -85,12 +85,12 @@ export default function AnimatedHero() {
       {/* CTA Buttons */}
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
         <motion.a
-          href="#get-started"
+          href="#live-demo"
           whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)" }}
           whileTap={{ scale: 0.95 }}
           className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-xl shadow-xl inline-flex items-center justify-center gap-2 group"
         >
-          Get Started Free
+          See it in action
           <motion.span
             animate={{ x: [0, 5, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
@@ -165,7 +165,7 @@ export default function AnimatedHero() {
                 transition={{ duration: 2, delay: 1 }}
                 className="text-cyan-400 font-mono text-sm md:text-base overflow-hidden whitespace-nowrap"
               >
-                aiready scan .
+                aiready scan
               </motion.code>
               <motion.span
                 animate={{ opacity: [1, 0] }}
@@ -185,7 +185,10 @@ export default function AnimatedHero() {
                 <div>✓ Found 42 semantic duplicates</div>
                 <div>✓ Identified 15 optimization opportunities</div>
                 <div className="text-green-400">✓ Report generated successfully!</div>
-                <div className="text-slate-500 text-xs">Next: <span className="text-cyan-300 font-mono">aiready visualise . --open</span></div>
+                <div className="text-slate-500 text-xs mt-2 border-t border-slate-700 pt-2">
+                  Step 2: <span className="text-cyan-300 font-mono">aiready visualise</span>
+                  <span className="text-slate-600 ml-2">— opens interactive graph in browser</span>
+                </div>
               </motion.div>
           </div>
 

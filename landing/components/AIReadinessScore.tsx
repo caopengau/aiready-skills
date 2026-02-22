@@ -41,7 +41,7 @@ export function AIReadinessScore() {
                 <div className="text-6xl font-black text-slate-900 mb-2">65/100</div>
                 <div className="text-2xl font-bold text-orange-600 mb-4">Fair Rating</div>
                 <code className="text-sm text-slate-600 block">
-                  aiready scan . --score
+                  aiready scan --score
                 </code>
               </div>
               
@@ -136,7 +136,7 @@ export function AIReadinessScore() {
                   </li>
                 </ul>
                 <code className="text-xs text-slate-600 block mt-4 p-3 bg-white rounded">
-                  aiready scan . --score --weights patterns:50,context:30
+                  aiready scan --score --weights patterns:50,context:30
                 </code>
               </div>
             </motion.div>

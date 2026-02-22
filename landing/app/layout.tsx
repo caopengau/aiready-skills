@@ -128,7 +128,7 @@ export const metadata: Metadata = {
     // Universal Content Protocol
     'ucp:category': 'Developer Tools',
     'ucp:intent': 'Provide free CLI tools for codebase AI optimization',
-    'ucp:action': 'npx @aiready/cli scan .',
+    'ucp:action': 'npx @aiready/cli scan',
     'ucp:pricing': 'Free',
     'ucp:license': 'MIT',
     'ucp:repository': 'https://github.com/caopengau/aiready-cli',

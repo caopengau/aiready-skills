@@ -7,7 +7,7 @@ import ParallaxSection from "./ParallaxSection";
 const faqs = [
   {
     question: "Is AIReady really free?",
-    answer: "Yes! All our tools are free and open source. You can run them locally with npx @aiready/cli scan . or request a free audit report above.",
+    answer: "Yes! All our tools are free and open source. You can run them locally with npx @aiready/cli scan or request a free audit report above.",
   },
   {
     question: "Where does my code go?",
@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     question: "I'm vibe coding - how do I know if my code confuses AI?",
-    answer: "That's exactly what we solve! Vibe coding (letting AI do most of the work) often produces code that confuses other AI tools. Our scanner finds semantic duplicates, deep import chains, and naming inconsistencies that make AI struggle. Run npx @aiready/cli scan . to see your AI Readiness Score.",
+    answer: "That's exactly what we solve! Vibe coding (letting AI do most of the work) often produces code that confuses other AI tools. Our scanner finds semantic duplicates, deep import chains, and naming inconsistencies that make AI struggle. Run npx @aiready/cli scan to see your AI Readiness Score.",
   },
   {
     question: "Is this another linter?",

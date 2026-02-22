@@ -45,7 +45,7 @@ export function AIOptimizedContent() {
 
       <section>
         <h2>Quick Start</h2>
-        <code itemProp="installUrl">npx @aiready/cli scan .</code>
+        <code itemProp="installUrl">npx @aiready/cli scan</code>
       </section>
 
       <section>
