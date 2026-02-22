@@ -31,14 +31,13 @@ export default $config({
         GSI1SK: "string",
         GSI2PK: "string",
         GSI2SK: "string",
-        ttl: "number", // TTL attribute for automatic expiration
       },
       primaryIndex: { hashKey: "PK", rangeKey: "SK" },
       globalIndexes: {
         GSI1: { hashKey: "GSI1PK", rangeKey: "GSI1SK" },
         GSI2: { hashKey: "GSI2PK", rangeKey: "GSI2SK" },
       },
-      ttl: "ttl", // Enable TTL on the table
+      ttl: "ttl", // Enable TTL on the table (field doesn't need to be indexed)
     });
 
     // Next.js site configuration

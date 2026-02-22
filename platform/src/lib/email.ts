@@ -264,6 +264,68 @@ export async function sendWelcomeEmail(params: {
 }
 
 /**
+ * Send magic link email for passwordless auth
+ */
+export async function sendMagicLinkEmail(params: {
+  to: string;
+  magicLinkUrl: string;
+}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const { to, magicLinkUrl } = params;
+  
+  const subject = 'Sign in to AIReady';
+  
+  const htmlBody = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0a0a0f; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.3); overflow: hidden;">
+    
+    <div style="padding: 32px; text-align: center;">
+      <h1 style="color: #fff; margin: 0; font-size: 24px; font-weight: 700;">Sign in to AIReady</h1>
+      <p style="color: #94a3b8; margin: 16px 0 0 0; font-size: 14px;">Click the button below to sign in to your account.</p>
+    </div>
+    
+    <div style="padding: 0 24px 32px; text-align: center;">
+      <a href="${magicLinkUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+        Sign In
+      </a>
+    </div>
+    
+    <div style="padding: 0 24px 24px; text-align: center;">
+      <p style="color: #64748b; font-size: 12px; margin: 0;">
+        This link will expire in 15 minutes. If you didn't request this email, you can safely ignore it.
+      </p>
+    </div>
+    
+    <div style="padding: 20px 24px; border-top: 1px solid rgba(99, 102, 241, 0.2); text-align: center;">
+      <p style="color: #64748b; font-size: 12px; margin: 0;">
+        © 2026 AIReady · Make your codebase AI-ready
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+  
+  const textBody = `
+Sign in to AIReady
+
+Click the link below to sign in to your account:
+${magicLinkUrl}
+
+This link will expire in 15 minutes. If you didn't request this email, you can safely ignore it.
+
+© 2026 AIReady
+  `.trim();
+  
+  return sendEmail({ to, subject, htmlBody, textBody });
+}
+
+/**
  * Format breakdown key for display
  */
 function formatBreakdownKey(key: string): string {
