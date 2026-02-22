@@ -81,16 +81,9 @@ export default $config({
       },
     };
 
-    // Add custom domain configuration for production only
-    // Dev stage uses auto-generated URL
-    if (isProd) {
-      siteConfig.domain = {
-        name: "platform.getaiready.dev",
-        dns: sst.cloudflare.dns({
-          zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
-        }),
-      };
-    }
+    // Custom domain configuration disabled for now
+    // DNS records already exist in Cloudflare for platform.getaiready.dev
+    // TODO: Migrate DNS to SST-managed or use existing CloudFront distribution
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
 
