@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
-import { createAnalysis, getRepository, listRepositoryAnalyses } from '@/lib/db';
+import { createAnalysis, getRepository, listRepositoryAnalyses, getUser } from '@/lib/db';
 import { storeAnalysis, calculateAiScore, extractSummary, extractBreakdown, AnalysisData } from '@/lib/storage';
 import { planLimits } from '@/lib/plans';
+import { sendAnalysisCompleteEmail } from '@/lib/email';
 import { randomUUID } from 'crypto';
 
 // Helper to count runs this month
@@ -96,6 +97,21 @@ export async function POST(request: NextRequest) {
 
     // Calculate remaining runs
     const remainingRuns = maxRunsPerMonth - runsThisMonth - 1;
+
+    // Send email notification (async, don't wait for it)
+    getUser(session.user.id).then(user => {
+      if (user?.email) {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://platform.getaiready.dev';
+        sendAnalysisCompleteEmail({
+          to: user.email!,
+          repoName: repo.name,
+          aiScore,
+          breakdown: analysis.breakdown,
+          summary: analysis.summary,
+          dashboardUrl: `${baseUrl}/dashboard?repo=${repoId}`,
+        }).catch(err => console.error('Failed to send analysis email:', err));
+      }
+    });
 
     return NextResponse.json({ 
       analysis,
