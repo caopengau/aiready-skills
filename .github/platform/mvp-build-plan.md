@@ -28,20 +28,21 @@
 ## 🔨 Week 1-2: Complete Free Tier Limits
 
 ### Priority 1A: Run Limit Enforcement
-- [ ] Track runs per user per month in DynamoDB
-- [ ] Block uploads after 10 runs/month for free users
-- [ ] Show "runs remaining" counter in dashboard
-- [ ] Return friendly error when limit reached
+- [x] Track runs per user per month in DynamoDB
+- [x] Block uploads after 10 runs/month for free users
+- [x] Show "runs remaining" counter in dashboard
+- [x] Return friendly error when limit reached
 
 ### Priority 1B: Repo Limit Enforcement
-- [ ] Count repos per user
-- [ ] Block repo creation after 3 repos for free users
-- [ ] Show "repos remaining" in dashboard
-- [ ] Return friendly error when limit reached
+- [x] Count repos per user
+- [x] Block repo creation after 3 repos for free users
+- [x] Show "repos remaining" in dashboard
+- [x] Return friendly error when limit reached
 
 ### Priority 1C: Data Retention (7 days)
-- [ ] Add TTL attribute to analysis records
-- [ ] Implement cleanup for old analyses
+- [x] Add TTL attribute to analysis records
+- [x] Enable TTL on DynamoDB table
+- [x] Set 7-day expiration on new analyses
 - [ ] Show "expires in X days" in dashboard
 
 ### Priority 1D: Analysis History
