@@ -206,6 +206,30 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
           )}
         </motion.div>
 
+        {/* Limits banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4"
+        >
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400 uppercase tracking-wide">Repos</span>
+              <span className="text-lg font-bold text-white">{repos.length}</span>
+              <span className="text-xs text-slate-500">/ 3</span>
+            </div>
+            <div className="h-4 w-px bg-slate-700" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400 uppercase tracking-wide">This Month</span>
+              <span className="text-lg font-bold text-white">{10 - repos.filter(r => r.latestAnalysis).length}</span>
+              <span className="text-xs text-slate-500">runs left</span>
+            </div>
+          </div>
+          <div className="text-xs text-slate-500">
+            Free plan · <a href="https://getaiready.dev/pricing" className="text-cyan-400 hover:underline">Upgrade</a>
+          </div>
+        </motion.div>
+
         {/* Upload error banner */}
         <AnimatePresence>
           {uploadError && (
