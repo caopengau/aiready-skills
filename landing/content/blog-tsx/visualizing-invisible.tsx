@@ -135,15 +135,81 @@ const Post = () => (
       Don't let your codebase become a black box. You can visualize your own project's shape today.
     </p>
 
-    <p>Run the analysis on your repository:</p>
+    <p>The visualizer ships as part of the unified <code>@aiready/cli</code>. Three commands gets you a full interactive graph:</p>
 
     <div className="my-6">
-      <CodeBlock language="bash" code="npx aiready visualise" />
+      <CodeBlock language="bash" code={`# 1. Scan your codebase
+npx aiready analyze
+
+# 2. Start the interactive visualizer
+npx aiready visualise
+
+# 3. Export a shareable static report
+npx aiready visualise --output report.html`} />
     </div>
 
+    <p>The output gives you:</p>
+
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li><strong>Colour-coded nodes</strong> by AI readiness score (green → red)</li>
+      <li><strong>Edge thickness</strong> proportional to import coupling strength</li>
+      <li><strong>Cluster labels</strong> automatically identifying Hairballs, Orphans, and Butterflies</li>
+      <li><strong>Hover tooltips</strong> showing token cost, import depth, and cohesion score per file</li>
+      <li>A <strong>shareable HTML report</strong> you can open anywhere — no tooling required</li>
+    </ul>
+
+    <h2>What&apos;s Next</h2>
+
+    <p>This wraps up the six-part &ldquo;AI Code Debt Tsunami&rdquo; series. If you&apos;ve followed along, you now have:</p>
+
+    <ol className="list-decimal pl-6 mb-4 space-y-2">
+      <li><strong>Why</strong> AI code debt forms faster than traditional debt</li>
+      <li><strong>Why</strong> your codebase is invisible to AI — semantic duplicates, fragmentation, low cohesion</li>
+      <li><strong>What</strong> metrics actually capture AI-readiness</li>
+      <li><strong>How</strong> to detect semantic duplicates automatically</li>
+      <li><strong>How</strong> to measure and reduce import-chain context costs</li>
+      <li><strong>How</strong> to <em>see</em> the shape of your debt visually ← You are here</li>
+    </ol>
+
     <p>
-      Stop guessing where the debt is. Start seeing it.
+      The natural next step is moving from <em>detection</em> to <em>remediation</em> — which is exactly what the AIReady Platform (currently in beta) is designed to do: auto-generated refactoring plans, trend tracking over time, and team-level benchmarks.
     </p>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p><strong>Resources:</strong></p>
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li>GitHub: <a href="https://github.com/caopengau/aiready-cli">github.com/caopengau/aiready-cli</a></li>
+      <li>Docs: <a href="https://aiready.dev">aiready.dev</a></li>
+      <li>Report issues: <a href="https://github.com/caopengau/aiready-cli/issues">github.com/caopengau/aiready-cli/issues</a></li>
+    </ul>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p>
+      <strong>Found a Hairball, Orphan, or Butterfly in your graph?</strong> Share a screenshot in the comments — I&apos;d love to see what patterns show up in the wild.
+    </p>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p className="text-sm italic text-slate-500">
+      *Peng Cao is the founder of{" "}
+      <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{" "}
+      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
+      open-source suite for measuring and optimising codebases for AI adoption.*
+    </p>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p><strong>Read the full series:</strong></p>
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li><a href="/blog/ai-code-debt-tsunami">Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready)</a></li>
+      <li><a href="/blog/invisible-codebase">Part 2: Why Your Codebase is Invisible to AI</a></li>
+      <li><a href="/blog/metrics-that-actually-matter">Part 3: AI Code Quality Metrics That Actually Matter</a></li>
+      <li><a href="/blog/semantic-duplicate-detection">Part 4: Deep Dive: Semantic Duplicate Detection</a></li>
+      <li><a href="/blog/hidden-cost-import-chains">Part 5: The Hidden Cost of Import Chains</a></li>
+      <li><strong>Part 6: Visualizing the Invisible ← You are here</strong></li>
+    </ul>
   </>
 );
 

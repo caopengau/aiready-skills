@@ -77,13 +77,63 @@ The visualizer bridges this gap. It's hard to explain abstract architectural pri
 
 Visuals turn abstract "best practices" into concrete, observable reality.
 
-## See Your Own Codebase
+## Try It on Your Codebase
 
-Don't let your codebase become a black box. You can visualize your own project's shape today.
+The visualizer ships as part of the unified `@aiready/cli`. Three commands gets you a full interactive graph:
 
-Run the analysis on your repository:
 ```bash
+# 1. Scan your codebase
+npx aiready analyze
+
+# 2. Start the interactive visualizer
 npx aiready visualise
+
+# 3. Export a shareable static report
+npx aiready visualise --output report.html
 ```
 
-Stop guessing where the debt is. Start seeing it.
+The output gives you:
+
+- **Colour-coded nodes** by AI readiness score (green → red)
+- **Edge thickness** proportional to import coupling strength
+- **Cluster labels** automatically identifying Hairballs, Orphans, and Butterflies
+- **Hover tooltips** showing token cost, import depth, and cohesion score per file
+- A **shareable HTML report** you can open anywhere — no tooling required
+
+## What's Next
+
+This wraps up the six-part "AI Code Debt Tsunami" series. If you've followed along, you now have:
+
+1. **Why** AI code debt forms faster than traditional debt
+2. **Why** your codebase is invisible to AI — semantic duplicates, fragmentation, low cohesion
+3. **What** metrics actually capture AI-readiness
+4. **How** to detect semantic duplicates automatically
+5. **How** to measure and reduce import-chain context costs
+6. **How** to *see* the shape of your debt visually ← You are here
+
+The natural next step is moving from *detection* to *remediation* — which is exactly what the AIReady Platform (currently in beta) is designed to do: auto-generated refactoring plans, trend tracking over time, and team-level benchmarks.
+
+---
+
+**Resources:**
+- GitHub: [github.com/caopengau/aiready-cli](https://github.com/caopengau/aiready-cli)
+- Docs: [aiready.dev](https://aiready.dev)
+- Report issues: [github.com/caopengau/aiready-cli/issues](https://github.com/caopengau/aiready-cli/issues)
+
+---
+
+**Found a Hairball, Orphan, or Butterfly in your graph?** Share a screenshot in the comments — I'd love to see what patterns show up in the wild.
+
+---
+
+*Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimising codebases for AI adoption.*
+
+---
+
+**Read the full series:**
+- [Part 1: The AI Code Debt Tsunami is Here (And We're Not Ready)](/blog/ai-code-debt-tsunami)
+- [Part 2: Why Your Codebase is Invisible to AI](/blog/invisible-codebase)
+- [Part 3: AI Code Quality Metrics That Actually Matter](/blog/metrics-that-actually-matter)
+- [Part 4: Deep Dive: Semantic Duplicate Detection](/blog/semantic-duplicate-detection)
+- [Part 5: The Hidden Cost of Import Chains](/blog/hidden-cost-import-chains)
+- **Part 6: Visualizing the Invisible** ← You are here
