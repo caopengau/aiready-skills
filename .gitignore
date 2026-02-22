@@ -80,3 +80,4 @@ secrets/
 *.temp
 .cache/
 packages/visualizer/web/report-data.json
+landing/next-env.d.ts
