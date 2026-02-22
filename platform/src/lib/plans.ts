@@ -2,6 +2,9 @@
  * Plan Limits and Feature Gating
  * 
  * Plan hierarchy: free < pro < team < enterprise
+ * 
+ * MVP Launch: Only Free tier is active. Pro, Team, and Enterprise are "Coming Soon".
+ * All users default to 'free' plan.
  */
 
 export type Plan = 'free' | 'pro' | 'team' | 'enterprise';
@@ -12,6 +15,17 @@ export const planHierarchy: Record<Plan, number> = {
   team: 2,
   enterprise: 3,
 };
+
+/**
+ * MVP Mode: Only Free tier is active
+ * Set to false when ready to launch paid tiers
+ */
+export const MVP_FREE_ONLY = true;
+
+/**
+ * Coming soon message for premium features
+ */
+export const COMING_SOON_MESSAGE = 'This feature is coming soon. Join the waitlist: team@getaiready.dev';
 
 export interface PlanLimits {
   maxRepos: number;

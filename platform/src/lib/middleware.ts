@@ -13,7 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from './auth';
 import { getTeam, getUser } from './db';
-import { Plan, planHierarchy, planLimits } from './plans';
+import { Plan, planHierarchy, planLimits, MVP_FREE_ONLY, COMING_SOON_MESSAGE } from './plans';
 
 interface AuthContext {
   userId: string;
@@ -74,7 +74,20 @@ export function withAuth(
         }
       }
 
-      // Check plan requirement
+      // MVP Mode: All users get free tier, premium features show "coming soon"
+      if (MVP_FREE_ONLY && options.requiredPlan && options.requiredPlan !== 'free') {
+        return NextResponse.json(
+          { 
+            error: COMING_SOON_MESSAGE,
+            code: 'FEATURE_COMING_SOON',
+            currentPlan: 'free',
+            requiredPlan: options.requiredPlan,
+          },
+          { status: 200 } // Return 200 instead of 403 during MVP
+        );
+      }
+
+      // Check plan requirement (only runs when MVP_FREE_ONLY is false)
       if (options.requiredPlan && !meetsPlanRequirement(plan, options.requiredPlan)) {
         const upgradePrompt = getUpgradeMessage(options.requiredPlan);
         return NextResponse.json(
@@ -93,6 +106,19 @@ export function withAuth(
       if (options.requiredFeature) {
         const limits = planLimits[plan];
         const hasFeature = limits.features[options.requiredFeature];
+        
+        // MVP Mode: Premium features show "coming soon"
+        if (MVP_FREE_ONLY && !hasFeature) {
+          return NextResponse.json(
+            {
+              error: COMING_SOON_MESSAGE,
+              code: 'FEATURE_COMING_SOON',
+              currentPlan: 'free',
+              requiredFeature: options.requiredFeature,
+            },
+            { status: 200 }
+          );
+        }
         
         if (!hasFeature) {
           return NextResponse.json(

@@ -4,7 +4,7 @@
 
 ---
 
-## Free — $0/month
+## Free — $0/month ✅ AVAILABLE NOW
 
 **Limits:**
 - 1 team
@@ -16,12 +16,13 @@
 - Full open-source CLI tools (pattern-detect, context-analyzer, consistency)
 - Local visualization
 - JSON/HTML export
+- GitHub OAuth signup
 
-**Value prop:** Try before you buy, personal projects and solo devs.
+**Value prop:** Get started immediately — no credit card required. Perfect for personal projects and trying out AIReady.
 
 ---
 
-## Pro — $49/month
+## Pro — $49/month 🚧 COMING SOON
 
 **Includes everything in Free, plus:**
 - 10 repositories
@@ -34,9 +35,11 @@
 
 **Value prop:** Individual developers and small projects serious about AI-friendly code quality.
 
+*Join the waitlist: team@getaiready.dev*
+
 ---
 
-## Team — $99/month
+## Team — $99/month 🚧 COMING SOON
 
 **Includes everything in Pro, plus:**
 - Unlimited repositories
@@ -50,15 +53,16 @@
 
 **Value prop:** Self-serve team plan with CI/CD gatekeeper — avoid the procurement nightmare while getting enterprise-grade protection.
 
+*Join the waitlist: team@getaiready.dev*
+
 ---
 
-## Enterprise — Custom (starts at $299/month)
+## Enterprise — Custom (starts at $299/month) 🚧 COMING SOON
 
-**Includes everything in Pro, plus:**
+**Includes everything in Team, plus:**
 - Unlimited teams/users
 - Unlimited refactoring plans
 - 1-year+ data retention
-- CI/CD integration (GitHub Actions, GitLab CI)
 - Custom thresholds & rules
 - API access for custom integrations
 - Dedicated account manager
@@ -66,6 +70,8 @@
 - On-premise deployment option
 
 **Value prop:** Large organizations with compliance requirements or strategic AI adoption programs.
+
+*Contact us: enterprise@getaiready.dev*
 
 ---
 
