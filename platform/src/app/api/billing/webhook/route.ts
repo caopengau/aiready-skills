@@ -42,17 +42,33 @@ export async function POST(request: NextRequest) {
     // Handle events
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as { metadata?: { teamId?: string }; customer: string; subscription: string };
+        const session = event.data.object as { 
+          metadata?: { teamId?: string; plan?: string }; 
+          customer: string; 
+          subscription: string;
+          amount_total?: number;
+        };
         const teamId = session.metadata?.teamId;
+        const planFromMetadata = session.metadata?.plan;
         const customerId = session.customer as string;
         const subscriptionId = session.subscription as string;
 
         if (teamId) {
+          // Determine plan based on metadata or amount
+          // Team plan: $99/mo = 9900 cents, Pro plan: $49/mo = 4900 cents
+          let plan: 'pro' | 'team' = 'pro';
+          if (planFromMetadata === 'team') {
+            plan = 'team';
+          } else if (session.amount_total && session.amount_total >= 9900) {
+            plan = 'team';
+          }
+
           await updateTeam(teamId, {
             stripeCustomerId: customerId,
             stripeSubscriptionId: subscriptionId,
-            plan: 'pro', // Upgrade to pro on successful checkout
+            plan,
           });
+          console.log(`Team ${teamId} upgraded to ${plan} plan`);
         }
         break;
       }

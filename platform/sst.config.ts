@@ -72,6 +72,7 @@ export default $config({
         STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
         STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
         STRIPE_PRICE_ID_PRO: process.env.STRIPE_PRICE_ID_PRO || "",
+        STRIPE_PRICE_ID_TEAM: process.env.STRIPE_PRICE_ID_TEAM || "",
         STRIPE_PRICE_ID_ENTERPRISE: process.env.STRIPE_PRICE_ID_ENTERPRISE || "",
         SES_DOMAIN: sesDomain,
         SES_FROM_EMAIL: `noreply@${sesDomain}`,

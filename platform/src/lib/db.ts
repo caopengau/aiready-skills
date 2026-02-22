@@ -56,7 +56,7 @@ export interface Team {
   id: string;
   name: string;
   slug: string;
-  plan: 'free' | 'pro' | 'enterprise';
+  plan: 'free' | 'pro' | 'team' | 'enterprise';
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   memberCount: number;
