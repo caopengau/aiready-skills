@@ -433,6 +433,11 @@ export async function deleteRepository(repoId: string): Promise<void> {
 // Analysis operations
 export async function createAnalysis(analysis: Analysis): Promise<Analysis> {
   const now = new Date().toISOString();
+  
+  // Calculate TTL for Free tier (7 days retention)
+  const retentionDays = 7; // Free tier retention
+  const ttlTimestamp = Math.floor(Date.now() / 1000) + (retentionDays * 24 * 60 * 60);
+  
   const item = {
     PK: `ANALYSIS#${analysis.repoId}`,
     SK: analysis.timestamp,
@@ -441,6 +446,7 @@ export async function createAnalysis(analysis: Analysis): Promise<Analysis> {
     GSI2PK: `ANALYSIS#${analysis.repoId}`,
     GSI2SK: analysis.timestamp,
     ...analysis,
+    ttl: ttlTimestamp, // TTL for automatic expiration
     createdAt: analysis.createdAt || now,
   };
 

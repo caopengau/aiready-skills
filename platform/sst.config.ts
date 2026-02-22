@@ -22,6 +22,7 @@ export default $config({
     const sesDomain = isProd ? "getaiready.dev" : "dev.getaiready.dev";
 
     // DynamoDB Table for all entities (Single Table Design)
+    // TTL enabled for automatic cleanup of old analyses (Free tier: 7 days)
     const table = new sst.aws.Dynamo("MainTable", {
       fields: {
         PK: "string",
@@ -30,12 +31,14 @@ export default $config({
         GSI1SK: "string",
         GSI2PK: "string",
         GSI2SK: "string",
+        ttl: "number", // TTL attribute for automatic expiration
       },
       primaryIndex: { hashKey: "PK", rangeKey: "SK" },
       globalIndexes: {
         GSI1: { hashKey: "GSI1PK", rangeKey: "GSI1SK" },
         GSI2: { hashKey: "GSI2PK", rangeKey: "GSI2SK" },
       },
+      ttl: "ttl", // Enable TTL on the table
     });
 
     // Next.js site configuration
