@@ -81,18 +81,11 @@ export default $config({
       },
     };
 
-    // Add custom domain configuration for all stages
-    // Requires CLOUDFLARE_API_TOKEN in environment
+    // Add custom domain configuration for production only
+    // Dev stage uses auto-generated URL
     if (isProd) {
       siteConfig.domain = {
         name: "platform.getaiready.dev",
-        dns: sst.cloudflare.dns({
-          zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
-        }),
-      };
-    } else if ($app.stage === "dev") {
-      siteConfig.domain = {
-        name: "dev.platform.getaiready.dev",
         dns: sst.cloudflare.dns({
           zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
         }),
