@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
 import { createRepository, listUserRepositories, getRepository, deleteRepository } from '@/lib/db';
+import { planLimits, MVP_FREE_ONLY } from '@/lib/plans';
 import { randomUUID } from 'crypto';
 
 // GET /api/repos - List user's repositories
@@ -12,7 +13,16 @@ export async function GET() {
     }
 
     const repos = await listUserRepositories(session.user.id);
-    return NextResponse.json({ repos });
+    const maxRepos = planLimits.free.maxRepos; // 3 repos for free tier
+    
+    return NextResponse.json({ 
+      repos,
+      limits: {
+        maxRepos,
+        currentCount: repos.length,
+        remaining: maxRepos - repos.length,
+      },
+    });
   } catch (error) {
     console.error('Error listing repositories:', error);
     return NextResponse.json({ error: 'Failed to list repositories' }, { status: 500 });
@@ -40,6 +50,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid repository URL' }, { status: 400 });
     }
 
+    // Check repo limit (Free tier: 3 repos)
+    const existingRepos = await listUserRepositories(session.user.id);
+    const maxRepos = planLimits.free.maxRepos; // 3 repos for free tier
+    
+    if (existingRepos.length >= maxRepos) {
+      return NextResponse.json({ 
+        error: `You've reached the maximum of ${maxRepos} repositories on the Free plan.`,
+        code: 'REPO_LIMIT_REACHED',
+        currentCount: existingRepos.length,
+        maxRepos,
+        upgradeUrl: 'https://getaiready.dev/pricing',
+      }, { status: 403 });
+    }
+
     const repo = await createRepository({
       id: randomUUID(),
       userId: session.user.id,
@@ -51,7 +75,11 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString(),
     });
 
-    return NextResponse.json({ repo }, { status: 201 });
+    // Return repo with remaining count
+    return NextResponse.json({ 
+      repo,
+      reposRemaining: maxRepos - existingRepos.length - 1,
+    }, { status: 201 });
   } catch (error) {
     console.error('Error creating repository:', error);
     return NextResponse.json({ error: 'Failed to create repository' }, { status: 500 });
