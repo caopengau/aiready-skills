@@ -127,6 +127,27 @@ npx @aiready/context-analyzer ./src
       Drop them in the comments. I read every one.
     </p>
 
+    <p>
+      <strong>Resources:</strong>
+    </p>
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li>GitHub: <a href="https://github.com/caopengau/aiready-cli">github.com/caopengau/aiready-cli</a></li>
+      <li>Docs: <a href="https://aiready.dev">aiready.dev</a></li>
+      <li>Report issues: <a href="https://github.com/caopengau/aiready-cli/issues">github.com/caopengau/aiready-cli/issues</a></li>
+    </ul>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p><strong>Read the full series:</strong></p>
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li><a href="/blog/ai-code-debt-tsunami">Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready)</a></li>
+      <li><a href="/blog/invisible-codebase">Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)</a></li>
+      <li><strong>Part 3: AI Code Quality Metrics That Actually Matter ← You are here</strong></li>
+      <li><a href="/blog/semantic-duplicate-detection">Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis</a></li>
+      <li><a href="/blog/hidden-cost-import-chains">Part 5: The Hidden Cost of Import Chains</a></li>
+      <li><a href="/blog/visualizing-invisible">Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt</a></li>
+    </ul>
+
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p className="text-sm italic text-slate-500">

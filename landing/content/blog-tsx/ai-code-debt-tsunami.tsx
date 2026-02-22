@@ -384,12 +384,17 @@ export const getUser = async (id) => {
 
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
-    <p>
-      <strong>Next in this series:</strong> Part 2 - <a href="/blog/invisible-codebase">"Why Your Codebase is
-      Invisible to AI (And What to Do About It)"</a> — We'll dive deep into
-      semantic duplicates and context fragmentation, with concrete examples and
-      detection strategies.
-    </p>
+    <p><strong>Read the full series:</strong></p>
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li><strong>Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready) ← You are here</strong></li>
+      <li><a href="/blog/invisible-codebase">Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)</a></li>
+      <li><a href="/blog/metrics-that-actually-matter">Part 3: AI Code Quality Metrics That Actually Matter</a></li>
+      <li><a href="/blog/semantic-duplicate-detection">Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis</a></li>
+      <li><a href="/blog/hidden-cost-import-chains">Part 5: The Hidden Cost of Import Chains</a></li>
+      <li><a href="/blog/visualizing-invisible">Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt</a></li>
+    </ul>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p>
       <strong>Try it yourself:</strong>

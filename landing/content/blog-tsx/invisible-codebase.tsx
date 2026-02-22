@@ -299,6 +299,7 @@ function checkUserValid(data) {
                               <ul>
                                 <li>GitHub: <a href="https://github.com/caopengau/aiready-cli">github.com/caopengau/aiready-cli</a></li>
                                 <li>Docs: <a href="https://aiready.dev">aiready.dev</a></li>
+                                <li>Report issues: <a href="https://github.com/caopengau/aiready-cli/issues">github.com/caopengau/aiready-cli/issues</a></li>
                               </ul>
 
                               <p><strong>Want to support this work?</strong></p>
@@ -308,16 +309,26 @@ function checkUserValid(data) {
                                 <li>💬 Share your results (I read every comment)</li>
                               </ul>
 
-                              <hr />
+                              <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
-                              <p><em>Peng Cao is building open source tools for AI-ready development. He's also the creator of ReceiptClaimer, an AI-powered receipt tracker for Australian taxpayers. Follow along as he builds in public.</em></p>
-
-                              <p><strong>Read the series:</strong></p>
-                              <ul>
-                                <li><a href="/blog/ai-code-debt-tsunami">Part 1: The AI Code Debt Tsunami is Here</a></li>
-                                <li><strong>Part 2: Why Your Codebase is Invisible to AI</strong> ← You are here</li>
-                                <li>Part 3: Building AIReady - Metrics That Actually Matter (coming Feb 7)</li>
+                              <p><strong>Read the full series:</strong></p>
+                              <ul className="list-disc pl-6 mb-4 space-y-2">
+                                <li><a href="/blog/ai-code-debt-tsunami">Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready)</a></li>
+                                <li><strong>Part 2: Why Your Codebase is Invisible to AI (And What to Do About It) ← You are here</strong></li>
+                                <li><a href="/blog/metrics-that-actually-matter">Part 3: AI Code Quality Metrics That Actually Matter</a></li>
+                                <li><a href="/blog/semantic-duplicate-detection">Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis</a></li>
+                                <li><a href="/blog/hidden-cost-import-chains">Part 5: The Hidden Cost of Import Chains</a></li>
+                                <li><a href="/blog/visualizing-invisible">Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt</a></li>
                               </ul>
+
+                              <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+                              <p className="text-sm italic text-slate-500">
+                                *Peng Cao is the founder of{" "}
+                                <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{" "}
+                                <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
+                                open-source suite for measuring and optimising codebases for AI adoption.*
+                              </p>
                             </>
                           );
 

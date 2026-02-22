@@ -446,16 +446,35 @@ npx @aiready/cli scan --score`}</CodeBlock>
       <li>Report issues: <a href="https://github.com/caopengau/aiready-cli/issues">github.com/caopengau/aiready-cli/issues</a></li>
     </ul>
 
-    <hr/>
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p>
       <strong>What&apos;s your biggest context budget file?</strong> Run the analyzer and share your findings—I&apos;d love to see what you discover.
     </p>
 
-    <hr/>
-
     <p>
       If you&apos;re vibe coding and noticing your AI responses getting slower or more confused, your import chains might be the culprit. We can help diagnose and fix it.
+    </p>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p><strong>Read the full series:</strong></p>
+    <ul className="list-disc pl-6 mb-4 space-y-2">
+      <li><a href="/blog/ai-code-debt-tsunami">Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready)</a></li>
+      <li><a href="/blog/invisible-codebase">Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)</a></li>
+      <li><a href="/blog/metrics-that-actually-matter">Part 3: AI Code Quality Metrics That Actually Matter</a></li>
+      <li><a href="/blog/semantic-duplicate-detection">Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis</a></li>
+      <li><strong>Part 5: The Hidden Cost of Import Chains ← You are here</strong></li>
+      <li><a href="/blog/visualizing-invisible">Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt</a></li>
+    </ul>
+
+    <hr className="my-12 border-slate-200 dark:border-zinc-800" />
+
+    <p className="text-sm italic text-slate-500">
+      *Peng Cao is the founder of{" "}
+      <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{" "}
+      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
+      open-source suite for measuring and optimising codebases for AI adoption.*
     </p>
 
   </>
