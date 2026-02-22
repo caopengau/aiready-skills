@@ -1,0 +1,89 @@
+# Sample GitHub Actions Workflow for AIReady
+# Copy this to .github/workflows/aiready.yml in your project
+
+name: AI Readiness Check
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: AI Readiness Check
+        id: aiready
+        uses: aiready/aiready/.github/actions/aiready-check@main
+        with:
+          directory: '.'
+          threshold: 70
+          fail-on: critical
+          tools: 'patterns,context,consistency'
+      
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = '${{ steps.aiready.outputs.score }}';
+            const passed = '${{ steps.aiready.outputs.passed }}';
+            const issues = '${{ steps.aiready.outputs.issues }}';
+            const critical = '${{ steps.aiready.outputs.critical }}';
+            const major = '${{ steps.aiready.outputs.major }}';
+            
+            const emoji = passed === 'true' ? '✅' : '❌';
+            const status = passed === 'true' ? 'PASSED' : 'BLOCKED';
+            
+            const body = `## ${emoji} AI Readiness Check ${status}
+            
+            | Metric | Value |
+            |--------|-------|
+            | **Score** | ${score}/100 |
+            | **Threshold** | 70 |
+            | **Total Issues** | ${issues} |
+            | **Critical** | ${critical} |
+            | **Major** | ${major} |
+            
+            ${passed !== 'true' ? '⚠️ This PR is blocked because it does not meet the AI readiness threshold. Run `aiready scan` locally to fix issues.' : 'Great job maintaining AI-ready code! 🎉'}
+            
+            ---
+            💡 [Track historical trends with Team plan](https://getaiready.dev/pricing) — $99/mo
+            `;
+            
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+  # Optional: Upload to SaaS (requires Team plan)
+  upload:
+    runs-on: ubuntu-latest
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run and Upload Analysis
+        if: ${{ secrets.AIREADY_API_KEY && secrets.AIREADY_REPO_ID }}
+        run: |
+          npm install -g @aiready/cli
+          aiready scan . --output json --output-file results.json --score
+          
+          curl -X POST "https://platform.getaiready.dev/api/analysis/upload" \
+            -H "Authorization: Bearer ${{ secrets.AIREADY_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"repoId\":\"${{ secrets.AIREADY_REPO_ID }}\",\"data\":$(cat results.json)}"

@@ -1,0 +1,60 @@
+# GitLab CI Template for AIReady
+# Add this to your .gitlab-ci.yml file
+
+aiready-check:
+  stage: test
+  image: node:20
+  script:
+    - npm install -g @aiready/cli
+    - aiready scan . --tools patterns,context,consistency --output json --output-file aiready-results.json --score
+  after_script:
+    - |
+      if [ -f aiready-results.json ]; then
+        SCORE=$(cat aiready-results.json | jq -r '.scoring.overallScore // 0')
+        THRESHOLD=${AIREADY_THRESHOLD:-70}
+        
+        echo "AI Readiness Score: $SCORE/100"
+        echo "Threshold: $THRESHOLD"
+        
+        if [ "$SCORE" -lt "$THRESHOLD" ]; then
+          echo "❌ PR BLOCKED: AI Readiness Score $SCORE is below threshold $THRESHOLD"
+          exit 1
+        else
+          echo "✅ AI Readiness Check passed with score $SCORE/100"
+        fi
+      else
+        echo "❌ AIReady analysis failed - no results file generated"
+        exit 1
+      fi
+  variables:
+    AIREADY_THRESHOLD: "70"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  artifacts:
+    reports:
+      dotenv: aiready-results.json
+    expire_in: 1 week
+  allow_failure: false
+
+# Optional: Upload to AIReady SaaS (requires Team plan)
+aiready-upload:
+  stage: deploy
+  image: node:20
+  needs:
+    - aiready-check
+  script:
+    - |
+      if [ -n "$AIREADY_API_KEY" ] && [ -n "$AIREADY_REPO_ID" ]; then
+        curl -X POST "https://platform.getaiready.dev/api/analysis/upload" \
+          -H "Authorization: Bearer $AIREADY_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d "{\"repoId\":\"$AIREADY_REPO_ID\",\"data\":$(cat aiready-results.json)}"
+        echo "✅ Results uploaded to AIReady SaaS"
+      else
+        echo "Skipping SaaS upload - AIREADY_API_KEY and AIREADY_REPO_ID not set"
+      fi
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+      allow_failure: true

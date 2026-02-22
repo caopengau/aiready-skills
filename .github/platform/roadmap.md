@@ -11,8 +11,8 @@
 - [x] Add `--fail-on` option for granular control (critical, major, any)
 - [x] Output GitHub Actions annotations for PR checks
 - [x] Block PRs that don't meet threshold with remediation steps
-- [ ] Create GitHub Action marketplace action (aiready-action)
-- [ ] Add GitLab CI template
+- [x] Create GitHub Action marketplace action (aiready-action)
+- [x] Add GitLab CI template
 
 ### Pricing & Plans (Strategic Update)
 - [x] Add Team plan at $99/mo (self-serve, avoids Enterprise procurement)
