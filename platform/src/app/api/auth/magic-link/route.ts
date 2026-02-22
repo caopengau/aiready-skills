@@ -47,11 +47,13 @@ export async function POST(request: NextRequest) {
     });
 
     // Send magic link email
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dev.platform.getaiready.dev';
+    const magicLinkUrl = `${baseUrl}/auth/verify?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
+    
     try {
       await sendMagicLinkEmail({
-        email: normalizedEmail,
-        token,
-        expiresInMinutes: MAGIC_LINK_EXPIRY_MINUTES,
+        to: normalizedEmail,
+        magicLinkUrl,
       });
     } catch (emailError) {
       console.error('Failed to send magic link email:', emailError);
