@@ -1,0 +1,52 @@
+name: Publish VS Code Extension
+
+on:
+  push:
+    tags:
+      - 'vscode-v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version bump type (patch, minor, major) or specific version'
+        required: false
+        default: 'patch'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build extension
+        run: cd packages/vscode-extension && pnpm run compile
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          cd packages/vscode-extension
+          npx @vscode/vsce publish --no-dependencies --allow-star-activation
+
+      - name: Create GitHub Release
+        if: success()
+        run: |
+          VERSION=$(node -p "require('./packages/vscode-extension/package.json').version")
+          gh release create "vscode-v${VERSION}" --title "VS Code Extension v${VERSION}" --notes "Release of AIReady VS Code Extension"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

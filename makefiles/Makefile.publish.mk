@@ -13,6 +13,7 @@ include $(MAKEFILE_DIR)/Makefile.shared.mk
 REPO_ROOT := $(abspath $(MAKEFILE_DIR)/..)
 
 .PHONY: publish npm-publish npm-login npm-check npm-publish-all \
+	publish-vscode publish-vscode-via-ci \
 	version-patch version-minor version-major \
         publish-core publish-pattern-detect publish-skills \
         npm-publish-core npm-publish-pattern-detect npm-publish-skills \
@@ -279,3 +280,24 @@ sync: ## Push monorepo to origin and sync all spokes to their public repos
 deploy: sync ## Alias for sync (push monorepo + publish all spokes)
 	@:-pattern-detect ## Build and publish all packages to npm
 	@$(call log_success,All packages published to npm)
+
+# ============================================================================
+# VS Code Extension Publishing
+# ============================================================================
+
+publish-vscode: ## Publish VS Code extension to Marketplace (requires VSCE_PAT env var)
+	@$(call log_step,Publishing VS Code extension...)
+	@cd packages/vscode-extension && pnpm run compile
+	@if [ -z "$(VSCE_PAT)" ]; then \
+		$(call log_error,VSCE_PAT environment variable not set); \
+		echo "Set it with: export VSCE_PAT=your_token"; \
+		echo "Or load from .env: source landing/.env"; \
+		exit 1; \
+	fi
+	@cd packages/vscode-extension && VSCE_PAT=$(VSCE_PAT) npx @vscode/vsce publish --no-dependencies --allow-star-activation
+	@$(call log_success,VS Code extension published)
+
+publish-vscode-via-ci: ## Trigger CI workflow to publish VS Code extension
+	@$(call log_step,Triggering VS Code extension publish workflow...)
+	@gh workflow run publish-vscode.yml
+	@$(call log_success,Workflow triggered. Check: https://github.com/caopengau/aiready/actions)
