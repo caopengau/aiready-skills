@@ -39,11 +39,19 @@ export default $config({
     });
 
     // Next.js site configuration
+    // Note: SST v3 with OpenNext creates multiple Lambda functions
+    // For production, we want to set reserved concurrency to prevent cascade failures
     const siteConfig: sst.aws.NextjsArgs = {
       path: ".",
       dev: {
         command: "pnpm run dev:next",
         autostart: true,
+      },
+      // Set reserved concurrency for the server function
+      // This prevents cascade failures when Enterprise clients upload many repos
+      // See: .github/platform/architecture.md - Lambda Concurrency Planning
+      server: {
+        reservedConcurrency: isProd ? 100 : 50, // Higher for prod, lower for dev
       },
       environment: {
         S3_BUCKET: bucket.name,

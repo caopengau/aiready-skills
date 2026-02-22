@@ -27,12 +27,12 @@
 - [x] Provision S3 bucket for raw analysis JSON
 - [ ] Set up EventBridge bus + SQS queues (for async processing)
 - [ ] Configure CloudWatch monitoring + Sentry
-- [ ] Set Lambda reserved concurrency (50) for Enterprise scale
+- [x] Set Lambda reserved concurrency (50 dev, 100 prod) for Enterprise scale
 
 ### Auth
 - [x] Implement GitHub OAuth with NextAuth.js (see [auth.md](./auth.md))
 - [x] JWT issuance + refresh (via NextAuth v5)
-- [ ] Plan-gating middleware (`withAuth`) — needs plan enforcement
+- [x] Plan-gating middleware (`withAuth`) — with plan enforcement
 
 ### Analysis Pipeline
 - [x] `POST /analysis/upload` API route — validate, store in S3, write DDB run record
