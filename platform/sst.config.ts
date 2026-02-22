@@ -81,9 +81,23 @@ export default $config({
       },
     };
 
-    // Custom domain configuration disabled for now
-    // DNS records already exist in Cloudflare for platform.getaiready.dev
-    // TODO: Migrate DNS to SST-managed or use existing CloudFront distribution
+    // Add custom domain configuration
+    // DNS records are managed by SST via Cloudflare API
+    if (isProd) {
+      siteConfig.domain = {
+        name: "platform.getaiready.dev",
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
+        }),
+      };
+    } else if ($app.stage === "dev") {
+      siteConfig.domain = {
+        name: "dev.platform.getaiready.dev",
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE_ID || "50eb7dcadc84c58ab34583742db0b671",
+        }),
+      };
+    }
 
     const site = new sst.aws.Nextjs("Dashboard", siteConfig);
 
