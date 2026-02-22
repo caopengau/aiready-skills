@@ -7,6 +7,7 @@ include makefiles/Makefile.test.mk
 include makefiles/Makefile.release.mk  # This includes Makefile.publish.mk
 include makefiles/Makefile.stats.mk
 include makefiles/Makefile.deploy.mk
+include makefiles/Makefile.distribution.mk
 
 # Dynamically resolve pnpm path for use in all commands
 PNPM := $(shell command -v pnpm)

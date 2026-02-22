@@ -1,0 +1,30 @@
+# AIReady CLI Docker Image (Slim)
+# Installs directly from npm for smaller image
+
+FROM node:24-alpine
+
+LABEL maintainer="AIReady <hello@getaiready.dev>"
+LABEL org.opencontainers.image.title="AIReady CLI"
+LABEL org.opencontainers.image.description="AI readiness analysis tools - detect issues that confuse AI models"
+LABEL org.opencontainers.image.url="https://getaiready.dev"
+LABEL org.opencontainers.image.source="https://github.com/caopengau/aiready"
+LABEL org.opencontainers.image.vendor="AIReady"
+
+WORKDIR /workspace
+
+# Install AIReady CLI globally
+RUN npm install -g @aiready/cli
+
+# Create non-root user
+RUN addgroup -g 1001 -S aiready && \
+    adduser -S -D -H -u 1001 -h /home/aiready -s /sbin/nologin -G aiready -g aiready aiready
+
+USER aiready
+
+# Set up entry point
+ENTRYPOINT ["aiready"]
+CMD ["--help"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD aiready --version || exit 1

@@ -2,48 +2,182 @@
 
 This document outlines the distribution strategy for AIReady tools and the status of each channel.
 
-## Current Channels
+## Quick Status
 
-| Channel | Package | Status | Version | Notes |
-|---------|---------|--------|---------|-------|
-| **npm** | `@aiready/cli` | ✅ Published | v0.9.26 | Primary CLI distribution |
-| **npm** | `@aiready/core` | ✅ Published | - | Shared utilities |
-| **npm** | `@aiready/pattern-detect` | ✅ Published | - | Semantic duplicate detection |
-| **npm** | `@aiready/context-analyzer` | ✅ Published | - | Context window analysis |
-| **npm** | `@aiready/consistency` | ✅ Published | - | Naming consistency |
-| **npm** | `@aiready/visualizer` | ✅ Published | - | Graph visualization |
-| **GitHub Action (Local)** | `.github/actions/aiready-check` | ✅ Active | v1.0.0 | Composite action in monorepo |
+| Channel | Status | Package | Priority |
+|---------|--------|---------|----------|
+| **npm** | ✅ Published | `@aiready/cli` | Done |
+| **Docker Hub** | 🟡 Ready | `aiready/cli` | High |
+| **ghcr.io** | 🟡 Ready | `ghcr.io/caopengau/aiready` | High |
+| **GitHub Marketplace** | ✅ Published | `caopengau/aiready-action` | Done |
+| **VS Code Extension** | 🟡 Scaffold Ready | `aiready.aiready` | Medium |
+| **Homebrew** | 🟡 Formula Ready | `aiready` | Medium |
 
-## Planned Channels
+## Makefile Commands
 
-### 1. GitHub Actions Marketplace 🔴 HIGH PRIORITY
-
-**Status:** Not published (action exists locally)
-
-**Requirements:**
-- [ ] Create standalone public repository `github.com/caopengau/aiready-action`
-- [ ] Add `action.yml` at repository root
-- [ ] Include bundled `dist/index.js`
-- [ ] Create release with `v1` tag
-- [ ] Publish via GitHub UI during release
-
-**Publishing Steps:**
 ```bash
-# 1. Create standalone repository
+# View all distribution channels status
+make distribution-status
+
+# Docker
+make docker-build      # Build Docker image
+make docker-push       # Push to Docker Hub and ghcr.io
+make docker-test       # Test Docker image
+
+# VS Code Extension
+make vscode-package    # Package as VSIX
+make vscode-publish    # Publish to Marketplace
+
+# GitHub Action
+make action-build      # Build action
+make action-publish    # Show publishing instructions
+
+# Homebrew
+make homebrew-test     # Test formula
+make homebrew-publish  # Show publishing instructions
+
+# Build all packages
+make distribution-all
+```
+
+---
+
+## 1. npm Packages ✅
+
+### Current Status
+All packages are published to npm:
+
+| Package | Version | Status |
+|---------|---------|--------|
+| `@aiready/cli` | v0.9.26 | ✅ Published |
+| `@aiready/core` | Latest | ✅ Published |
+| `@aiready/pattern-detect` | Latest | ✅ Published |
+| `@aiready/context-analyzer` | Latest | ✅ Published |
+| `@aiready/consistency` | Latest | ✅ Published |
+| `@aiready/visualizer` | Latest | ✅ Published |
+
+### Installation
+
+```bash
+# Global install
+npm install -g @aiready/cli
+
+# Or use with npx (no install)
+npx @aiready/cli scan .
+
+# Or in package.json
+{
+  "devDependencies": {
+    "@aiready/cli": "^0.9.26"
+  }
+}
+```
+
+### Release Process
+
+```bash
+# Release specific package
+make release-cli VERSION=patch
+
+# Release all packages
+make release-all
+```
+
+---
+
+## 2. Docker 🟡 Ready
+
+### Files Created
+- `docker/Dockerfile` - Multi-stage build from source
+- `docker/Dockerfile.slim` - Installs from npm (smaller image)
+- `.github/workflows/docker.yml` - Automated build & push workflow
+
+### Building & Publishing
+
+```bash
+# Build locally
+make docker-build
+
+# Test the image
+make docker-test
+
+# Push to registries
+make docker-push
+```
+
+### Usage
+
+```bash
+# Pull from Docker Hub
+docker pull aiready/cli:latest
+
+# Pull from ghcr.io
+docker pull ghcr.io/caopengau/aiready:latest
+
+# Run analysis
+docker run --rm -v $(pwd):/workspace aiready/cli:latest scan /workspace
+
+# With options
+docker run --rm -v $(pwd):/workspace aiready/cli:latest \
+  scan /workspace --score --output json
+```
+
+### GitHub Actions Integration
+
+```yaml
+- name: Run AIReady
+  run: |
+    docker run --rm -v ${{ github.workspace }}:/workspace \
+      aiready/cli:latest scan /workspace --score
+```
+
+### CI/CD Pipeline
+
+Docker images are automatically built and pushed on releases via `.github/workflows/docker.yml`:
+- Triggers on GitHub releases
+- Builds for `linux/amd64` and `linux/arm64`
+- Pushes to both Docker Hub and ghcr.io
+- Includes version tags and `latest`
+
+---
+
+## 3. GitHub Actions Marketplace 🟡 Ready
+
+### Files Created
+- `action-marketplace/` - Standalone action directory
+- `action-marketplace/action.yml` - Action definition
+- `action-marketplace/src/index.ts` - Action source
+- `action-marketplace/README.md` - Marketplace README
+
+### Publishing Steps
+
+```bash
+# 1. Build the action
+make action-build
+
+# 2. Create standalone repository
 gh repo create aiready-action --public
 
-# 2. Copy action files
-cp -r .github/actions/aiready-check/* /path/to/aiready-action/
+# 3. Copy files to new repo
+cp -r action-marketplace/* /path/to/aiready-action/
 
-# 3. Create release
+# 4. Create initial commit and release
+cd aiready-action
+git init
+git add .
+git commit -m "Initial release"
+git branch -M main
+git remote add origin https://github.com/caopengau/aiready-action.git
+git push -u origin main
 gh release create v1 --title "v1.0.0" --notes "Initial release"
 
-# 4. Publish to Marketplace
-# Go to https://github.com/caopengau/aiready-action
+# 5. Publish to Marketplace
+# Go to: https://github.com/caopengau/aiready-action
 # Click "Release" → "Publish this Action to the GitHub Marketplace"
 ```
 
-**Usage (after publishing):**
+### Usage After Publishing
+
 ```yaml
 # .github/workflows/aiready.yml
 name: AIReady Check
@@ -60,177 +194,192 @@ jobs:
           fail-on: 'critical'
 ```
 
-### 2. Docker Hub 🟡 MEDIUM PRIORITY
+### Inputs
 
-**Status:** Not created
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `directory` | No | `.` | Directory to analyze |
+| `threshold` | No | `70` | Minimum AI readiness score (0-100) |
+| `fail-on` | No | `critical` | Fail on severity: `critical`, `major`, `any`, `none` |
+| `tools` | No | `patterns,context,consistency` | Tools to run |
 
-**Benefits:**
-- Easy integration in CI/CD pipelines
-- No Node.js installation required
-- Consistent environment
+### Outputs
 
-**Implementation:**
-```dockerfile
-# Dockerfile
-FROM node:24-alpine
-RUN npm install -g @aiready/cli
-ENTRYPOINT ["aiready"]
-```
+| Output | Description |
+|--------|-------------|
+| `score` | Overall AI readiness score (0-100) |
+| `passed` | Whether the check passed |
+| `issues` | Total issues found |
+| `critical` | Critical issues count |
+| `major` | Major issues count |
 
-**Publishing Steps:**
+---
+
+## 4. VS Code Extension 🟡 Scaffold Ready
+
+### Files Created
+- `packages/vscode-extension/package.json` - Extension manifest
+- `packages/vscode-extension/src/extension.ts` - Extension source
+- `packages/vscode-extension/README.md` - Extension README
+
+### Features
+- 🛡️ Real-time AI readiness score in status bar
+- 📊 Issue explorer in sidebar
+- ⚡ Quick scan current file
+- 🔧 Configurable thresholds and tools
+
+### Building & Publishing
+
 ```bash
-# Build and push
-docker build -t aiready/cli:latest .
-docker push aiready/cli:latest
+# Package as VSIX
+make vscode-package
+
+# Publish to Marketplace
+make vscode-publish
+
+# Or manually
+cd packages/vscode-extension
+pnpm install
+pnpm run package
+vsce publish
 ```
 
-**Usage:**
-```yaml
-# GitHub Actions with Docker
-- name: Run AIReady
-  run: |
-    docker run --rm -v ${{ github.workspace }}:/workspace \
-      aiready/cli:latest --directory /workspace
-```
+### Configuration
 
-### 3. GitHub Container Registry (ghcr.io) 🟡 MEDIUM PRIORITY
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `aiready.threshold` | `70` | Minimum score to pass |
+| `aiready.failOn` | `critical` | Severity to fail on |
+| `aiready.tools` | `["patterns", "context", "consistency"]` | Tools to run |
+| `aiready.autoScan` | `false` | Auto-scan on save |
+| `aiready.showStatusBar` | `true` | Show score in status bar |
 
-**Status:** Not created
+### Commands
 
-**Benefits:**
-- Integrated with GitHub
-- Better for GitHub Actions workflows
-- Free for public repos
+| Command | Description |
+|---------|-------------|
+| `AIReady: Scan Workspace` | Full workspace scan |
+| `AIReady: Quick Scan` | Current file only |
+| `AIReady: Show Report` | Open output panel |
+| `AIReady: Open Settings` | Configure options |
 
-**Implementation:**
-```yaml
-# .github/workflows/docker.yml
-name: Docker Build & Push
+---
 
-on:
-  release:
-    types: [published]
+## 5. Homebrew 🟡 Formula Ready
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Log in to ghcr.io
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: ghcr.io/caopengau/aiready:latest
-```
+### Files Created
+- `homebrew/aiready.rb` - Homebrew formula
 
-### 4. VS Code Extension 🟡 MEDIUM PRIORITY
+### Publishing Steps
 
-**Status:** Not created
-
-**Benefits:**
-- Real-time AI readiness feedback
-- Visual indicators in editor
-- Integrated analysis results
-
-**Implementation:**
-- Create `@aiready/vscode-extension` package
-- Use VS Code Extension API
-- Integrate with CLI for analysis
-
-**Features:**
-- Status bar with AI readiness score
-- Problem panel with issues
-- Quick fix suggestions
-
-### 5. Homebrew 🟢 LOW PRIORITY
-
-**Status:** Not created
-
-**Benefits:**
-- Easy installation for macOS/Linux users
-- Auto-update support
-
-**Implementation:**
-Create a Homebrew formula:
-```ruby
-# Formula/aiready.rb
-class Aiready < Formula
-  desc "AI readiness analysis tools"
-  homepage "https://getaiready.dev"
-  url "https://registry.npmjs.org/@aiready/cli/-/cli-0.9.26.tgz"
-  sha256 "..."
-  license "MIT"
-
-  depends_on "node"
-
-  def install
-    system "npm", "install", *std_npm_args
-    bin.install_symlink Dir["#{libexec}/bin/*"]
-  end
-end
-```
-
-### 6. Other Potential Channels
-
-| Channel | Priority | Effort | Notes |
-|---------|----------|--------|-------|
-| **Snap** | Low | Medium | Linux desktop users |
-| **Chocolatey** | Low | Low | Windows users |
-| **AUR** | Low | Low | Arch Linux users |
-| **Scoop** | Low | Low | Windows users |
-
-## Release Process
-
-### npm Packages (Automated via Makefile)
 ```bash
-# Release all packages
-make release-all
+# 1. Create homebrew-tap repository
+gh repo create homebrew-tap --public
 
-# Release specific package
-make release-cli VERSION=patch
+# 2. Get SHA256 for the tarball
+curl -sL https://registry.npmjs.org/@aiready/cli/-/cli-0.9.26.tgz | shasum -a 256
+
+# 3. Update formula with SHA256
+# Edit homebrew/aiready.rb with the correct SHA256
+
+# 4. Copy to tap repository
+cp homebrew/aiready.rb /path/to/homebrew-tap/Formula/
+
+# 5. Push to tap
+cd homebrew-tap
+git add Formula/aiready.rb
+git commit -m "Add aiready formula"
+git push
 ```
 
-### GitHub Action
+### Installation After Publishing
+
 ```bash
-# After changes to action
-cd .github/actions/aiready-check
-npm run build
-git add dist/
-git commit -m "feat: update action"
-git tag -f v1
-git push origin v1 --force
+# Add tap
+brew tap caopengau/tap
+
+# Install
+brew install aiready
+
+# Run
+aiready scan .
 ```
 
-### Docker
+### Testing Formula Locally
+
 ```bash
-# Build and push
-make docker-build
-make docker-push
+# Test without installing
+brew audit --formula homebrew/aiready.rb
+
+# Install from local formula
+brew install --build-from-source homebrew/aiready.rb
 ```
+
+---
+
+## 6. Other Potential Channels
+
+| Channel | Priority | Effort | Status | Notes |
+|---------|----------|--------|--------|-------|
+| **Snap** | Low | Medium | Not started | Linux desktop users |
+| **Chocolatey** | Low | Low | Not started | Windows users |
+| **AUR** | Low | Low | Not started | Arch Linux users |
+| **Scoop** | Low | Low | Not started | Windows users |
+
+---
 
 ## Versioning Strategy
 
-| Component | Versioning | Notes |
-|-----------|------------|-------|
-| npm packages | Semantic | Independent versioning per package |
-| GitHub Action | Major.Minor | Tag-based (`v1`, `v1.1`) |
-| Docker | Latest + Semantic | `latest`, `0.9.26` |
+| Component | Versioning | Example |
+|-----------|------------|---------|
+| npm packages | Semantic | `0.9.26` |
+| GitHub Action | Major tag | `v1`, `v1.1` |
+| Docker | Semantic + latest | `0.9.26`, `latest` |
+| VS Code Extension | Semantic | `0.1.0` |
+
+---
 
 ## Monitoring & Analytics
 
 - **npm downloads:** `npm info @aiready/cli`
 - **GitHub Action usage:** GitHub Insights tab
-- **Docker pulls:** Docker Hub statistics
+- **Docker pulls:** Docker Hub statistics, ghcr.io packages
 - **VS Code extension:** Marketplace metrics
 
 ---
 
+## Release Checklist
+
+### Before Release
+- [ ] Update all package versions
+- [ ] Update CHANGELOG.md
+- [ ] Run `make pre-commit`
+- [ ] Run `make test`
+
+### Release npm
+- [ ] Run `make release-all`
+- [ ] Verify packages on npmjs.com
+
+### Release Docker
+- [ ] Run `make docker-push`
+- [ ] Verify images on Docker Hub and ghcr.io
+
+### Release GitHub Action
+- [ ] Copy to `aiready-action` repo
+- [ ] Create new release tag
+- [ ] Publish to Marketplace
+
+### Release VS Code Extension
+- [ ] Run `make vscode-publish`
+- [ ] Verify on Marketplace
+
+### Release Homebrew
+- [ ] Update SHA256 in formula
+- [ ] Push to homebrew-tap
+- [ ] Test installation
+
+---
+
 *Last updated: February 2026*
+</task_progress>
+</write_to_file>

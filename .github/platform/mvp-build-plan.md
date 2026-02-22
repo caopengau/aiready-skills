@@ -70,14 +70,16 @@
 - [x] Welcome email template
 
 ### Priority 2C: Error Handling
-- [ ] Better error messages for common issues
-- [ ] Retry logic for transient failures
-- [ ] User-friendly error pages
+- [x] Error boundary component (error.tsx)
+- [x] 404 page (not-found.tsx)
+- [x] Loading state component (loading.tsx)
+- [ ] Retry logic for transient failures (deferred)
 
 ### Priority 2D: Onboarding Flow
-- [ ] Welcome message for new users
-- [ ] "Run your first analysis" guide
-- [ ] CLI command examples in dashboard
+- [x] Onboarding component with step-by-step guide
+- [x] Welcome message for new users
+- [x] "Run your first analysis" guide
+- [x] CLI command examples in onboarding
 
 ---
 
