@@ -142,7 +142,34 @@ export async function GET(request: NextRequest) {
     }
 
     const analyses = await listRepositoryAnalyses(repoId, limit);
-    return NextResponse.json({ analyses });
+    
+    // Get run limits info
+    const maxRunsPerMonth = planLimits.free.maxRunsPerMonth;
+    const runsThisMonth = await getRunsThisMonth(session.user.id);
+    const retentionDays = planLimits.free.dataRetentionDays;
+    
+    // Add expiry info to each analysis
+    const analysesWithExpiry = analyses.map(a => {
+      const createdAt = new Date(a.createdAt);
+      const expiresAt = new Date(createdAt.getTime() + retentionDays * 24 * 60 * 60 * 1000);
+      const daysUntilExpiry = Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+      
+      return {
+        ...a,
+        expiresAt: expiresAt.toISOString(),
+        daysUntilExpiry,
+      };
+    });
+
+    return NextResponse.json({ 
+      analyses: analysesWithExpiry,
+      limits: {
+        runsRemaining: maxRunsPerMonth - runsThisMonth,
+        maxRunsPerMonth,
+        resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(),
+        retentionDays,
+      },
+    });
   } catch (error) {
     console.error('Error fetching analyses:', error);
     return NextResponse.json({ error: 'Failed to fetch analyses' }, { status: 500 });
