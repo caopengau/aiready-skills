@@ -23,6 +23,8 @@ coverage/
 
 # Build artifacts
 **/dist/
+*.bundled.*.mjs
+tsup.config.bundled.*.mjs
 
 # AIReady output
 .aiready/
