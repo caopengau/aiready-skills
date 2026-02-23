@@ -302,6 +302,9 @@ importers:
       glob:
         specifier: ^13.0.0
         version: 13.0.6
+      ignore:
+        specifier: ^7.0.0
+        version: 7.0.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
