@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
 import { existsSync } from 'fs';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(async ({ command }) => {
   const isDev = command === 'serve';
@@ -20,7 +21,7 @@ export default defineConfig(async ({ command }) => {
     }
   }
 
-  const plugins: any[] = [react()];
+  const plugins: any[] = [react(), tailwindcss()];
   // Dev-time middleware: if the CLI sets AIREADY_REPORT_PATH when spawning Vite,
   // serve that file at /report-data.json so the client can fetch the report
   // directly from the consumer working directory without copying into node_modules.
@@ -70,18 +71,6 @@ export default defineConfig(async ({ command }) => {
     },
   };
   plugins.push(reportProxyPlugin);
-  // Try to dynamically import Tailwind Vite plugin. If it's not installed,
-  // continue without it so consumers who don't use Tailwind won't error.
-  try {
-    // import may return a module with a default export or the function itself
-    const mod = await import('@tailwindcss/vite');
-    const fn = mod?.default ?? mod;
-    if (typeof fn === 'function') {
-      plugins.push(fn());
-    }
-  } catch (e) {
-    // plugin not available; proceed without Tailwind integration
-  }
 
   return {
     plugins,
