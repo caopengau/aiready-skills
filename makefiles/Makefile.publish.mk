@@ -286,15 +286,18 @@ deploy: sync ## Alias for sync (push monorepo + publish all spokes)
 # ============================================================================
 
 publish-vscode: ## Publish VS Code extension to Marketplace (requires VSCE_PAT env var)
-	@$(call log_step,Publishing VS Code extension...)
-	@cd packages/vscode-extension && pnpm run compile
-	@test -n "$$VSCE_PAT" || { \
-		[ -f packages/vscode-extension/.env ] && echo "[INFO] Loading VSCE_PAT from packages/vscode-extension/.env" && set -a && . packages/vscode-extension/.env && set +a; \
-		: ; \
-	}; \
-	test -n "$$VSCE_PAT" || { echo "[ERROR] VSCE_PAT not set. Add it to packages/vscode-extension/.env or export VSCE_PAT=your_token"; exit 1; }; \
-	cd packages/vscode-extension && VSCE_PAT="$$VSCE_PAT" npx @vscode/vsce publish --no-dependencies --allow-star-activation
-	@$(call log_success,VS Code extension published)
+	@$(call log_step,Publishing VS Code extension...); \
+	if [ -f packages/vscode-extension/.env ]; then \
+		echo "[INFO] Loading VSCE_PAT from packages/vscode-extension/.env"; \
+		set -a; . packages/vscode-extension/.env; set +a; \
+	fi; \
+	if [ -z "$$VSCE_PAT" ]; then \
+		echo "[ERROR] VSCE_PAT not set. Add it to packages/vscode-extension/.env or export VSCE_PAT=your_token"; \
+		exit 1; \
+	fi; \
+	cd packages/vscode-extension && pnpm run compile && \
+	VSCE_PAT="$$VSCE_PAT" npx @vscode/vsce publish --no-dependencies --allow-star-activation; \
+	$(call log_success,VS Code extension published)
 
 publish-vscode-via-ci: ## Trigger CI workflow to publish VS Code extension
 	@$(call log_step,Triggering VS Code extension publish workflow...)
