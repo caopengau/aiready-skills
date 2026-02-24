@@ -588,11 +588,11 @@ export default function DocsPage() {
               </p>
               <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
                 <div className="mb-2"># Produce and open a visualization for the current repo</div>
-                <div className="mb-2">npm run visualize -- . --open</div>
-                <div className="mb-2">pnpm run visualize -- . --open</div>
+                <div className="mb-2">npm run visualise</div>
+                <div className="mb-2">pnpm run visualise</div>
                 <div className="mb-2"># If you have the `aiready` CLI installed globally</div>
-                <div className="mb-2">aiready visualize . --open</div>
-                <div>npx @aiready/cli visualize . --open</div>
+                <div className="mb-2">aiready visualise</div>
+                <div>npx @aiready/cli visualise</div>
               </div>
 
               <h4 className="font-bold text-slate-900 mb-2">Options</h4>
