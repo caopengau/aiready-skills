@@ -1,3 +1,9 @@
+import { 
+  calculateMonthlyCost, 
+  calculateProductivityImpact,
+  DEFAULT_COST_CONFIG,
+  type CostConfig 
+} from '@aiready/core';
 import type { ToolScoringOutput } from '@aiready/core';
 import type { DuplicatePattern } from './detector';
 
@@ -8,10 +14,15 @@ import type { DuplicatePattern } from './detector';
  * - Number of duplicates per file
  * - Token waste per file
  * - High-impact duplicates (>1000 tokens or >70% similarity)
+ * 
+ * Includes business value metrics:
+ * - Estimated monthly cost of token waste
+ * - Estimated developer hours to fix
  */
 export function calculatePatternScore(
   duplicates: DuplicatePattern[],
-  totalFilesAnalyzed: number
+  totalFilesAnalyzed: number,
+  costConfig?: Partial<CostConfig>
 ): ToolScoringOutput {
   // Calculate raw metrics
   const totalDuplicates = duplicates.length;
@@ -119,6 +130,17 @@ export function calculatePatternScore(
     });
   }
   
+  // Calculate business value metrics
+  const cfg = { ...DEFAULT_COST_CONFIG, ...costConfig };
+  const estimatedMonthlyCost = calculateMonthlyCost(totalTokenCost, cfg);
+  
+  // Convert duplicates to issue format for productivity calculation
+  const issues = duplicates.map(d => ({
+    severity: d.severity === 'critical' ? 'critical' : 
+              d.severity === 'major' ? 'major' : 'minor' as const
+  }));
+  const productivityImpact = calculateProductivityImpact(issues);
+  
   return {
     toolName: 'pattern-detect',
     score: finalScore,
@@ -129,6 +151,9 @@ export function calculatePatternScore(
       totalFilesAnalyzed,
       duplicatesPerFile: Math.round(duplicatesPerFile * 10) / 10,
       tokenWastePerFile: Math.round(tokenWastePerFile),
+      // Business value metrics
+      estimatedMonthlyCost,
+      estimatedDeveloperHours: productivityImpact.totalHours,
     },
     factors,
     recommendations,
