@@ -287,20 +287,7 @@ deploy: sync ## Alias for sync (push monorepo + publish all spokes)
 
 publish-vscode: ## Publish VS Code extension to Marketplace (requires VSCE_PAT env var)
 	@$(call log_step,Publishing VS Code extension...)
-	@cd packages/vscode-extension && pnpm run compile
-	@if [ -z "$(VSCE_PAT)" ]; then \
-		if [ -f packages/vscode-extension/.env ]; then \
-			$(call log_info,Loading VSCE_PAT from packages/vscode-extension/.env); \
-			eval $$(grep -v '^#' packages/vscode-extension/.env | xargs); \
-		fi; \
-	fi; \
-	if [ -z "$(VSCE_PAT)" ]; then \
-		$(call log_error,VSCE_PAT environment variable not set); \
-		echo "Set it in packages/vscode-extension/.env or export VSCE_PAT=your_token"; \
-		exit 1; \
-	fi
-	@cd packages/vscode-extension && VSCE_PAT=$$(grep -v '^#' .env | grep VSCE_PAT | cut -d'=' -f2) npx @vscode/vsce publish --no-dependencies --allow-star-activation
-	@$(call log_success,VS Code extension published)
+	@./scripts/publish-vscode.sh
 
 publish-vscode-via-ci: ## Trigger CI workflow to publish VS Code extension
 	@$(call log_step,Triggering VS Code extension publish workflow...)
