@@ -52,9 +52,9 @@ dev-skills: ## Build and validate skills rules
 	@$(call log_success,Skills validated)
 
 landing: dev-landing ## Alias for dev-landing
-dev-landing: ## Start landing page dev server at http://localhost:3333
+dev-landing: ## Start landing page dev server at http://localhost:8887
 	@$(call log_step,Starting landing page dev server...)
-	@echo "$(CYAN)Landing page will be available at: $(GREEN)http://localhost:3333$(NC)"
+	@echo "$(CYAN)Landing page will be available at: $(GREEN)http://localhost:8887$(NC)"
 	@$(PNPM) --filter @aiready/landing dev
 
 platform: dev-platform ## Alias for dev-platform
