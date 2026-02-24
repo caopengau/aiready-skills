@@ -1,3 +1,8 @@
+import { 
+  calculateProductivityImpact,
+  DEFAULT_COST_CONFIG,
+  type CostConfig 
+} from '@aiready/core';
 import type { ToolScoringOutput } from '@aiready/core';
 import type { ConsistencyIssue } from './types';
 
@@ -8,10 +13,14 @@ import type { ConsistencyIssue } from './types';
  * - Issue density (issues per file)
  * - Weighted severity (critical: 10pts, major: 3pts, minor: 0.5pts)
  * - Pattern consistency across codebase
+ * 
+ * Includes business value metrics:
+ * - Estimated developer hours to fix consistency issues
  */
 export function calculateConsistencyScore(
   issues: ConsistencyIssue[],
-  totalFilesAnalyzed: number
+  totalFilesAnalyzed: number,
+  costConfig?: Partial<CostConfig>
 ): ToolScoringOutput {
   const criticalIssues = issues.filter(i => i.severity === 'critical').length;
   const majorIssues = issues.filter(i => i.severity === 'major').length;
@@ -111,6 +120,9 @@ export function calculateConsistencyScore(
     });
   }
   
+  // Calculate business value metrics
+  const productivityImpact = calculateProductivityImpact(issues);
+  
   return {
     toolName: 'consistency',
     score,
@@ -121,6 +133,8 @@ export function calculateConsistencyScore(
       minorIssues,
       issuesPerFile: Math.round(issuesPerFile * 100) / 100,
       avgWeightedIssuesPerFile: Math.round(avgWeightedIssuesPerFile * 100) / 100,
+      // Business value metrics
+      estimatedDeveloperHours: productivityImpact.totalHours,
     },
     factors,
     recommendations,
