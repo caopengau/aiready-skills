@@ -15,11 +15,13 @@ endif
 
 # Dynamically discover all packages in packages/ directory
 # Exclude skills (skills.sh distribution only, not npm)
-ALL_SPOKES := $(filter-out skills, $(notdir $(wildcard packages/*)))
+# Exclude vscode-extension (published to VS Code Marketplace, not npm)
+ALL_SPOKES := $(filter-out skills vscode-extension, $(notdir $(wildcard packages/*)))
 
 # Three-phase release strategy (matches release-all workflow)
 # Landing site is EXCLUDED from release-all (different release cadence)
 # Skills is EXCLUDED - it's distributed via skills.sh, not npm
+# VS Code extension is EXCLUDED - published to VS Code Marketplace, not npm
 CORE_SPOKE := core
 CLI_SPOKE := cli
 MIDDLE_SPOKES := $(filter-out core cli, $(sort $(ALL_SPOKES)))
