@@ -37,7 +37,8 @@
     "common-patterns": ".github/sub-instructions/common-patterns.md",
     "error-handling": ".github/sub-instructions/error-handling-strategy.md",
     "devops-best-practices": ".github/sub-instructions/devops-best-practices.md",
-    "troubleshooting": ".github/sub-instructions/troubleshooting.md"
+    "troubleshooting": ".github/sub-instructions/troubleshooting.md",
+    "metrics-evolution": ".github/sub-instructions/metrics-evolution.md"
   },
 
   "PLANS": {
