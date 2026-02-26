@@ -153,9 +153,32 @@ npm-publish-context-analyzer: ## Publish @aiready/context-analyzer to npm (short
 npm-publish-cli: ## Publish @aiready/cli to npm (shortcut for: make npm-publish SPOKE=cli)
 	@$(MAKE) npm-publish SPOKE=cli OTP=$(OTP)
 
+npm-publish-consistency: ## Publish @aiready/consistency to npm
+	@$(MAKE) npm-publish SPOKE=consistency OTP=$(OTP)
+
+npm-publish-doc-drift: ## Publish @aiready/doc-drift to npm
+	@$(MAKE) npm-publish SPOKE=doc-drift OTP=$(OTP)
+
+npm-publish-deps: ## Publish @aiready/deps to npm
+	@$(MAKE) npm-publish SPOKE=deps OTP=$(OTP)
+
+npm-publish-hallucination-risk: ## Publish @aiready/hallucination-risk to npm
+	@$(MAKE) npm-publish SPOKE=hallucination-risk OTP=$(OTP)
+
+npm-publish-testability: ## Publish @aiready/testability to npm
+	@$(MAKE) npm-publish SPOKE=testability OTP=$(OTP)
+
+npm-publish-agent-grounding: ## Publish @aiready/agent-grounding to npm
+	@$(MAKE) npm-publish SPOKE=agent-grounding OTP=$(OTP)
+
+npm-publish-visualizer: ## Publish @aiready/visualizer to npm
+	@$(MAKE) npm-publish SPOKE=visualizer OTP=$(OTP)
+
 # Note: skills is NOT published to npm, only via skills.sh (GitHub)
 
-npm-publish-all: build npm-publish-core npm-publish-pattern-detect npm-publish-context-analyzer npm-publish-cli
+npm-publish-all: build npm-publish-core npm-publish-pattern-detect npm-publish-context-analyzer npm-publish-cli \
+	npm-publish-consistency npm-publish-doc-drift npm-publish-deps npm-publish-hallucination-risk \
+	npm-publish-testability npm-publish-agent-grounding npm-publish-visualizer
 
 # Sync changes from spoke repos back to monorepo (for external contributions)
 sync-from-spoke: ## Sync changes from spoke repo back to monorepo. Usage: make sync-from-spoke SPOKE=pattern-detect
