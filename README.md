@@ -41,11 +41,12 @@ Mixed-language projects are fully supported - the tool automatically detects and
 - **[@aiready/consistency](https://www.npmjs.com/package/@aiready/consistency)** [![npm](https://img.shields.io/npm/v/@aiready/consistency)](https://www.npmjs.com/package/@aiready/consistency) - Check naming conventions and pattern consistency across your codebase
 - **[@aiready/visualizer](https://www.npmjs.com/package/@aiready/visualizer)** [![npm](https://img.shields.io/npm/v/@aiready/visualizer)](https://www.npmjs.com/package/@aiready/visualizer) - Interactive force-directed graph visualization of analysis results; generates standalone HTML reports and includes a React/D3 web app
 - **[@aiready/components](https://www.npmjs.com/package/@aiready/components)** [![npm](https://img.shields.io/npm/v/@aiready/components)](https://www.npmjs.com/package/@aiready/components) - Shared UI component library (shadcn/ui based), D3 charts (ForceDirectedGraph), React hooks, and utilities used across AIReady tools
+- **[@aiready/doc-drift](https://www.npmjs.com/package/@aiready/doc-drift)** [![npm](https://img.shields.io/npm/v/@aiready/doc-drift)](https://www.npmjs.com/package/@aiready/doc-drift) - Track documentation freshness vs code churn to identify outdated docs
+- **[@aiready/deps](https://www.npmjs.com/package/@aiready/deps)** [![npm](https://img.shields.io/npm/v/@aiready/deps)](https://www.npmjs.com/package/@aiready/deps) - Analyze dependency health and detect skew against AI training-cutoff dates
 
 ### Coming Soon
 
-- **[@aiready/doc-drift](./packages/doc-drift)** - Track documentation freshness vs code churn to identify outdated docs
-- **[@aiready/deps](./packages/deps)** - Analyze dependency health and detect circular dependencies
+- **change-amplification** - Analyze betweenness centrality and fan-out to assess rippling changes.
 
 ## 🏗️ Architecture
 
@@ -79,13 +80,22 @@ AIReady uses a **hub-and-spoke architecture** for modularity and extensibility:
           │                    │                  │                  │
           │                    ▼                  ▼                  ▼
           │              ┌──────────┐       ┌──────────┐       ┌──────────┐
-          │              │📊 PATTERN│       │📦 CONTEXT│       │🔧 CONSIST│
+          │              │📊 PATTERN│       │🧠 CONTEXT│       │🔧 CONSIST│
           │              │  DETECT  │       │ ANALYZER │       │  ENCY    │
           │              │          │       │          │       │          │
           │              │• Semantic│       │• Context │       │• Naming  │
           │              │  dupes   │       │  budgets │       │  rules   │
           │              │✅ Ready  │       │✅ Ready  │       │✅ Ready  │
-          │              └──────────┘       └──────────┘       └──────────┘
+          │              └─────┬────┘       └─────┬────┘       └─────┬────┘
+          │                    │                  │                  │
+          │              ┌─────┴────┐       ┌─────┴────┐             │
+          │              │📝 DOC    │       │📦 DEPS   │             │
+          │              │  DRIFT   │       │          │             │
+          │              │          │       │          │             │
+          │              │• Outdated│       │• Health  │             │
+          │              │  docs    │       │  & Skew  │             │
+          │              │✅ Ready  │       │✅ Ready  │             │
+          │              └──────────┘       └──────────┘             │
           │                    │                  │                  │
           └────────────────────┴──────────────────┴──────────────────┘
                                    │
