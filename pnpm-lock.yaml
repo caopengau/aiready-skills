@@ -137,8 +137,45 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/agent-grounding:
+    dependencies:
+      '@aiready/core':
+        specifier: workspace:*
+        version: link:../core
+      '@typescript-eslint/types':
+        specifier: ^8.53.0
+        version: 8.56.0
+      '@typescript-eslint/typescript-estree':
+        specifier: ^8.53.0
+        version: 8.56.0(typescript@5.9.3)
+      chalk:
+        specifier: ^5.3.0
+        version: 5.6.2
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.3
+      glob:
+        specifier: ^11.0.0
+        version: 11.1.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.10.13
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
+
   packages/cli:
     dependencies:
+      '@aiready/agent-grounding':
+        specifier: workspace:*
+        version: link:../agent-grounding
       '@aiready/consistency':
         specifier: workspace:*
         version: link:../consistency
@@ -148,9 +185,15 @@ importers:
       '@aiready/core':
         specifier: workspace:*
         version: link:../core
+      '@aiready/hallucination-risk':
+        specifier: workspace:*
+        version: link:../hallucination-risk
       '@aiready/pattern-detect':
         specifier: workspace:*
         version: link:../pattern-detect
+      '@aiready/testability':
+        specifier: workspace:*
+        version: link:../testability
       '@aiready/visualizer':
         specifier: workspace:*
         version: link:../visualizer
@@ -316,6 +359,40 @@ importers:
         specifier: ^8.3.5
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
 
+  packages/hallucination-risk:
+    dependencies:
+      '@aiready/core':
+        specifier: workspace:*
+        version: link:../core
+      '@typescript-eslint/types':
+        specifier: ^8.53.0
+        version: 8.56.0
+      '@typescript-eslint/typescript-estree':
+        specifier: ^8.53.0
+        version: 8.56.0(typescript@5.9.3)
+      chalk:
+        specifier: ^5.3.0
+        version: 5.6.2
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.3
+      glob:
+        specifier: ^11.0.0
+        version: 11.1.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.10.13
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
+
   packages/pattern-detect:
     dependencies:
       '@aiready/core':
@@ -350,6 +427,40 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
+
+  packages/testability:
+    dependencies:
+      '@aiready/core':
+        specifier: workspace:*
+        version: link:../core
+      '@typescript-eslint/types':
+        specifier: ^8.53.0
+        version: 8.56.0
+      '@typescript-eslint/typescript-estree':
+        specifier: ^8.53.0
+        version: 8.56.0(typescript@5.9.3)
+      chalk:
+        specifier: ^5.3.0
+        version: 5.6.2
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.3
+      glob:
+        specifier: ^11.0.0
+        version: 11.1.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.10.13
+      tsup:
+        specifier: ^8.3.5
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.18(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/visualizer:
     dependencies:
