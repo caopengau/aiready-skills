@@ -3,80 +3,19 @@
  * Scans all TS/JS files in a directory and aggregates signals.
  */
 
-import { readdirSync, statSync } from 'fs';
-import { join, extname } from 'path';
+import { scanFiles, calculateAiSignalClarity } from '@aiready/core';
 import { scanFile } from './scanner';
-import { calculateAiSignalClarity } from '@aiready/core';
 import type {
   AiSignalClarityOptions,
   AiSignalClarityReport,
   FileAiSignalClarityResult,
 } from './types';
 
-const SUPPORTED_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
-const DEFAULT_EXCLUDES = [
-  'node_modules',
-  'dist',
-  '.git',
-  'coverage',
-  '.turbo',
-  'build',
-  '__pycache__',
-];
-
-function shouldInclude(
-  filePath: string,
-  include?: string[],
-  exclude?: string[]
-): boolean {
-  const excludePatterns = [...DEFAULT_EXCLUDES, ...(exclude ?? [])];
-  for (const ex of excludePatterns) {
-    if (filePath.includes(ex)) return false;
-  }
-  if (!SUPPORTED_EXTENSIONS.has(extname(filePath))) return false;
-  if (include && include.length > 0) {
-    return include.some((pat) => filePath.includes(pat));
-  }
-  return true;
-}
-
-function collectFiles(
-  dir: string,
-  options: AiSignalClarityOptions,
-  depth = 0
-): string[] {
-  if (depth > (options.maxDepth ?? 20)) return [];
-  const files: string[] = [];
-  let entries: string[];
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return files;
-  }
-  for (const entry of entries) {
-    const full = join(dir, entry);
-    let stat;
-    try {
-      stat = statSync(full);
-    } catch {
-      continue;
-    }
-    if (stat.isDirectory()) {
-      files.push(...collectFiles(full, options, depth + 1));
-    } else if (
-      stat.isFile() &&
-      shouldInclude(full, options.include, options.exclude)
-    ) {
-      files.push(full);
-    }
-  }
-  return files;
-}
-
 export async function analyzeAiSignalClarity(
   options: AiSignalClarityOptions
 ): Promise<AiSignalClarityReport> {
-  const files = collectFiles(options.rootDir, options);
+  // Use core scanFiles which respects .gitignore recursively
+  const files = await scanFiles(options);
   const results: FileAiSignalClarityResult[] = [];
 
   // Aggregate signals
@@ -92,7 +31,15 @@ export async function analyzeAiSignalClarity(
     totalExports: 0,
   };
 
+  let processed = 0;
   for (const filePath of files) {
+    processed++;
+    options.onProgress?.(
+      processed,
+      files.length,
+      `ai-signal-clarity: analyzing files`
+    );
+
     const result = scanFile(filePath, options);
     results.push(result);
     for (const key of Object.keys(aggregate) as Array<keyof typeof aggregate>) {

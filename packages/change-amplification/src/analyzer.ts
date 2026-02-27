@@ -1,45 +1,26 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { globSync } from 'glob';
-import { calculateChangeAmplification } from '@aiready/core';
+import {
+  scanFiles,
+  calculateChangeAmplification,
+  getParser,
+} from '@aiready/core';
 import type {
   ChangeAmplificationOptions,
   ChangeAmplificationReport,
   FileChangeAmplificationResult,
   ChangeAmplificationIssue,
 } from './types';
-import { getParser } from '@aiready/core';
-
-function collectFiles(
-  dir: string,
-  options: ChangeAmplificationOptions
-): string[] {
-  const includePatterns =
-    options.include && options.include.length > 0
-      ? options.include
-      : ['**/*.{ts,tsx,js,jsx,py,go}'];
-  const excludePatterns =
-    options.exclude && options.exclude.length > 0
-      ? options.exclude
-      : ['**/node_modules/**', '**/dist/**', '**/.git/**'];
-
-  let matchedFiles: string[] = [];
-  for (const pattern of includePatterns) {
-    const files = globSync(pattern, {
-      cwd: dir,
-      ignore: excludePatterns,
-      absolute: true,
-    });
-    matchedFiles = matchedFiles.concat(files);
-  }
-  return [...new Set(matchedFiles)];
-}
 
 export async function analyzeChangeAmplification(
   options: ChangeAmplificationOptions
 ): Promise<ChangeAmplificationReport> {
   const rootDir = path.resolve(options.rootDir || '.');
-  const files = collectFiles(rootDir, options);
+  // Use core scanFiles which respects .gitignore recursively
+  const files = await scanFiles({
+    ...options,
+    include: options.include || ['**/*.{ts,tsx,js,jsx,py,go}'],
+  });
 
   // Compute graph metrics: fanIn and fanOut
   const dependencyGraph = new Map<string, string[]>(); // key: file, value: imported files
@@ -52,7 +33,15 @@ export async function analyzeChangeAmplification(
   }
 
   // Parse files to build dependency graph
+  let processed = 0;
   for (const file of files) {
+    processed++;
+    options.onProgress?.(
+      processed,
+      files.length,
+      `change-amplification: analyzing files`
+    );
+
     try {
       const parser = getParser(file);
       if (!parser) continue;

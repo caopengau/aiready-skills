@@ -43,6 +43,7 @@ interface DetectionOptions {
   maxCandidatesPerBlock?: number; // Cap candidates per block
   maxComparisons?: number; // Maximum total comparisons budget
   streamResults?: boolean; // Output duplicates as they're found
+  onProgress?: (processed: number, total: number, message: string) => void;
 }
 
 interface CodeBlock {
@@ -283,7 +284,9 @@ export async function detectDuplicatePatterns(
       }))
   );
 
-  console.log(`Extracted ${allBlocks.length} code blocks for analysis`);
+  if (!options.onProgress) {
+    console.log(`Extracted ${allBlocks.length} code blocks for analysis`);
+  }
 
   // Add Python blocks if present
   const pythonFiles = files.filter((f) => f.file.toLowerCase().endsWith('.py'));
@@ -308,7 +311,9 @@ export async function detectDuplicatePatterns(
       }));
 
     allBlocks.push(...pythonBlocks);
-    console.log(`Added ${pythonBlocks.length} Python patterns`);
+    if (!options.onProgress) {
+      console.log(`Added ${pythonBlocks.length} Python patterns`);
+    }
   }
 
   // Warn about --no-approx performance implications
@@ -406,23 +411,27 @@ export async function detectDuplicatePatterns(
     }
     // Progress reporting every batch
     if (i % batchSize === 0 && i > 0) {
-      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-      const duplicatesFound = duplicates.length;
-      if (totalComparisons !== undefined) {
-        const progress = (
-          (comparisonsProcessed / totalComparisons) *
-          100
-        ).toFixed(1);
-        const remaining = totalComparisons - comparisonsProcessed;
-        const rate = comparisonsProcessed / parseFloat(elapsed);
-        const eta = remaining > 0 ? (remaining / rate).toFixed(0) : 0;
-        console.log(
-          `   ${progress}% (${comparisonsProcessed.toLocaleString()}/${totalComparisons.toLocaleString()} comparisons, ${elapsed}s elapsed, ~${eta}s remaining, ${duplicatesFound} duplicates)`
-        );
+      if (options.onProgress) {
+        options.onProgress(i, allBlocks.length, `pattern-detect: analyzing blocks`);
       } else {
-        console.log(
-          `   Processed ${i.toLocaleString()}/${allBlocks.length} blocks (${elapsed}s elapsed, ${duplicatesFound} duplicates)`
-        );
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        const duplicatesFound = duplicates.length;
+        if (totalComparisons !== undefined) {
+          const progress = (
+            (comparisonsProcessed / totalComparisons) *
+            100
+          ).toFixed(1);
+          const remaining = totalComparisons - comparisonsProcessed;
+          const rate = comparisonsProcessed / parseFloat(elapsed);
+          const eta = remaining > 0 ? (remaining / rate).toFixed(0) : 0;
+          console.log(
+            `   ${progress}% (${comparisonsProcessed.toLocaleString()}/${totalComparisons.toLocaleString()} comparisons, ${elapsed}s elapsed, ~${eta}s remaining, ${duplicatesFound} duplicates)`
+          );
+        } else {
+          console.log(
+            `   Processed ${i.toLocaleString()}/${allBlocks.length} blocks (${elapsed}s elapsed, ${duplicatesFound} duplicates)`
+          );
+        }
       }
       // Allow garbage collection between batches
       await new Promise((resolve) => setImmediate(resolve));

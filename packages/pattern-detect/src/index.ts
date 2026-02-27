@@ -39,6 +39,7 @@ export interface PatternDetectOptions extends ScanOptions {
   createClusters?: boolean; // Create refactor clusters for related patterns (default: true)
   minClusterTokenCost?: number; // Minimum token cost for cluster reporting (default: 1000)
   minClusterFiles?: number; // Minimum files for cluster reporting (default: 3)
+  onProgress?: (processed: number, total: number, message: string) => void;
 }
 
 export interface PatternSummary {
@@ -256,6 +257,7 @@ export async function analyzePatterns(options: PatternDetectOptions): Promise<{
     minSharedTokens,
     maxCandidatesPerBlock,
     streamResults,
+    onProgress: options.onProgress,
   });
 
   for (const file of files) {

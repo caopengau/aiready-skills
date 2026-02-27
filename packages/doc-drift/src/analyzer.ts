@@ -1,85 +1,23 @@
-import { calculateDocDrift } from '@aiready/core';
+import {
+  scanFiles,
+  readFileContent,
+  calculateDocDrift,
+  getFileCommitTimestamps,
+  getLineRangeLastModifiedCached,
+} from '@aiready/core';
 import type { DocDriftOptions, DocDriftReport, DocDriftIssue } from './types';
-import { readdirSync, statSync, readFileSync } from 'fs';
-import { join, extname } from 'path';
+import { readFileSync } from 'fs';
 import { parse } from '@typescript-eslint/typescript-estree';
 import type { TSESTree } from '@typescript-eslint/types';
-import { execSync } from 'child_process';
-
-const SRC_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
-const DEFAULT_EXCLUDES = [
-  'node_modules',
-  'dist',
-  '.git',
-  'coverage',
-  '.turbo',
-  'build',
-];
-
-function collectFiles(
-  dir: string,
-  options: DocDriftOptions,
-  depth = 0
-): string[] {
-  if (depth > 20) return [];
-  const excludes = [...DEFAULT_EXCLUDES, ...(options.exclude ?? [])];
-  let entries: string[];
-  try {
-    entries = readdirSync(dir);
-  } catch {
-    return [];
-  }
-
-  const files: string[] = [];
-  for (const entry of entries) {
-    if (excludes.some((ex) => entry === ex || entry.includes(ex))) continue;
-    const full = join(dir, entry);
-    let stat;
-    try {
-      stat = statSync(full);
-    } catch {
-      continue;
-    }
-    if (stat.isDirectory()) {
-      files.push(...collectFiles(full, options, depth + 1));
-    } else if (stat.isFile() && SRC_EXTENSIONS.has(extname(full))) {
-      if (!options.include || options.include.some((p) => full.includes(p))) {
-        files.push(full);
-      }
-    }
-  }
-  return files;
-}
-
-function getLineRangeLastModified(
-  file: string,
-  startLine: number,
-  endLine: number
-): number {
-  try {
-    // format %ct is committer date, UNIX timestamp
-    const output = execSync(
-      `git log -1 --format=%ct -L ${startLine},${endLine}:"${file}"`,
-      {
-        encoding: 'utf-8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      }
-    );
-    const match = output.trim().split('\n')[0];
-    if (match && !isNaN(parseInt(match, 10))) {
-      return parseInt(match, 10);
-    }
-  } catch {
-    // Ignore errors (file untracked, new file, etc)
-  }
-  return 0; // Unknown or not committed
-}
 
 export async function analyzeDocDrift(
   options: DocDriftOptions
 ): Promise<DocDriftReport> {
   const rootDir = options.rootDir;
-  const files = collectFiles(rootDir, options);
+  // Use core scanFiles which respects .gitignore recursively
+  const files = await scanFiles(options);
+  const issues: DocDriftIssue[] = [];
+  const results: DocDriftIssue[] = [];
   const staleMonths = options.staleMonths ?? 6;
   const staleSeconds = staleMonths * 30 * 24 * 60 * 60;
 
@@ -88,10 +26,13 @@ export async function analyzeDocDrift(
   let outdatedComments = 0;
   let undocumentedComplexity = 0;
 
-  const issues: DocDriftIssue[] = [];
   const now = Math.floor(Date.now() / 1000);
 
+  let processed = 0;
   for (const file of files) {
+    processed++;
+    options.onProgress?.(processed, files.length, `doc-drift: analyzing files`);
+
     let code: string;
     try {
       code = readFileSync(file, 'utf-8');
@@ -111,6 +52,7 @@ export async function analyzeDocDrift(
     }
 
     const comments = ast.comments || [];
+    let fileLineStamps: Record<number, number> | undefined;
 
     for (const node of ast.body) {
       if (
@@ -174,13 +116,16 @@ export async function analyzeDocDrift(
             }
 
             // Timestamp comparison
-            const commentModified = getLineRangeLastModified(
-              file,
+            if (!fileLineStamps) {
+              fileLineStamps = getFileCommitTimestamps(file);
+            }
+            const commentModified = getLineRangeLastModifiedCached(
+              fileLineStamps,
               jsdoc.loc.start.line,
               jsdoc.loc.end.line
             );
-            const bodyModified = getLineRangeLastModified(
-              file,
+            const bodyModified = getLineRangeLastModifiedCached(
+              fileLineStamps,
               decl.loc.start.line,
               decl.loc.end.line
             );
