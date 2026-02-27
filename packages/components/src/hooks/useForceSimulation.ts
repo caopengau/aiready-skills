@@ -96,6 +96,13 @@ export interface ForceSimulationOptions {
   stabilizeOnStop?: boolean;
 
   /**
+   * Throttle for tick updates in milliseconds to reduce update frequency
+   * (helps avoid excessive React re-renders).
+   * @default 33
+   */
+  tickThrottleMs?: number;
+
+  /**
    * Maximum time (ms) to allow the simulation to run after creation/restart.
    * If the simulation hasn't cooled by this time, it will be force-stopped
    * to prevent indefinite animation. Set to 0 to disable.
@@ -230,14 +237,11 @@ export function useForceSimulation(
     alphaTarget = 0,
     warmAlpha = 0.3,
     alphaMin = 0.01,
-    // @ts-expect-error allow extra option
-    stabilizeOnStop = true,
     onTick,
     // Optional throttle in milliseconds for tick updates (reduce React re-renders)
     // Lower values = smoother but more CPU; default ~30ms (~33fps)
-    // @ts-expect-error allow extra option
+    stabilizeOnStop = true,
     tickThrottleMs = 33,
-    // @ts-expect-error allow extra option
     maxSimulationTimeMs = 3000,
   } = options;
 

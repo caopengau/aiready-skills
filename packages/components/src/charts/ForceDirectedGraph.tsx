@@ -193,8 +193,9 @@ export const ForceDirectedGraph = forwardRef<
       // No-op for static layout
     }, []);
 
-    const setForcesEnabled = React.useCallback(() => {
-      // No-op for static layout
+    const setForcesEnabled = React.useCallback((enabled?: boolean) => {
+      // No-op for static layout; accept optional `enabled` arg for API compatibility
+      void enabled;
     }, []);
 
     // Remove package bounds effect - boundary packing disabled for faster convergence
