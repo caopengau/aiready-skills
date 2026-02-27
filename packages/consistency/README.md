@@ -15,10 +15,22 @@ Consistent naming and project structure are the bedrock of high-performing AI te
                     🎯 USER
                       │
                       ▼
-    └───────────┴─────────────────────┴───┴── YOU ARE HERE ─────────────┘
-                            │
-                            ▼
-                  🏢 HUB (@aiready/core)
+         🎛️  @aiready/cli (orchestrator)
+          │     │     │     │     │     │     │     │     │
+          ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+        [PAT] [CTX] [CON] [AMP] [DEP] [DOC] [SIG] [AGT] [TST]
+          │     │     │     │     │     │     │     │     │
+          └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+                               │
+                               ▼
+                      🏢 @aiready/core
+
+Legend:
+  PAT = pattern-detect        CTX = context-analyzer
+  CON = consistency ★         AMP = change-amplification
+  DEP = deps-health           DOC = doc-drift
+  SIG = ai-signal-clarity     AGT = agent-grounding
+  TST = testability           ★   = YOU ARE HERE
 ```
 
 ## Features
