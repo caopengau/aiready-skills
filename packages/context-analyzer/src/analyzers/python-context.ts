@@ -255,6 +255,7 @@ function estimateContextBudget(
   dependencyGraph: Map<string, Set<string>>
 ): number {
   // File tokens
+  void dependencyGraph;
   let budget = estimateTokens(code);
 
   // Add tokens for direct dependencies (simplified)

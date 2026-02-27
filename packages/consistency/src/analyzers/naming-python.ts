@@ -184,7 +184,9 @@ function toPascalCase(str: string): string {
 /**
  * Detect common Python anti-patterns in naming
  */
-export function detectPythonNamingAntiPatterns(_files: string[]): NamingIssue[] {
+export function detectPythonNamingAntiPatterns(
+  _files: string[]
+): NamingIssue[] {
   const issues: NamingIssue[] = [];
 
   // Parameter currently unused; reference to avoid lint warnings

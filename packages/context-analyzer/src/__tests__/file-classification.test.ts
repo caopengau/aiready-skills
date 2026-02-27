@@ -5,7 +5,7 @@ import {
   adjustCohesionForClassification,
   getClassificationRecommendations,
 } from '../analyzer';
-import type { DependencyNode, FileClassification } from '../types';
+import type { DependencyNode } from '../types';
 
 describe('file classification', () => {
   const createNode = (overrides: Partial<DependencyNode>): DependencyNode => ({

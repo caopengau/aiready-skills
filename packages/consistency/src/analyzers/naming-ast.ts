@@ -111,7 +111,7 @@ function analyzeFileNamingAST(
       }
 
       // Track variable declarations
-        if (node.type === 'VariableDeclarator') {
+      if (node.type === 'VariableDeclarator') {
         if (node.id.type === 'Identifier') {
           void isCoverageContext(node, ancestors);
           scopeTracker.declareVariable(

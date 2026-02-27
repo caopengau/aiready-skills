@@ -299,11 +299,11 @@ export async function analyzeContext(
         maxFragmentation,
         circularDeps,
       });
-      // Some returned fields are not needed for the Python mapping here
-      void severity;
-      void issues;
-      void recommendations;
-      void potentialSavings;
+    // Some returned fields are not needed for the Python mapping here
+    void severity;
+    void issues;
+    void recommendations;
+    void potentialSavings;
 
     // Get domains from exports
     const domains = [

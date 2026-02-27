@@ -102,12 +102,16 @@ function singularize(word: string): string {
 /**
  * Build a dependency graph from file contents
  */
-export function buildDependencyGraph(files: FileContent[]): DependencyGraph {
+export function buildDependencyGraph(
+  files: FileContent[],
+  options?: { domainKeywords?: string[] }
+): DependencyGraph {
   const nodes = new Map<string, DependencyNode>();
   const edges = new Map<string, Set<string>>();
 
-  // Auto-detect domain keywords from workspace folder structure
-  const autoDetectedKeywords = extractDomainKeywordsFromPaths(files);
+  // Auto-detect domain keywords from workspace folder structure (allow override)
+  const autoDetectedKeywords =
+    options?.domainKeywords ?? extractDomainKeywordsFromPaths(files);
 
   // Some imported helpers are optional for future features; reference to avoid lint warnings
   void calculateImportSimilarity;

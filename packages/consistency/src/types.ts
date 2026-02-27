@@ -32,6 +32,7 @@ export interface NamingIssue {
   identifier: string;
   suggestion?: string;
   severity: 'critical' | 'major' | 'minor' | 'info';
+  category?: 'naming';
 }
 
 export interface PatternIssue {

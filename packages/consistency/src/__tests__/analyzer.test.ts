@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { analyzeConsistency } from '../analyzer';
-import { analyzeNaming } from '../analyzers/naming';
 import { analyzePatterns } from '../analyzers/patterns';
 
 describe('analyzeConsistency', () => {
@@ -39,8 +38,9 @@ const x = 10;
 const y = 20;
 const result = x + y;
 `;
-      void testCode;
-      // In a real test, we'd create temp files or mock file reading
+    void testCode;
+    void 0;
+    // In a real test, we'd create temp files or mock file reading
     // For now, this is a placeholder structure
     expect(true).toBe(true);
   });

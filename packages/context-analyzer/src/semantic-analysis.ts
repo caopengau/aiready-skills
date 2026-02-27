@@ -17,6 +17,7 @@ export function buildCoUsageMatrix(
 
   // For each file, track which other files are imported alongside it
   for (const [sourceFile, node] of graph.nodes) {
+    void sourceFile;
     const imports = node.imports;
 
     // For each pair of imports in this file, increment their co-usage count
@@ -149,7 +150,7 @@ export function inferDomainFromSemantics(
   // 1. Check co-usage patterns
   const coUsages = coUsageMatrix.get(file) || new Map();
   const strongCoUsages = Array.from(coUsages.entries())
-    .filter(([_, count]) => count >= 3)
+    .filter(([, count]) => count >= 3)
     .map(([coFile]) => coFile);
 
   // Extract domains from frequently co-imported files
