@@ -19,13 +19,13 @@ export async function analyzeConsistency(
   const {
     checkNaming = true,
     checkPatterns = true,
-    _checkArchitecture = false, // Not implemented yet
+    checkArchitecture = false, // Not implemented yet
     minSeverity = 'info',
     ...scanOptions
   } = options;
 
   // Mark intentionally-unused option to avoid lint warnings
-  void _checkArchitecture;
+  void checkArchitecture;
 
   // Scan files
   const filePaths = await scanFiles(scanOptions);

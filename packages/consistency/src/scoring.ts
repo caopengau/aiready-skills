@@ -1,5 +1,5 @@
 import { calculateProductivityImpact } from '@aiready/core';
-import type { ToolScoringOutput } from '@aiready/core';
+import type { ToolScoringOutput, CostConfig } from '@aiready/core';
 import type { ConsistencyIssue } from './types';
 
 /**
