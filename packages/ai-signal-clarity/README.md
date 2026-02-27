@@ -1,13 +1,13 @@
-# @aiready/context-analyzer
+# @aiready/ai-signal-clarity
 
-> AIReady Spoke: Analyzes import chains, fragmented code, and context window costs for AI tools.
+> AIReady Spoke: Identifies code patterns, naming ambiguities, and logic traps that frequently cause AI model hallucinations.
 
-[![npm version](https://img.shields.io/npm/v/@aiready/context-analyzer.svg)](https://npmjs.com/package/@aiready/context-analyzer)
+[![npm version](https://img.shields.io/npm/v/@aiready/ai-signal-clarity.svg)](https://npmjs.com/package/@aiready/ai-signal-clarity)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-AI model context windows are precious and expensive. The **Context Analyzer** identifies import chains, redundant dependencies, and complex data structures that bloat your context window and degrade AI reasoning performance.
+AI models often generate incorrect code when they encounter ambiguous signals in the codebase. The **AI Signal Clarity** analyzer (formerly `hallucination-risk`) scans for high-entropy patterns that undermine AI reasoning.
 
 ## 🏛️ Architecture
 
@@ -29,14 +29,14 @@ AI model context windows are precious and expensive. The **Context Analyzer** id
     │           ┌─────────────────────┼─────────────────────┐
     │           ▼                     ▼                     ▼
     │     ┌────────┐           ┌────────┐           ┌────────┐
-    │     │📊 PAT- │           │📦 CON- │           │🔧 CON- │
-    │     │TERN    │           │TEXT    │           │SISTENCY│
-    │     │DETECT  │           │ANALYZER│           │        │
+    │     │📊 SIG- │           │📦 CON- │           │🔧 CON- │
+    │     │ CLARITY│           │TEXT    │           │SISTENCY│
+    │     │        │           │ANALYZER│           │        │
     │     │        │           │        │           │        │
     │     │✅ Ready│           │✅ Ready│           │✅ Ready│
     │     └────────┘           └────────┘           └────────┘
-    │                                 │                     │
-    │                                 └─ YOU ARE HERE ──────┘
+    │           │                                           │
+    │           └──────── YOU ARE HERE ─────────────────────┘
     │                                                       │
     └───────────────────────────────────────────────────────┘
                             │
@@ -46,20 +46,27 @@ AI model context windows are precious and expensive. The **Context Analyzer** id
 
 ## Features
 
-- **Import Chain Analysis**: Detects deep dependency trees that force unnecessary files into AI context.
-- **Fragmentation detection**: Identifies modules that are split across too many small, non-semantic files.
-- **Context Budgeting**: Projects the dollar cost of loading specific modules into frontier models (GPT-4, Claude 3.5).
+- **Boolean Trap Detection**: Flags multi-boolean parameter patterns where AI often flips intent.
+- **Magic Literal Detection**: Identifies unnamed constants that AI struggles to interpret.
+- **Naming Entropy**: Detects variable names with multiple semantic interpretations in the same context.
+- **Ambiguous API**: Surfaces untyped exports that prevent AI from inferring interface contracts.
 
 ## Installation
 
 ```bash
-pnpm add @aiready/context-analyzer
+pnpm add @aiready/ai-signal-clarity
 ```
 
 ## Usage
 
+This tool is designed to be run through the unified AIReady CLI.
+
 ```bash
-aiready scan . --tools context-analyzer
+# Scan for AI signal clarity issues
+aiready scan . --tools ai-signal-clarity
+
+# Alias for backwards compatibility
+aiready scan . --tools hallucination-risk
 ```
 
 ## License

@@ -1,20 +1,20 @@
-import { calculateHallucinationRisk } from '@aiready/core';
+import { calculateAiSignalClarity } from '@aiready/core';
 import type { ToolScoringOutput } from '@aiready/core';
-import type { HallucinationRiskReport } from './types';
+import type { AiSignalClarityReport } from './types';
 
 /**
- * Convert hallucination risk report into a ToolScoringOutput
+ * Convert AI signal clarity report into a ToolScoringOutput
  * suitable for inclusion in the unified AIReady score.
  *
  * Note: The risk score from core is 0-100 where higher = more risk.
  * We invert it so the spoke score is 0-100 where higher = better.
  */
-export function calculateHallucinationScore(
-  report: HallucinationRiskReport,
+export function calculateAiSignalClarityScore(
+  report: AiSignalClarityReport,
 ): ToolScoringOutput {
   const { aggregateSignals } = report;
 
-  const riskResult = calculateHallucinationRisk({
+  const riskResult = calculateAiSignalClarity({
     overloadedSymbols: aggregateSignals.overloadedSymbols,
     magicLiterals: aggregateSignals.magicLiterals,
     booleanTraps: aggregateSignals.booleanTraps,
@@ -44,7 +44,7 @@ export function calculateHallucinationScore(
   );
 
   return {
-    toolName: 'hallucination-risk',
+    toolName: 'ai-signal-clarity',
     score,
     rawMetrics: {
       riskScore: riskResult.score,

@@ -1,13 +1,13 @@
-# @aiready/context-analyzer
+# @aiready/agent-grounding
 
-> AIReady Spoke: Analyzes import chains, fragmented code, and context window costs for AI tools.
+> AIReady Spoke: Evaluates how well the codebase provides structured context for AI agents to understand domain boundaries and project architecture.
 
-[![npm version](https://img.shields.io/npm/v/@aiready/context-analyzer.svg)](https://npmjs.com/package/@aiready/context-analyzer)
+[![npm version](https://img.shields.io/npm/v/@aiready/agent-grounding.svg)](https://npmjs.com/package/@aiready/agent-grounding)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-AI model context windows are precious and expensive. The **Context Analyzer** identifies import chains, redundant dependencies, and complex data structures that bloat your context window and degrade AI reasoning performance.
+AI agents are only as good as the context they are given. The **Agent Grounding** analyzer evaluates how "groundable" your codebase is—checking if domain concepts are clearly defined and project structure carries semantic meaning that aids AI retrieval.
 
 ## 🏛️ Architecture
 
@@ -29,14 +29,14 @@ AI model context windows are precious and expensive. The **Context Analyzer** id
     │           ┌─────────────────────┼─────────────────────┐
     │           ▼                     ▼                     ▼
     │     ┌────────┐           ┌────────┐           ┌────────┐
-    │     │📊 PAT- │           │📦 CON- │           │🔧 CON- │
-    │     │TERN    │           │TEXT    │           │SISTENCY│
-    │     │DETECT  │           │ANALYZER│           │        │
+    │     │🌱 AGENT│           │📦 CON- │           │🔧 CON- │
+    │     │ GROUND │           │TEXT    │           │SISTENCY│
+    │     │        │           │ANALYZER│           │        │
     │     │        │           │        │           │        │
     │     │✅ Ready│           │✅ Ready│           │✅ Ready│
     │     └────────┘           └────────┘           └────────┘
-    │                                 │                     │
-    │                                 └─ YOU ARE HERE ──────┘
+    │           │                                           │
+    │           └──────── YOU ARE HERE ─────────────────────┘
     │                                                       │
     └───────────────────────────────────────────────────────┘
                             │
@@ -46,20 +46,24 @@ AI model context windows are precious and expensive. The **Context Analyzer** id
 
 ## Features
 
-- **Import Chain Analysis**: Detects deep dependency trees that force unnecessary files into AI context.
-- **Fragmentation detection**: Identifies modules that are split across too many small, non-semantic files.
-- **Context Budgeting**: Projects the dollar cost of loading specific modules into frontier models (GPT-4, Claude 3.5).
+- **README Quality**: Analyzes if high-level project documentation provides sufficient context for agent reasoning.
+- **Directory Semantics**: Checks if file structure follows industry patterns that AI models recognize.
+- **Domain Consistency**: Detects if core business concepts are named consistently across different modules.
+- **Context Boundaries**: Flags ambiguous boundaries where code for multiple domains is mixed together.
 
 ## Installation
 
 ```bash
-pnpm add @aiready/context-analyzer
+pnpm add @aiready/agent-grounding
 ```
 
 ## Usage
 
+This tool is designed to be run through the unified AIReady CLI.
+
 ```bash
-aiready scan . --tools context-analyzer
+# Scan for agent grounding quality
+aiready scan . --tools agent-grounding
 ```
 
 ## License

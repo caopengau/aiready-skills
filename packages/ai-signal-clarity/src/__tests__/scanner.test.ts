@@ -4,7 +4,7 @@ import { writeFileSync, mkdirSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
-describe('Hallucination Risk Scanner', () => {
+describe('AI Signal Clarity Scanner', () => {
   const tmpDir = join(tmpdir(), 'aiready-hr-scan-tests');
 
   beforeAll(() => {

@@ -1,6 +1,6 @@
 import type { ScanOptions, Issue } from '@aiready/core';
 
-export interface HallucinationRiskOptions extends ScanOptions {
+export interface AiSignalClarityOptions extends ScanOptions {
   /** Minimum severity to report */
   minSeverity?: 'info' | 'minor' | 'major' | 'critical';
   /** Check for magic literal numbers and strings */
@@ -17,12 +17,12 @@ export interface HallucinationRiskOptions extends ScanOptions {
   checkDeepCallbacks?: boolean;
 }
 
-export interface HallucinationRiskIssue extends Issue {
+export interface AiSignalClarityIssue extends Issue {
   type:
   | 'magic-literal'
   | 'boolean-trap'
   | 'ambiguous-api'
-  | 'hallucination-risk'
+  | 'ai-signal-clarity'
   | 'dead-code';
   /** Category of risk signal */
   category: 'magic-literal' | 'boolean-trap' | 'ambiguous-name' | 'undocumented-export' | 'implicit-side-effect' | 'deep-callback' | 'overloaded-symbol';
@@ -30,9 +30,9 @@ export interface HallucinationRiskIssue extends Issue {
   snippet?: string;
 }
 
-export interface FileHallucinationResult {
+export interface FileAiSignalClarityResult {
   filePath: string;
-  issues: HallucinationRiskIssue[];
+  issues: AiSignalClarityIssue[];
   signals: {
     magicLiterals: number;
     booleanTraps: number;
@@ -46,7 +46,7 @@ export interface FileHallucinationResult {
   };
 }
 
-export interface HallucinationRiskReport {
+export interface AiSignalClarityReport {
   summary: {
     filesAnalyzed: number;
     totalSignals: number;
@@ -58,7 +58,7 @@ export interface HallucinationRiskReport {
     /** Overall rating */
     rating: 'minimal' | 'low' | 'moderate' | 'high' | 'severe';
   };
-  results: FileHallucinationResult[];
+  results: FileAiSignalClarityResult[];
   aggregateSignals: {
     magicLiterals: number;
     booleanTraps: number;

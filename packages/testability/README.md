@@ -1,13 +1,13 @@
-# @aiready/context-analyzer
+# @aiready/testability
 
-> AIReady Spoke: Analyzes import chains, fragmented code, and context window costs for AI tools.
+> AIReady Spoke: Measures the "Verify" score of the codebase—how easily an AI agent can write tests and verify its own changes autonomously.
 
-[![npm version](https://img.shields.io/npm/v/@aiready/context-analyzer.svg)](https://npmjs.com/package/@aiready/context-analyzer)
+[![npm version](https://img.shields.io/npm/v/@aiready/testability.svg)](https://npmjs.com/package/@aiready/testability)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-AI model context windows are precious and expensive. The **Context Analyzer** identifies import chains, redundant dependencies, and complex data structures that bloat your context window and degrade AI reasoning performance.
+The "Verify" loop is the most expensive part of the AI agent workflow. Codebases with high global state, missing dependency injection, or poor test coverage force agents into long, expensive retry loops. The **Testability Index** quantifies these frictions.
 
 ## 🏛️ Architecture
 
@@ -29,14 +29,14 @@ AI model context windows are precious and expensive. The **Context Analyzer** id
     │           ┌─────────────────────┼─────────────────────┐
     │           ▼                     ▼                     ▼
     │     ┌────────┐           ┌────────┐           ┌────────┐
-    │     │📊 PAT- │           │📦 CON- │           │🔧 CON- │
-    │     │TERN    │           │TEXT    │           │SISTENCY│
-    │     │DETECT  │           │ANALYZER│           │        │
+    │     │🧪 TEST-│           │📦 CON- │           │🔧 CON- │
+    │     │ ABILITY│           │TEXT    │           │SISTENCY│
+    │     │        │           │ANALYZER│           │        │
     │     │        │           │        │           │        │
     │     │✅ Ready│           │✅ Ready│           │✅ Ready│
     │     └────────┘           └────────┘           └────────┘
-    │                                 │                     │
-    │                                 └─ YOU ARE HERE ──────┘
+    │           │                                           │
+    │           └──────── YOU ARE HERE ─────────────────────┘
     │                                                       │
     └───────────────────────────────────────────────────────┘
                             │
@@ -46,20 +46,24 @@ AI model context windows are precious and expensive. The **Context Analyzer** id
 
 ## Features
 
-- **Import Chain Analysis**: Detects deep dependency trees that force unnecessary files into AI context.
-- **Fragmentation detection**: Identifies modules that are split across too many small, non-semantic files.
-- **Context Budgeting**: Projects the dollar cost of loading specific modules into frontier models (GPT-4, Claude 3.5).
+- **Purity analysis**: Detects usage of global state and side effects that make unit testing difficult for agents.
+- **Dependency Map**: Evaluates the usage of DI (Dependency Injection) patterns that allow agents to mock boundaries easily.
+- **Verification Ratio**: Measures the presence and quality of existing tests relative to source files.
+- **Retry Risk**: Specifically flags patterns that cause AI agents to enter infinite "fix-test-fail" loops.
 
 ## Installation
 
 ```bash
-pnpm add @aiready/context-analyzer
+pnpm add @aiready/testability
 ```
 
 ## Usage
 
+This tool is designed to be run through the unified AIReady CLI.
+
 ```bash
-aiready scan . --tools context-analyzer
+# Scan for testability and verification risk
+aiready scan . --tools testability
 ```
 
 ## License

@@ -1,13 +1,13 @@
 /**
- * Main analyzer for hallucination risk.
+ * Main analyzer for AI signal clarity.
  * Scans all TS/JS files in a directory and aggregates signals.
  */
 
 import { readdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 import { scanFile } from './scanner';
-import { calculateHallucinationRisk } from '@aiready/core';
-import type { HallucinationRiskOptions, HallucinationRiskReport, FileHallucinationResult } from './types';
+import { calculateAiSignalClarity } from '@aiready/core';
+import type { AiSignalClarityOptions, AiSignalClarityReport, FileAiSignalClarityResult } from './types';
 
 const SUPPORTED_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 const DEFAULT_EXCLUDES = ['node_modules', 'dist', '.git', 'coverage', '.turbo', 'build', '__pycache__'];
@@ -24,7 +24,7 @@ function shouldInclude(filePath: string, include?: string[], exclude?: string[])
   return true;
 }
 
-function collectFiles(dir: string, options: HallucinationRiskOptions, depth = 0): string[] {
+function collectFiles(dir: string, options: AiSignalClarityOptions, depth = 0): string[] {
   if (depth > (options.maxDepth ?? 20)) return [];
   const files: string[] = [];
   let entries: string[];
@@ -50,11 +50,11 @@ function collectFiles(dir: string, options: HallucinationRiskOptions, depth = 0)
   return files;
 }
 
-export async function analyzeHallucinationRisk(
-  options: HallucinationRiskOptions,
-): Promise<HallucinationRiskReport> {
+export async function analyzeAiSignalClarity(
+  options: AiSignalClarityOptions,
+): Promise<AiSignalClarityReport> {
   const files = collectFiles(options.rootDir, options);
-  const results: FileHallucinationResult[] = [];
+  const results: FileAiSignalClarityResult[] = [];
 
   // Aggregate signals
   const aggregate = {
@@ -78,7 +78,7 @@ export async function analyzeHallucinationRisk(
   }
 
   // Calculate grounding score using core math (statically imported)
-  const riskResult = calculateHallucinationRisk({
+  const riskResult = calculateAiSignalClarity({
     overloadedSymbols: aggregate.overloadedSymbols,
     magicLiterals: aggregate.magicLiterals,
     booleanTraps: aggregate.booleanTraps,

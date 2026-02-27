@@ -1,8 +1,13 @@
 # @aiready/pattern-detect
 
-> **Semantic duplicate pattern detection for AI-generated code**
+> AIReady Spoke: Semantic duplicate pattern detection for AI-generated code.
 
-Finds semantically similar but syntactically different code patterns that waste AI context and confuse models.
+[![npm version](https://img.shields.io/npm/v/@aiready/pattern-detect.svg)](https://npmjs.com/package/@aiready/pattern-detect)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Overview
+
+AI models often suffer from "semantic confusion" when multiple variants of the same logic exist in the codebase. The **Pattern Detect** analyzer helps you identify these duplicates and consolidate them into reusable components.
 
 ## 🏛️ Architecture
 
@@ -30,269 +35,33 @@ Finds semantically similar but syntactically different code patterns that waste 
     │     │        │           │        │           │        │
     │     │✅ Ready│           │✅ Ready│           │✅ Ready│
     │     └────────┘           └────────┘           └────────┘
-    │           │                     │                     │
-    │           │    ← YOU ARE HERE ──┘                     │
     │           │                                           │
-    └───────────┴───────────────────────────────────────────┘
+    │           └──────── YOU ARE HERE ─────────────────────┘
+    │                                                       │
+    └───────────────────────────────────────────────────────┘
                             │
                             ▼
                   🏢 HUB (@aiready/core)
 ```
 
-## 🌍 Language Support
+## Features
 
-**Currently Supported (64% market coverage):**
-- ✅ **TypeScript** (`.ts`, `.tsx`) - AST-based pattern extraction
-- ✅ **JavaScript** (`.js`, `.jsx`) - AST-based pattern extraction
-- ✅ **Python** (`.py`) - Function/class pattern extraction, similarity scoring
+- **Semantic Duplication**: Detects code blocks that perform the same task with different syntax.
+- **Context Waste**: Identifies how much duplicate code is bloat for AI context windows.
+- **Refactoring Suggestions**: Recommends extraction points for shared utilities.
 
-**Roadmap:**
-- 🔜 **Java** (Q3 2026) - Method/class patterns, Spring annotations
-- 🔜 **Go** (Q4 2026) - Function patterns, interface implementations
-- 🔜 **Rust** (Q4 2026) - Function/trait patterns, macro detection
-- 🔜 **C#** (Q1 2027) - Method/class patterns, LINQ queries
-
-## 🚀 Quick Start
-
-**Zero config, works out of the box:**
+## Installation
 
 ```bash
-# Run without installation (recommended)
-npx @aiready/pattern-detect ./src
-
-# Or use the unified CLI (includes all AIReady tools)
-npx @aiready/cli scan ./src
-
-# Or install globally for simpler command and faster runs
-npm install -g @aiready/pattern-detect
-aiready-patterns ./src
+pnpm add @aiready/pattern-detect
 ```
 
-### 🎯 Input & Output
-
-**Input:** Path to your source code directory
-```bash
-aiready-patterns ./src
-```
-
-**Output:** Terminal report + optional JSON file (saved to `.aiready/` directory)
-```
-📊 Duplicate Pattern Analysis
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📁 Files analyzed: 47
-⚠️  Duplicate patterns: 12 files with 23 issues
-💰 Wasted tokens: 8,450
-
-CRITICAL (6 files)
-  src/handlers/users.ts - 4 duplicates (1,200 tokens)
-  src/handlers/posts.ts - 3 duplicates (950 tokens)
-```
-
-### ✨ Smart Defaults (Zero Config)
-
-- ✅ **Auto-excludes** test files (`**/*.test.*`, `**/*.spec.*`, `**/__tests__/**`)
-- ✅ **Auto-excludes** build outputs (`dist/`, `build/`, `.next/`)
-- ✅ **Auto-excludes** dependencies (`node_modules/`)
-- ✅ **Adaptive threshold**: Adjusts similarity detection based on codebase size
-- ✅ **Pattern classification**: Automatically categorizes duplicates (API handlers, validators, etc.)
-
-> Override defaults with `--include-tests` or `--exclude <patterns>` as needed
-
-## 🎯 What It Does
-
-AI tools generate similar code in different ways because they lack awareness of your codebase patterns. This tool:
-
-- **Semantic detection**: Finds functionally similar code (not just copy-paste) using Jaccard similarity on AST tokens
-- **Pattern classification**: Groups duplicates by type (API handlers, validators, utilities, etc.)
-- **Token cost analysis**: Shows wasted AI context budget
-- **Refactoring guidance**: Suggests specific fixes per pattern type
-
-### How It Works
-
-The tool uses **Jaccard similarity** to compare code semantically:
-1. Parses TypeScript/JavaScript files into Abstract Syntax Trees (AST)
-2. Extracts semantic tokens (identifiers, operators, keywords) from each function
-3. Calculates Jaccard similarity between token sets: `|A ∩ B| / |A ∪ B|`
-4. Groups similar functions above the similarity threshold
-
-This approach catches duplicates even when variable names or minor logic differs.
-
-### Example Output
-
-```
-📁 Files analyzed: 47
-⚠  Duplicate patterns found: 23
-💰 Token cost (wasted): 8,450
-
-🌐 api-handler      12 patterns
-✓  validator        8 patterns
-🔧 utility          3 patterns
-
-1. 87% 🌐 api-handler
-   src/api/users.ts:15 ↔ src/api/posts.ts:22
-   432 tokens wasted
-   → Create generic handler function
-```
-
-## ⚙️ Key Options
+## Usage
 
 ```bash
-# Basic usage
-aiready patterns ./src
-
-# Focus on obvious duplicates
-aiready patterns ./src --similarity 0.9
-
-# Include smaller patterns
-aiready patterns ./src --min-lines 3
-
-# Export results (saved to .aiready/ by default)
-aiready patterns ./src --output json
-
-# Or specify custom path
-aiready patterns ./src --output json --output-file custom-report.json
+aiready scan . --tools pattern-detect
 ```
 
-> **📁 Output Files:** By default, all output files are saved to the `.aiready/` directory in your project root. You can override this with `--output-file`.
+## License
 
-## 🎛️ Tuning Guide
-
-### Main Parameters
-
-| Parameter | Default | Effect | Use When |
-|-----------|---------|--------|----------|
-| `--similarity` | `0.4` | Similarity threshold (0-1) | Want more/less sensitive detection |
-| `--min-lines` | `5` | Minimum lines per pattern | Include/exclude small functions |
-| `--min-shared-tokens` | `8` | Tokens that must match | Control comparison strictness |
-
-### Quick Tuning Scenarios
-
-**Want more results?** (catch subtle duplicates)
-```bash
-# Lower similarity threshold
-aiready patterns ./src --similarity 0.3
-
-# Include smaller functions  
-aiready patterns ./src --min-lines 3
-
-# Both together
-aiready patterns ./src --similarity 0.3 --min-lines 3
-```
-
-**Want fewer but higher quality results?** (focus on obvious duplicates)
-```bash
-# Higher similarity threshold
-aiready patterns ./src --similarity 0.8
-
-# Larger patterns only
-aiready patterns ./src --min-lines 10
-```
-
-**Analysis too slow?** (optimize for speed)
-```bash
-# Focus on substantial functions
-aiready patterns ./src --min-lines 10
-
-# Reduce comparison candidates
-aiready patterns ./src --min-shared-tokens 12
-```
-
-### Parameter Tradeoffs
-
-| Adjustment | More Results | Faster | Higher Quality | Tradeoff |
-|------------|--------------|--------|----------------|----------|
-| Lower `--similarity` | ✅ | ❌ | ❌ | More false positives |
-| Lower `--min-lines` | ✅ | ❌ | ❌ | Includes trivial duplicates |
-| Higher `--similarity` | ❌ | ✅ | ✅ | Misses subtle duplicates |
-| Higher `--min-lines` | ❌ | ✅ | ✅ | Misses small but important patterns |
-
-### Common Workflows
-
-**First run** (broad discovery):
-```bash
-aiready patterns ./src  # Default settings
-```
-
-**Focus on critical issues** (production ready):
-```bash
-aiready patterns ./src --similarity 0.8 --min-lines 8
-```
-
-**Catch everything** (comprehensive audit):
-```bash
-aiready patterns ./src --similarity 0.3 --min-lines 3
-```
-
-**Performance optimization** (large codebases):
-```bash
-aiready patterns ./src --min-lines 10 --min-shared-tokens 10
-```
-
-## 📁 Configuration File
-
-Create an `aiready.json` or `aiready.config.json` file in your project root:
-
-```json
-{
-  "scan": {
-    "include": ["src/**/*.{ts,tsx,js,jsx}"],
-    "exclude": ["**/*.test.*", "**/dist/**"]
-  },
-  "tools": {
-    "pattern-detect": {
-      "minSimilarity": 0.6,
-      "minLines": 8,
-      "maxResults": 20,
-      "minSharedTokens": 10,
-      "maxCandidatesPerBlock": 100
-    }
-  },
-  "output": {
-    "format": "console",
-    "file": ".aiready/pattern-report.json"
-  }
-}
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `minSimilarity` | number | `0.4` | Similarity threshold (0-1) |
-| `minLines` | number | `5` | Minimum lines to consider |
-| `maxResults` | number | `10` | Max results to display in console |
-| `minSharedTokens` | number | `8` | Min tokens that must match |
-| `maxCandidatesPerBlock` | number | `100` | Performance tuning limit |
-| `approx` | boolean | `true` | Use approximate candidate selection |
-| `severity` | string | `'all'` | Filter: `'critical'`, `'high'`, `'medium'`, `'all'` |
-
-**Use the unified CLI** for all AIReady tools:
-
-```bash
-npm install -g @aiready/cli
-
-# Pattern detection
-aiready patterns ./src
-
-# Context analysis (token costs, fragmentation)
-aiready context ./src
-
-# Consistency checking (naming, patterns)
-aiready consistency ./src
-
-# Full codebase analysis
-aiready scan ./src
-```
-
-**Related packages:**
-- [**@aiready/cli**](https://www.npmjs.com/package/@aiready/cli) - Unified CLI with all tools
-- [**@aiready/context-analyzer**](https://www.npmjs.com/package/@aiready/context-analyzer) - Context window cost analysis
-- [**@aiready/consistency**](https://www.npmjs.com/package/@aiready/consistency) - Consistency checking
-
-## 🌐 Visit Our Website
-
-**Try AIReady tools online and optimize your codebase:** [getaiready.dev](https://getaiready.dev)
-
----
-
-**Made with 💙 by the AIReady team** | [Website](https://getaiready.dev)
+MIT

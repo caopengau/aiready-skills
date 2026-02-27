@@ -1,5 +1,5 @@
 /**
- * AST-based scanner for hallucination risk signals.
+ * AST-based scanner for AI signal clarity signals.
  *
  * Detects code patterns that empirically cause AI models to generate
  * incorrect code — magic literals, boolean traps, ambiguous names,
@@ -10,7 +10,7 @@
 import { readFileSync } from 'fs';
 import { parse } from '@typescript-eslint/typescript-estree';
 import type { TSESTree } from '@typescript-eslint/types';
-import type { HallucinationRiskIssue, FileHallucinationResult, HallucinationRiskOptions } from './types';
+import type { AiSignalClarityIssue, FileAiSignalClarityResult, AiSignalClarityOptions } from './types';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -123,8 +123,8 @@ function getCallbackDepth(node: TSESTree.Node, depth = 0): number {
 
 export function scanFile(
   filePath: string,
-  options: HallucinationRiskOptions = { rootDir: '.' },
-): FileHallucinationResult {
+  options: AiSignalClarityOptions = { rootDir: '.' },
+): FileAiSignalClarityResult {
   let code: string;
   try {
     code = readFileSync(filePath, 'utf-8');
@@ -145,7 +145,7 @@ export function scanFile(
     return emptyResult(filePath);
   }
 
-  const issues: HallucinationRiskIssue[] = [];
+  const issues: AiSignalClarityIssue[] = [];
   const signals = {
     magicLiterals: 0,
     booleanTraps: 0,
@@ -163,8 +163,8 @@ export function scanFile(
   const exportedNames = new Set<string>();
 
   function reportIssue(
-    category: HallucinationRiskIssue['category'],
-    severity: HallucinationRiskIssue['severity'],
+    category: AiSignalClarityIssue['category'],
+    severity: AiSignalClarityIssue['severity'],
     message: string,
     node: TSESTree.Node,
     suggestion?: string,
@@ -173,7 +173,7 @@ export function scanFile(
     issues.push({
       type: category === 'magic-literal' ? 'magic-literal'
         : category === 'boolean-trap' ? 'boolean-trap'
-          : 'hallucination-risk',
+          : 'ai-signal-clarity',
       category,
       severity,
       message,
@@ -389,7 +389,7 @@ export function scanFile(
   };
 }
 
-function emptyResult(filePath: string): FileHallucinationResult {
+function emptyResult(filePath: string): FileAiSignalClarityResult {
   return {
     filePath,
     issues: [],
