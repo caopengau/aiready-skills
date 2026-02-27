@@ -1,8 +1,8 @@
 # AIReady Best Practices
 
-**Version 0.1.0**  
+**Version 0.2.0**  
 AIReady  
-January 2026
+February 2026
 
 > **Note:**  
 > This document is for AI agents and LLMs to follow when writing,  
@@ -14,628 +14,231 @@ January 2026
 
 ## Abstract
 
-Guidelines for writing AI-friendly codebases that AI coding assistants can understand and maintain effectively. Based on analysis of thousands of repositories and common AI model failure patterns. Covers pattern detection, context optimization, consistency checking, documentation drift, and dependency management.
+Guidelines for writing AI-friendly codebases that AI coding assistants can understand and maintain effectively. Based on analysis of thousands of repositories and common AI model failure patterns. Covers pattern detection, AI signal clarity, context optimization, change amplification, agent grounding, consistency checking, documentation, testability, and dependency management.
 
 ---
 
-## Table of Contents
+## Detecting Issues
 
-1. [Pattern Detection (patterns)](#1-pattern-detection-(patterns)) (CRITICAL)
-   - 1.1 [Avoid Semantic Duplicate Patterns](#11-avoid-semantic-duplicate-patterns)
-   - 1.2 [Unify Fragmented Interfaces](#12-unify-fragmented-interfaces)
-2. [Context Optimization (context)](#2-context-optimization-(context)) (HIGH)
-   - 2.1 [Keep Import Chains Shallow](#21-keep-import-chains-shallow)
-   - 2.2 [Maintain High Module Cohesion](#22-maintain-high-module-cohesion)
-   - 2.3 [Split Large Files (>500 lines)](#23-split-large-files-(>500-lines))
-3. [Consistency Checking (consistency)](#3-consistency-checking-(consistency)) (MEDIUM)
-   - 3.1 [Follow Consistent Naming Conventions](#31-follow-consistent-naming-conventions)
-   - 3.2 [Use Consistent Error Handling Patterns](#32-use-consistent-error-handling-patterns)
-4. [Documentation (docs)](#4-documentation-(docs)) (MEDIUM)
-   - 4.1 [Keep Documentation in Sync with Code](#41-keep-documentation-in-sync-with-code)
+To check your codebase for all AI-readiness issues at once, use the unified aiready CLI:
 
----
+```bash
+# Run all available checks
+aiready scan .
 
-## 1. Pattern Detection (patterns)
+# Run specific tools
+aiready scan . --tools pattern-detect,ai-signal-clarity,context-analyzer
 
-**Impact: CRITICAL**
-
-Identifies semantic duplicate patterns and naming inconsistencies that waste AI context window tokens and confuse pattern recognition. Consolidating duplicates can save 30-70% of context usage.
+# Output JSON for automation
+aiready scan . --output json
+```
 
 ---
+
+## 1. Pattern Detection (patterns) (CRITICAL)
 
 ### 1.1 Avoid Semantic Duplicate Patterns
 
 **Impact: CRITICAL (30-70% context window waste)**
 
-*Tags: patterns, duplicates, context-window, semantic-similarity*
+Semantic duplicates—components, functions, or modules that perform the same task with different names—waste AI context window tokens and confuse pattern recognition.
 
-Semantic duplicates—components, functions, or modules that perform the same task with different names—waste AI context window tokens and confuse pattern recognition. AI models struggle to identify which implementation to use, leading to inconsistent suggestions and hallucinated variations.
+See `rules/patterns-semantic-duplicates.md` for examples.
 
-When AI encounters multiple implementations of the same concept, it:
-- Wastes tokens loading all variations into context
-- Cannot determine the canonical pattern
-- Suggests mixing patterns inappropriately
-- Creates new variations instead of reusing existing code
-
-**Incorrect:**
-
-```typescript
-// getUserData.ts
-export async function getUserData(id: string) {
-  return fetch(`/api/users/${id}`).then(r => r.json())
-}
-
-// fetchUser.ts
-export async function fetchUser(userId: string) {
-  const response = await fetch(`/api/users/${userId}`)
-  return response.json()
-}
-
-// loadUserInfo.ts
-export async function loadUserInfo(id: string) {
-  return await fetch(`/api/users/${id}`).then(res => res.json())
-}
-```
-
-**Correct:**
-
-```typescript
-// users.ts
-export async function getUser(userId: string) {
-  const response = await fetch(`/api/users/${userId}`)
-  return response.json()
-}
-
-// All other files import from here
-import { getUser } from './users'
-```
-
-Reference: [https://getaiready.dev/docs/pattern-detect](https://getaiready.dev/docs/pattern-detect)
+Reference: https://getaiready.dev/docs/pattern-detect
 
 ### 1.2 Unify Fragmented Interfaces
 
-**Impact: CRITICAL (40-80% reduction in AI confusion, prevents wrong type usage)**
+**Impact: CRITICAL (40-80% reduction in AI confusion)**
 
-*Tags: patterns, interfaces, types, consistency*
+Multiple similar interfaces for the same concept confuse AI models and lead to incorrect implementations.
 
-Multiple similar interfaces or types for the same concept confuse AI models and lead to incorrect implementations. When AI encounters 5 different user types (`User`, `UserData`, `UserInfo`, `UserProfile`, `UserDTO`), it cannot determine which to use and often mixes them incorrectly.
+See `rules/patterns-interface-fragmentation.md` for examples.
 
-This is one of the most critical issues for AI comprehension because it directly causes type errors and logic bugs that are hard to detect.
-
-**Incorrect:**
-
-```typescript
-// user.types.ts
-interface User {
-  id: string
-  email: string
-}
-
-// profile.types.ts
-interface UserProfile {
-  userId: string
-  email: string
-  name: string
-}
-
-// api.types.ts
-interface UserData {
-  id: string
-  emailAddress: string
-  displayName: string
-}
-
-// Three different interfaces for the same concept!
-// AI cannot determine which to use where
-function updateUser(user: User) { /* ... */ }
-function getProfile(userId: string): UserProfile { /* ... */ }
-function syncData(data: UserData) { /* ... */ }
-```
-
-**Correct:**
-
-```typescript
-// user.types.ts
-interface User {
-  id: string
-  email: string
-  name?: string // Optional fields for different contexts
-}
-
-// Use a single source of truth
-function updateUser(user: User) { /* ... */ }
-function getProfile(userId: string): User { /* ... */ }
-function syncData(user: User) { /* ... */ }
-
-// For API-specific needs, extend rather than duplicate
-interface UserDTO extends User {
-  createdAt: Date
-  updatedAt: Date
-}
-```
-
-Reference: [https://refactoring.guru/extract-interface](https://refactoring.guru/extract-interface)
+Reference: https://refactoring.guru/extract-interface
 
 ---
 
-## 2. Context Optimization (context)
+## 2. AI Signal Clarity (signal) (CRITICAL)
 
-**Impact: HIGH**
+### 2.1 Avoid Boolean Trap Parameters
 
-Optimizes code organization for AI context windows. Addresses import depth, file cohesion, and dependency fragmentation that break AI understanding and lead to incomplete or incorrect suggestions.
+**Impact: CRITICAL (High confusion potential)**
+
+Boolean parameters with unclear meaning cause AI assistants to incorrectly flip or interpret their intent.
+
+See `rules/signal-boolean-traps.md` for examples.
+
+Reference: https://getaiready.dev/docs/ai-signal-clarity
+
+### 2.2 Avoid Magic Literals
+
+**Impact: CRITICAL (AI cannot infer business rules)**
+
+Unnamed constants prevent AI from understanding business rules and domain constraints.
+
+See `rules/signal-magic-literals.md` for examples.
+
+Reference: https://getaiready.dev/docs/ai-signal-clarity
+
+### 2.3 Avoid High-Entropy Naming
+
+**Impact: CRITICAL (AI cannot disambiguate intent)**
+
+Names with multiple semantic interpretations confuse AI models about code intent.
+
+See `rules/signal-naming-entropy.md` for examples.
+
+Reference: https://getaiready.dev/docs/ai-signal-clarity
 
 ---
 
-### 2.1 Keep Import Chains Shallow
+## 3. Context Optimization (context) (HIGH)
+
+### 3.1 Keep Import Chains Shallow
 
 **Impact: HIGH (10-30% reduction in context depth)**
 
-*Tags: context, imports, dependency-depth, circular-imports*
+Deep import chains force AI models to load many intermediate files, exceeding context limits.
 
-Deep import chains force AI models to load many intermediate files to understand a single function, quickly exceeding context window limits. When AI needs to trace through 5+ levels of imports, it often loses context of the original goal and provides incomplete or incorrect suggestions.
+See `rules/context-import-depth.md` for examples.
 
-Each level of import depth exponentially increases the context needed:
-- Level 1: Direct dependencies (good)
-- Level 2-3: Transitive dependencies (acceptable)
-- Level 4+: Deep chains (problematic for AI)
+Reference: https://getaiready.dev/docs/context-analyzer
 
-**Incorrect:**
+### 3.2 Maintain High Module Cohesion
 
-```typescript
-// app.ts
-import { processData } from './features/processor'
+**Impact: HIGH (25-40% reduction in context pollution)**
 
-// features/processor.ts
-import { transform } from './utils/transformer'
+Low cohesion forces AI to load multiple unrelated files to understand one feature.
 
-// features/utils/transformer.ts
-import { validate } from '../../../lib/validation/validator'
+See `rules/context-cohesion.md` for examples.
 
-// lib/validation/validator.ts
-import { checkSchema } from './schema/checker'
+Reference: https://en.wikipedia.org/wiki/Cohesion_(computer_science)
 
-// lib/validation/schema/checker.ts
-import { rules } from '../../../config/rules/validation-rules'
-```
-
-**Correct:**
-
-```typescript
-// app.ts
-import { processData } from './features/processor'
-
-// features/processor.ts
-import { transform, validate } from '@/lib/utils'
-
-// lib/utils/index.ts (barrel export)
-export { transform } from './transformer'
-export { validate } from './validator'
-export { checkSchema } from './schema'
-```
-
-Reference: [https://getaiready.dev/docs/context-analyzer](https://getaiready.dev/docs/context-analyzer)
-
-### 2.2 Maintain High Module Cohesion
-
-**Impact: HIGH (25-40% reduction in context pollution, improves AI file selection)**
-
-*Tags: context, cohesion, organization, modules*
-
-Low cohesion forces AI to load multiple unrelated files to understand one feature. When a file contains unrelated functions (authentication + date formatting + validation), AI must read the entire file even when only needing one function.
-
-High cohesion means related code stays together. AI can load the minimal context needed.
-
-**Incorrect:**
-
-```typescript
-// utils.ts - Everything dumped together
-export function hashPassword(password: string) {
-  return bcrypt.hash(password, 10)
-}
-
-export function formatDate(date: Date) {
-  return date.toISOString()
-}
-
-export function validateEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
-export function generateToken(userId: string) {
-  return jwt.sign({ userId }, SECRET)
-}
-
-// AI must load ALL of this just to understand password hashing!
-// Context cost: 150+ lines for 10 lines of relevant code
-```
-
-**Correct:**
-
-```typescript
-// auth/password.ts
-export function hashPassword(password: string) {
-  return bcrypt.hash(password, 10)
-}
-
-export function verifyPassword(password: string, hash: string) {
-  return bcrypt.compare(password, hash)
-}
-
-// auth/token.ts
-export function generateToken(userId: string) {
-  return jwt.sign({ userId }, SECRET)
-}
-
-export function verifyToken(token: string) {
-  return jwt.verify(token, SECRET)
-}
-
-// validation/email.ts
-export function validateEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
-// utils/date.ts
-export function formatDate(date: Date) {
-  return date.toISOString()
-}
-
-// AI loads only auth/password.ts for password operations
-// Context cost: 15 lines instead of 150+
-```
-
-Reference: [https://en.wikipedia.org/wiki/Cohesion_(computer_science)](https://en.wikipedia.org/wiki/Cohesion_(computer_science))
-
-### 2.3 Split Large Files (>500 lines)
+### 3.3 Split Large Files (>500 lines)
 
 **Impact: HIGH (30-50% reduction in context window usage)**
 
-*Tags: context, file-size, refactoring, modules*
+Files over 500 lines often exceed AI context windows or force loading unnecessary code.
 
-Files over 500 lines often exceed AI context windows or force loading unnecessary code. When AI needs to understand one function in a 2000-line file, it must process the entire file, wasting 90%+ of its context budget.
+See `rules/context-file-size.md` for examples.
 
-Split large files by feature, responsibility, or data type.
-
-**Incorrect:**
-
-```typescript
-// user-service.ts (2000+ lines)
-class UserService {
-  // Profile management (300 lines)
-  async getProfile(userId: string) { /* ... */ }
-  async updateProfile(userId: string, data: any) { /* ... */ }
-  async uploadAvatar(userId: string, file: File) { /* ... */ }
-  
-  // Authentication (400 lines)
-  async login(email: string, password: string) { /* ... */ }
-  async logout(userId: string) { /* ... */ }
-  async resetPassword(email: string) { /* ... */ }
-  async verifyEmail(token: string) { /* ... */ }
-  
-  // Permissions (350 lines)
-  async hasPermission(userId: string, resource: string) { /* ... */ }
-  async grantPermission(userId: string, permission: string) { /* ... */ }
-  async revokePermission(userId: string, permission: string) { /* ... */ }
-  
-  // Notifications (300 lines)
-  async sendNotification(userId: string, message: string) { /* ... */ }
-  async getNotifications(userId: string) { /* ... */ }
-  async markAsRead(notificationId: string) { /* ... */ }
-  
-  // Analytics (350 lines)
-  async trackUserEvent(userId: string, event: string) { /* ... */ }
-  async getUserStats(userId: string) { /* ... */ }
-  
-  // ... 300 more lines
-}
-
-// AI needs 2000 lines context just to understand profile updates!
-```
-
-**Correct:**
-
-```typescript
-// user/profile-service.ts (150 lines)
-export class ProfileService {
-  async get(userId: string) { /* ... */ }
-  async update(userId: string, data: ProfileData) { /* ... */ }
-  async uploadAvatar(userId: string, file: File) { /* ... */ }
-}
-
-// user/auth-service.ts (200 lines)
-export class AuthService {
-  async login(email: string, password: string) { /* ... */ }
-  async logout(userId: string) { /* ... */ }
-  async resetPassword(email: string) { /* ... */ }
-  async verifyEmail(token: string) { /* ... */ }
-}
-
-// user/permission-service.ts (180 lines)
-export class PermissionService {
-  async check(userId: string, resource: string) { /* ... */ }
-  async grant(userId: string, permission: string) { /* ... */ }
-  async revoke(userId: string, permission: string) { /* ... */ }
-}
-
-// user/notification-service.ts (160 lines)
-export class NotificationService {
-  async send(userId: string, message: string) { /* ... */ }
-  async list(userId: string) { /* ... */ }
-  async markRead(notificationId: string) { /* ... */ }
-}
-
-// user/analytics-service.ts (170 lines)
-export class AnalyticsService {
-  async trackEvent(userId: string, event: string) { /* ... */ }
-  async getStats(userId: string) { /* ... */ }
-}
-
-// AI loads only 150 lines for profile operations
-// Context savings: 1850 lines (92% reduction)
-```
-
-Reference: [https://refactoring.guru/extract-class](https://refactoring.guru/extract-class)
+Reference: https://refactoring.guru/extract-class
 
 ---
 
-## 3. Consistency Checking (consistency)
+## 4. Change Amplification (amplification) (HIGH)
 
-**Impact: MEDIUM**
+### 4.1 Avoid Change Amplification Hotspots
 
-Ensures naming conventions, error handling patterns, and API designs are consistent across the codebase. Inconsistencies confuse AI models and lead to incorrect pattern replication.
+**Impact: HIGH (Predicts edit explosion risk)**
+
+High fan-in/fan-out files cause cascading updates when modified, exceeding AI context windows.
+
+See `rules/amplification-hotspots.md` for examples.
+
+Reference: https://getaiready.dev/docs/change-amplification
 
 ---
 
-### 3.1 Follow Consistent Naming Conventions
+## 5. Agent Grounding (grounding) (HIGH)
+
+### 5.1 Define Clear Context Boundaries
+
+**Impact: HIGH (AI cannot retrieve relevant context)**
+
+Unclear domain boundaries confuse AI about which code to load for a given task.
+
+See `rules/grounding-context-boundaries.md` for examples.
+
+Reference: https://getaiready.dev/docs/agent-grounding
+
+### 5.2 Write Agent-Actionable READMEs
+
+**Impact: HIGH (AI needs high-level context)**
+
+Poor READMEs leave AI without the context needed to make architectural decisions.
+
+See `rules/grounding-readme-quality.md` for examples.
+
+Reference: https://getaiready.dev/docs/agent-grounding
+
+---
+
+## 6. Consistency Checking (consistency) (MEDIUM)
+
+### 6.1 Follow Consistent Naming Conventions
 
 **Impact: MEDIUM (5-15% improvement in AI pattern recognition)**
 
-*Tags: consistency, naming, conventions, readability*
+Inconsistent naming confuses AI about code intent and relationships.
 
-Inconsistent naming conventions confuse AI models about code intent and relationships. When similar concepts use different naming patterns, AI cannot reliably predict the correct pattern for new code, leading to inconsistent suggestions that mix multiple styles.
+See `rules/consistency-naming-conventions.md` for examples.
 
-AI models are trained on millions of repositories and learn that consistent naming correlates with code quality. Inconsistent naming signals:
-- Lack of coordination between team members
-- Technical debt or legacy code
-- Unclear ownership or architecture
+Reference: https://getaiready.dev/docs/consistency
 
-**Incorrect:**
+### 6.2 Use Consistent Error Handling Patterns
 
-```typescript
-// Inconsistent naming for similar operations
-function getUserData() { ... }
-function fetch_user_profile() { ... }
-function GetUserSettings() { ... }
-function user_preferences() { ... }
+**Impact: MEDIUM (15-25% improvement in AI error handling)**
 
-// Inconsistent naming for similar types
-interface UserData { ... }
-type user_profile = { ... }
-interface IUserSettings { ... }
-type UserPrefs = { ... }
+Mixed error patterns confuse AI about which pattern to use.
 
-// Inconsistent file naming
-// UserService.ts
-// user-repository.ts
-// userController.ts
-// user_model.ts
-```
+See `rules/consistency-error-handling.md` for examples.
 
-**Correct:**
-
-```typescript
-// Consistent camelCase for functions
-function getUserData() { ... }
-function getUserProfile() { ... }
-function getUserSettings() { ... }
-function getUserPreferences() { ... }
-
-// Consistent PascalCase for types
-interface UserData { ... }
-interface UserProfile { ... }
-interface UserSettings { ... }
-interface UserPreferences { ... }
-
-// Consistent kebab-case for files
-// user-service.ts
-// user-repository.ts
-// user-controller.ts
-// user-model.ts
-```
-
-Reference: [https://getaiready.dev/docs/consistency](https://getaiready.dev/docs/consistency)
-
-### 3.2 Use Consistent Error Handling Patterns
-
-**Impact: MEDIUM (15-25% improvement in AI error handling suggestions)**
-
-*Tags: consistency, errors, patterns, exceptions*
-
-Mixed error patterns confuse AI models. When your codebase uses throw, try-catch, error callbacks, Result types, and null returns interchangeably, AI cannot predict the correct pattern and suggests inconsistent error handling.
-
-Choose one primary pattern and use it consistently.
-
-**Incorrect:**
-
-```typescript
-// File 1: throws exceptions
-function parseUserData(data: string): User {
-  if (!data) throw new Error('Invalid data')
-  return JSON.parse(data)
-}
-
-// File 2: returns null
-function getUserById(id: string): User | null {
-  const user = database.get(id)
-  return user ?? null
-}
-
-// File 3: uses error callbacks
-function fetchUser(id: string, callback: (error: Error | null, user?: User) => void) {
-  // ...
-}
-
-// File 4: returns Result type
-function validateUser(user: User): Result<User, ValidationError> {
-  // ...
-}
-
-// AI cannot determine which pattern to use when suggesting code!
-```
-
-**Correct:**
-
-```typescript
-// shared/result.ts
-export type Result<T, E = Error> = 
-  | { success: true; data: T }
-  | { success: false; error: E }
-
-export function ok<T>(data: T): Result<T> {
-  return { success: true, data }
-}
-
-export function err<E>(error: E): Result<never, E> {
-  return { success: false, error }
-}
-
-// All functions use the same pattern
-function parseUserData(data: string): Result<User> {
-  if (!data) return err(new Error('Invalid data'))
-  try {
-    return ok(JSON.parse(data))
-  } catch (e) {
-    return err(new Error('Parse failed'))
-  }
-}
-
-function getUserById(id: string): Result<User> {
-  const user = database.get(id)
-  if (!user) return err(new Error('User not found'))
-  return ok(user)
-}
-
-function validateUser(user: User): Result<User, ValidationError> {
-  if (!user.email) return err({ field: 'email', message: 'Required' })
-  return ok(user)
-}
-
-// Usage is consistent everywhere
-const result = getUserById('123')
-if (result.success) {
-  console.log(result.data.name)
-} else {
-  console.error(result.error.message)
-}
-```
-
-Reference: [https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
+Reference: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
 
 ---
 
-## 4. Documentation (docs)
+## 7. Testability (testability) (MEDIUM)
 
-**Impact: MEDIUM**
+### 7.1 Write Pure Functions
 
-Keeps documentation synchronized with code changes. Outdated documentation misleads AI models, causing them to suggest deprecated patterns or incorrect implementations.
+**Impact: MEDIUM (AI cannot easily verify impure code)**
+
+Impure functions make verification difficult and cause AI to enter retry loops.
+
+See `rules/testability-purity.md` for examples.
+
+Reference: https://getaiready.dev/docs/testability
+
+### 7.2 Maintain Verification Coverage
+
+**Impact: MEDIUM (AI cannot confirm changes without tests)**
+
+Low test coverage forces AI into trial-and-error loops.
+
+See `rules/testability-verification.md` for examples.
+
+Reference: https://getaiready.dev/docs/testability
 
 ---
 
-### 4.1 Keep Documentation in Sync with Code
+## 8. Documentation (docs) (MEDIUM)
 
-**Impact: MEDIUM (20-30% reduction in AI suggestion errors from stale docs)**
+### 8.1 Keep Documentation in Sync with Code
 
-*Tags: documentation, maintenance, comments, sync*
+**Impact: MEDIUM (20-30% reduction in AI suggestion errors)**
 
-Outdated documentation misleads AI models. When function signatures change but JSDoc comments don't update, AI suggests code based on old documentation, causing type errors and logic bugs.
+Outdated documentation misleads AI models about current code behavior.
 
-Keep docs close to code and update them together.
+See `rules/docs-code-sync.md` for examples.
 
-**Incorrect:**
+Reference: https://jsdoc.app/
 
-```typescript
-/**
- * Fetch user by email
- * @param email - User email address
- * @returns User object
- */
-function getUser(id: string, options?: FetchOptions): Promise<User | null> {
-  // Function signature changed but docs didn't!
-  // AI will suggest: getUser('user@example.com')
-  // Actual usage: getUser('user-123', { includeDeleted: false })
-  return database.users.findOne({ id, ...options })
-}
+---
 
-/**
- * Calculate total price
- * @param items - Array of items
- * @returns Total price
- */
-function calculateTotal(
-  items: CartItem[],
-  taxRate: number,
-  discount?: Discount
-): Money {
-  // Added taxRate and discount but docs don't mention them
-  // AI won't know these parameters exist
-}
+## Quick Reference
 
-// Comments that lie
-const MAX_RETRIES = 5 // Maximum retry attempts (actually 5, not 3!)
-// This function is deprecated (but it's still used everywhere)
-function legacyAuth() { /* ... */ }
-```
-
-**Correct:**
-
-```typescript
-/**
- * Fetch user by ID with optional fetch configurations
- * @param id - User ID (UUID format)
- * @param options - Optional fetch configuration
- * @param options.includeDeleted - Include soft-deleted users
- * @param options.relations - Related entities to include
- * @returns User object if found, null otherwise
- * @throws {DatabaseError} If database connection fails
- * 
- * @example
- * const user = await getUser('user-123')
- * const userWithPosts = await getUser('user-123', { relations: ['posts'] })
- */
-function getUser(id: string, options?: FetchOptions): Promise<User | null> {
-  return database.users.findOne({ id, ...options })
-}
-
-/**
- * Calculate total price including tax and discounts
- * @param items - Cart items to calculate
- * @param taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
- * @param discount - Optional discount to apply
- * @returns Total price after tax and discounts
- * 
- * @example
- * const total = calculateTotal(items, 0.08)
- * const discounted = calculateTotal(items, 0.08, { type: 'percentage', value: 10 })
- */
-function calculateTotal(
-  items: CartItem[],
-  taxRate: number,
-  discount?: Discount
-): Money {
-  // Implementation
-}
-
-// Accurate comments
-const MAX_RETRIES = 5 // Maximum retry attempts before giving up
-
-/**
- * @deprecated Use authenticateWithJWT instead. Will be removed in v2.0
- * @see authenticateWithJWT
- */
-function legacyAuth() { /* ... */ }
-```
-
-Reference: [https://jsdoc.app/](https://jsdoc.app/)
+| Category | Priority | Rule Files |
+|----------|----------|------------|
+| Pattern Detection | CRITICAL | patterns-semantic-duplicates, patterns-interface-fragmentation |
+| AI Signal Clarity | CRITICAL | signal-boolean-traps, signal-magic-literals, signal-naming-entropy |
+| Context Optimization | HIGH | context-import-depth, context-cohesion, context-file-size |
+| Change Amplification | HIGH | amplification-hotspots |
+| Agent Grounding | HIGH | grounding-context-boundaries, grounding-readme-quality |
+| Consistency | MEDIUM | consistency-naming-conventions, consistency-error-handling |
+| Testability | MEDIUM | testability-purity, testability-verification |
+| Documentation | MEDIUM | docs-code-sync |
 
 ---
 
@@ -643,3 +246,8 @@ Reference: [https://jsdoc.app/](https://jsdoc.app/)
 
 1. [https://getaiready.dev](https://getaiready.dev)
 2. [https://getaiready.dev/docs](https://getaiready.dev/docs)
+3. [https://getaiready.dev/docs/pattern-detect](https://getaiready.dev/docs/pattern-detect)
+4. [https://getaiready.dev/docs/ai-signal-clarity](https://getaiready.dev/docs/ai-signal-clarity)
+5. [https://getaiready.dev/docs/change-amplification](https://getaiready.dev/docs/change-amplification)
+6. [https://getaiready.dev/docs/agent-grounding](https://getaiready.dev/docs/agent-grounding)
+7. [https://getaiready.dev/docs/testability](https://getaiready.dev/docs/testability)

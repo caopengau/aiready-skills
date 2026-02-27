@@ -35,6 +35,7 @@ pnpm run dev
 ### Creating New Rules
 
 1. Copy the template:
+
 ```bash
 cp aiready-best-practices/rules/_template.md aiready-best-practices/rules/section-name.md
 ```
@@ -42,6 +43,7 @@ cp aiready-best-practices/rules/_template.md aiready-best-practices/rules/sectio
 2. Fill in the content following the template structure
 
 3. Build to regenerate:
+
 ```bash
 pnpm run build
 ```
@@ -86,13 +88,13 @@ packages/skills/
 
 Rules are organized by priority/impact:
 
-| Section | Impact | Prefix | Description |
-|---------|--------|--------|-------------|
-| 1. Pattern Detection | CRITICAL | `patterns-` | Semantic duplicates, naming |
-| 2. Context Optimization | HIGH | `context-` | Import depth, cohesion |
-| 3. Consistency Checking | MEDIUM | `consistency-` | Naming conventions, errors |
-| 4. Documentation | MEDIUM | `docs-` | Code-doc sync |
-| 5. Dependencies | LOW | `deps-` | Circular deps |
+| Section                 | Impact   | Prefix         | Description                 |
+| ----------------------- | -------- | -------------- | --------------------------- |
+| 1. Pattern Detection    | CRITICAL | `patterns-`    | Semantic duplicates, naming |
+| 2. Context Optimization | HIGH     | `context-`     | Import depth, cohesion      |
+| 3. Consistency Checking | MEDIUM   | `consistency-` | Naming conventions, errors  |
+| 4. Documentation        | MEDIUM   | `docs-`        | Code-doc sync               |
+| 5. Dependencies         | LOW      | `deps-`        | Circular deps               |
 
 ## Contributing
 

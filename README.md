@@ -39,6 +39,7 @@ Legend:
 ### aiready-best-practices
 
 Guidelines for writing AI-friendly code. Use when:
+
 - Writing new features or refactoring
 - Reviewing pull requests
 - Preparing codebases for AI adoption
