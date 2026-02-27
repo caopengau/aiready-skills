@@ -318,7 +318,10 @@ publish-vscode: ## Publish VS Code extension to Marketplace (requires VSCE_PAT e
 		echo "[ERROR] VSCE_PAT not set. Add it to packages/vscode-extension/.env or export VSCE_PAT=your_token"; \
 		exit 1; \
 	fi; \
-	cd packages/vscode-extension && pnpm run compile && \
+	cd packages/vscode-extension && \
+	echo "[INFO] Bumping version..." && \
+	npm version $(if $(TYPE),$(TYPE),patch) --no-git-tag-version --workspaces-update=false && \
+	pnpm run compile && \
 	VSCE_PAT="$$VSCE_PAT" npx @vscode/vsce publish --no-dependencies --allow-star-activation; \
 	$(call log_success,VS Code extension published)
 
