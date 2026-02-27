@@ -21,10 +21,13 @@ Simple enough. But here's the problem: this exact logic—checking for '@' and '
 const isValidEmail = (e) => e.indexOf('@') !== -1 && e.indexOf('.') !== -1;
 
 // In src/api/auth.ts
-if (user.email.match(/@/) && user.email.match(/\./)) { /* ... */ }
+if (user.email.match(/@/) && user.email.match(/\./)) {
+  /* ... */
+}
 
 // In src/components/EmailForm.tsx
-const checkEmail = (val) => val.split('').includes('@') && val.split('').includes('.');
+const checkEmail = (val) =>
+  val.split('').includes('@') && val.split('').includes('.');
 
 // In src/services/user-service.ts
 return email.search('@') >= 0 && email.search('.') >= 0;
@@ -34,7 +37,8 @@ Your AI didn't see these patterns. Why? Because they look different syntacticall
 
 ## The Problem: Syntax Blinds AI Models
 
-Traditional duplicate detection tools look for *exact* or near-exact text matches. They catch copy-paste duplicates, but miss logic that's been rewritten with different:
+Traditional duplicate detection tools look for _exact_ or near-exact text matches. They catch copy-paste duplicates, but miss logic that's been rewritten with different:
+
 - Variable names (`email` vs `e` vs `val`)
 - Methods (`includes()` vs `indexOf()` vs `match()` vs `search()`)
 - Structure (inline vs function vs arrow function)
@@ -46,12 +50,14 @@ AI models suffer from the same limitation. When they scan your codebase for cont
 When I ran `@aiready/pattern-detect` on [receiptclaimer](https://receiptclaimer.com)'s codebase, I found **23 semantic duplicate patterns** scattered across 47 files. Here's what that looked like:
 
 **Before:**
+
 - 23 duplicate patterns (validation, formatting, error handling)
 - 8,450 wasted context tokens
 - AI suggestions kept reinventing existing logic
 - Code reviews: "Didn't we already have this somewhere?"
 
 **After consolidation:**
+
 - 3 remaining patterns (acceptable, different contexts)
 - 1,200 context tokens (85% reduction)
 - AI now references existing patterns
@@ -85,13 +91,14 @@ function validateEmail(email) {
   'StringLiteral:@',
   'CallExpression:includes',
   'MemberExpression:email',
-  'StringLiteral:.'
-]
+  'StringLiteral:.',
+];
 ```
 
 ### Step 2: Normalize
 
 We normalize these tokens by:
+
 - Removing specific identifiers (variable/function names)
 - Keeping operation types (CallExpression, LogicalExpression)
 - Preserving structure (nesting, flow control)
@@ -105,8 +112,8 @@ We normalize these tokens by:
   'CallExpression:includes',
   'StringLiteral',
   'CallExpression:includes',
-  'StringLiteral'
-]
+  'StringLiteral',
+];
 ```
 
 ### Step 3: Calculate Jaccard Similarity
@@ -118,6 +125,7 @@ Jaccard(A, B) = |A ∩ B| / |A ∪ B|
 ```
 
 Where:
+
 - **A ∩ B** = tokens in both sets (intersection)
 - **A ∪ B** = tokens in either set (union)
 
@@ -125,20 +133,20 @@ Where:
 
 ```typescript
 // Pattern A (normalized)
-Set A = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&', 
+Set A = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&',
          'CallExpression:includes', 'StringLiteral']
 
 // Pattern B (normalized)
-Set B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&', 
+Set B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&',
          'CallExpression:indexOf', 'StringLiteral']
 
 // Intersection
-A ∩ B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&', 
+A ∩ B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&',
          'StringLiteral']
 |A ∩ B| = 4
 
 // Union
-A ∪ B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&', 
+A ∪ B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&',
          'CallExpression:includes', 'CallExpression:indexOf', 'StringLiteral']
 |A ∪ B| = 6
 
@@ -153,34 +161,54 @@ By default, `pattern-detect` flags patterns with **≥70% similarity** as duplic
 The tool automatically classifies patterns into categories:
 
 ### 1. Validators
+
 Logic that checks conditions and returns boolean:
+
 ```typescript
 // Pattern: Email validation
-function validateEmail(email) { return email.includes('@'); }
+function validateEmail(email) {
+  return email.includes('@');
+}
 const isValidEmail = (e) => e.indexOf('@') !== -1;
 ```
 
 ### 2. Formatters
+
 Logic that transforms input to output:
+
 ```typescript
 // Pattern: Phone number formatting
-function formatPhone(num) { return num.replace(/\D/g, ''); }
-const cleanPhone = (n) => n.split('').filter(c => /\d/.test(c)).join('');
+function formatPhone(num) {
+  return num.replace(/\D/g, '');
+}
+const cleanPhone = (n) =>
+  n
+    .split('')
+    .filter((c) => /\d/.test(c))
+    .join('');
 ```
 
 ### 3. API Handlers
+
 Request/response processing logic:
+
 ```typescript
 // Pattern: Error response handling
-function handleError(err) { return { status: 500, message: err.message }; }
+function handleError(err) {
+  return { status: 500, message: err.message };
+}
 const errorResponse = (e) => ({ status: 500, message: e.message });
 ```
 
 ### 4. Utilities
+
 General helper functions:
+
 ```typescript
 // Pattern: Array deduplication
-function unique(arr) { return [...new Set(arr)]; }
+function unique(arr) {
+  return [...new Set(arr)];
+}
 const dedupe = (a) => Array.from(new Set(a));
 ```
 
@@ -189,17 +217,20 @@ const dedupe = (a) => Array.from(new Set(a));
 Not all semantic duplicates should be eliminated. Here's how to decide:
 
 ### ✅ Extract When:
+
 - **High similarity (>85%)**: Nearly identical logic, definitely consolidate
 - **Frequent reuse**: Used in 3+ places
 - **Core business logic**: Validation, formatting, calculations
 - **High maintenance cost**: Logic that changes often
 
 ### ⚠️ Consider Context:
+
 - **Medium similarity (70-85%)**: Review case-by-case
 - **Different domains**: User validation vs product validation might be intentionally separate
 - **Performance critical**: Sometimes duplication for optimization is justified
 
 ### ❌ Tolerate When:
+
 - **Low similarity (<70%)**: Probably not semantic duplicates
 - **Test code**: Tests often duplicate assertions intentionally
 - **Isolated modules**: If modules should remain independent
@@ -218,8 +249,7 @@ function validateSignupEmail(email: string) {
 }
 
 // src/api/auth/login.ts
-const checkLoginEmail = (e: string) => 
-  e.indexOf('@') !== -1 && e.length > 5;
+const checkLoginEmail = (e: string) => e.indexOf('@') !== -1 && e.length > 5;
 
 // src/services/user-service.ts
 function isValidEmail(email: string) {
@@ -227,15 +257,16 @@ function isValidEmail(email: string) {
 }
 
 // src/components/EmailForm.tsx
-const validateEmail = (val: string) => 
+const validateEmail = (val: string) =>
   val.includes('@') && val.trim().length > 5;
 
 // src/utils/validators.ts
-export const emailValid = (email: string) => 
+export const emailValid = (email: string) =>
   email.search('@') >= 0 && email.length > 5;
 ```
 
 **Similarity scores:**
+
 - signup vs login: 89%
 - signup vs user-service: 87%
 - signup vs EmailForm: 85%
@@ -254,6 +285,7 @@ import { isValidEmail } from '@/utils/validators';
 ```
 
 **Impact:**
+
 - 5 implementations → 1
 - ~1,850 tokens → ~370 tokens (80% reduction)
 - AI now finds and reuses the pattern
@@ -275,10 +307,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      
+
       - name: Detect semantic duplicates
         run: npx @aiready/pattern-detect ./src --threshold 70
-        
+
       - name: Comment on PR
         if: failure()
         uses: actions/github-script@v6
@@ -316,11 +348,7 @@ Customize pattern detection for your project:
   "pattern-detect": {
     "threshold": 70,
     "minTokens": 10,
-    "ignorePatterns": [
-      "**/tests/**",
-      "**/*.test.ts",
-      "**/mocks/**"
-    ],
+    "ignorePatterns": ["**/tests/**", "**/*.test.ts", "**/mocks/**"],
     "categories": {
       "validators": {
         "enabled": true,
@@ -346,8 +374,9 @@ Customize pattern detection for your project:
 ## The Bottom Line
 
 Semantic duplication is invisible to traditional tools and AI models alike. But it's costing you:
+
 - **Context window waste**: 30-50% of tokens in typical AI-assisted projects
-- **Slower AI responses**: Models process redundant logic repeatedly  
+- **Slower AI responses**: Models process redundant logic repeatedly
 - **Inconsistent suggestions**: AI doesn't know which pattern to follow
 - **Higher maintenance**: Changes must be made in multiple places
 
@@ -370,6 +399,7 @@ npx @aiready/cli scan --score
 ```
 
 **Resources:**
+
 - GitHub: [github.com/caopengau/aiready-cli](https://github.com/caopengau/aiready-cli)
 - Docs: [aiready.dev](https://aiready.dev)
 - Report issues: [github.com/caopengau/aiready-cli/issues](https://github.com/caopengau/aiready-cli/issues)
@@ -380,4 +410,4 @@ npx @aiready/cli scan --score
 
 ---
 
-*Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimizing codebases for AI adoption.*
+_Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimizing codebases for AI adoption._

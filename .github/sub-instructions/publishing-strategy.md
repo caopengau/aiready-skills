@@ -19,9 +19,10 @@ make publish SPOKE=your-tool
 ```
 
 **Important:**
+
 - Always use `make push` after commits to sync spoke repos
-- Always use `make npm-publish` (handles workspace:* protocol)
-- Never use `npm publish` directly (will fail with workspace:* protocol)
+- Always use `make npm-publish` (handles workspace:\* protocol)
+- Never use `npm publish` directly (will fail with workspace:\* protocol)
 - Release order: `core` first, then dependent spokes
 - All spoke packages are free and open source
 - Publish to npm with `@aiready/` scope
@@ -63,6 +64,7 @@ make release-status
 ```
 
 Output legend:
+
 - `✓` = Published (local matches npm)
 - `ahead` = Local is newer (needs publishing)
 - `new` = Not yet on npm
@@ -78,12 +80,14 @@ Output legend:
 > **✅ SIMPLE:** Core always first, CLI always last, spokes in alphabetical order. No complex dependency graphs needed!
 
 > **⚠️ CRITICAL:** After publishing ANY spoke tool separately (not via `release-all`), you MUST republish CLI:
+>
 > ```bash
 > # After publishing any spoke:
 > make release-one SPOKE=consistency TYPE=patch
 > # ALWAYS follow with CLI republish:
 > make release-one SPOKE=cli TYPE=patch
 > ```
+>
 > **Why?** CLI imports all spokes dynamically. Publishing a spoke without CLI creates version mismatch.
 
 > **📝 NOTE:** `release-all` handles this automatically - it releases CLI last, ensuring all dependencies are current.
@@ -91,9 +95,11 @@ Output legend:
 #### Landing Site (Excluded from release-all)
 
 The landing site is NOT included in `release-all` and should be released separately:
+
 ```bash
 make release-landing TYPE=patch
 ```
+
 This is intentional - the landing site has different release cadence and doesn't affect npm packages.
 
 #### Version Bump Guidelines
@@ -116,6 +122,7 @@ This is intentional - the landing site has different release cadence and doesn't
 ### Sync Workflow (External Contributions)
 
 For external contributions to spoke repos:
+
 ```bash
 # Pull changes from spoke repo back to monorepo
 make sync-from-spoke SPOKE=context-analyzer

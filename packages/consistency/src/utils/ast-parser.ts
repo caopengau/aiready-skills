@@ -5,11 +5,14 @@ import { readFileSync } from 'fs';
  * Parse a file into an AST
  * Only supports TypeScript/JavaScript files (.ts, .tsx, .js, .jsx)
  */
-export function parseFile(filePath: string, content?: string): TSESTree.Program | null {
+export function parseFile(
+  filePath: string,
+  content?: string
+): TSESTree.Program | null {
   try {
     const code = content ?? readFileSync(filePath, 'utf-8');
     const isTypeScript = filePath.match(/\.tsx?$/);
-    
+
     return parse(code, {
       jsx: filePath.match(/\.[jt]sx$/i) !== null,
       loc: true,
@@ -23,6 +26,7 @@ export function parseFile(filePath: string, content?: string): TSESTree.Program 
       filePath: isTypeScript ? filePath : undefined,
     });
   } catch (error) {
+    void error;
     // Silently skip files that fail to parse (likely non-JS/TS or syntax errors)
     // Non-JS/TS files should be filtered before reaching this point
     return null;
@@ -47,7 +51,7 @@ export function traverseAST(
   // Visit children
   for (const key of Object.keys(node)) {
     const value = (node as any)[key];
-    
+
     if (Array.isArray(value)) {
       for (const child of value) {
         if (child && typeof child === 'object' && 'type' in child) {
@@ -70,7 +74,7 @@ export function hasAncestor(
   ancestorTypes: string[],
   ancestors: TSESTree.Node[]
 ): boolean {
-  return ancestors.some(ancestor => ancestorTypes.includes(ancestor.type));
+  return ancestors.some((ancestor) => ancestorTypes.includes(ancestor.type));
 }
 
 /**
@@ -135,7 +139,7 @@ export function getFunctionName(node: TSESTree.Node): string | null {
  */
 export function isInDestructuring(node: TSESTree.Node): boolean {
   if (!node) return false;
-  
+
   return node.type === 'ObjectPattern' || node.type === 'ArrayPattern';
 }
 
@@ -149,34 +153,48 @@ export function getLineNumber(node: TSESTree.Node): number {
 /**
  * Check if a node represents a coverage metric context
  */
-export function isCoverageContext(node: TSESTree.Node, ancestors: TSESTree.Node[]): boolean {
+export function isCoverageContext(
+  node: TSESTree.Node,
+  ancestors: TSESTree.Node[]
+): boolean {
   // Check if any ancestor or the node itself references coverage-related properties
-  const coveragePatterns = /coverage|summary|metrics|pct|percent|statements|branches|functions|lines/i;
-  
+  const coveragePatterns =
+    /coverage|summary|metrics|pct|percent|statements|branches|functions|lines/i;
+
   // Check variable name
   if (node.type === 'Identifier' && coveragePatterns.test(node.name)) {
     return true;
   }
-  
+
   // Check if it's a property of something coverage-related
-  for (const ancestor of ancestors.slice(-3)) { // Check last 3 ancestors
+  for (const ancestor of ancestors.slice(-3)) {
+    // Check last 3 ancestors
     if (ancestor.type === 'MemberExpression') {
       const memberExpr = ancestor as TSESTree.MemberExpression;
-      if (memberExpr.object.type === 'Identifier' && coveragePatterns.test(memberExpr.object.name)) {
+      if (
+        memberExpr.object.type === 'Identifier' &&
+        coveragePatterns.test(memberExpr.object.name)
+      ) {
         return true;
       }
     }
-    if (ancestor.type === 'ObjectPattern' || ancestor.type === 'ObjectExpression') {
+    if (
+      ancestor.type === 'ObjectPattern' ||
+      ancestor.type === 'ObjectExpression'
+    ) {
       // Check if parent variable has coverage-related name
       const parent = ancestors[ancestors.indexOf(ancestor) - 1];
       if (parent?.type === 'VariableDeclarator') {
         const varDecl = parent as TSESTree.VariableDeclarator;
-        if (varDecl.id.type === 'Identifier' && coveragePatterns.test(varDecl.id.name)) {
+        if (
+          varDecl.id.type === 'Identifier' &&
+          coveragePatterns.test(varDecl.id.name)
+        ) {
           return true;
         }
       }
     }
   }
-  
+
   return false;
 }

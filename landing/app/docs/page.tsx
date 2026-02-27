@@ -1,28 +1,29 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
-import Breadcrumb from "../../components/Breadcrumb";
-import { Header } from "../../components/Header";
-import { Footer } from "../../components/Footer";
-import AgentPrompt from "../../components/AgentPrompt";
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import Breadcrumb from '../../components/Breadcrumb';
+import { Header } from '../../components/Header';
+import { Footer } from '../../components/Footer';
+import AgentPrompt from '../../components/AgentPrompt';
 
 const tools = [
   {
-    id: "pattern-detect",
-    icon: "🛡️",
-    name: "Pattern Detection",
-    package: "@aiready/pattern-detect",
-    description: "Find semantic duplicates that look different but do the same thing",
-    color: "from-blue-600 to-cyan-500",
+    id: 'pattern-detect',
+    icon: '🛡️',
+    name: 'Pattern Detection',
+    package: '@aiready/pattern-detect',
+    description:
+      'Find semantic duplicates that look different but do the same thing',
+    color: 'from-blue-600 to-cyan-500',
     features: [
-      "Semantic detection using Jaccard similarity on AST tokens",
-      "Pattern classification (API handlers, validators, utilities)",
-      "Token cost analysis showing wasted AI context budget",
-      "Auto-excludes tests and build outputs",
-      "Adaptive threshold based on codebase size"
+      'Semantic detection using Jaccard similarity on AST tokens',
+      'Pattern classification (API handlers, validators, utilities)',
+      'Token cost analysis showing wasted AI context budget',
+      'Auto-excludes tests and build outputs',
+      'Adaptive threshold based on codebase size',
     ],
     quickStart: `# Run without installation
 npx @aiready/pattern-detect ./src
@@ -40,18 +41,19 @@ CRITICAL (6 files)
   src/handlers/posts.ts - 3 duplicates (950 tokens)`,
   },
   {
-    id: "context-analyzer",
-    icon: "📈",
-    name: "Context Analysis",
-    package: "@aiready/context-analyzer",
-    description: "Analyze import depth, cohesion, and fragmentation for AI optimization",
-    color: "from-cyan-600 to-teal-500",
+    id: 'context-analyzer',
+    icon: '📈',
+    name: 'Context Analysis',
+    package: '@aiready/context-analyzer',
+    description:
+      'Analyze import depth, cohesion, and fragmentation for AI optimization',
+    color: 'from-cyan-600 to-teal-500',
     features: [
-      "Context budget calculation (file + dependencies)",
-      "Deep import chain detection",
-      "Low cohesion identification (God objects)",
-      "High fragmentation analysis (scattered domains)",
-      "Framework-aware (Next.js, AWS CDK)"
+      'Context budget calculation (file + dependencies)',
+      'Deep import chain detection',
+      'Low cohesion identification (God objects)',
+      'High fragmentation analysis (scattered domains)',
+      'Framework-aware (Next.js, AWS CDK)',
     ],
     quickStart: `# Run without installation
 npx @aiready/context-analyzer ./src
@@ -70,18 +72,19 @@ CRITICAL (3 files)
     • Cohesion: 0.23 (LOW)`,
   },
   {
-    id: "consistency",
-    icon: "⚡",
-    name: "Consistency Checker",
-    package: "@aiready/consistency",
-    description: "Catch naming issues and architectural drift before they become problems",
-    color: "from-purple-600 to-pink-500",
+    id: 'consistency',
+    icon: '⚡',
+    name: 'Consistency Checker',
+    package: '@aiready/consistency',
+    description:
+      'Catch naming issues and architectural drift before they become problems',
+    color: 'from-purple-600 to-pink-500',
     features: [
-      "Naming quality checks (single-letter vars, abbreviations)",
-      "Convention enforcement (camelCase vs snake_case)",
-      "Boolean naming validation (is/has/can prefixes)",
-      "Pattern consistency (error handling, async patterns)",
-      "100+ built-in acceptable abbreviations"
+      'Naming quality checks (single-letter vars, abbreviations)',
+      'Convention enforcement (camelCase vs snake_case)',
+      'Boolean naming validation (is/has/can prefixes)',
+      'Pattern consistency (error handling, async patterns)',
+      '100+ built-in acceptable abbreviations',
     ],
     quickStart: `# Run without installation
 npx @aiready/consistency ./src
@@ -97,45 +100,46 @@ CRITICAL (2 files)
   src/utils/helpers.ts:12 - poor-naming: x
   src/api/users.ts:45 - convention-mix: user_name`,
   },
-    {
-      id: "visualize",
-      icon: "🖼️",
-      name: "Visualizer",
-      package: "packages/visualizer (or npm run visualize)",
-      description: "Generate interactive visualizations from AIReady JSON reports",
-      color: "from-amber-500 to-amber-400",
-      features: [
-        "Generate an HTML visualization from an AIReady report",
-        "Auto-runs a scan if no report is present",
-        "Opens result in the browser with --open",
-        "Customizable output path and input report",
-      ],
-      quickStart: `# From repo root
+  {
+    id: 'visualize',
+    icon: '🖼️',
+    name: 'Visualizer',
+    package: 'packages/visualizer (or npm run visualize)',
+    description:
+      'Generate interactive visualizations from AIReady JSON reports',
+    color: 'from-amber-500 to-amber-400',
+    features: [
+      'Generate an HTML visualization from an AIReady report',
+      'Auto-runs a scan if no report is present',
+      'Opens result in the browser with --open',
+      'Customizable output path and input report',
+    ],
+    quickStart: `# From repo root
   npm run visualize -- . --open
 
   # Or with pnpm
   pnpm run visualize -- . --open`,
-      output: `🔍 Visualization generated
+    output: `🔍 Visualization generated
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   Output: packages/visualizer/visualization.html
   Open it in your browser to explore discovery charts and token waste breakdowns`,
-    },
+  },
 ];
 
 const sections = [
-  { id: "getting-started", label: "Getting Started" },
-  { id: "ai-agent", label: "Use with AI Agent" },
-  { id: "tools", label: "Tools" },
-  { id: "scoring", label: "AI Readiness Scoring" },
-  { id: "metrics", label: "Understanding Metrics" },
-  { id: "unified-cli", label: "Unified CLI" },
-  { id: "visualize", label: "Visualize" },
-  { id: "options", label: "CLI Options" },
-  { id: "contributing", label: "Contributing" },
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'ai-agent', label: 'Use with AI Agent' },
+  { id: 'tools', label: 'Tools' },
+  { id: 'scoring', label: 'AI Readiness Scoring' },
+  { id: 'metrics', label: 'Understanding Metrics' },
+  { id: 'unified-cli', label: 'Unified CLI' },
+  { id: 'visualize', label: 'Visualize' },
+  { id: 'options', label: 'CLI Options' },
+  { id: 'contributing', label: 'Contributing' },
 ];
 
 export default function DocsPage() {
-  const [activeSection, setActiveSection] = useState("getting-started");
+  const [activeSection, setActiveSection] = useState('getting-started');
   const [selectedTool, setSelectedTool] = useState(tools[0]);
 
   return (
@@ -155,12 +159,14 @@ export default function DocsPage() {
                   onClick={(e) => {
                     e.preventDefault();
                     setActiveSection(section.id);
-                    document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
+                    document
+                      .getElementById(section.id)
+                      ?.scrollIntoView({ behavior: 'smooth' });
                   }}
                   className={`block px-3 py-2 rounded-lg text-sm transition-all ${
                     activeSection === section.id
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
                   {section.label}
@@ -179,11 +185,13 @@ export default function DocsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <Breadcrumb items={[
-                { label: "Home", href: "/" },
-                { label: "Documentation", href: "/docs" }
-              ]} />
-              
+              <Breadcrumb
+                items={[
+                  { label: 'Home', href: '/' },
+                  { label: 'Documentation', href: '/docs' },
+                ]}
+              />
+
               <h1 className="text-5xl font-black text-slate-900 mb-4">
                 Documentation
               </h1>
@@ -192,7 +200,9 @@ export default function DocsPage() {
               </p>
 
               <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-6 mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">🚀 Quick Start</h2>
+                <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                  🚀 Quick Start
+                </h2>
                 <p className="text-slate-700 mb-4">
                   Get started in seconds with zero configuration:
                 </p>
@@ -203,9 +213,12 @@ export default function DocsPage() {
               </div>
 
               <div className="prose prose-slate max-w-none">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Installation</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  Installation
+                </h3>
                 <p className="text-slate-600 mb-4">
-                  You can use AIReady tools without installation via <code>npx</code>, or install globally for faster runs:
+                  You can use AIReady tools without installation via{' '}
+                  <code>npx</code>, or install globally for faster runs:
                 </p>
                 <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
                   <div className="mb-2"># Unified CLI (recommended)</div>
@@ -226,41 +239,54 @@ export default function DocsPage() {
                 Use with AI Agent
               </span>
             </h2>
-            
+
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6 mb-6">
               <p className="text-slate-700 mb-4">
-                Prefer using AI agents like <strong>Cline</strong>, <strong>Cursor</strong>, <strong>GitHub Copilot Chat</strong>, or <strong>ChatGPT</strong>? 
-                Copy these ready-to-use prompts and paste them into your agent to run AIReady analysis.
+                Prefer using AI agents like <strong>Cline</strong>,{' '}
+                <strong>Cursor</strong>, <strong>GitHub Copilot Chat</strong>,
+                or <strong>ChatGPT</strong>? Copy these ready-to-use prompts and
+                paste them into your agent to run AIReady analysis.
               </p>
               <p className="text-sm text-slate-600">
-                💡 These prompts include step-by-step instructions for the AI agent to run the analysis and provide actionable recommendations.
+                💡 These prompts include step-by-step instructions for the AI
+                agent to run the analysis and provide actionable
+                recommendations.
               </p>
             </div>
 
             <div className="space-y-6">
               {/* Basic Scan Prompt */}
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">🔍 Basic Scan</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  🔍 Basic Scan
+                </h3>
                 <p className="text-slate-600 mb-4">
-                  Quick analysis to identify top issues and get your AI Readiness Score.
+                  Quick analysis to identify top issues and get your AI
+                  Readiness Score.
                 </p>
                 <AgentPrompt variant="basic" />
               </div>
 
               {/* Detailed Analysis Prompt */}
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">📊 Detailed Analysis</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  📊 Detailed Analysis
+                </h3>
                 <p className="text-slate-600 mb-4">
-                  Comprehensive analysis with prioritized recommendations and impact assessment.
+                  Comprehensive analysis with prioritized recommendations and
+                  impact assessment.
                 </p>
                 <AgentPrompt variant="detailed" />
               </div>
 
               {/* Fix Issues Prompt */}
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">🔧 Fix Issues</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                  🔧 Fix Issues
+                </h3>
                 <p className="text-slate-600 mb-4">
-                  Have your AI agent automatically fix the top 3 critical issues and verify improvements.
+                  Have your AI agent automatically fix the top 3 critical issues
+                  and verify improvements.
                 </p>
                 <AgentPrompt variant="fix" />
               </div>
@@ -271,19 +297,29 @@ export default function DocsPage() {
               <ul className="space-y-2 text-sm text-slate-700">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 mt-0.5">•</span>
-                  <span>These prompts work with any AI agent that can execute terminal commands</span>
+                  <span>
+                    These prompts work with any AI agent that can execute
+                    terminal commands
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 mt-0.5">•</span>
-                  <span>The agent will run the commands locally and analyze the results</span>
+                  <span>
+                    The agent will run the commands locally and analyze the
+                    results
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 mt-0.5">•</span>
-                  <span>All analysis happens on your machine - no code is uploaded</span>
+                  <span>
+                    All analysis happens on your machine - no code is uploaded
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 mt-0.5">•</span>
-                  <span>Customize the prompts to focus on specific tools or issues</span>
+                  <span>
+                    Customize the prompts to focus on specific tools or issues
+                  </span>
                 </li>
               </ul>
             </div>
@@ -292,7 +328,7 @@ export default function DocsPage() {
           {/* Tools Section */}
           <section id="tools" className="mb-16">
             <h2 className="text-4xl font-black text-slate-900 mb-8">Tools</h2>
-            
+
             {/* Tool Selector */}
             <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
               {tools.map((tool) => (
@@ -302,7 +338,7 @@ export default function DocsPage() {
                   className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all whitespace-nowrap ${
                     selectedTool.id === tool.id
                       ? `bg-gradient-to-r ${tool.color} text-white shadow-lg`
-                      : "bg-white text-slate-700 border border-slate-200 hover:border-slate-300"
+                      : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <span className="text-2xl">{tool.icon}</span>
@@ -320,33 +356,52 @@ export default function DocsPage() {
               className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className={`w-16 h-16 bg-gradient-to-r ${selectedTool.color} rounded-2xl flex items-center justify-center text-3xl shadow-lg`}>
+                <div
+                  className={`w-16 h-16 bg-gradient-to-r ${selectedTool.color} rounded-2xl flex items-center justify-center text-3xl shadow-lg`}
+                >
                   {selectedTool.icon}
                 </div>
                 <div>
-                  <h3 className="text-3xl font-black text-slate-900">{selectedTool.name}</h3>
-                  <code className="text-sm text-slate-500 font-mono">{selectedTool.package}</code>
+                  <h3 className="text-3xl font-black text-slate-900">
+                    {selectedTool.name}
+                  </h3>
+                  <code className="text-sm text-slate-500 font-mono">
+                    {selectedTool.package}
+                  </code>
                 </div>
               </div>
 
-              <p className="text-lg text-slate-600 mb-6">{selectedTool.description}</p>
+              <p className="text-lg text-slate-600 mb-6">
+                {selectedTool.description}
+              </p>
 
-              <h4 className="text-xl font-bold text-slate-900 mb-3">✨ Features</h4>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">
+                ✨ Features
+              </h4>
               <ul className="space-y-2 mb-6">
                 {selectedTool.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-slate-700">
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2 text-slate-700"
+                  >
                     <span className="text-green-600 mt-1">✓</span>
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
 
-              <h4 className="text-xl font-bold text-slate-900 mb-3">🚀 Quick Start</h4>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">
+                🚀 Quick Start
+              </h4>
               <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-6 overflow-x-auto">
-                <pre className="whitespace-pre-wrap">{selectedTool.quickStart}</pre>
+                <pre className="whitespace-pre-wrap">
+                  {selectedTool.quickStart}
+                </pre>
               </div>
 
-              <h4 className="text-xl font-bold text-slate-900 mb-3">📊 Example Output</h4>
+              <h4 className="text-xl font-bold text-slate-900 mb-3">
+                📊 Example Output
+              </h4>
               <div className="bg-slate-900 text-slate-300 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                 <pre className="whitespace-pre-wrap">{selectedTool.output}</pre>
               </div>
@@ -361,17 +416,22 @@ export default function DocsPage() {
               </span>
             </h2>
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-8 shadow-lg mb-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">📊 One Number, Complete Picture</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                📊 One Number, Complete Picture
+              </h3>
               <p className="text-slate-700 mb-4">
-                Get a unified <strong>0-100 score</strong> combining all three tools with proven default weights:
+                Get a unified <strong>0-100 score</strong> combining all three
+                tools with proven default weights:
               </p>
               <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-6">
                 <div>npx @aiready/cli scan ./src --score</div>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-3">Default Weights</h4>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">
+                    Default Weights
+                  </h4>
                   <ul className="space-y-2 text-slate-700">
                     <li className="flex justify-between">
                       <span>Pattern Detection:</span>
@@ -387,9 +447,11 @@ export default function DocsPage() {
                     </li>
                   </ul>
                 </div>
-                
+
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-3">Rating Scale</h4>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">
+                    Rating Scale
+                  </h4>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
@@ -417,49 +479,79 @@ export default function DocsPage() {
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg mb-6">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">🎯 Customizable Weights</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                🎯 Customizable Weights
+              </h3>
               <p className="text-slate-700 mb-4">
                 Adjust weights to match your team's priorities:
               </p>
               <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
                 <div className="mb-2"># Prioritize pattern detection</div>
-                <div className="mb-4">aiready scan . --score --weights patterns:60,context:25,consistency:15</div>
+                <div className="mb-4">
+                  aiready scan . --score --weights
+                  patterns:60,context:25,consistency:15
+                </div>
                 <div className="mb-2"># Equal weighting</div>
-                <div>aiready scan . --score --weights patterns:33,context:33,consistency:34</div>
+                <div>
+                  aiready scan . --score --weights
+                  patterns:33,context:33,consistency:34
+                </div>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-slate-700">
-                  <strong>💡 Tip:</strong> Use <code className="bg-white px-2 py-1 rounded">--threshold 75</code> to enforce minimum scores in CI/CD pipelines.
+                  <strong>💡 Tip:</strong> Use{' '}
+                  <code className="bg-white px-2 py-1 rounded">
+                    --threshold 75
+                  </code>{' '}
+                  to enforce minimum scores in CI/CD pipelines.
                 </p>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">🚀 Forward-Compatible & Flexible</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                🚀 Forward-Compatible & Flexible
+              </h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-3">Forward-Compatible</h4>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">
+                    Forward-Compatible
+                  </h4>
                   <ul className="space-y-2 text-slate-700">
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-1">✓</span>
-                      <span>Scores remain comparable as new tools are added</span>
+                      <span>
+                        Scores remain comparable as new tools are added
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-1">✓</span>
-                      <span>New tools are opt-in via <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">--tools</code> flag</span>
+                      <span>
+                        New tools are opt-in via{' '}
+                        <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">
+                          --tools
+                        </code>{' '}
+                        flag
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-1">✓</span>
-                      <span>Existing scores unchanged when new tools launch</span>
+                      <span>
+                        Existing scores unchanged when new tools launch
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-1">✓</span>
-                      <span>Historical trends stay valid for tracking progress</span>
+                      <span>
+                        Historical trends stay valid for tracking progress
+                      </span>
                     </li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-3">Fully Customizable</h4>
+                  <h4 className="text-lg font-bold text-slate-900 mb-3">
+                    Fully Customizable
+                  </h4>
                   <ul className="space-y-2 text-slate-700">
                     <li className="flex items-start gap-2">
                       <span className="text-purple-600 mt-1">✓</span>
@@ -485,74 +577,115 @@ export default function DocsPage() {
 
           {/* Metrics Explained */}
           <section id="metrics" className="mb-16">
-            <h2 className="text-4xl font-black text-slate-900 mb-6">Understanding Metrics</h2>
-            
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              Understanding Metrics
+            </h2>
+
             <div className="space-y-6">
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-900 mb-3">📊 Fragmentation</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  📊 Fragmentation
+                </h3>
                 <p className="text-slate-700 mb-3">
-                  Measures how scattered related code is across directories. Impacts AI's ability to load context efficiently.
+                  Measures how scattered related code is across directories.
+                  Impacts AI's ability to load context efficiently.
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg mb-3">
-                  <code className="text-sm text-slate-800">fragmentation = (unique_directories - 1) / (total_files - 1)</code>
+                  <code className="text-sm text-slate-800">
+                    fragmentation = (unique_directories - 1) / (total_files - 1)
+                  </code>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="font-bold text-green-900 mb-1">0% = Perfect Cohesion</div>
-                    <div className="text-sm text-slate-700">All related files in same directory</div>
+                    <div className="font-bold text-green-900 mb-1">
+                      0% = Perfect Cohesion
+                    </div>
+                    <div className="text-sm text-slate-700">
+                      All related files in same directory
+                    </div>
                   </div>
                   <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <div className="font-bold text-red-900 mb-1">100% = Maximum Scatter</div>
-                    <div className="text-sm text-slate-700">Every file in different directory</div>
+                    <div className="font-bold text-red-900 mb-1">
+                      100% = Maximum Scatter
+                    </div>
+                    <div className="text-sm text-slate-700">
+                      Every file in different directory
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-900 mb-3">🔄 Duplication Density</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  🔄 Duplication Density
+                </h3>
                 <p className="text-slate-700 mb-3">
-                  Ratio of files with semantic duplicates. High density indicates systematic copy-paste patterns.
+                  Ratio of files with semantic duplicates. High density
+                  indicates systematic copy-paste patterns.
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg">
-                  <code className="text-sm text-slate-800">density = files_with_duplicates / total_files_analyzed</code>
+                  <code className="text-sm text-slate-800">
+                    density = files_with_duplicates / total_files_analyzed
+                  </code>
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-900 mb-3">🪙 Token Waste</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  🪙 Token Waste
+                </h3>
                 <p className="text-slate-700 mb-3">
-                  Estimated tokens consumed by duplicate code when loaded into AI context windows.
+                  Estimated tokens consumed by duplicate code when loaded into
+                  AI context windows.
                 </p>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <p className="text-sm text-slate-700">
-                    <strong>Example:</strong> 24 duplicates consuming 20,300 tokens = ~25% of a typical 80K context budget wasted
+                    <strong>Example:</strong> 24 duplicates consuming 20,300
+                    tokens = ~25% of a typical 80K context budget wasted
                   </p>
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-900 mb-3">📏 Context Budget</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  📏 Context Budget
+                </h3>
                 <p className="text-slate-700 mb-3">
-                  Total tokens (file + all dependencies) needed to provide full context for AI edits.
+                  Total tokens (file + all dependencies) needed to provide full
+                  context for AI edits.
                 </p>
                 <div className="bg-slate-50 p-4 rounded-lg mb-3">
-                  <code className="text-sm text-slate-800">budget = file_tokens + sum(dependency_tokens)</code>
+                  <code className="text-sm text-slate-800">
+                    budget = file_tokens + sum(dependency_tokens)
+                  </code>
                 </div>
                 <div className="text-sm text-slate-700">
-                  <strong>Thresholds:</strong> &lt;10K tokens = Good | 10-20K = Warning | &gt;20K = Critical
+                  <strong>Thresholds:</strong> &lt;10K tokens = Good | 10-20K =
+                  Warning | &gt;20K = Critical
                 </div>
               </div>
 
               <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-900 mb-3">🔗 Import Depth</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  🔗 Import Depth
+                </h3>
                 <p className="text-slate-700 mb-3">
-                  Maximum levels of transitive imports. Deep chains make it harder for AI to understand full context.
+                  Maximum levels of transitive imports. Deep chains make it
+                  harder for AI to understand full context.
                 </p>
                 <div className="text-sm text-slate-700 space-y-1">
-                  <div><strong>Depth 1-3:</strong> Excellent (direct dependencies)</div>
-                  <div><strong>Depth 4-6:</strong> Good (reasonable depth)</div>
-                  <div><strong>Depth 7-10:</strong> Warning (getting deep)</div>
-                  <div><strong>Depth 11+:</strong> Critical (too many layers)</div>
+                  <div>
+                    <strong>Depth 1-3:</strong> Excellent (direct dependencies)
+                  </div>
+                  <div>
+                    <strong>Depth 4-6:</strong> Good (reasonable depth)
+                  </div>
+                  <div>
+                    <strong>Depth 7-10:</strong> Warning (getting deep)
+                  </div>
+                  <div>
+                    <strong>Depth 11+:</strong> Critical (too many layers)
+                  </div>
                 </div>
               </div>
             </div>
@@ -560,10 +693,16 @@ export default function DocsPage() {
 
           {/* Unified CLI */}
           <section id="unified-cli" className="mb-16">
-            <h2 className="text-4xl font-black text-slate-900 mb-6">Unified CLI</h2>
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              Unified CLI
+            </h2>
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
               <p className="text-slate-700 mb-4">
-                The <code className="bg-slate-100 px-2 py-1 rounded">@aiready/cli</code> package provides a unified interface to run all tools:
+                The{' '}
+                <code className="bg-slate-100 px-2 py-1 rounded">
+                  @aiready/cli
+                </code>{' '}
+                package provides a unified interface to run all tools:
               </p>
               <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
                 <div className="mb-2"># Scan with all tools</div>
@@ -574,68 +713,109 @@ export default function DocsPage() {
                 <div>npx @aiready/cli consistency ./src</div>
               </div>
               <p className="text-slate-700">
-                The CLI automatically formats results, handles errors, and provides a consistent experience across all tools.
+                The CLI automatically formats results, handles errors, and
+                provides a consistent experience across all tools.
               </p>
             </div>
           </section>
 
           {/* Visualize */}
           <section id="visualize" className="mb-16">
-            <h2 className="text-4xl font-black text-slate-900 mb-6">Visualize</h2>
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              Visualize
+            </h2>
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg mb-6">
               <p className="text-slate-700 mb-4">
-                Generate an interactive HTML visualization from an AIReady JSON report. The repo includes a convenience script exposed as the `visualize` npm script.
+                Generate an interactive HTML visualization from an AIReady JSON
+                report. The repo includes a convenience script exposed as the
+                `visualize` npm script.
               </p>
               <div className="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
-                <div className="mb-2"># Produce and open a visualization for the current repo</div>
+                <div className="mb-2">
+                  # Produce and open a visualization for the current repo
+                </div>
                 <div className="mb-2">npm run visualise</div>
                 <div className="mb-2">pnpm run visualise</div>
-                <div className="mb-2"># If you have the `aiready` CLI installed globally</div>
+                <div className="mb-2">
+                  # If you have the `aiready` CLI installed globally
+                </div>
                 <div className="mb-2">aiready visualise</div>
                 <div>npx @aiready/cli visualise</div>
               </div>
 
               <h4 className="font-bold text-slate-900 mb-2">Options</h4>
               <ul className="space-y-2 text-slate-700">
-                <li><strong>--report &lt;file&gt;:</strong> Path to an existing report JSON. Auto-detects latest report in <code>.aiready/</code> directory (pattern: <code>aiready-report-*.json</code>)</li>
-                <li><strong>--output &lt;file&gt;:</strong> Output HTML path (default: packages/visualizer/visualization.html)</li>
-                <li><strong>--open:</strong> Open the generated visualization in the default browser</li>
+                <li>
+                  <strong>--report &lt;file&gt;:</strong> Path to an existing
+                  report JSON. Auto-detects latest report in{' '}
+                  <code>.aiready/</code> directory (pattern:{' '}
+                  <code>aiready-report-*.json</code>)
+                </li>
+                <li>
+                  <strong>--output &lt;file&gt;:</strong> Output HTML path
+                  (default: packages/visualizer/visualization.html)
+                </li>
+                <li>
+                  <strong>--open:</strong> Open the generated visualization in
+                  the default browser
+                </li>
               </ul>
             </div>
           </section>
 
           {/* CLI Options */}
           <section id="options" className="mb-16">
-            <h2 className="text-4xl font-black text-slate-900 mb-6">CLI Options</h2>
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              CLI Options
+            </h2>
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
               <div className="space-y-6">
                 <div>
-                  <h4 className="font-bold text-slate-900 mb-2">--output &lt;path&gt;</h4>
-                  <p className="text-slate-600">Save results to JSON file (default: .aiready/&lt;tool&gt;-results.json)</p>
+                  <h4 className="font-bold text-slate-900 mb-2">
+                    --output &lt;path&gt;
+                  </h4>
+                  <p className="text-slate-600">
+                    Save results to JSON file (default:
+                    .aiready/&lt;tool&gt;-results.json)
+                  </p>
                   <div className="bg-slate-900 text-green-400 p-2 rounded font-mono text-sm mt-2">
                     npx @aiready/cli scan ./src --output results.json
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-slate-900 mb-2">--exclude &lt;patterns&gt;</h4>
-                  <p className="text-slate-600">Glob patterns to exclude (comma-separated)</p>
+                  <h4 className="font-bold text-slate-900 mb-2">
+                    --exclude &lt;patterns&gt;
+                  </h4>
+                  <p className="text-slate-600">
+                    Glob patterns to exclude (comma-separated)
+                  </p>
                   <div className="bg-slate-900 text-green-400 p-2 rounded font-mono text-sm mt-2">
-                    npx @aiready/cli scan ./src --exclude &quot;**/*.d.ts,**/generated/**&quot;
+                    npx @aiready/cli scan ./src --exclude
+                    &quot;**/*.d.ts,**/generated/**&quot;
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-slate-900 mb-2">--include-tests</h4>
-                  <p className="text-slate-600">Include test files in analysis (default: excluded)</p>
+                  <h4 className="font-bold text-slate-900 mb-2">
+                    --include-tests
+                  </h4>
+                  <p className="text-slate-600">
+                    Include test files in analysis (default: excluded)
+                  </p>
                   <div className="bg-slate-900 text-green-400 p-2 rounded font-mono text-sm mt-2">
                     npx @aiready/cli scan ./src --include-tests
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-slate-900 mb-2">--threshold &lt;number&gt;</h4>
-                  <p className="text-slate-600">Similarity threshold for pattern detection (0-1, default: 0.7)</p>
+                  <h4 className="font-bold text-slate-900 mb-2">
+                    --threshold &lt;number&gt;
+                  </h4>
+                  <p className="text-slate-600">
+                    Similarity threshold for pattern detection (0-1, default:
+                    0.7)
+                  </p>
                   <div className="bg-slate-900 text-green-400 p-2 rounded font-mono text-sm mt-2">
                     npx @aiready/cli patterns ./src --threshold 0.8
                   </div>
@@ -646,10 +826,14 @@ export default function DocsPage() {
 
           {/* Contributing */}
           <section id="contributing" className="mb-16">
-            <h2 className="text-4xl font-black text-slate-900 mb-6">Contributing</h2>
+            <h2 className="text-4xl font-black text-slate-900 mb-6">
+              Contributing
+            </h2>
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-8">
               <p className="text-slate-700 mb-4">
-                We welcome contributions! AIReady is open source and available on GitHub. Star our landing page or report issues for any of our tools.
+                We welcome contributions! AIReady is open source and available
+                on GitHub. Star our landing page or report issues for any of our
+                tools.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link

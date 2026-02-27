@@ -9,6 +9,7 @@ This guide covers deploying the AIReady landing page to production. The landing 
 A professional Next.js 16 landing page for aiready with:
 
 ### Features
+
 - ✅ Hero section with value proposition
 - ✅ Stats showcase (12K downloads, <1s speed, 91% accuracy)
 - ✅ Three tool cards (pattern-detect, context-analyzer, consistency)
@@ -20,6 +21,7 @@ A professional Next.js 16 landing page for aiready with:
 - ✅ Gradient branding (blue → cyan)
 
 ### Tech Stack
+
 - **Framework**: Next.js 16.1.2 (App Router)
 - **Styling**: Tailwind CSS v4
 - **Language**: TypeScript
@@ -56,16 +58,19 @@ pnpm --filter @aiready/landing start
 #### Quick Deploy
 
 1. **Install Vercel CLI** (if not installed):
+
 ```bash
 npm i -g vercel
 ```
 
 2. **Login to Vercel**:
+
 ```bash
 vercel login
 ```
 
 3. **Deploy from landing directory**:
+
 ```bash
 cd landing
 vercel
@@ -80,6 +85,7 @@ vercel
    - Want to override settings? **N** (auto-detection works great)
 
 5. **Production deploy**:
+
 ```bash
 vercel --prod
 ```
@@ -95,6 +101,7 @@ vercel --prod
 #### Configuration
 
 The project is configured in:
+
 - `vercel.json` - Vercel settings
 - `package.json` - Build commands
 - Auto-detects Next.js 16
@@ -112,6 +119,7 @@ Deploy your Next.js landing page to AWS using S3 + CloudFront (serverless, free 
 - ✅ **Lambda APIs**: Add backend functions easily (1M requests/month free)
 
 **Free tier includes:**
+
 - S3: 5GB storage, 20K GET requests, 2K PUT requests/month
 - CloudFront: 1TB data transfer out, 10M HTTP/HTTPS requests/month
 - **Lambda: 1M requests/month + 400K GB-seconds compute** (perfect for APIs!)
@@ -122,6 +130,7 @@ Deploy your Next.js landing page to AWS using S3 + CloudFront (serverless, free 
 **If your existing AWS account exceeds free tier**, create a new account:
 
 **Why separate accounts?**
+
 - ✅ Each AWS account gets **its own free tier** (12 months + always-free services)
 - ✅ Isolate billing and resources
 - ✅ Best practice for separating personal/work/projects
@@ -133,6 +142,7 @@ Deploy your Next.js landing page to AWS using S3 + CloudFront (serverless, free 
    - You'll get fresh free tier limits
 
 2. **Configure AWS CLI with new profile**:
+
    ```bash
    # Add profile for AIReady project
    aws configure --profile aiready
@@ -155,6 +165,7 @@ Deploy your Next.js landing page to AWS using S3 + CloudFront (serverless, free 
 Use SST Ion for automated AWS deployment:
 
 1. **Install SST CLI**:
+
 ```bash
 npm install -g sst
 ```
@@ -162,12 +173,14 @@ npm install -g sst
 2. **Configure AWS credentials** (see above)
 
 3. **Deploy**:
+
 ```bash
 # From monorepo root
 make deploy-landing
 ```
 
 This will:
+
 - Create S3 bucket for static files
 - Set up CloudFront CDN
 - Configure SSL certificate
@@ -179,6 +192,7 @@ This will:
 If you prefer manual setup:
 
 1. **Build the app**:
+
 ```bash
 cd landing
 pnpm build
@@ -186,6 +200,7 @@ pnpm export  # Creates 'out' directory
 ```
 
 2. **Upload to S3**:
+
 ```bash
 aws s3 sync out/ s3://your-bucket-name --profile aiready
 ```
@@ -198,21 +213,26 @@ aws s3 sync out/ s3://your-bucket-name --profile aiready
 ## Custom Domain Setup
 
 ### With Vercel
+
 1. Go to Vercel dashboard
 2. Project settings → Domains
 3. Add your domain (e.g., `getaiready.dev`)
 4. Follow DNS instructions
 
 ### With AWS
+
 1. **Purchase domain** on Cloudflare/Namecheap/etc
 2. **Update SST config** (`landing/sst.config.ts`):
+
 ```typescript
 domain: {
   name: "getaiready.dev",
   dns: sst.cloudflare.dns(), // or sst.aws.dns()
 }
 ```
+
 3. **Deploy**:
+
 ```bash
 make deploy-landing
 ```
@@ -284,15 +304,18 @@ cd landing && vercel --prod
 ## Troubleshooting
 
 ### Build Issues
+
 - Ensure Node.js 18+
 - Clear `.next` cache: `rm -rf landing/.next`
 
 ### Deployment Issues
+
 - Check AWS credentials: `aws sts get-caller-identity --profile aiready`
 - Verify domain DNS propagation (can take 24-48 hours)
 - Check Cloudflare zone status
 
 ### Performance
+
 - Images are optimized automatically
 - Static generation for fast loading
 - CDN distribution for global speed
@@ -304,4 +327,4 @@ cd landing && vercel --prod
 3. **Set up analytics** (optional)
 4. **Monitor lead capture** via email/S3
 5. **A/B test messaging** based on conversion data</content>
-<parameter name="filePath">/Users/pengcao/projects/aiready/.github/sub-instructions/landing-deployment.md
+   <parameter name="filePath">/Users/pengcao/projects/aiready/.github/sub-instructions/landing-deployment.md

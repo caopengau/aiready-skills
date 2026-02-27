@@ -1,18 +1,27 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 const data = [
-  { name: "Without AIReady", tokens: 100, color: "#ef4444" },
-  { name: "With AIReady", tokens: 60, color: "#10b981" },
+  { name: 'Without AIReady', tokens: 100, color: '#ef4444' },
+  { name: 'With AIReady', tokens: 60, color: '#10b981' },
 ];
 
 export default function InteractiveChart() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
     <motion.div
@@ -31,20 +40,31 @@ export default function InteractiveChart() {
           Save up to 40% on API costs by eliminating redundant context
         </p>
         <div className="h-80">
-          {typeof window !== "undefined" ? (
+          {typeof window !== 'undefined' ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="name" stroke="#64748b" />
-                <YAxis stroke="#64748b" label={{ value: 'Tokens (k)', angle: -90, position: 'insideLeft' }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(255, 255, 255, 0.95)",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "8px",
+                <YAxis
+                  stroke="#64748b"
+                  label={{
+                    value: 'Tokens (k)',
+                    angle: -90,
+                    position: 'insideLeft',
                   }}
                 />
-                <Bar dataKey="tokens" radius={[8, 8, 0, 0]} animationDuration={1500}>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Bar
+                  dataKey="tokens"
+                  radius={[8, 8, 0, 0]}
+                  animationDuration={1500}
+                >
                   {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}

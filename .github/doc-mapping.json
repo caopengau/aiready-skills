@@ -1,6 +1,6 @@
 {
   "_comment": "Hub-and-Spoke Documentation Map - Load relevant context for each topic",
-  
+
   "HUB_DOCS": {
     "project-overview": ".github/copilot-instructions.md#project-overview",
     "architecture": ".github/copilot-instructions.md#architecture",

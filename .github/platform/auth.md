@@ -16,12 +16,12 @@ This document covers OAuth login flows, token/session lifecycle, and security co
 
 ## Authentication Methods (Implemented)
 
-| Method | Status | Use Case | Flow |
-|--------|--------|----------|------|
-| **GitHub OAuth** | ✅ Implemented | Primary sign-in for developers | GitHub → Authorize → Session |
-| **Google OAuth** | ✅ Implemented | Convenience for users with Google accounts | Google → Authorize → Session |
-| **Email/Password** | ✅ Implemented | Traditional login | Email + Password → Verify → Session |
-| **Magic Link** | ✅ Implemented | Passwordless option | Email → Link → Verify → Session |
+| Method             | Status         | Use Case                                   | Flow                                |
+| ------------------ | -------------- | ------------------------------------------ | ----------------------------------- |
+| **GitHub OAuth**   | ✅ Implemented | Primary sign-in for developers             | GitHub → Authorize → Session        |
+| **Google OAuth**   | ✅ Implemented | Convenience for users with Google accounts | Google → Authorize → Session        |
+| **Email/Password** | ✅ Implemented | Traditional login                          | Email + Password → Verify → Session |
+| **Magic Link**     | ✅ Implemented | Passwordless option                        | Email → Link → Verify → Session     |
 
 ---
 
@@ -107,11 +107,11 @@ NEXTAUTH_URL=http://localhost:8888
 
 ### API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth/register` | POST | Create new account |
-| `/api/auth/signin` | POST | Sign in (NextAuth) |
-| `/api/auth/signout` | POST | Sign out (NextAuth) |
+| Endpoint             | Method | Description         |
+| -------------------- | ------ | ------------------- |
+| `/api/auth/register` | POST   | Create new account  |
+| `/api/auth/signin`   | POST   | Sign in (NextAuth)  |
+| `/api/auth/signout`  | POST   | Sign out (NextAuth) |
 
 ---
 
@@ -143,10 +143,10 @@ NEXTAUTH_URL=http://localhost:8888
 
 ### API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth/magic-link` | POST | Request magic link email |
-| `/api/auth/verify` | POST | Verify magic link token |
+| Endpoint               | Method | Description              |
+| ---------------------- | ------ | ------------------------ |
+| `/api/auth/magic-link` | POST   | Request magic link email |
+| `/api/auth/verify`     | POST   | Verify magic link token  |
 
 ### AWS SES Setup (Automated via SST)
 
@@ -154,20 +154,20 @@ SST automatically configures Cloudflare DNS for SES verification.
 
 **Dev vs Production:**
 
-| Environment | SES Domain | From Email | Site URL |
-|-------------|------------|------------|----------|
-| Dev | `dev.getaiready.dev` | `noreply@dev.getaiready.dev` | `dev.platform.getaiready.dev` |
-| Production | `getaiready.dev` | `noreply@getaiready.dev` | `platform.getaiready.dev` |
+| Environment | SES Domain           | From Email                   | Site URL                      |
+| ----------- | -------------------- | ---------------------------- | ----------------------------- |
+| Dev         | `dev.getaiready.dev` | `noreply@dev.getaiready.dev` | `dev.platform.getaiready.dev` |
+| Production  | `getaiready.dev`     | `noreply@getaiready.dev`     | `platform.getaiready.dev`     |
 
 **DNS Records Created Automatically:**
 
 Each environment gets its own set of DNS records:
 
-| Type | Name | Value | Purpose |
-|------|------|-------|---------|
-| CNAME (x3) | `{token}._domainkey.{domain}` | `{token}.dkim.amazonses.com` | DKIM signing |
-| TXT | `{domain}` | `v=spf1 include:amazonses.com ~all` | SPF authorization |
-| TXT | `_dmarc.{domain}` | `v=DMARC1; p=quarantine; ...` | DMARC policy |
+| Type       | Name                          | Value                               | Purpose           |
+| ---------- | ----------------------------- | ----------------------------------- | ----------------- |
+| CNAME (x3) | `{token}._domainkey.{domain}` | `{token}.dkim.amazonses.com`        | DKIM signing      |
+| TXT        | `{domain}`                    | `v=spf1 include:amazonses.com ~all` | SPF authorization |
+| TXT        | `_dmarc.{domain}`             | `v=DMARC1; p=quarantine; ...`       | DMARC policy      |
 
 **Deploy Commands:**
 
@@ -187,11 +187,13 @@ make deploy-platform-status
 ```
 
 **Prerequisites:**
+
 1. Set `CLOUDFLARE_ZONE_ID` environment variable
 2. Set `CLOUDFLARE_API_TOKEN` for DNS management
 3. Run `sst deploy` - DNS records are created automatically
 
 **Manual Steps:**
+
 1. For production: Request SES sending limit increase from AWS Support
 2. Monitor DMARC reports at `dmarc@getaiready.dev`
 
@@ -199,11 +201,11 @@ make deploy-platform-status
 
 ## Session & Token Lifecycle
 
-| Token Type | Lifetime | Storage | Purpose |
-|------------|----------|---------|---------|
-| **Auth Token** | 15 minutes | DynamoDB | One-time magic link verification |
-| **Session Token** | 7 days | HTTP-only cookie | Authenticated requests |
-| **Refresh Token** | 30 days | HTTP-only cookie | Session renewal |
+| Token Type        | Lifetime   | Storage          | Purpose                          |
+| ----------------- | ---------- | ---------------- | -------------------------------- |
+| **Auth Token**    | 15 minutes | DynamoDB         | One-time magic link verification |
+| **Session Token** | 7 days     | HTTP-only cookie | Authenticated requests           |
+| **Refresh Token** | 30 days    | HTTP-only cookie | Session renewal                  |
 
 ---
 
@@ -213,12 +215,12 @@ make deploy-platform-status
 // Available via getServerSession() or useSession()
 interface Session {
   user: {
-    id: string;       // DynamoDB User id (stored in JWT callback)
+    id: string; // DynamoDB User id (stored in JWT callback)
     email: string;
     name: string;
     image: string;
   };
-  expires: string;  // ISO timestamp
+  expires: string; // ISO timestamp
 }
 ```
 
@@ -243,10 +245,10 @@ All authenticated users land at `/dashboard` after sign-in, regardless of provid
 
 ## Security Considerations
 
-| Concern | Implementation |
-|---------|----------------|
-| **Rate limiting** | Max 5 magic link requests per email per hour |
-| **Token rotation** | New session token issued on refresh |
-| **Token revocation** | Deleting session from DynamoDB invalidates cookie |
-| **CSRF protection** | SameSite=Strict cookies + CSRF token in headers |
-| **Audit logging** | All auth events logged with IP, user agent, timestamp |
+| Concern              | Implementation                                        |
+| -------------------- | ----------------------------------------------------- |
+| **Rate limiting**    | Max 5 magic link requests per email per hour          |
+| **Token rotation**   | New session token issued on refresh                   |
+| **Token revocation** | Deleting session from DynamoDB invalidates cookie     |
+| **CSRF protection**  | SameSite=Strict cookies + CSRF token in headers       |
+| **Audit logging**    | All auth events logged with IP, user agent, timestamp |

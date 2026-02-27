@@ -5,6 +5,7 @@
 NPM download counts include ALL installations, which means:
 
 ### What Gets Counted:
+
 - ✅ Real users running `npx @aiready/cli`
 - ✅ Projects installing your package
 - ❌ **Your own CI/CD** testing installations
@@ -19,12 +20,13 @@ NPM download counts include ALL installations, which means:
 For a package with 2,689 downloads/week:
 
 **Realistic User Estimate:**
+
 ```
 Real Users ≈ (Total Downloads) / (Inflation Factor)
 
 Inflation factors:
 - New package, active dev: 50-100x
-- Stable package, little dev: 10-20x  
+- Stable package, little dev: 10-20x
 - Popular package: 5-10x
 
 Your case (Week 1): ~100x inflation
@@ -56,6 +58,7 @@ Real users: 2,689 / 100 = ~25-30 users
 ### Better Metrics for Real Users:
 
 #### Leading Indicators (Show Real Interest):
+
 - **GitHub stars** (1 = just you)
 - **Issues/PRs from strangers** (0 so far)
 - **Social mentions** (search Twitter/Reddit)
@@ -63,35 +66,39 @@ Real users: 2,689 / 100 = ~25-30 users
 - **Direct feedback** (email, comments)
 
 #### Lagging Indicators (Show Past Success):
+
 - NPM downloads (heavily inflated early on)
 - Dependents count (who depends on you)
 - Package rank on npms.io
 
 ### Honest Assessment Table:
 
-| Metric | Your Number | Reality Check |
-|--------|-------------|---------------|
-| NPM Downloads (7d) | 12,847 | 95% is you/CI/CD |
+| Metric                | Your Number | Reality Check     |
+| --------------------- | ----------- | ----------------- |
+| NPM Downloads (7d)    | 12,847      | 95% is you/CI/CD  |
 | Real Users (estimate) | **~50-100** | Based on patterns |
-| GitHub Stars | 1 | Just you |
-| External Dependents | 0 | No one yet |
-| Community Engagement | 0 | No strangers |
+| GitHub Stars          | 1           | Just you          |
+| External Dependents   | 0           | No one yet        |
+| Community Engagement  | 0           | No strangers      |
 
 ### When Will You Know It's Real?
 
 **Week 2-3 Signals:**
+
 - [ ] First stranger opens an issue
 - [ ] Someone stars without you asking
 - [ ] Download pattern stabilizes (not zero on quiet days)
 - [ ] Someone tweets about it
 
 **Month 2-3 Signals:**
+
 - [ ] 10+ organic GitHub stars
 - [ ] Strangers asking questions
 - [ ] Someone contributes a PR
 - [ ] Steady 100+ downloads/day after dev stops
 
 **Month 6+ Signals:**
+
 - [ ] 100+ stars
 - [ ] Other packages depend on you
 - [ ] Blog posts from others
@@ -113,6 +120,7 @@ gh api repos/caopengau/aiready/traffic/clones
 ### Method 2: Unique Visitor Tracking
 
 Add to your tools (opt-in only):
+
 ```typescript
 // Track unique anonymous users (with consent)
 // Store in simple analytics DB
@@ -138,21 +146,25 @@ gh search repos "@aiready/cli"
 ## Honest Growth Timeline
 
 **Week 1 (Now):**
+
 - Real users: 0-50
 - Mostly you testing
 - **Goal:** Ship stable versions, stop publishing
 
 **Week 2-4:**
+
 - Real users: 50-200
 - From your marketing efforts
 - **Goal:** Post to communities, write content
 
 **Month 2-3:**
+
 - Real users: 200-500
 - Organic discovery starting
 - **Goal:** SEO, more case studies
 
 **Month 6:**
+
 - Real users: 500-2,000
 - Sustainable growth
 - **Goal:** Community building
@@ -160,12 +172,14 @@ gh search repos "@aiready/cli"
 ## Action Items for Real Growth
 
 ### Stop Inflating Your Numbers:
+
 1. ✅ Stabilize versions (stop publishing daily)
 2. ✅ Use tags for pre-release (`npm publish --tag beta`)
 3. ✅ Test locally before publishing
 4. ✅ Set up proper CI/CD to avoid manual publishes
 
 ### Start Tracking Real Metrics:
+
 1. ✅ GitHub stars (most honest)
 2. ✅ Issues from strangers
 3. ✅ External package dependents
@@ -173,6 +187,7 @@ gh search repos "@aiready/cli"
 5. ✅ Traffic to docs/website
 
 ### Generate Real Usage:
+
 1. ✅ Post to Reddit/HN/Twitter
 2. ✅ Analyze popular repos, share findings
 3. ✅ Write blog posts with data
@@ -206,11 +221,13 @@ And that's OK! Most successful packages started this way:
 - Commander: 100 users first month
 
 **What matters:**
+
 - Your tools work (✅ you have this)
-- Quality is high (✅ 91% accuracy)  
+- Quality is high (✅ 91% accuracy)
 - You're marketing actively (← work on this)
 
 Don't be discouraged by "fake" download numbers. Focus on:
+
 1. Real engagement (stars, issues, mentions)
 2. Consistent marketing
 3. Building in public

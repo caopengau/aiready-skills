@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import ParallaxSection from "./ParallaxSection";
-import ToolShowcase from "./ToolShowcase";
+import { motion } from 'framer-motion';
+import ParallaxSection from './ParallaxSection';
+import ToolShowcase from './ToolShowcase';
 
 export function Features() {
   return (
@@ -17,17 +17,17 @@ export function Features() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
-              Three Powerful Tools,{" "}
+              Three Powerful Tools,{' '}
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 One Command
               </span>
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Identify what confuses AI models, optimize context usage, 
-              and unlock better AI collaboration—locally and safely.
+              Identify what confuses AI models, optimize context usage, and
+              unlock better AI collaboration—locally and safely.
             </p>
           </motion.div>
-          
+
           <ToolShowcase />
         </div>
       </ParallaxSection>

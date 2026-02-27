@@ -22,7 +22,11 @@ const DefaultSeparator = () => (
     strokeWidth="1.5"
     stroke="currentColor"
   >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+    />
   </svg>
 );
 
@@ -30,16 +34,17 @@ export function Breadcrumb({ items, separator, className }: BreadcrumbProps) {
   const Separator = separator || <DefaultSeparator />;
 
   return (
-    <nav className={cn('flex items-center gap-1 text-sm', className)} aria-label="Breadcrumb">
+    <nav
+      className={cn('flex items-center gap-1 text-sm', className)}
+      aria-label="Breadcrumb"
+    >
       <ol className="flex items-center gap-1">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
-          
+
           return (
             <li key={index} className="flex items-center gap-1">
-              {index > 0 && (
-                <span className="flex-shrink-0">{Separator}</span>
-              )}
+              {index > 0 && <span className="flex-shrink-0">{Separator}</span>}
               {item.href && !isLast ? (
                 <a
                   href={item.href}
@@ -48,7 +53,11 @@ export function Breadcrumb({ items, separator, className }: BreadcrumbProps) {
                   {item.label}
                 </a>
               ) : (
-                <span className={isLast ? 'font-medium text-slate-900' : 'text-slate-600'}>
+                <span
+                  className={
+                    isLast ? 'font-medium text-slate-900' : 'text-slate-600'
+                  }
+                >
                   {item.label}
                 </span>
               )}

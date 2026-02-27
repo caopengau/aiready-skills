@@ -1,56 +1,65 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef, useState } from "react";
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from "recharts";
-import { useEffect } from "react";
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef, useState } from 'react';
+import {
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  Radar,
+  ResponsiveContainer,
+} from 'recharts';
+import { useEffect } from 'react';
 
 const tools = [
   {
-    id: "pattern",
-    icon: "🛡️",
-    title: "Pattern Detection",
-    description: "Find semantic duplicates that look different but do the same thing.",
-    package: "@aiready/pattern-detect",
-    color: "from-blue-600 to-cyan-500",
+    id: 'pattern',
+    icon: '🛡️',
+    title: 'Pattern Detection',
+    description:
+      'Find semantic duplicates that look different but do the same thing.',
+    package: '@aiready/pattern-detect',
+    color: 'from-blue-600 to-cyan-500',
     stats: [
-      { metric: "Accuracy", value: 94 },
-      { metric: "Speed", value: 72 },
-      { metric: "Coverage", value: 88 },
+      { metric: 'Accuracy', value: 94 },
+      { metric: 'Speed', value: 72 },
+      { metric: 'Coverage', value: 88 },
     ],
   },
   {
-    id: "context",
-    icon: "📈",
-    title: "Context Analysis",
-    description: "Analyze import depth, cohesion, and fragmentation for AI optimization.",
-    package: "@aiready/context-analyzer",
-    color: "from-cyan-600 to-teal-500",
+    id: 'context',
+    icon: '📈',
+    title: 'Context Analysis',
+    description:
+      'Analyze import depth, cohesion, and fragmentation for AI optimization.',
+    package: '@aiready/context-analyzer',
+    color: 'from-cyan-600 to-teal-500',
     stats: [
-      { metric: "Accuracy", value: 98 },
-      { metric: "Speed", value: 96 },
-      { metric: "Coverage", value: 85 },
+      { metric: 'Accuracy', value: 98 },
+      { metric: 'Speed', value: 96 },
+      { metric: 'Coverage', value: 85 },
     ],
   },
   {
-    id: "consistency",
-    icon: "⚡",
-    title: "Consistency Checker",
-    description: "Catch naming issues and architectural drift before they become problems.",
-    package: "@aiready/consistency",
-    color: "from-purple-600 to-pink-500",
+    id: 'consistency',
+    icon: '⚡',
+    title: 'Consistency Checker',
+    description:
+      'Catch naming issues and architectural drift before they become problems.',
+    package: '@aiready/consistency',
+    color: 'from-purple-600 to-pink-500',
     stats: [
-      { metric: "Accuracy", value: 91 },
-      { metric: "Speed", value: 99 },
-      { metric: "Coverage", value: 93 },
+      { metric: 'Accuracy', value: 91 },
+      { metric: 'Speed', value: 99 },
+      { metric: 'Coverage', value: 93 },
     ],
   },
 ];
 
 export default function ToolShowcase() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
 
   return (
@@ -80,36 +89,55 @@ export default function ToolShowcase() {
           <div className="relative bg-white/80 backdrop-blur-sm p-8 rounded-3xl border border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-2xl h-full flex flex-col">
             {/* Icon with animation */}
             <motion.div
-              animate={hoveredTool === tool.id ? { rotate: [0, -10, 10, -10, 0] } : {}}
+              animate={
+                hoveredTool === tool.id ? { rotate: [0, -10, 10, -10, 0] } : {}
+              }
               transition={{ duration: 0.5 }}
               className={`w-16 h-16 bg-gradient-to-r ${tool.color} rounded-2xl flex items-center justify-center mb-4 text-3xl shadow-lg`}
             >
               {tool.icon}
             </motion.div>
 
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">{tool.title}</h3>
+            <h3 className="text-2xl font-bold text-slate-900 mb-3">
+              {tool.title}
+            </h3>
             <p className="text-slate-600 mb-4 flex-grow">{tool.description}</p>
 
             {/* Mini radar chart */}
             <div className="h-48 -mx-4 mb-4">
-              {typeof window !== "undefined" && (
+              {typeof window !== 'undefined' && (
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={tool.stats}>
-                  <PolarGrid stroke="#e2e8f0" />
-                  <PolarAngleAxis dataKey="metric" tick={{ fill: "#64748b", fontSize: 12 }} />
-                  <Radar
-                    name={tool.title}
-                    dataKey="value"
-                    stroke={`url(#gradient-${tool.id})`}
-                    fill={`url(#gradient-${tool.id})`}
-                    fillOpacity={0.6}
-                  />
-                  <defs>
-                    <linearGradient id={`gradient-${tool.id}`} x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor={tool.color.split(" ")[1]} />
-                      <stop offset="100%" stopColor={tool.color.split(" ")[3]} />
-                    </linearGradient>
-                  </defs>
+                    <PolarGrid stroke="#e2e8f0" />
+                    <PolarAngleAxis
+                      dataKey="metric"
+                      tick={{ fill: '#64748b', fontSize: 12 }}
+                    />
+                    <Radar
+                      name={tool.title}
+                      dataKey="value"
+                      stroke={`url(#gradient-${tool.id})`}
+                      fill={`url(#gradient-${tool.id})`}
+                      fillOpacity={0.6}
+                    />
+                    <defs>
+                      <linearGradient
+                        id={`gradient-${tool.id}`}
+                        x1="0"
+                        y1="0"
+                        x2="1"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor={tool.color.split(' ')[1]}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={tool.color.split(' ')[3]}
+                        />
+                      </linearGradient>
+                    </defs>
                   </RadarChart>
                 </ResponsiveContainer>
               )}

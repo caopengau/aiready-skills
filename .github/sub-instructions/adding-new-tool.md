@@ -118,6 +118,7 @@ program.parse();
 ### Step 6: Create `README.md`
 
 Document:
+
 - What problem it solves
 - Why it exists (vs alternatives)
 - Installation

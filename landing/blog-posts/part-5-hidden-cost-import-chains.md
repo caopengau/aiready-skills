@@ -54,7 +54,7 @@ Every import creates a **cascading context cost**:
 Modern AI models have context windows of 128K-1M tokens. Sounds like a lot, right? But in a real codebase:
 
 - **Average file**: 200-300 lines = 4,800-7,200 tokens
-- **With direct imports**: 800-1,200 lines = 19,200-28,800 tokens  
+- **With direct imports**: 800-1,200 lines = 19,200-28,800 tokens
 - **With deep chains**: 2,000+ lines = 48,000+ tokens
 - **Multiple related files**: Context exhaustion
 
@@ -93,6 +93,7 @@ Top files (now optimized):
 ```
 
 **Impact on AI Performance:**
+
 - Response time: Avg 8.2s → 3.1s (62% faster)
 - Context truncation errors: 34 → 2 (94% reduction)
 - Suggestions quality: Subjectively much better, AI now references correct patterns
@@ -119,12 +120,13 @@ export function calculate(x: number) {
 }
 
 // Depth 3+: Deep chain (EXPENSIVE)
-import { processUser } from './user-processor';  // imports 5 files
-  // └─ which imports './validators'             // imports 3 files
-  //     └─ which imports './validation-rules'   // imports 2 files
+import { processUser } from './user-processor'; // imports 5 files
+// └─ which imports './validators'             // imports 3 files
+//     └─ which imports './validation-rules'   // imports 2 files
 ```
 
 **Rule of thumb:**
+
 - Depth 0-2: ✅ Excellent (< 5,000 tokens)
 - Depth 3-4: ⚠️ Acceptable (5,000-15,000 tokens)
 - Depth 5+: ❌ Expensive (15,000+ tokens)
@@ -141,16 +143,17 @@ export function fetchUser(id: string) {
   return fetch(`${API_URL}/users/${id}`);
 }
 
-// Large budget (> 20,000 tokens) 
+// Large budget (> 20,000 tokens)
 // File: 200 lines, 8 imports, deep dependencies
-import { validateInput } from './validators';     // +4,500 tokens
-import { transformData } from './transformers';   // +6,200 tokens
-import { enrichUser } from './enrichment';        // +8,100 tokens
-import { formatResponse } from './formatters';    // +3,800 tokens
+import { validateInput } from './validators'; // +4,500 tokens
+import { transformData } from './transformers'; // +6,200 tokens
+import { enrichUser } from './enrichment'; // +8,100 tokens
+import { formatResponse } from './formatters'; // +3,800 tokens
 // ... more imports ...
 ```
 
 **Target zones:**
+
 - < 5,000 tokens: ✅ AI-friendly
 - 5,000-15,000 tokens: ⚠️ Monitor
 - 15,000+ tokens: ❌ Refactor needed
@@ -180,6 +183,7 @@ src/domain/user/
 **Why fragmentation matters:**
 
 When AI tries to understand user-related features, it must:
+
 - Load 8 separate files (fragmented) vs 3 files (consolidated)
 - Parse 3,200+ lines vs 800 lines
 - Navigate 24+ imports vs 6 imports
@@ -193,33 +197,55 @@ How well a file focuses on one responsibility:
 // LOW COHESION (mixed concerns)
 // user-service.ts
 export class UserService {
-  validateEmail() { /* validation logic */ }
-  sendEmail() { /* email sending logic */ }
-  formatUserName() { /* formatting logic */ }
-  logUserAction() { /* logging logic */ }
-  encryptPassword() { /* crypto logic */ }
-  renderUserProfile() { /* rendering logic */ }
+  validateEmail() {
+    /* validation logic */
+  }
+  sendEmail() {
+    /* email sending logic */
+  }
+  formatUserName() {
+    /* formatting logic */
+  }
+  logUserAction() {
+    /* logging logic */
+  }
+  encryptPassword() {
+    /* crypto logic */
+  }
+  renderUserProfile() {
+    /* rendering logic */
+  }
 }
 
 // HIGH COHESION (single responsibility)
 // user-service.ts
 export class UserService {
-  createUser() { /* user creation */ }
-  updateUser() { /* user updates */ }
-  deleteUser() { /* user deletion */ }
-  getUserById() { /* user retrieval */ }
+  createUser() {
+    /* user creation */
+  }
+  updateUser() {
+    /* user updates */
+  }
+  deleteUser() {
+    /* user deletion */
+  }
+  getUserById() {
+    /* user retrieval */
+  }
 }
 ```
 
 **Cohesion calculation:**
 
 The tool analyzes:
+
 - Method names and their similarity
 - Import types (business logic vs utilities vs external)
 - File path and naming conventions
 - Return types and parameter types
 
 Scores:
+
 - 80-100%: ✅ Highly cohesive (focused responsibility)
 - 60-79%: ⚠️ Moderate cohesion (some mixing)
 - < 60%: ❌ Low cohesion (refactor into separate modules)
@@ -232,21 +258,21 @@ Scores:
 // Pseudo-code of the analysis
 function analyzeDependencies(entryFile: string) {
   const graph = new DependencyGraph();
-  
+
   function traverse(file: string, depth: number = 0) {
     const ast = parseFile(file);
     const imports = extractImports(ast);
-    
+
     for (const imp of imports) {
       const resolvedPath = resolveImport(imp, file);
       graph.addEdge(file, resolvedPath, depth + 1);
-      
+
       if (depth < MAX_DEPTH) {
         traverse(resolvedPath, depth + 1);
       }
     }
   }
-  
+
   traverse(entryFile);
   return graph;
 }
@@ -258,21 +284,21 @@ function analyzeDependencies(entryFile: string) {
 function calculateContextBudget(file: string, graph: DependencyGraph) {
   let totalTokens = 0;
   const visited = new Set();
-  
+
   function countTokens(currentFile: string) {
     if (visited.has(currentFile)) return;
     visited.add(currentFile);
-    
+
     const content = readFile(currentFile);
     const tokens = estimateTokens(content); // ~24 tokens per 100 chars
     totalTokens += tokens;
-    
+
     // Recursively count dependencies
     for (const dep of graph.getDependencies(currentFile)) {
       countTokens(dep);
     }
   }
-  
+
   countTokens(file);
   return totalTokens;
 }
@@ -283,7 +309,7 @@ function calculateContextBudget(file: string, graph: DependencyGraph) {
 ```typescript
 function detectFragmentation(files: string[]) {
   const domains = new Map();
-  
+
   for (const file of files) {
     const domain = extractDomain(file); // e.g., "user", "receipt"
     if (!domains.has(domain)) {
@@ -291,14 +317,14 @@ function detectFragmentation(files: string[]) {
     }
     domains.get(domain).push(file);
   }
-  
+
   // Flag domains split across many files
   return [...domains.entries()]
     .filter(([_, files]) => files.length > 5)
     .map(([domain, files]) => ({
       domain,
       fileCount: files.length,
-      fragmentationScore: calculateFragmentation(files)
+      fragmentationScore: calculateFragmentation(files),
     }));
 }
 ```
@@ -310,7 +336,7 @@ function analyzeCohesion(file: string) {
   const ast = parseFile(file);
   const exports = extractExports(ast);
   const imports = extractImports(ast);
-  
+
   // Analyze semantic similarity of exports
   const similarities = [];
   for (let i = 0; i < exports.length - 1; i++) {
@@ -319,14 +345,15 @@ function analyzeCohesion(file: string) {
       similarities.push(sim);
     }
   }
-  
+
   // High average similarity = high cohesion
-  const avgSimilarity = similarities.reduce((a, b) => a + b, 0) / similarities.length;
-  
+  const avgSimilarity =
+    similarities.reduce((a, b) => a + b, 0) / similarities.length;
+
   // Penalty for mixed import types
   const importTypes = categorizeImports(imports);
   const mixedPenalty = Object.keys(importTypes).length > 3 ? 0.2 : 0;
-  
+
   return Math.max(0, avgSimilarity - mixedPenalty);
 }
 ```
@@ -350,22 +377,23 @@ import { notifyUser } from '../notifications/user-notifier';
 
 export async function processReceipt(imageUrl: string, userId: string) {
   logProcessing('start', userId);
-  
+
   const validation = validateReceipt(imageUrl);
   if (!validation.valid) throw new Error('Invalid receipt');
-  
+
   const ocrResult = await parseReceiptImage(imageUrl);
   const lineItems = extractLineItems(ocrResult);
   const totals = calculateTotals(lineItems);
   const enriched = await enrichMerchantData(ocrResult.merchant, lineItems);
-  
+
   await notifyUser(userId, 'Receipt processed');
-  
+
   return formatReceiptResponse({ lineItems, totals, merchant: enriched });
 }
 ```
 
 **Dependency tree:**
+
 ```
 receipt-processor.ts (180 lines, 4,302 tokens)
   ├─ receipt-validator.ts (94 lines, 2,247 tokens)
@@ -403,7 +431,10 @@ export class ReceiptService {
     private ocrProvider: OCRProvider
   ) {}
 
-  async processReceipt(imageUrl: string, userId: string): Promise<ReceiptTypes.ProcessedReceipt> {
+  async processReceipt(
+    imageUrl: string,
+    userId: string
+  ): Promise<ReceiptTypes.ProcessedReceipt> {
     // Validation (inline, simple)
     if (!this.isValidImageUrl(imageUrl)) {
       throw new ReceiptTypes.ValidationError('Invalid image URL');
@@ -416,7 +447,7 @@ export class ReceiptService {
     const receipt = this.buildReceipt(ocrResult);
     const lineItems = this.parseLineItems(ocrResult.text);
     const totals = this.calculateTotals(lineItems);
-    
+
     // Enrichment (co-located)
     const merchant = await this.enrichMerchant(ocrResult.merchantName);
 
@@ -426,7 +457,7 @@ export class ReceiptService {
       lineItems,
       totals,
       merchant,
-      userId
+      userId,
     });
 
     return saved;
@@ -458,6 +489,7 @@ export class ReceiptService {
 ```
 
 **New dependency tree:**
+
 ```
 receipt.service.ts (245 lines, 5,856 tokens)
   ├─ receipt.repository.ts (87 lines, 2,078 tokens)
@@ -472,21 +504,25 @@ Reduction: 47,821 → 8,234 tokens (82.8% decrease)
 ### What Changed?
 
 **1. Consolidated scattered logic:**
+
 - 8 separate files → 1 service file
 - Related functions co-located
 - Clear domain boundary
 
 **2. Inlined simple utilities:**
+
 - `validateReceipt`: 94 lines → 3 lines (simple inline check)
 - `calculateTotals`: 78 lines → 15 lines (removed abstraction overhead)
 - `parseLineItems`: 167 lines → 30 lines (removed generic parsers)
 
 **3. Removed unnecessary abstractions:**
+
 - Separate formatter → methods on service
 - Separate logger → focused logging where needed
 - Notification → moved to message queue trigger
 
 **4. Created thin wrappers:**
+
 - OCR client: Fat client (203 lines) → thin provider (45 lines)
 - Repository: Focused data access only
 
@@ -507,6 +543,7 @@ npx @aiready/context-analyzer ./src --sort-by budget --limit 10
 ### Step 2: Prioritize Refactoring
 
 Focus on:
+
 - **High-traffic files**: API handlers, services, core business logic
 - **High-budget files**: > 15,000 tokens
 - **Deep chains**: Depth > 5
@@ -587,10 +624,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      
+
       - name: Analyze context budget
         run: npx @aiready/context-analyzer ./src --threshold 15000
-        
+
       - name: Check for regressions
         run: |
           npx @aiready/context-analyzer ./src --output current.json
@@ -615,6 +652,7 @@ fi
 ## The Bottom Line
 
 Import chains are **invisible expensive**. Every import adds context cost that:
+
 - Slows down AI responses
 - Increases token usage (costs money on paid APIs)
 - Causes context truncation errors
@@ -647,16 +685,19 @@ npx @aiready/cli scan --score
 ```
 
 **Before you refactor:**
+
 - Measure your current context budget
 - Identify top offenders (top 10 files by token cost)
 - Pick one domain to consolidate
 
 **After you refactor:**
+
 - Measure again
 - Calculate percentage improvement
 - Share your results!
 
 **Resources:**
+
 - GitHub: [github.com/caopengau/aiready-cli](https://github.com/caopengau/aiready-cli)
 - Docs: [aiready.dev](https://aiready.dev)
 - Report issues: [github.com/caopengau/aiready-cli/issues](https://github.com/caopengau/aiready-cli/issues)
@@ -667,4 +708,4 @@ npx @aiready/cli scan --score
 
 ---
 
-*Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimizing codebases for AI adoption.*
+_Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimizing codebases for AI adoption._

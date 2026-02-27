@@ -17,7 +17,9 @@ const STORAGE_KEY = 'aiready-theme';
 
 function getSystemTheme(): EffectiveTheme {
   if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 }
 
 function getStoredTheme(): Theme {
@@ -102,7 +104,13 @@ export function ThemeProvider({
   // Prevent hydration mismatch
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: defaultTheme, setTheme: () => {}, effectiveTheme: 'light' }}>
+      <ThemeContext.Provider
+        value={{
+          theme: defaultTheme,
+          setTheme: () => {},
+          effectiveTheme: 'light',
+        }}
+      >
         {children}
       </ThemeContext.Provider>
     );

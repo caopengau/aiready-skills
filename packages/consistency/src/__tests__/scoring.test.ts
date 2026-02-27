@@ -52,8 +52,12 @@ describe('Consistency Scoring', () => {
       // score = 100 - 3 - 4 = 93
       expect(result.score).toBe(93);
       expect(result.rawMetrics.criticalIssues).toBe(2);
-      expect(result.factors.some(f => f.name === 'Critical Issues')).toBe(true);
-      expect(result.recommendations.some(r => r.priority === 'high')).toBe(true);
+      expect(result.factors.some((f) => f.name === 'Critical Issues')).toBe(
+        true
+      );
+      expect(result.recommendations.some((r) => r.priority === 'high')).toBe(
+        true
+      );
     });
 
     it('should apply weighted severity penalties', () => {
@@ -84,8 +88,14 @@ describe('Consistency Scoring', () => {
 
     it('should generate appropriate recommendations', () => {
       const issues: ConsistencyIssue[] = [
-        ...Array(3).fill({ severity: 'critical', category: 'naming' } as ConsistencyIssue),
-        ...Array(10).fill({ severity: 'major', category: 'patterns' } as ConsistencyIssue),
+        ...Array(3).fill({
+          severity: 'critical',
+          category: 'naming',
+        } as ConsistencyIssue),
+        ...Array(10).fill({
+          severity: 'major',
+          category: 'patterns',
+        } as ConsistencyIssue),
       ];
 
       const result = calculateConsistencyScore(
@@ -98,8 +108,12 @@ describe('Consistency Scoring', () => {
       );
 
       expect(result.recommendations.length).toBeGreaterThan(0);
-      expect(result.recommendations.some(r => r.action.includes('critical'))).toBe(true);
-      expect(result.recommendations.some(r => r.action.includes('naming'))).toBe(true);
+      expect(
+        result.recommendations.some((r) => r.action.includes('critical'))
+      ).toBe(true);
+      expect(
+        result.recommendations.some((r) => r.action.includes('naming'))
+      ).toBe(true);
     });
 
     it('should handle edge case of zero files', () => {
@@ -121,14 +135,25 @@ describe('Consistency Scoring', () => {
 
       const result = calculateConsistencyScore(issues, 10);
 
-      expect(result.recommendations.some(r => r.action.includes('linter'))).toBe(true);
+      expect(
+        result.recommendations.some((r) => r.action.includes('linter'))
+      ).toBe(true);
     });
 
     it('should combine all penalty types', () => {
       const issues: ConsistencyIssue[] = [
-        ...Array(10).fill({ severity: 'critical', category: 'naming' } as ConsistencyIssue),
-        ...Array(20).fill({ severity: 'major', category: 'patterns' } as ConsistencyIssue),
-        ...Array(40).fill({ severity: 'minor', category: 'naming' } as ConsistencyIssue),
+        ...Array(10).fill({
+          severity: 'critical',
+          category: 'naming',
+        } as ConsistencyIssue),
+        ...Array(20).fill({
+          severity: 'major',
+          category: 'patterns',
+        } as ConsistencyIssue),
+        ...Array(40).fill({
+          severity: 'minor',
+          category: 'naming',
+        } as ConsistencyIssue),
       ];
 
       const result = calculateConsistencyScore(

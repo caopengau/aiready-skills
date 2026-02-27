@@ -46,7 +46,9 @@ export function scoreGlow(score: number | null | undefined): string {
 /**
  * Get rating from score (for use with ScoreBar component)
  */
-export function getScoreRating(score: number | null | undefined): 'excellent' | 'good' | 'fair' | 'needs-work' | 'critical' {
+export function getScoreRating(
+  score: number | null | undefined
+): 'excellent' | 'good' | 'fair' | 'needs-work' | 'critical' {
   if (score == null) return 'critical';
   if (score >= 90) return 'excellent';
   if (score >= 75) return 'good';

@@ -5,6 +5,7 @@ Thank you for your interest in contributing to AIReady Visualizer! We welcome bu
 ## 🎯 What is Visualizer?
 
 The Visualizer transforms AIReady analysis results into **interactive force-directed graph visualizations**. It helps you understand:
+
 - **Dependency graphs**: How files connect through imports
 - **Issue overlays**: Where problems are located in your codebase
 - **Cluster analysis**: How your code is organized into domains
@@ -37,6 +38,7 @@ The Visualizer follows a **hub-and-spoke** pattern:
 ## 🐛 Reporting Issues
 
 Found a bug or have a feature request? [Open an issue](https://github.com/caopengau/aiready-visualizer/issues) with:
+
 - Clear description of the problem or feature
 - Steps to reproduce (for bugs)
 - Expected vs actual behavior
@@ -68,6 +70,7 @@ pnpm test
 ## 📝 Making Changes
 
 1. **Fork the repository** and create a new branch:
+
    ```bash
    git checkout -b fix/graph-layout
    # or
@@ -81,15 +84,17 @@ pnpm test
    - Keep visualization logic modular
 
 3. **Test your changes**:
+
    ```bash
    pnpm build
    pnpm test
-   
+
    # Generate sample visualization
    ./dist/cli.js sample -o test.html
    ```
 
 4. **Commit using conventional commits**:
+
    ```bash
    git commit -m "fix: correct node positioning"
    git commit -m "feat: add zoom controls"
@@ -121,13 +126,14 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 - Verify responsive behavior
 
 Example test:
+
 ```typescript
 import { GraphBuilder } from './src/graph/builder';
 
 test('builds graph from analysis results', () => {
   const report = { files: [...], dependencies: [...] };
   const graph = GraphBuilder.buildFromReport(report, '/project');
-  
+
   expect(graph.nodes).toHaveLength(10);
   expect(graph.edges).toHaveLength(15);
 });
@@ -160,6 +166,7 @@ packages/visualizer/
 ### Adding a New Visualization Feature
 
 1. For CLI tools, edit `src/cli.ts`:
+
    ```typescript
    program
      .command('new-command')
@@ -170,6 +177,7 @@ packages/visualizer/
    ```
 
 2. For web features, add to `web/src/components/`:
+
    ```typescript
    export function YourFeature() {
      // Your React component
@@ -184,6 +192,7 @@ packages/visualizer/
 ## 🎯 Areas for Contribution
 
 Great places to start:
+
 - **New visualizations**: Add new chart types or views
 - **Interactivity**: Improve drag, zoom, pan behaviors
 - **Performance**: Optimize for large graphs
@@ -194,6 +203,7 @@ Great places to start:
 ## 💡 Feature Ideas
 
 Looking for inspiration? Consider:
+
 - Clustering by module/domain
 - Timeline views for changes
 - Filter by issue type/severity

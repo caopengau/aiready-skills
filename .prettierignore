@@ -23,3 +23,8 @@ yarn.lock
 # OS
 .DS_Store
 Thumbs.db
+
+# Ignore files that Prettier cannot parse in this repo
+.github/
+action-marketplace/
+packages/visualizer/web/

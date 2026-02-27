@@ -5,7 +5,13 @@ import { analyzeContext, generateSummary } from './index';
 import chalk from 'chalk';
 import { writeFileSync, existsSync, readFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
-import { loadMergedConfig, handleJSONOutput, handleCLIError, getElapsedTime, resolveOutputPath } from '@aiready/core';
+import {
+  loadMergedConfig,
+  handleJSONOutput,
+  handleCLIError,
+  getElapsedTime,
+  resolveOutputPath,
+} from '@aiready/core';
 import prompts from 'prompts';
 
 const program = new Command();
@@ -14,7 +20,10 @@ program
   .name('aiready-context')
   .description('Analyze AI context window cost and code structure')
   .version('0.1.0')
-  .addHelpText('after', '\nCONFIGURATION:\n  Supports config files: aiready.json, aiready.config.json, .aiready.json, .aireadyrc.json, aiready.config.js, .aireadyrc.js\n  CLI options override config file settings')
+  .addHelpText(
+    'after',
+    '\nCONFIGURATION:\n  Supports config files: aiready.json, aiready.config.json, .aiready.json, .aireadyrc.json, aiready.config.js, .aireadyrc.js\n  CLI options override config file settings'
+  )
   .argument('<directory>', 'Directory to analyze')
   .option('--max-depth <number>', 'Maximum acceptable import depth')
   .option(
@@ -33,14 +42,20 @@ program
   .option('--include-node-modules', 'Include node_modules in analysis')
   .option('--include <patterns>', 'File patterns to include (comma-separated)')
   .option('--exclude <patterns>', 'File patterns to exclude (comma-separated)')
-  .option('--max-results <number>', 'Maximum number of results to show in console output')
+  .option(
+    '--max-results <number>',
+    'Maximum number of results to show in console output'
+  )
   .option(
     '-o, --output <format>',
     'Output format: console, json, html',
     'console'
   )
   .option('--output-file <path>', 'Output file path (for json/html)')
-  .option('--interactive', 'Run interactive setup to suggest excludes and focus areas')
+  .option(
+    '--interactive',
+    'Run interactive setup to suggest excludes and focus areas'
+  )
   .action(async (directory, options) => {
     console.log(chalk.blue('🔍 Analyzing context window costs...\n'));
 
@@ -61,17 +76,27 @@ program
       };
 
       // Load and merge config with CLI options
-      let finalOptions = await loadMergedConfig(directory, defaults, {
+      let finalOptions = (await loadMergedConfig(directory, defaults, {
         maxDepth: options.maxDepth ? parseInt(options.maxDepth) : undefined,
-        maxContextBudget: options.maxContext ? parseInt(options.maxContext) : undefined,
-        minCohesion: options.minCohesion ? parseFloat(options.minCohesion) : undefined,
-        maxFragmentation: options.maxFragmentation ? parseFloat(options.maxFragmentation) : undefined,
-        focus: (options.focus as 'fragmentation' | 'cohesion' | 'depth' | 'all') || undefined,
+        maxContextBudget: options.maxContext
+          ? parseInt(options.maxContext)
+          : undefined,
+        minCohesion: options.minCohesion
+          ? parseFloat(options.minCohesion)
+          : undefined,
+        maxFragmentation: options.maxFragmentation
+          ? parseFloat(options.maxFragmentation)
+          : undefined,
+        focus:
+          (options.focus as 'fragmentation' | 'cohesion' | 'depth' | 'all') ||
+          undefined,
         includeNodeModules: options.includeNodeModules,
         include: options.include?.split(','),
         exclude: options.exclude?.split(','),
-        maxResults: options.maxResults ? parseInt(options.maxResults) : undefined,
-      }) as any;
+        maxResults: options.maxResults
+          ? parseInt(options.maxResults)
+          : undefined,
+      })) as any;
 
       // Optional: interactive setup to refine options for first-time users
       if (options.interactive) {
@@ -96,8 +121,12 @@ program
           `context-report-${new Date().toISOString().split('T')[0]}.json`,
           directory
         );
-        
-        handleJSONOutput(jsonOutput, outputPath, `\n✓ JSON report saved to ${outputPath}`);
+
+        handleJSONOutput(
+          jsonOutput,
+          outputPath,
+          `\n✓ JSON report saved to ${outputPath}`
+        );
         return;
       }
 
@@ -108,20 +137,25 @@ program
           `context-report-${new Date().toISOString().split('T')[0]}.html`,
           directory
         );
-        
+
         const dir = dirname(outputPath);
         if (!existsSync(dir)) {
           mkdirSync(dir, { recursive: true });
         }
-        
+
         writeFileSync(outputPath, html);
         console.log(chalk.green(`\n✓ HTML report saved to ${outputPath}`));
         return;
       }
 
       // Console output
-      displayConsoleReport(summary, results, elapsedTime, finalOptions.maxResults);
-      
+      displayConsoleReport(
+        summary,
+        results,
+        elapsedTime,
+        finalOptions.maxResults
+      );
+
       // Show tuning guidance after results
       displayTuningGuidance(results, finalOptions);
     } catch (error) {
@@ -138,35 +172,105 @@ function displayTuningGuidance(
   results: Awaited<ReturnType<typeof analyzeContext>>,
   options: any
 ): void {
-  const issueCount = results.filter(r => r.severity !== 'info').length;
-  
+  const issueCount = results.filter((r) => r.severity !== 'info').length;
+
   if (issueCount === 0) {
-    console.log(chalk.green('\n✨ No optimization opportunities found! Your code is well-structured for AI context usage.\n'));
+    console.log(
+      chalk.green(
+        '\n✨ No optimization opportunities found! Your code is well-structured for AI context usage.\n'
+      )
+    );
     return;
   }
-  
+
   console.log(chalk.cyan('\n━'.repeat(60)));
   console.log(chalk.bold.white('  TUNING GUIDANCE'));
   console.log(chalk.cyan('━'.repeat(60) + '\n'));
-  
+
   if (issueCount < 5) {
-    console.log(chalk.yellow('📊 Showing few optimization opportunities. To find more areas to improve:\n'));
-    console.log(chalk.dim('   • Lower --max-depth (currently: ' + options.maxDepth + ') to catch shallower import chains'));
-    console.log(chalk.dim('   • Lower --max-context (currently: ' + options.maxContextBudget.toLocaleString() + ') to catch smaller files'));
-    console.log(chalk.dim('   • Raise --min-cohesion (currently: ' + (options.minCohesion * 100).toFixed(0) + '%) to be stricter about mixed concerns'));
-    console.log(chalk.dim('   • Lower --max-fragmentation (currently: ' + (options.maxFragmentation * 100).toFixed(0) + '%) to catch scattered code\n'));
+    console.log(
+      chalk.yellow(
+        '📊 Showing few optimization opportunities. To find more areas to improve:\n'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Lower --max-depth (currently: ' +
+          options.maxDepth +
+          ') to catch shallower import chains'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Lower --max-context (currently: ' +
+          options.maxContextBudget.toLocaleString() +
+          ') to catch smaller files'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Raise --min-cohesion (currently: ' +
+          (options.minCohesion * 100).toFixed(0) +
+          '%) to be stricter about mixed concerns'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Lower --max-fragmentation (currently: ' +
+          (options.maxFragmentation * 100).toFixed(0) +
+          '%) to catch scattered code\n'
+      )
+    );
   } else if (issueCount > 20) {
-    console.log(chalk.yellow('📊 Showing many opportunities. To focus on highest-impact areas:\n'));
-    console.log(chalk.dim('   • Raise --max-depth (currently: ' + options.maxDepth + ') to only catch very deep chains'));
-    console.log(chalk.dim('   • Raise --max-context (currently: ' + options.maxContextBudget.toLocaleString() + ') to focus on largest files'));
-    console.log(chalk.dim('   • Lower --min-cohesion (currently: ' + (options.minCohesion * 100).toFixed(0) + '%) to only flag severe mixed concerns'));
-    console.log(chalk.dim('   • Raise --max-fragmentation (currently: ' + (options.maxFragmentation * 100).toFixed(0) + '%) to only flag highly scattered code\n'));
+    console.log(
+      chalk.yellow(
+        '📊 Showing many opportunities. To focus on highest-impact areas:\n'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Raise --max-depth (currently: ' +
+          options.maxDepth +
+          ') to only catch very deep chains'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Raise --max-context (currently: ' +
+          options.maxContextBudget.toLocaleString() +
+          ') to focus on largest files'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Lower --min-cohesion (currently: ' +
+          (options.minCohesion * 100).toFixed(0) +
+          '%) to only flag severe mixed concerns'
+      )
+    );
+    console.log(
+      chalk.dim(
+        '   • Raise --max-fragmentation (currently: ' +
+          (options.maxFragmentation * 100).toFixed(0) +
+          '%) to only flag highly scattered code\n'
+      )
+    );
   } else {
-    console.log(chalk.green('📊 Good balance of optimization opportunities (showing ' + issueCount + ' areas)\n'));
+    console.log(
+      chalk.green(
+        '📊 Good balance of optimization opportunities (showing ' +
+          issueCount +
+          ' areas)\n'
+      )
+    );
     console.log(chalk.dim('   💡 Tip: Adjust thresholds if needed:'));
-    console.log(chalk.dim('      aiready-context . --max-depth N --max-context N --min-cohesion 0.X\n'));
+    console.log(
+      chalk.dim(
+        '      aiready-context . --max-depth N --max-context N --min-cohesion 0.X\n'
+      )
+    );
   }
-  
+
   console.log(chalk.dim('   📖 See README for detailed tuning guide\n'));
 }
 
@@ -188,9 +292,13 @@ function displayConsoleReport(
   console.log(chalk.cyan(divider) + '\n');
 
   // Overview
-  console.log(chalk.white(`📁 Files analyzed: ${chalk.bold(summary.totalFiles)}`));
   console.log(
-    chalk.white(`📊 Total tokens: ${chalk.bold(summary.totalTokens.toLocaleString())}`)
+    chalk.white(`📁 Files analyzed: ${chalk.bold(summary.totalFiles)}`)
+  );
+  console.log(
+    chalk.white(
+      `📊 Total tokens: ${chalk.bold(summary.totalTokens.toLocaleString())}`
+    )
   );
   console.log(
     chalk.yellow(
@@ -217,7 +325,9 @@ function displayConsoleReport(
       );
     }
     if (summary.minorIssues > 0) {
-      console.log(chalk.blue(`   🔵 Minor: ${chalk.bold(summary.minorIssues)}`));
+      console.log(
+        chalk.blue(`   🔵 Minor: ${chalk.bold(summary.minorIssues)}`)
+      );
     }
     console.log(
       chalk.green(
@@ -297,8 +407,8 @@ function displayConsoleReport(
         item.severity === 'critical'
           ? chalk.red
           : item.severity === 'major'
-          ? chalk.yellow
-          : chalk.blue;
+            ? chalk.yellow
+            : chalk.blue;
 
       console.log(
         `   ${severityColor('●')} ${chalk.white(fileName)} ${chalk.dim(`- ${item.contextBudget.toLocaleString()} tokens`)}`
@@ -333,7 +443,9 @@ function displayConsoleReport(
     )
   );
   console.log(
-    chalk.dim('🐛 Found a bug? Report it: https://github.com/caopengau/aiready-context-analyzer/issues\n')
+    chalk.dim(
+      '🐛 Found a bug? Report it: https://github.com/caopengau/aiready-context-analyzer/issues\n'
+    )
   );
 }
 
@@ -346,6 +458,9 @@ function generateHTMLReport(
 ): string {
   const totalIssues =
     summary.criticalIssues + summary.majorIssues + summary.minorIssues;
+
+  // 'results' may be used in templates later; reference to avoid lint warnings
+  void results;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -449,7 +564,9 @@ function generateHTMLReport(
     </div>
   </div>
 
-  ${totalIssues > 0 ? `
+  ${
+    totalIssues > 0
+      ? `
   <div class="card" style="margin-bottom: 30px;">
     <h2>⚠️ Issues Summary</h2>
     <p>
@@ -459,9 +576,13 @@ function generateHTMLReport(
     </p>
     <p><strong>Potential Savings:</strong> ${summary.totalPotentialSavings.toLocaleString()} tokens</p>
   </div>
-  ` : ''}
+  `
+      : ''
+  }
 
-  ${summary.fragmentedModules.length > 0 ? `
+  ${
+    summary.fragmentedModules.length > 0
+      ? `
   <div class="card" style="margin-bottom: 30px;">
     <h2>🧩 Fragmented Modules</h2>
     <table>
@@ -474,20 +595,28 @@ function generateHTMLReport(
         </tr>
       </thead>
       <tbody>
-        ${summary.fragmentedModules.map(m => `
+        ${summary.fragmentedModules
+          .map(
+            (m) => `
           <tr>
             <td>${m.domain}</td>
             <td>${m.files.length}</td>
             <td>${(m.fragmentationScore * 100).toFixed(0)}%</td>
             <td>${m.totalTokens.toLocaleString()}</td>
           </tr>
-        `).join('')}
+        `
+          )
+          .join('')}
       </tbody>
     </table>
   </div>
-  ` : ''}
+  `
+      : ''
+  }
 
-  ${summary.topExpensiveFiles.length > 0 ? `
+  ${
+    summary.topExpensiveFiles.length > 0
+      ? `
   <div class="card" style="margin-bottom: 30px;">
     <h2>💸 Most Expensive Files</h2>
     <table>
@@ -499,17 +628,23 @@ function generateHTMLReport(
         </tr>
       </thead>
       <tbody>
-        ${summary.topExpensiveFiles.map(f => `
+        ${summary.topExpensiveFiles
+          .map(
+            (f) => `
           <tr>
             <td>${f.file}</td>
             <td>${f.contextBudget.toLocaleString()} tokens</td>
             <td class="issue-${f.severity}">${f.severity.toUpperCase()}</td>
           </tr>
-        `).join('')}
+        `
+          )
+          .join('')}
       </tbody>
     </table>
   </div>
-  ` : ''}
+  `
+      : ''
+  }
 
   <div class="footer">
     <p>Generated by <strong>@aiready/context-analyzer</strong></p>
@@ -523,7 +658,10 @@ function generateHTMLReport(
 /**
  * Interactive setup: detect common frameworks and suggest excludes & focus areas
  */
-async function runInteractiveSetup(directory: string, current: any): Promise<any> {
+async function runInteractiveSetup(
+  directory: string,
+  current: any
+): Promise<any> {
   console.log(chalk.yellow('🧭 Interactive mode: let’s tailor the analysis.'));
 
   const pkgPath = join(directory, 'package.json');
@@ -532,17 +670,29 @@ async function runInteractiveSetup(directory: string, current: any): Promise<any
     try {
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
       deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-    } catch {}
+    } catch (e) {
+      void e;
+      // Ignore parse errors, use empty deps
+    }
   }
 
   const hasNextJs = existsSync(join(directory, '.next')) || !!deps['next'];
-  const hasCDK = existsSync(join(directory, 'cdk.out')) || !!deps['aws-cdk-lib'] || Object.keys(deps).some(d => d.startsWith('@aws-cdk/'));
+  const hasCDK =
+    existsSync(join(directory, 'cdk.out')) ||
+    !!deps['aws-cdk-lib'] ||
+    Object.keys(deps).some((d) => d.startsWith('@aws-cdk/'));
 
   const recommendedExcludes = new Set<string>(current.exclude || []);
-  if (hasNextJs && !Array.from(recommendedExcludes).some((p) => p.includes('.next'))) {
+  if (
+    hasNextJs &&
+    !Array.from(recommendedExcludes).some((p) => p.includes('.next'))
+  ) {
     recommendedExcludes.add('**/.next/**');
   }
-  if (hasCDK && !Array.from(recommendedExcludes).some((p) => p.includes('cdk.out'))) {
+  if (
+    hasCDK &&
+    !Array.from(recommendedExcludes).some((p) => p.includes('cdk.out'))
+  ) {
     recommendedExcludes.add('**/cdk.out/**');
   }
 
@@ -555,7 +705,7 @@ async function runInteractiveSetup(directory: string, current: any): Promise<any
     inactive: 'no',
   });
 
-  let nextOptions = { ...current };
+  const nextOptions = { ...current };
   if (applyExcludes) {
     nextOptions.exclude = Array.from(recommendedExcludes);
   }
@@ -574,9 +724,23 @@ async function runInteractiveSetup(directory: string, current: any): Promise<any
 
   if (focusArea === 'frontend') {
     nextOptions.include = ['**/*.{ts,tsx,js,jsx}'];
-    nextOptions.exclude = Array.from(new Set([...(nextOptions.exclude || []), '**/cdk.out/**', '**/infra/**', '**/server/**', '**/backend/**']));
+    nextOptions.exclude = Array.from(
+      new Set([
+        ...(nextOptions.exclude || []),
+        '**/cdk.out/**',
+        '**/infra/**',
+        '**/server/**',
+        '**/backend/**',
+      ])
+    );
   } else if (focusArea === 'backend') {
-    nextOptions.include = ['**/api/**', '**/server/**', '**/backend/**', '**/infra/**', '**/*.{ts,js,py,java}'];
+    nextOptions.include = [
+      '**/api/**',
+      '**/server/**',
+      '**/backend/**',
+      '**/infra/**',
+      '**/*.{ts,js,py,java}',
+    ];
   }
 
   console.log(chalk.green('✓ Interactive configuration applied.'));

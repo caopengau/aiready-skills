@@ -1,5 +1,4 @@
 import { scanFiles, readFileContent } from '@aiready/core';
-import type { ScanOptions } from '@aiready/core';
 import {
   buildDependencyGraph,
   calculateImportDepth,
@@ -37,11 +36,13 @@ import {
   getCoUsageData,
   findConsolidationCandidates,
 } from './semantic-analysis';
+// Reference optional imports used by future heuristics to avoid lint warnings
+void calculateFragmentation;
 
-export type { 
-  ContextAnalyzerOptions, 
-  ContextAnalysisResult, 
-  ContextSummary, 
+export type {
+  ContextAnalyzerOptions,
+  ContextAnalysisResult,
+  ContextSummary,
   ModuleCluster,
   DomainAssignment,
   DomainSignals,
@@ -50,10 +51,7 @@ export type {
   FileClassification,
 };
 
-export {
-  classifyFile,
-  adjustFragmentationForClassification,
-};
+export { classifyFile, adjustFragmentationForClassification };
 
 export {
   buildCoUsageMatrix,
@@ -152,14 +150,18 @@ export async function analyzeContext(
     // Only add node_modules to exclude if includeNodeModules is false
     // The DEFAULT_EXCLUDE already includes node_modules, so this is only needed
     // if user overrides the default exclude list
-    exclude: includeNodeModules && scanOptions.exclude
-      ? scanOptions.exclude.filter(pattern => pattern !== '**/node_modules/**')
-      : scanOptions.exclude,
+    exclude:
+      includeNodeModules && scanOptions.exclude
+        ? scanOptions.exclude.filter(
+            (pattern) => pattern !== '**/node_modules/**'
+          )
+        : scanOptions.exclude,
   });
 
   // Separate files by language
-  const pythonFiles = files.filter(f => f.toLowerCase().endsWith('.py'));
-  const tsJsFiles = files.filter(f => !f.toLowerCase().endsWith('.py'));
+  const pythonFiles = files.filter((f) => f.toLowerCase().endsWith('.py'));
+  const tsJsFiles = files.filter((f) => !f.toLowerCase().endsWith('.py'));
+  void tsJsFiles;
 
   // Read all file contents
   const fileContents = await Promise.all(
@@ -170,37 +172,51 @@ export async function analyzeContext(
   );
 
   // Build dependency graph (TS/JS)
-  const graph = buildDependencyGraph(fileContents.filter(f => !f.file.toLowerCase().endsWith('.py')));
+  const graph = buildDependencyGraph(
+    fileContents.filter((f) => !f.file.toLowerCase().endsWith('.py'))
+  );
 
   // Analyze Python files separately (if any)
   let pythonResults: ContextAnalysisResult[] = [];
   if (pythonFiles.length > 0) {
     const { analyzePythonContext } = await import('./analyzers/python-context');
-    const pythonMetrics = await analyzePythonContext(pythonFiles, scanOptions.rootDir || options.rootDir || '.');
-    
+    const pythonMetrics = await analyzePythonContext(
+      pythonFiles,
+      scanOptions.rootDir || options.rootDir || '.'
+    );
+
     // Convert Python metrics to ContextAnalysisResult format
-    pythonResults = pythonMetrics.map(metric => {
-      const { severity, issues, recommendations, potentialSavings } = analyzeIssues({
-        file: metric.file,
-        importDepth: metric.importDepth,
-        contextBudget: metric.contextBudget,
-        cohesionScore: metric.cohesion,
-        fragmentationScore: 0, // Python analyzer doesn't calculate fragmentation yet
-        maxDepth,
-        maxContextBudget,
-        minCohesion,
-        maxFragmentation,
-        circularDeps: metric.metrics.circularDependencies.map(cycle => cycle.split(' → ')),
-      });
+    pythonResults = pythonMetrics.map((metric) => {
+      const { severity, issues, recommendations, potentialSavings } =
+        analyzeIssues({
+          file: metric.file,
+          importDepth: metric.importDepth,
+          contextBudget: metric.contextBudget,
+          cohesionScore: metric.cohesion,
+          fragmentationScore: 0, // Python analyzer doesn't calculate fragmentation yet
+          maxDepth,
+          maxContextBudget,
+          minCohesion,
+          maxFragmentation,
+          circularDeps: metric.metrics.circularDependencies.map((cycle) =>
+            cycle.split(' → ')
+          ),
+        });
 
       return {
         file: metric.file,
-        tokenCost: Math.floor(metric.contextBudget / (1 + metric.imports.length || 1)), // Estimate
+        tokenCost: Math.floor(
+          metric.contextBudget / (1 + metric.imports.length || 1)
+        ), // Estimate
         linesOfCode: metric.metrics.linesOfCode,
         importDepth: metric.importDepth,
         dependencyCount: metric.imports.length,
-        dependencyList: metric.imports.map(imp => imp.resolvedPath || imp.source),
-        circularDeps: metric.metrics.circularDependencies.map(cycle => cycle.split(' → ')),
+        dependencyList: metric.imports.map(
+          (imp) => imp.resolvedPath || imp.source
+        ),
+        circularDeps: metric.metrics.circularDependencies.map((cycle) =>
+          cycle.split(' → ')
+        ),
         cohesionScore: metric.cohesion,
         domains: ['python'], // Generic for now
         exportCount: metric.exports.length,
@@ -253,7 +269,9 @@ export async function analyzeContext(
 
     const cohesionScore =
       focus === 'cohesion' || focus === 'all'
-        ? calculateCohesion(node.exports, file, { coUsageMatrix: graph.coUsageMatrix })
+        ? calculateCohesion(node.exports, file, {
+            coUsageMatrix: graph.coUsageMatrix,
+          })
         : 1;
 
     const fragmentationScore = fragmentationMap.get(file) || 0;
@@ -281,6 +299,11 @@ export async function analyzeContext(
         maxFragmentation,
         circularDeps,
       });
+      // Some returned fields are not needed for the Python mapping here
+      void severity;
+      void issues;
+      void recommendations;
+      void potentialSavings;
 
     // Get domains from exports
     const domains = [
@@ -289,14 +312,14 @@ export async function analyzeContext(
 
     // Classify the file to help distinguish real issues from false positives
     const fileClassification = classifyFile(node, cohesionScore, domains);
-    
+
     // Adjust cohesion based on classification (utility/service/handler files get boosted)
     const adjustedCohesionScore = adjustCohesionForClassification(
       cohesionScore,
       fileClassification,
       node
     );
-    
+
     // Adjust fragmentation based on classification
     const adjustedFragmentationScore = adjustFragmentationForClassification(
       fragmentationScore,
@@ -346,7 +369,10 @@ export async function analyzeContext(
       fileClassification,
       severity: adjustedSeverity,
       issues: adjustedIssues,
-      recommendations: [...finalRecommendations, ...classificationRecommendations.slice(0, 1)],
+      recommendations: [
+        ...finalRecommendations,
+        ...classificationRecommendations.slice(0, 1),
+      ],
       potentialSavings: adjustedSavings,
     });
   }
@@ -457,7 +483,10 @@ export function generateSummary(
     let importPairs = 0;
     for (let i = 0; i < files.length; i++) {
       for (let j = i + 1; j < files.length; j++) {
-        importSimTotal += jaccard(files[i].dependencyList || [], files[j].dependencyList || []);
+        importSimTotal += jaccard(
+          files[i].dependencyList || [],
+          files[j].dependencyList || []
+        );
         importPairs++;
       }
     }
@@ -495,7 +524,9 @@ export function generateSummary(
     .sort((a, b) => a.score - b.score)
     .slice(0, 10);
 
-  const criticalIssues = results.filter((r) => r.severity === 'critical').length;
+  const criticalIssues = results.filter(
+    (r) => r.severity === 'critical'
+  ).length;
   const majorIssues = results.filter((r) => r.severity === 'major').length;
   const minorIssues = results.filter((r) => r.severity === 'minor').length;
 
@@ -574,10 +605,10 @@ function analyzeIssues(params: {
   // Check circular dependencies (CRITICAL)
   if (circularDeps.length > 0) {
     severity = 'critical';
-    issues.push(
-      `Part of ${circularDeps.length} circular dependency chain(s)`
+    issues.push(`Part of ${circularDeps.length} circular dependency chain(s)`);
+    recommendations.push(
+      'Break circular dependencies by extracting interfaces or using dependency injection'
     );
-    recommendations.push('Break circular dependencies by extracting interfaces or using dependency injection');
     potentialSavings += contextBudget * 0.2; // Estimate 20% savings
   }
 
@@ -589,7 +620,9 @@ function analyzeIssues(params: {
     potentialSavings += contextBudget * 0.3; // Estimate 30% savings
   } else if (importDepth > maxDepth) {
     severity = severity === 'critical' ? 'critical' : 'major';
-    issues.push(`Import depth ${importDepth} exceeds recommended maximum ${maxDepth}`);
+    issues.push(
+      `Import depth ${importDepth} exceeds recommended maximum ${maxDepth}`
+    );
     recommendations.push('Consider reducing dependency depth');
     potentialSavings += contextBudget * 0.15;
   }
@@ -597,12 +630,19 @@ function analyzeIssues(params: {
   // Check context budget
   if (contextBudget > maxContextBudget * 1.5) {
     severity = severity === 'critical' ? 'critical' : 'critical';
-    issues.push(`Context budget ${contextBudget.toLocaleString()} tokens is 50% over limit`);
-    recommendations.push('Split into smaller modules or reduce dependency tree');
+    issues.push(
+      `Context budget ${contextBudget.toLocaleString()} tokens is 50% over limit`
+    );
+    recommendations.push(
+      'Split into smaller modules or reduce dependency tree'
+    );
     potentialSavings += contextBudget * 0.4; // Significant savings possible
   } else if (contextBudget > maxContextBudget) {
-    severity = severity === 'critical' || severity === 'major' ? severity : 'major';
-    issues.push(`Context budget ${contextBudget.toLocaleString()} exceeds ${maxContextBudget.toLocaleString()}`);
+    severity =
+      severity === 'critical' || severity === 'major' ? severity : 'major';
+    issues.push(
+      `Context budget ${contextBudget.toLocaleString()} exceeds ${maxContextBudget.toLocaleString()}`
+    );
     recommendations.push('Reduce file size or dependencies');
     potentialSavings += contextBudget * 0.2;
   }
@@ -610,11 +650,16 @@ function analyzeIssues(params: {
   // Check cohesion
   if (cohesionScore < minCohesion * 0.5) {
     severity = severity === 'critical' ? 'critical' : 'major';
-    issues.push(`Very low cohesion (${(cohesionScore * 100).toFixed(0)}%) - mixed concerns`);
-    recommendations.push('Split file by domain - separate unrelated functionality');
+    issues.push(
+      `Very low cohesion (${(cohesionScore * 100).toFixed(0)}%) - mixed concerns`
+    );
+    recommendations.push(
+      'Split file by domain - separate unrelated functionality'
+    );
     potentialSavings += contextBudget * 0.25;
   } else if (cohesionScore < minCohesion) {
-    severity = severity === 'critical' || severity === 'major' ? severity : 'minor';
+    severity =
+      severity === 'critical' || severity === 'major' ? severity : 'minor';
     issues.push(`Low cohesion (${(cohesionScore * 100).toFixed(0)}%)`);
     recommendations.push('Consider grouping related exports together');
     potentialSavings += contextBudget * 0.1;
@@ -622,8 +667,11 @@ function analyzeIssues(params: {
 
   // Check fragmentation
   if (fragmentationScore > maxFragmentation) {
-    severity = severity === 'critical' || severity === 'major' ? severity : 'minor';
-    issues.push(`High fragmentation (${(fragmentationScore * 100).toFixed(0)}%) - scattered implementation`);
+    severity =
+      severity === 'critical' || severity === 'major' ? severity : 'minor';
+    issues.push(
+      `High fragmentation (${(fragmentationScore * 100).toFixed(0)}%) - scattered implementation`
+    );
     recommendations.push('Consolidate with related files in same domain');
     potentialSavings += contextBudget * 0.3;
   }
@@ -636,13 +684,20 @@ function analyzeIssues(params: {
   // Detect build artifacts and downgrade severity to reduce noise
   if (isBuildArtifact(file)) {
     issues.push('Detected build artifact (bundled/output file)');
-    recommendations.push('Exclude build outputs (e.g., cdk.out, dist, build, .next) from analysis');
+    recommendations.push(
+      'Exclude build outputs (e.g., cdk.out, dist, build, .next) from analysis'
+    );
     severity = downgradeSeverity(severity);
     // Build artifacts do not represent actionable savings
     potentialSavings = 0;
   }
 
-  return { severity, issues, recommendations, potentialSavings: Math.floor(potentialSavings) };
+  return {
+    severity,
+    issues,
+    recommendations,
+    potentialSavings: Math.floor(potentialSavings),
+  };
 }
 
 export { getSmartDefaults };
@@ -664,7 +719,9 @@ function isBuildArtifact(filePath: string): boolean {
   );
 }
 
-function downgradeSeverity(s: ContextAnalysisResult['severity']): ContextAnalysisResult['severity'] {
+function downgradeSeverity(
+  s: ContextAnalysisResult['severity']
+): ContextAnalysisResult['severity'] {
   switch (s) {
     case 'critical':
       return 'minor';

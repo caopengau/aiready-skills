@@ -3,6 +3,7 @@
 ## Hub-and-Spoke Git Architecture
 
 AIReady uses a **hub-and-spoke git architecture** where:
+
 - **Public Entry Point:** `https://github.com/caopengau/aiready-cli` - The CLI tool users install
 - **Spokes:** Individual GitHub repos for each package (e.g., `aiready-cli`, `aiready-core`)
 
@@ -18,6 +19,7 @@ AIReady uses a **hub-and-spoke git architecture** where:
 ### Always Use Makefiles for Git Operations
 
 **❌ NEVER do this:**
+
 ```bash
 git add .
 git commit -m "changes"
@@ -25,6 +27,7 @@ git push origin main
 ```
 
 **✅ ALWAYS do this:**
+
 ```bash
 # After making changes
 make push-all  # Syncs monorepo + all spokes
@@ -62,11 +65,13 @@ Spoke Repos:
 ### Critical Rules
 
 #### 1. Never Commit Directly to Spoke Repos
+
 - All development happens in the monorepo
 - Spoke repos are read-only mirrors (auto-updated)
 - External contributions must be synced back using `make sync-from-spoke`
 
 #### 2. Always Use `make push-all` After Commits
+
 ```bash
 # Workflow:
 git add .
@@ -75,6 +80,7 @@ make push-all  # ← This syncs everything
 ```
 
 #### 3. Check Repository Status Regularly
+
 ```bash
 # See all repo statuses
 make release-status
@@ -84,6 +90,7 @@ git status
 ```
 
 #### 4. Handle External Contributions
+
 ```bash
 # When someone contributes to a spoke repo directly:
 make sync-from-spoke SPOKE=cli
@@ -92,6 +99,7 @@ make sync-from-spoke SPOKE=cli
 ### Common Git Scenarios
 
 #### New Feature Development
+
 ```bash
 # 1. Work in monorepo
 cd packages/cli
@@ -106,6 +114,7 @@ make push-all
 ```
 
 #### Bug Fix
+
 ```bash
 # 1. Fix in monorepo
 # 2. Test: make test
@@ -114,6 +123,7 @@ make push-all
 ```
 
 #### Release Process
+
 ```bash
 # 1. Check status
 make release-status
@@ -127,6 +137,7 @@ make release-one SPOKE=cli TYPE=patch
 ### Troubleshooting Git Issues
 
 #### "Repository not found" Error
+
 ```bash
 # Create the missing spoke repo first
 gh repo create caopengau/aiready-{spoke-name} --public
@@ -136,6 +147,7 @@ make publish SPOKE={spoke-name}
 ```
 
 #### Out of Sync Repos
+
 ```bash
 # Force sync all spokes
 make push-all
@@ -145,6 +157,7 @@ make push SPOKE=cli
 ```
 
 #### External Changes in Spoke
+
 ```bash
 # Pull changes back to monorepo
 make sync-from-spoke SPOKE=cli

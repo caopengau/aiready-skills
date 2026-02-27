@@ -5,7 +5,9 @@ import type { TestabilityReport } from './types';
 /**
  * Convert testability report into a ToolScoringOutput for the unified score.
  */
-export function calculateTestabilityScore(report: TestabilityReport): ToolScoringOutput {
+export function calculateTestabilityScore(
+  report: TestabilityReport
+): ToolScoringOutput {
   const { summary, rawData, recommendations } = report;
 
   const factors: ToolScoringOutput['factors'] = [
@@ -36,13 +38,17 @@ export function calculateTestabilityScore(report: TestabilityReport): ToolScorin
     },
   ];
 
-  const recs: ToolScoringOutput['recommendations'] = recommendations.map(action => ({
-    action,
-    estimatedImpact: summary.aiChangeSafetyRating === 'blind-risk' ? 15 : 8,
-    priority: summary.aiChangeSafetyRating === 'blind-risk' || summary.aiChangeSafetyRating === 'high-risk'
-      ? 'high'
-      : 'medium',
-  }));
+  const recs: ToolScoringOutput['recommendations'] = recommendations.map(
+    (action) => ({
+      action,
+      estimatedImpact: summary.aiChangeSafetyRating === 'blind-risk' ? 15 : 8,
+      priority:
+        summary.aiChangeSafetyRating === 'blind-risk' ||
+        summary.aiChangeSafetyRating === 'high-risk'
+          ? 'high'
+          : 'medium',
+    })
+  );
 
   return {
     toolName: 'testability',

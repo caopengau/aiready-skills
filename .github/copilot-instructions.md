@@ -9,10 +9,12 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 ### Packages (all in `packages/` directory)
 
 **Hubs:**
+
 - **[@aiready/core](packages/core)** - Shared utilities and types (HUB) - v0.9.22
 - **[@aiready/cli](packages/cli)** - Unified CLI interface (HUB) - v0.9.26
 
 **Spokes:**
+
 - **[@aiready/pattern-detect](packages/pattern-detect)** - Semantic duplicate detection - v0.11.22
 - **[@aiready/context-analyzer](packages/context-analyzer)** - Context window cost & dependency fragmentation - v0.9.26
 - **[@aiready/consistency](packages/consistency)** - Naming conventions and pattern consistency - v0.8.22
@@ -21,6 +23,7 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 - **[@aiready/skills](packages/skills)** - Agent skills for AI assistants - v0.1.0
 
 **Extension:**
+
 - **[aiready](packages/vscode-extension)** - VS Code extension - v0.3.5
 
 ### Distribution Channels
@@ -40,6 +43,7 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 - **Spokes:** Individual analysis tools importing only from core, integrated via CLI
 
 **Key Rules:**
+
 - Hubs: No spoke dependencies
 - Spokes: Import only from core, focus on one problem, comply with CLI specs
 - All spokes must integrate with CLI (--output, --include, --exclude, unified format)
@@ -52,6 +56,7 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 **AWS Profile:** `AWS_PROFILE=aiready` (defined in makefiles/Makefile.shared.mk)
 
 **⚠️ BEFORE deploying, SST operations, or any AWS commands:**
+
 1. ✅ **ALWAYS verify AWS account first:**
    ```bash
    aws sts get-caller-identity
@@ -66,6 +71,7 @@ AIReady is a monorepo with tools for assessing AI-readiness and improving AI lev
 4. ❌ **NEVER assume AWS credentials are correct**
 
 **If wrong account detected:**
+
 ```bash
 # Immediately remove deployment:
 cd landing && pnpm sst remove --stage production
@@ -83,12 +89,14 @@ aws configure --profile aiready
 **Load:** `git-workflow` from doc-mapping.json
 
 **Key Rules (Never Forget):**
+
 - ❌ **NEVER** commit directly to spoke repos
 - ✅ **ALWAYS** use `make sync` after monorepo commits
 - ✅ **ALWAYS** develop in the monorepo hub
 - ✅ **ALWAYS** check `make release-status` before releases
 
 **Workflow:**
+
 ```bash
 # After changes in monorepo:
 git add .
@@ -99,6 +107,7 @@ make sync  # ← This syncs ALL repos automatically
 ## Publishing & Distribution
 
 ### Make Commands for Publishing
+
 ```bash
 make help                    # Show all available commands
 make publish-vscode          # Publish VS Code extension (requires VSCE_PAT)
@@ -108,21 +117,25 @@ make sync                    # Sync all spokes to GitHub repos
 ```
 
 ### VS Code Extension
+
 - Location: `packages/vscode-extension/`
 - Publisher: `pengcao`
 - Requires `VSCE_PAT` in `packages/vscode-extension/.env`
 - Market: https://marketplace.visualstudio.com/items?itemName=pengcao.aiready
 
 ### GitHub Action
+
 - Location: `action-marketplace/`
 - Published automatically via GitHub release workflow
 - Market: https://github.com/marketplace/actions/aiready-action
 
 ### Docker
+
 - Images: `aiready/cli` (Docker Hub), `ghcr.io/caopengau/aiready/cli`
 - Build: `docker build -f docker/Dockerfile -t aiready/cli .`
 
 ### Homebrew
+
 - Formula: `homebrew/aiready.rb`
 - Install: `brew install caopengau/aiready/aiready`
 

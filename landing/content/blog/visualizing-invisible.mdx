@@ -1,11 +1,19 @@
 ---
-title: "Visualizing the Invisible: Seeing the Shape of AI Code Debt"
-date: "2026-02-21"
+title: 'Visualizing the Invisible: Seeing the Shape of AI Code Debt'
+date: '2026-02-21'
 excerpt: "Lists of lint errors fail to convey the structural complexity of AI-generated code. Learn to spot 'The Hairball', 'The Orphans', and 'The Butterflies' by visualizing your codebase's dependency graph."
-author: "Peng Cao"
-tags: ["AI Code Debt", "Software Architecture", "Team Management", "Visualization", "D3.js", "Tech Debt"]
-readingTime: "8 min read"
-slug: "visualizing-invisible"
+author: 'Peng Cao'
+tags:
+  [
+    'AI Code Debt',
+    'Software Architecture',
+    'Team Management',
+    'Visualization',
+    'D3.js',
+    'Tech Debt',
+  ]
+readingTime: '8 min read'
+slug: 'visualizing-invisible'
 ---
 
 > Part 6 of "The AI Code Debt Tsunami" series
@@ -13,14 +21,18 @@ slug: "visualizing-invisible"
 ---
 
 <div className="my-8 max-w-4xl mx-auto">
-	<img src="/series-6-visualise-invisible-debt.png" alt="Visualizing the Invisible - cover" className="w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800" />
+  <img
+    src="/series-6-visualise-invisible-debt.png"
+    alt="Visualizing the Invisible - cover"
+    className="w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800"
+  />
 </div>
 
 When we talk about technical debt, we usually talk about lists. A linter report with 450 warnings. A backlog with 32 "refactoring" tickets. A SonarQube dashboard showing 15% duplication.
 
 But for AI-generated code, lists are deceiving. "15 duplicates" sounds manageable—until you realize they are all slight variations of your core authentication logic spread across five different micro-frontends.
 
-Text-based metrics fail to convey **structural complexity**. They tell you *what* is wrong, but not *where* it fits in the bigger picture. In the age of "vibe coding," where code is generated faster than it can be read, we need a new way to understand our systems. We need to see the shape of our debt.
+Text-based metrics fail to convey **structural complexity**. They tell you _what_ is wrong, but not _where_ it fits in the bigger picture. In the age of "vibe coding," where code is generated faster than it can be read, we need a new way to understand our systems. We need to see the shape of our debt.
 
 ## The Solution: Introducing the AIReady Visualizer
 
@@ -59,7 +71,8 @@ When we run the visualizer on "vibe-coded" projects, three distinct patterns eme
 **What it looks like:** A single node with massive connections radiating out (high fan-out) or pointing in (high fan-in). Often seen in files named `utils/index.ts` or `types/common.ts`.
 
 **The Problem:** These files are bottlenecks and context bloat.
-- **High Fan-In:** Changing this file breaks *everything*. AI agents struggle to predict the blast radius of changes here.
+
+- **High Fan-In:** Changing this file breaks _everything_. AI agents struggle to predict the blast radius of changes here.
 - **High Fan-Out:** Importing this file brings in a massive tree of unnecessary dependencies, polluting the AI's context window with irrelevant code.
 
 **The Fix:** Split these "god objects" into smaller, deeper modules.
@@ -74,10 +87,11 @@ Under the hood, the AIReady Visualizer combines two powerful tools:
 ## Use Case: Bridging the "Vibe" Gap
 
 We're seeing a growing divide in engineering teams:
-- **The "Vibe Coders":** Junior devs or founders using AI to ship features at breakneck speed. Their focus is *output*.
-- **The Engineering Managers:** Seniors trying to maintain stability and scalability. Their focus is *structure*.
 
-The visualizer bridges this gap. It's hard to explain abstract architectural principles to a junior dev who just wants to "ship it." It's much easier to show them a giant, tangled "Hairball" and say, *"See this knot? This is why your build takes 15 minutes and why the AI keeps getting confused."*
+- **The "Vibe Coders":** Junior devs or founders using AI to ship features at breakneck speed. Their focus is _output_.
+- **The Engineering Managers:** Seniors trying to maintain stability and scalability. Their focus is _structure_.
+
+The visualizer bridges this gap. It's hard to explain abstract architectural principles to a junior dev who just wants to "ship it." It's much easier to show them a giant, tangled "Hairball" and say, _"See this knot? This is why your build takes 15 minutes and why the AI keeps getting confused."_
 
 Visuals turn abstract "best practices" into concrete, observable reality.
 
@@ -105,8 +119,14 @@ The output gives you:
 - A **shareable HTML report** you can open anywhere — no tooling required
 
 <div style="max-width:720px;margin:1.5rem auto;text-align:center;">
-	<img src="/example-visualisation.png" alt="Example AIReady visualisation" style="width:100%;border-radius:8px;box-shadow:0 10px 30px rgba(2,6,23,0.12);" />
-	<p style="font-size:0.9rem;color:#6b7280;margin-top:0.5rem;">Example visualiser output highlighting clusters and token-cost overlays.</p>
+  <img
+    src="/example-visualisation.png"
+    alt="Example AIReady visualisation"
+    style="width:100%;border-radius:8px;box-shadow:0 10px 30px rgba(2,6,23,0.12);"
+  />
+  <p style="font-size:0.9rem;color:#6b7280;margin-top:0.5rem;">
+    Example visualiser output highlighting clusters and token-cost overlays.
+  </p>
 </div>
 
 ## What's Next
@@ -118,13 +138,14 @@ This wraps up the six-part "AI Code Debt Tsunami" series. If you've followed alo
 3. **What** metrics actually capture AI-readiness
 4. **How** to detect semantic duplicates automatically
 5. **How** to measure and reduce import-chain context costs
-6. **How** to *see* the shape of your debt visually ← You are here
+6. **How** to _see_ the shape of your debt visually ← You are here
 
-The natural next step is moving from *detection* to *remediation* — which is exactly what the AIReady Platform (currently in beta) is designed to do: auto-generated refactoring plans, trend tracking over time, and team-level benchmarks.
+The natural next step is moving from _detection_ to _remediation_ — which is exactly what the AIReady Platform (currently in beta) is designed to do: auto-generated refactoring plans, trend tracking over time, and team-level benchmarks.
 
 ---
 
 **Resources:**
+
 - GitHub: [github.com/caopengau/aiready-cli](https://github.com/caopengau/aiready-cli)
 - Docs: [aiready.dev](https://aiready.dev)
 - Report issues: [github.com/caopengau/aiready-cli/issues](https://github.com/caopengau/aiready-cli/issues)
@@ -135,11 +156,12 @@ The natural next step is moving from *detection* to *remediation* — which is e
 
 ---
 
-*Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimising codebases for AI adoption.*
+_Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimising codebases for AI adoption._
 
 ---
 
 **Read the full series:**
+
 - [Part 1: The AI Code Debt Tsunami is Here (And We're Not Ready)](/blog/ai-code-debt-tsunami)
 - [Part 2: Why Your Codebase is Invisible to AI](/blog/invisible-codebase)
 - [Part 3: AI Code Quality Metrics That Actually Matter](/blog/metrics-that-actually-matter)

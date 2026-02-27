@@ -19,29 +19,35 @@ This is one of the most critical issues for AI comprehension because it directly
 ```typescript
 // user.types.ts
 interface User {
-  id: string
-  email: string
+  id: string;
+  email: string;
 }
 
 // profile.types.ts
 interface UserProfile {
-  userId: string
-  email: string
-  name: string
+  userId: string;
+  email: string;
+  name: string;
 }
 
 // api.types.ts
 interface UserData {
-  id: string
-  emailAddress: string
-  displayName: string
+  id: string;
+  emailAddress: string;
+  displayName: string;
 }
 
 // Three different interfaces for the same concept!
 // AI cannot determine which to use where
-function updateUser(user: User) { /* ... */ }
-function getProfile(userId: string): UserProfile { /* ... */ }
-function syncData(data: UserData) { /* ... */ }
+function updateUser(user: User) {
+  /* ... */
+}
+function getProfile(userId: string): UserProfile {
+  /* ... */
+}
+function syncData(data: UserData) {
+  /* ... */
+}
 ```
 
 **Correct (unified interface):**
@@ -49,24 +55,31 @@ function syncData(data: UserData) { /* ... */ }
 ```typescript
 // user.types.ts
 interface User {
-  id: string
-  email: string
-  name?: string // Optional fields for different contexts
+  id: string;
+  email: string;
+  name?: string; // Optional fields for different contexts
 }
 
 // Use a single source of truth
-function updateUser(user: User) { /* ... */ }
-function getProfile(userId: string): User { /* ... */ }
-function syncData(user: User) { /* ... */ }
+function updateUser(user: User) {
+  /* ... */
+}
+function getProfile(userId: string): User {
+  /* ... */
+}
+function syncData(user: User) {
+  /* ... */
+}
 
 // For API-specific needs, extend rather than duplicate
 interface UserDTO extends User {
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
 When consolidating interfaces:
+
 1. Identify the canonical type (usually the domain entity)
 2. Make fields optional if they vary by context
 3. Use `extends` for specialized versions

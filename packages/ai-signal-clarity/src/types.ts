@@ -19,13 +19,20 @@ export interface AiSignalClarityOptions extends ScanOptions {
 
 export interface AiSignalClarityIssue extends Issue {
   type:
-  | 'magic-literal'
-  | 'boolean-trap'
-  | 'ambiguous-api'
-  | 'ai-signal-clarity'
-  | 'dead-code';
+    | 'magic-literal'
+    | 'boolean-trap'
+    | 'ambiguous-api'
+    | 'ai-signal-clarity'
+    | 'dead-code';
   /** Category of risk signal */
-  category: 'magic-literal' | 'boolean-trap' | 'ambiguous-name' | 'undocumented-export' | 'implicit-side-effect' | 'deep-callback' | 'overloaded-symbol';
+  category:
+    | 'magic-literal'
+    | 'boolean-trap'
+    | 'ambiguous-name'
+    | 'undocumented-export'
+    | 'implicit-side-effect'
+    | 'deep-callback'
+    | 'overloaded-symbol';
   /** Code snippet where the issue was found */
   snippet?: string;
 }

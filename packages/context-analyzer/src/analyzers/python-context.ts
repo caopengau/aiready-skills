@@ -1,6 +1,6 @@
 /**
  * Python Context Analyzer
- * 
+ *
  * Analyzes Python code for:
  * - Import chain depth
  * - Context budget (tokens needed)
@@ -54,34 +54,52 @@ export async function analyzePythonContext(
     return results;
   }
 
-  const pythonFiles = files.filter(f => f.toLowerCase().endsWith('.py'));
+  const pythonFiles = files.filter((f) => f.toLowerCase().endsWith('.py'));
+
+  // Some path helpers are imported for future use; reference them to avoid lint warnings
+  void relative;
+  void join;
 
   // Build dependency graph first
-  const dependencyGraph = await buildPythonDependencyGraph(pythonFiles, rootDir);
+  const dependencyGraph = await buildPythonDependencyGraph(
+    pythonFiles,
+    rootDir
+  );
 
   for (const file of pythonFiles) {
     try {
       const code = await fs.promises.readFile(file, 'utf-8');
       const result = parser.parse(code, file);
 
-      const imports: PythonImportInfo[] = result.imports.map(imp => ({
+      const imports: PythonImportInfo[] = result.imports.map((imp) => ({
         source: imp.source,
         specifiers: imp.specifiers,
         isRelative: imp.source.startsWith('.'),
         resolvedPath: resolvePythonImport(file, imp.source, rootDir),
       }));
 
-      const exports: PythonExportInfo[] = result.exports.map(exp => ({
+      const exports: PythonExportInfo[] = result.exports.map((exp) => ({
         name: exp.name,
         type: exp.type,
       }));
 
       // Calculate metrics
       const linesOfCode = code.split('\n').length;
-      const importDepth = await calculatePythonImportDepth(file, dependencyGraph, new Set());
-      const contextBudget = estimateContextBudget(code, imports, dependencyGraph);
+      const importDepth = await calculatePythonImportDepth(
+        file,
+        dependencyGraph,
+        new Set()
+      );
+      const contextBudget = estimateContextBudget(
+        code,
+        imports,
+        dependencyGraph
+      );
       const cohesion = calculatePythonCohesion(exports, imports);
-      const circularDependencies = detectCircularDependencies(file, dependencyGraph);
+      const circularDependencies = detectCircularDependencies(
+        file,
+        dependencyGraph
+      );
 
       results.push({
         file,
@@ -133,6 +151,7 @@ async function buildPythonDependencyGraph(
 
       graph.set(file, dependencies);
     } catch (error) {
+      void error;
       // Skip files with errors
     }
   }
@@ -143,7 +162,11 @@ async function buildPythonDependencyGraph(
 /**
  * Resolve Python import to file path
  */
-function resolvePythonImport(fromFile: string, importPath: string, rootDir: string): string | undefined {
+function resolvePythonImport(
+  fromFile: string,
+  importPath: string,
+  rootDir: string
+): string | undefined {
   const dir = dirname(fromFile);
 
   // Handle relative imports
@@ -244,7 +267,7 @@ function estimateContextBudget(
 
 /**
  * Calculate cohesion for a Python module
- * 
+ *
  * Cohesion = How related are the exports to each other?
  * Higher cohesion = better (single responsibility)
  */

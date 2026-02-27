@@ -5,16 +5,24 @@ import { analyzeConsistency } from './analyzer';
 import type { ConsistencyOptions } from './types';
 import chalk from 'chalk';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { loadConfig, mergeConfigWithDefaults, resolveOutputPath } from '@aiready/core';
+import { dirname } from 'path';
+import {
+  loadConfig,
+  mergeConfigWithDefaults,
+  resolveOutputPath,
+} from '@aiready/core';
 
 const program = new Command();
 
 program
   .name('aiready-consistency')
-  .description('Detect consistency patterns in naming, code structure, and architecture')
+  .description(
+    'Detect consistency patterns in naming, code structure, and architecture'
+  )
   .version('0.1.0')
-  .addHelpText('after', `
+  .addHelpText(
+    'after',
+    `
 LANGUAGE SUPPORT:
   Supported: TypeScript (.ts, .tsx), JavaScript (.js, .jsx)
   Note: Python, Java, and other language files will be safely ignored
@@ -33,17 +41,28 @@ EXAMPLES:
   aiready-consistency . --no-naming                   # Skip naming checks
   aiready-consistency . --min-severity major          # Only show major+ patterns
   aiready-consistency . --output json > report.json   # JSON export
-`)
+`
+  )
   .argument('<directory>', 'Directory to analyze')
   .option('--naming', 'Check naming conventions and quality (default: true)')
   .option('--no-naming', 'Skip naming analysis')
   .option('--patterns', 'Check code pattern consistency (default: true)')
   .option('--no-patterns', 'Skip pattern analysis')
-  .option('--architecture', 'Check architectural consistency (not yet implemented)')
-  .option('--min-severity <level>', 'Minimum severity: info|minor|major|critical. Default: info')
+  .option(
+    '--architecture',
+    'Check architectural consistency (not yet implemented)'
+  )
+  .option(
+    '--min-severity <level>',
+    'Minimum severity: info|minor|major|critical. Default: info'
+  )
   .option('--include <patterns>', 'File patterns to include (comma-separated)')
   .option('--exclude <patterns>', 'File patterns to exclude (comma-separated)')
-  .option('-o, --output <format>', 'Output format: console|json|markdown', 'console')
+  .option(
+    '-o, --output <format>',
+    'Output format: console|json|markdown',
+    'console'
+  )
   .option('--output-file <path>', 'Output file path (for json/markdown)')
   .action(async (directory, options) => {
     console.log(chalk.blue('🔍 Analyzing consistency...\n'));
@@ -89,12 +108,12 @@ EXAMPLES:
         `consistency-report-${new Date().toISOString().split('T')[0]}.json`,
         directory
       );
-      
+
       const dir = dirname(outputPath);
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
       }
-      
+
       writeFileSync(outputPath, output);
       console.log(chalk.green(`✓ Report saved to ${outputPath}`));
     } else if (options.output === 'markdown') {
@@ -104,12 +123,12 @@ EXAMPLES:
         `consistency-report-${new Date().toISOString().split('T')[0]}.md`,
         directory
       );
-      
+
       const dir = dirname(outputPath);
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
       }
-      
+
       writeFileSync(outputPath, markdown);
       console.log(chalk.green(`✓ Report saved to ${outputPath}`));
     } else {
@@ -132,7 +151,11 @@ function displayConsoleReport(report: any, elapsedTime: string): void {
   console.log(`Analysis Time: ${chalk.gray(elapsedTime + 's')}\n`);
 
   if (summary.totalIssues === 0) {
-    console.log(chalk.green('✨ No consistency patterns found! Your codebase is AI-friendly.\n'));
+    console.log(
+      chalk.green(
+        '✨ No consistency patterns found! Your codebase is AI-friendly.\n'
+      )
+    );
     return;
   }
 
@@ -174,10 +197,10 @@ function displayCategoryIssues(results: any[], maxToShow: number): void {
         issue.severity === 'critical'
           ? chalk.red
           : issue.severity === 'major'
-          ? chalk.yellow
-          : issue.severity === 'minor'
-          ? chalk.blue
-          : chalk.gray;
+            ? chalk.yellow
+            : issue.severity === 'minor'
+              ? chalk.blue
+              : chalk.gray;
 
       console.log(
         `${severityColor(issue.severity.toUpperCase())} ${chalk.dim(
@@ -193,7 +216,8 @@ function displayCategoryIssues(results: any[], maxToShow: number): void {
     }
   }
 
-  const remaining = results.reduce((sum, r) => sum + r.issues.length, 0) - shown;
+  const remaining =
+    results.reduce((sum, r) => sum + r.issues.length, 0) - shown;
   if (remaining > 0) {
     console.log(chalk.dim(`  ... and ${remaining} more patterns\n`));
   }

@@ -59,7 +59,6 @@ export function useD3<T extends SVGSVGElement | HTMLDivElement>(
       const selection = d3.select(ref.current);
       renderFn(selection);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return ref;
@@ -118,7 +117,6 @@ export function useD3WithResize<T extends SVGSVGElement | HTMLDivElement>(
     return () => {
       resizeObserver.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return ref;

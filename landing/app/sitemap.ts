@@ -1,20 +1,20 @@
-import { MetadataRoute } from 'next'
-import { getAllPosts } from '@/lib/blog-tsx'
+import { MetadataRoute } from 'next';
+import { getAllPosts } from '@/lib/blog-tsx';
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-static';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://getaiready.dev'
-  
+  const baseUrl = 'https://getaiready.dev';
+
   // Get all blog posts for sitemap
-  const posts = await getAllPosts()
+  const posts = await getAllPosts();
   const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(post.date),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
-  }))
-  
+  }));
+
   return [
     {
       url: baseUrl,
@@ -47,5 +47,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     ...blogEntries,
-  ]
+  ];
 }

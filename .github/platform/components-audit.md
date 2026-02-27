@@ -52,32 +52,33 @@
 
 **Location:** `landing/components/`
 
-| Component | Quality | Reusability | Recommendation |
-|-----------|---------|-------------|----------------|
-| `Header.tsx` | ⚠️ Landing-specific | Low | Keep in landing, create platform-specific header |
-| `Footer.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `CodeBlock.tsx` | ✅ High | **High** | **Cherry-pick to components** |
-| `CodeBlockCopyButton.tsx` | ✅ High | **High** | **Cherry-pick to components** |
-| `AIReadinessScore.tsx` | ⚠️ Landing-specific | Medium | Extract ScoreBar component |
-| `Features.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `AnimatedHero.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `Benefits.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `CTA.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `FAQ.tsx` | ⚠️ Landing-specific | Medium | Extract Accordion component |
-| `Testimonials.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `LiveScanDemo.tsx` | ⚠️ Demo-specific | Low | Keep in landing |
-| `InteractiveChart.tsx` | ✅ Good | Medium | Consider consolidating with charts |
-| `ChartsClient.tsx` | ⚠️ Demo-specific | Low | Keep in landing |
-| `ComparisonChart.tsx` | ✅ Good | Medium | Evaluate for components |
-| `Breadcrumb.tsx` | ✅ High | **High** | **Cherry-pick to components** |
-| `ParallaxSection.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `FloatingElements.tsx` | ⚠️ Landing-specific | Low | Keep in landing |
-| `MotionProgress.tsx` | ✅ Good | Medium | Consider for components |
-| `RequestForm.tsx` | ⚠️ Landing-specific | Low | Platform will have different forms |
-| `BlogContent.tsx` | ⚠️ Blog-specific | Low | Keep in landing |
-| `Comments.tsx` | ⚠️ Blog-specific | Low | Keep in landing |
+| Component                 | Quality             | Reusability | Recommendation                                   |
+| ------------------------- | ------------------- | ----------- | ------------------------------------------------ |
+| `Header.tsx`              | ⚠️ Landing-specific | Low         | Keep in landing, create platform-specific header |
+| `Footer.tsx`              | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `CodeBlock.tsx`           | ✅ High             | **High**    | **Cherry-pick to components**                    |
+| `CodeBlockCopyButton.tsx` | ✅ High             | **High**    | **Cherry-pick to components**                    |
+| `AIReadinessScore.tsx`    | ⚠️ Landing-specific | Medium      | Extract ScoreBar component                       |
+| `Features.tsx`            | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `AnimatedHero.tsx`        | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `Benefits.tsx`            | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `CTA.tsx`                 | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `FAQ.tsx`                 | ⚠️ Landing-specific | Medium      | Extract Accordion component                      |
+| `Testimonials.tsx`        | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `LiveScanDemo.tsx`        | ⚠️ Demo-specific    | Low         | Keep in landing                                  |
+| `InteractiveChart.tsx`    | ✅ Good             | Medium      | Consider consolidating with charts               |
+| `ChartsClient.tsx`        | ⚠️ Demo-specific    | Low         | Keep in landing                                  |
+| `ComparisonChart.tsx`     | ✅ Good             | Medium      | Evaluate for components                          |
+| `Breadcrumb.tsx`          | ✅ High             | **High**    | **Cherry-pick to components**                    |
+| `ParallaxSection.tsx`     | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `FloatingElements.tsx`    | ⚠️ Landing-specific | Low         | Keep in landing                                  |
+| `MotionProgress.tsx`      | ✅ Good             | Medium      | Consider for components                          |
+| `RequestForm.tsx`         | ⚠️ Landing-specific | Low         | Platform will have different forms               |
+| `BlogContent.tsx`         | ⚠️ Blog-specific    | Low         | Keep in landing                                  |
+| `Comments.tsx`            | ⚠️ Blog-specific    | Low         | Keep in landing                                  |
 
 **Patterns to Extract:**
+
 1. **CodeBlock** - Syntax highlighting with copy button
 2. **Breadcrumb** - Navigation breadcrumb
 3. **ScoreBar** - Progress bar for scores (from AIReadinessScore)
@@ -88,14 +89,14 @@
 
 **Location:** `packages/visualizer/web/src/components/`
 
-| Component | Quality | Reusability | Recommendation |
-|-----------|---------|-------------|----------------|
-| `GraphCanvas.tsx` | ✅ High | Medium | Keep in visualizer, uses ForceDirectedGraph |
-| `Navbar.tsx` | ✅ High | **High** | **Extract ThemeToggle pattern** |
-| `NodeDetails.tsx` | ✅ Good | Medium | Platform-specific adaptation needed |
-| `LegendPanel.tsx` | ✅ Good | Medium | Keep in visualizer |
-| `LoadingSpinner.tsx` | ✅ High | **High** | **Cherry-pick to components** |
-| `ErrorDisplay.tsx` | ✅ High | **High** | **Cherry-pick to components** |
+| Component            | Quality | Reusability | Recommendation                              |
+| -------------------- | ------- | ----------- | ------------------------------------------- |
+| `GraphCanvas.tsx`    | ✅ High | Medium      | Keep in visualizer, uses ForceDirectedGraph |
+| `Navbar.tsx`         | ✅ High | **High**    | **Extract ThemeToggle pattern**             |
+| `NodeDetails.tsx`    | ✅ Good | Medium      | Platform-specific adaptation needed         |
+| `LegendPanel.tsx`    | ✅ Good | Medium      | Keep in visualizer                          |
+| `LoadingSpinner.tsx` | ✅ High | **High**    | **Cherry-pick to components**               |
+| `ErrorDisplay.tsx`   | ✅ High | **High**    | **Cherry-pick to components**               |
 
 **Hooks to Extract:**
 | Hook | Quality | Reusability | Recommendation |
@@ -110,6 +111,7 @@
 ### Phase 1: High-Priority Additions to @aiready/components
 
 #### 1. CodeBlock (from Landing)
+
 ```
 packages/components/src/code-block/
 ├── CodeBlock.tsx      # Main component
@@ -119,6 +121,7 @@ packages/components/src/code-block/
 ```
 
 **Features:**
+
 - Syntax highlighting (highlight.js)
 - Copy to clipboard
 - Language badge
@@ -126,6 +129,7 @@ packages/components/src/code-block/
 - macOS-style window chrome
 
 #### 2. Theme System (from Visualizer)
+
 ```
 packages/components/src/theme/
 ├── ThemeProvider.tsx  # Context provider
@@ -136,12 +140,14 @@ packages/components/src/theme/
 ```
 
 **Features:**
+
 - Dark/Light/System modes
 - localStorage persistence
 - System preference detection
 - Theme-aware colors object
 
 #### 3. Loading & Error States (from Visualizer)
+
 ```
 packages/components/src/feedback/
 ├── LoadingSpinner.tsx # Animated spinner
@@ -151,6 +157,7 @@ packages/components/src/feedback/
 ```
 
 #### 4. Navigation (new, patterns from both)
+
 ```
 packages/components/src/navigation/
 ├── Breadcrumb.tsx     # From landing
@@ -160,6 +167,7 @@ packages/components/src/navigation/
 ```
 
 #### 5. Data Display (new)
+
 ```
 packages/components/src/data-display/
 ├── ScoreBar.tsx       # Progress bar for scores
@@ -177,7 +185,7 @@ packages/components/src/data-display/
 export { useDebounce } from './useDebounce';
 export { useD3, useD3WithResize } from './useD3';
 export { useForceSimulation } from './useForceSimulation';
-export { useTheme } from './useTheme';           // NEW
+export { useTheme } from './useTheme'; // NEW
 export { useDimensions } from './useDimensions'; // NEW
 ```
 
@@ -186,32 +194,37 @@ export { useDimensions } from './useDimensions'; // NEW
 ## Design System Consistency
 
 ### Colors (Already Defined)
+
 ```typescript
 // packages/components/src/utils/colors.ts
 export const severityColors = {
-  critical: '#ef4444',  // red-500
-  major: '#f59e0b',     // amber-500
-  minor: '#3b82f6',     // blue-500
-  info: '#6b7280',      // gray-500
+  critical: '#ef4444', // red-500
+  major: '#f59e0b', // amber-500
+  minor: '#3b82f6', // blue-500
+  info: '#6b7280', // gray-500
 };
 ```
 
 ### Typography
+
 - Headings: Inter font, black weight (900)
 - Body: Inter font, normal weight (400)
 - Code: JetBrains Mono or Fira Code
 
 ### Spacing
+
 - Section padding: `py-20`
 - Container: `container mx-auto px-4`
 - Card padding: `p-6` or `p-8`
 
 ### Border Radius
+
 - Cards: `rounded-2xl`
 - Buttons: `rounded-lg`
 - Inputs: `rounded-md`
 
 ### Shadows
+
 - Cards: `shadow-lg`
 - Elevated: `shadow-xl`
 - None for flat surfaces
@@ -221,6 +234,7 @@ export const severityColors = {
 ## Implementation Checklist
 
 ### Immediate (Before Platform Development)
+
 - [ ] Add CodeBlock component to @aiready/components
 - [ ] Add ThemeProvider and useTheme hook
 - [ ] Add LoadingSpinner and ErrorDisplay
@@ -228,12 +242,14 @@ export const severityColors = {
 - [ ] Add ScoreBar component
 
 ### Platform Development Phase
+
 - [ ] Create Sidebar component
 - [ ] Create StatCard component
 - [ ] Create Table component
 - [ ] Create EmptyState component
 
 ### Documentation
+
 - [ ] Update packages/components/README.md
 - [ ] Add Storybook stories for new components
 - [ ] Document theme system usage
@@ -320,3 +336,4 @@ packages/components/src/
     "framer-motion": "^11.0.0"
   }
 }
+```

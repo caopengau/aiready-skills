@@ -1,4 +1,10 @@
-import { FileNode, GraphEdge, GraphData, ReportData, BusinessMetrics } from './types';
+import {
+  FileNode,
+  GraphEdge,
+  GraphData,
+  ReportData,
+  BusinessMetrics,
+} from './types';
 import { severityColors, GRAPH_CONFIG } from './constants';
 
 export function getSeverityColor(severity: string | undefined): string {
@@ -45,7 +51,10 @@ function extractBusinessMetrics(report: ReportData): BusinessMetrics {
   };
 }
 
-export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: { maxNodes?: number; maxEdges?: number }): GraphData {
+export function transformReportToGraph(
+  report: ReportData,
+  runtimeGraphConfig?: { maxNodes?: number; maxEdges?: number }
+): GraphData {
   // Use runtime config if available (from aiready.json), else use defaults from constants
   const graphConfig = {
     maxNodes: runtimeGraphConfig?.maxNodes ?? GRAPH_CONFIG.maxNodes,
@@ -55,19 +64,34 @@ export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: 
   const edges: GraphEdge[] = [];
   const nodeMap = new Map<string, FileNode>();
 
-  const fileIssues = new Map<string, { count: number; severities: Set<string>; maxSeverity: string }>();
+  const fileIssues = new Map<
+    string,
+    { count: number; severities: Set<string>; maxSeverity: string }
+  >();
 
   for (const pattern of report.patterns) {
     const issueCount = pattern.issues?.length || 0;
     if (issueCount > 0) {
       let maxSeverity = 'info';
-      const severityPriority: Record<string, number> = { critical: 4, major: 3, minor: 2, info: 1 };
+      const severityPriority: Record<string, number> = {
+        critical: 4,
+        major: 3,
+        minor: 2,
+        info: 1,
+      };
       for (const issue of pattern.issues) {
-        if ((severityPriority[issue.severity] || 0) > (severityPriority[maxSeverity] || 0)) {
+        if (
+          (severityPriority[issue.severity] || 0) >
+          (severityPriority[maxSeverity] || 0)
+        ) {
           maxSeverity = issue.severity;
         }
       }
-      fileIssues.set(pattern.fileName, { count: issueCount, severities: new Set(), maxSeverity });
+      fileIssues.set(pattern.fileName, {
+        count: issueCount,
+        severities: new Set(),
+        maxSeverity,
+      });
     }
   }
 
@@ -124,7 +148,7 @@ export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: 
       if (dep.startsWith('.') || dep.startsWith('/')) {
         // Try multiple matching strategies
         let targetFile: string | undefined;
-        
+
         // Strategy 1: Direct resolve from source file's directory
         const normalizedDep = dep.replace(/^\.\/?/, '');
         const possiblePaths = [
@@ -136,25 +160,32 @@ export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: 
           // Just the path
           `${sourceDir}/${normalizedDep}`,
         ];
-        
+
         for (const p of possiblePaths) {
           if (nodeMap.has(p)) {
             targetFile = p;
             break;
           }
         }
-        
+
         // Strategy 2: Fall back to loose endsWith matching
         if (!targetFile) {
           const depBase = normalizedDep.split('/').pop() || normalizedDep;
-          targetFile = [...nodeMap.keys()].find(k => 
-            k.endsWith(`/${depBase}.ts`) || k.endsWith(`/${depBase}.tsx`) ||
-            k.endsWith(`/${depBase}/index.ts`) || k.endsWith(`/${depBase}/index.tsx`)
+          targetFile = [...nodeMap.keys()].find(
+            (k) =>
+              k.endsWith(`/${depBase}.ts`) ||
+              k.endsWith(`/${depBase}.tsx`) ||
+              k.endsWith(`/${depBase}/index.ts`) ||
+              k.endsWith(`/${depBase}/index.tsx`)
           );
         }
-        
+
         if (targetFile && targetFile !== ctx.file) {
-          edges.push({ source: ctx.file, target: targetFile, type: 'dependency' });
+          edges.push({
+            source: ctx.file,
+            target: targetFile,
+            type: 'dependency',
+          });
         }
       }
     }
@@ -186,19 +217,28 @@ export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: 
 
       // Fallback: loose basename matching
       if (!nodeMap.has(relatedId)) {
-        const relBase = (related.split('/').pop() || related).replace(/\.(ts|tsx|js|jsx)$/, '');
-        relatedId = [...nodeMap.keys()].find(k =>
-          k.endsWith(`/${relBase}.ts`) || k.endsWith(`/${relBase}.tsx`) || k.endsWith(`/${relBase}/index.ts`) || k.endsWith(`/${relBase}/index.tsx`) || k.endsWith(`/${relBase}`)
+        const relBase = (related.split('/').pop() || related).replace(
+          /\.(ts|tsx|js|jsx)$/,
+          ''
+        );
+        relatedId = [...nodeMap.keys()].find(
+          (k) =>
+            k.endsWith(`/${relBase}.ts`) ||
+            k.endsWith(`/${relBase}.tsx`) ||
+            k.endsWith(`/${relBase}/index.ts`) ||
+            k.endsWith(`/${relBase}/index.tsx`) ||
+            k.endsWith(`/${relBase}`)
         );
       }
 
       if (relatedId && nodeMap.has(relatedId) && relatedId !== ctx.file) {
         const exists = edges.some(
-          e =>
+          (e) =>
             (e.source === ctx.file && e.target === relatedId) ||
             (e.source === relatedId && e.target === ctx.file)
         );
-        if (!exists) edges.push({ source: ctx.file, target: relatedId, type: 'related' });
+        if (!exists)
+          edges.push({ source: ctx.file, target: relatedId, type: 'related' });
       }
     }
   }
@@ -206,11 +246,16 @@ export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: 
   for (const dup of report.duplicates || []) {
     if (nodeMap.has(dup.file1) && nodeMap.has(dup.file2)) {
       const exists = edges.some(
-        e =>
+        (e) =>
           (e.source === dup.file1 && e.target === dup.file2) ||
           (e.source === dup.file2 && e.target === dup.file1)
       );
-      if (!exists) edges.push({ source: dup.file1, target: dup.file2, type: 'similarity' });
+      if (!exists)
+        edges.push({
+          source: dup.file1,
+          target: dup.file2,
+          type: 'similarity',
+        });
     }
   }
 
@@ -243,7 +288,11 @@ export function transformReportToGraph(report: ReportData, runtimeGraphConfig?: 
 }
 
 export async function loadReportData(): Promise<ReportData | null> {
-  const possiblePaths = ['/report-data.json', '../report-data.json', '../../report-data.json'];
+  const possiblePaths = [
+    '/report-data.json',
+    '../report-data.json',
+    '../../report-data.json',
+  ];
 
   for (const path of possiblePaths) {
     try {
@@ -260,15 +309,27 @@ export async function loadReportData(): Promise<ReportData | null> {
 }
 
 export function getEdgeDistance(type: string): number {
-  return GRAPH_CONFIG.edgeDistances[type as keyof typeof GRAPH_CONFIG.edgeDistances] ?? GRAPH_CONFIG.edgeDistances.dependency;
+  return (
+    GRAPH_CONFIG.edgeDistances[
+      type as keyof typeof GRAPH_CONFIG.edgeDistances
+    ] ?? GRAPH_CONFIG.edgeDistances.dependency
+  );
 }
 
 export function getEdgeStrength(type: string): number {
-  return GRAPH_CONFIG.edgeStrengths[type as keyof typeof GRAPH_CONFIG.edgeStrengths] ?? GRAPH_CONFIG.edgeStrengths.dependency;
+  return (
+    GRAPH_CONFIG.edgeStrengths[
+      type as keyof typeof GRAPH_CONFIG.edgeStrengths
+    ] ?? GRAPH_CONFIG.edgeStrengths.dependency
+  );
 }
 
 export function getEdgeOpacity(type: string): number {
-  return GRAPH_CONFIG.edgeOpacities[type as keyof typeof GRAPH_CONFIG.edgeOpacities] ?? GRAPH_CONFIG.edgeOpacities.dependency;
+  return (
+    GRAPH_CONFIG.edgeOpacities[
+      type as keyof typeof GRAPH_CONFIG.edgeOpacities
+    ] ?? GRAPH_CONFIG.edgeOpacities.dependency
+  );
 }
 
 export function getEdgeStrokeWidth(type: string): number {

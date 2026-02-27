@@ -8,16 +8,18 @@
 
 Based on market analysis and solo founder constraints, here's a grounded timeline:
 
-| Phase | Timeline | Realistic Goal | Focus Area |
-|-------|----------|----------------|------------|
-| **The Grind** | Months 1–4 | 500 Free / 5 Pro ($245 MRR) | Bug fixes, SEO, Product-Market Fit |
-| **The Validation** | Months 5–9 | 2,000 Free / 30 Pro / 2 Team ($1.6k MRR) | First Team pilots, CI/CD integration |
-| **The Breakout** | Months 10–18 | 5,000 Free / 100 Pro / 10 Team ($5.9k MRR) | Scaling organic growth, automating support |
+| Phase              | Timeline     | Realistic Goal                             | Focus Area                                 |
+| ------------------ | ------------ | ------------------------------------------ | ------------------------------------------ |
+| **The Grind**      | Months 1–4   | 500 Free / 5 Pro ($245 MRR)                | Bug fixes, SEO, Product-Market Fit         |
+| **The Validation** | Months 5–9   | 2,000 Free / 30 Pro / 2 Team ($1.6k MRR)   | First Team pilots, CI/CD integration       |
+| **The Breakout**   | Months 10–18 | 5,000 Free / 100 Pro / 10 Team ($5.9k MRR) | Scaling organic growth, automating support |
 
 ### Key Insight: "Trough of Sorrow"
+
 Most solo SaaS products hit a growth plateau around Month 7. The "compound interest" of SEO and word-of-mouth typically kicks in around Month 12-18.
 
 ### Path to "Senior Dev Salary" ($15k/mo)
+
 - **Timeline:** 18–24 months (not 12)
 - **Requires:** ~150 Pro + ~50 Team + 2 Enterprise customers
 - **MRR breakdown:** $7,350 Pro + $4,950 Team + $1,000+ Enterprise
@@ -26,14 +28,14 @@ Most solo SaaS products hit a growth plateau around Month 7. The "compound inter
 
 ## Year 1 Target Metrics (Grounded)
 
-| Metric | Month 4 | Month 9 | Month 12 |
-|--------|---------|---------|----------|
-| Free users | 500 | 2,000 | 5,000 |
-| Pro subscribers | 5 | 30 | 80 |
-| Team subscribers | 0 | 5 | 15 |
-| Enterprise deals | 0 | 0 | 1-2 |
-| MRR | $245 | $2,000 | $5,500 |
-| ARR | $2,940 | $24,000 | $66,000 |
+| Metric           | Month 4 | Month 9 | Month 12 |
+| ---------------- | ------- | ------- | -------- |
+| Free users       | 500     | 2,000   | 5,000    |
+| Pro subscribers  | 5       | 30      | 80       |
+| Team subscribers | 0       | 5       | 15       |
+| Enterprise deals | 0       | 0       | 1-2      |
+| MRR              | $245    | $2,000  | $5,500   |
+| ARR              | $2,940  | $24,000 | $66,000  |
 
 ---
 
@@ -56,17 +58,20 @@ Total: $14,800 MRR = $177,600 ARR
 ## Customer Acquisition
 
 ### Organic
+
 - npm package downloads → website
 - GitHub stars / trending
 - Dev.to / Hacker News posts
 - Technical blog (SEO)
 
 ### Paid
+
 - Google Ads: "code quality", "AI code tools"
 - LinkedIn sponsored content (CTOs, engineering managers)
 - Conference sponsorships (React Summit, Node Congress)
 
 ### Partnerships
+
 - GitHub Marketplace listing
 - Copilot plugin marketplace
 - VS Code extension recommendations
@@ -76,11 +81,13 @@ Total: $14,800 MRR = $177,600 ARR
 ## Retention Strategy
 
 ### Prevent Churn
+
 - Weekly email: "Your code quality improved 12% this week"
 - In-app notifications: "New fragmentation detected"
 - Quarterly business reviews (Enterprise)
 
 ### Expansion Revenue
+
 - Usage-based pricing for extra repos
 - Upsell: Free → Pro (show locked features inline)
 - Cross-sell: Pro → Enterprise (team growth triggers)
@@ -122,15 +129,16 @@ Total: $14,800 MRR = $177,600 ARR
 
 ## Phase 2 Revenue Targets (Agentic Platform)
 
-| Metric | Month 3 | Month 6 | Month 12 |
-|--------|---------|---------|----------|
-| Platform MRR | $2,000 | $8,000 | $25,000 |
-| Consulting revenue | $5,000 | $20,000 | $50,000 |
-| Auto-remediations/mo | 100 | 500 | 2,000 |
-| Expert reviews/mo | 10 | 50 | 150 |
-| NPS score | >40 | >50 | >60 |
+| Metric               | Month 3 | Month 6 | Month 12 |
+| -------------------- | ------- | ------- | -------- |
+| Platform MRR         | $2,000  | $8,000  | $25,000  |
+| Consulting revenue   | $5,000  | $20,000 | $50,000  |
+| Auto-remediations/mo | 100     | 500     | 2,000    |
+| Expert reviews/mo    | 10      | 50      | 150      |
+| NPS score            | >40     | >50     | >60      |
 
 **Multi-year targets:**
+
 - Year 1: $177K ARR (Phase 1 SaaS)
 - Year 2: $500K ARR (Phase 2 Agentic)
 - Year 3: $2M+ ARR (Enterprise + Consulting)

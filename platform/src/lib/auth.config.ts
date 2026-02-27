@@ -32,7 +32,11 @@ export const authConfig: NextAuthConfig = {
       id: 'credentials',
       name: 'Email',
       credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'name@example.com' },
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'name@example.com',
+        },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -109,18 +113,18 @@ export const authConfig: NextAuthConfig = {
           token.providerAccountId = account.providerAccountId;
         }
       }
-      
+
       // Update session
       if (trigger === 'update' && session) {
         token = { ...token, ...session };
       }
-      
+
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.email = token.email as string || session.user.email;
+        session.user.email = (token.email as string) || session.user.email;
         session.user.name = token.name as string | null | undefined;
         session.user.image = token.image as string | null | undefined;
       }
@@ -130,17 +134,23 @@ export const authConfig: NextAuthConfig = {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
       const isOnApi = nextUrl.pathname.startsWith('/api');
-      
+
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login
       }
-      
+
       // Allow API routes and public pages
-      if (isOnApi || nextUrl.pathname === '/' || nextUrl.pathname === '/login' || nextUrl.pathname === '/terms' || nextUrl.pathname === '/privacy') {
+      if (
+        isOnApi ||
+        nextUrl.pathname === '/' ||
+        nextUrl.pathname === '/login' ||
+        nextUrl.pathname === '/terms' ||
+        nextUrl.pathname === '/privacy'
+      ) {
         return true;
       }
-      
+
       return isLoggedIn;
     },
   },

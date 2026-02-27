@@ -9,6 +9,7 @@
 ## 🎯 Mission
 
 As AI becomes deeply integrated into SDLC, codebases become harder for AI models to understand due to:
+
 - Knowledge cutoff limitations in AI models
 - Different model preferences across team members
 - Duplicated patterns AI doesn't recognize
@@ -19,11 +20,13 @@ AIReady helps teams **assess, visualize, and prepare** repositories for better A
 ## 🌍 Language Support
 
 **Currently Supported (64% market coverage):**
+
 - ✅ **TypeScript** (`.ts`, `.tsx`)
 - ✅ **JavaScript** (`.js`, `.jsx`)
 - ✅ **Python** (`.py`) - NEW! PEP 8 conventions, import analysis, pattern detection
 
 **Roadmap:**
+
 - 🔜 **Java** (Q3 2026) - Maven/Gradle, Spring Framework
 - 🔜 **Go** (Q4 2026) - Go modules, concurrency patterns
 - 🔜 **Rust** (Q4 2026) - Cargo, ownership patterns
@@ -152,10 +155,11 @@ npm install -g @aiready/pattern-detect @aiready/context-analyzer
 ```
 
 > **💡 Smart Defaults:** All tools automatically:
+>
 > - Exclude test files, build outputs, and node_modules
 > - Adjust sensitivity based on codebase size (~10 most serious issues)
 > - Save reports to `.aiready/` directory
-> 
+>
 > Use `--include-tests`, `--exclude`, or threshold options to customize behavior.
 
 ### Using Unified CLI
@@ -189,12 +193,13 @@ aiready scan . --score
 ```
 
 **Example Output:**
+
 ```
 🎯 AI Readiness Score: 65/100 (Fair)
 
 📊 Breakdown:
   • Pattern Detection:    66/100  (40% weight)
-  • Context Analysis:     52/100  (35% weight)  
+  • Context Analysis:     52/100  (35% weight)
   • Consistency:          80/100  (25% weight)
 
 Calculation: (66×40 + 52×35 + 80×25) / 100 = 65
@@ -202,13 +207,13 @@ Calculation: (66×40 + 52×35 + 80×25) / 100 = 65
 
 ### Rating Scale
 
-| Score | Rating | What It Means |
-|-------|--------|---------------|
-| 90-100 | 🟢 Excellent | AI works optimally |
-| 75-89  | 🟡 Good | Minor improvements possible |
-| 60-74  | 🟠 Fair | Noticeable AI confusion |
-| 40-59  | 🔴 Needs Work | Significant AI struggles |
-| 0-39   | 🚨 Critical | Major refactoring recommended |
+| Score  | Rating        | What It Means                 |
+| ------ | ------------- | ----------------------------- |
+| 90-100 | 🟢 Excellent  | AI works optimally            |
+| 75-89  | 🟡 Good       | Minor improvements possible   |
+| 60-74  | 🟠 Fair       | Noticeable AI confusion       |
+| 40-59  | 🔴 Needs Work | Significant AI struggles      |
+| 0-39   | 🚨 Critical   | Major refactoring recommended |
 
 ### Customize Weights
 
@@ -240,18 +245,21 @@ aiready scan . --score --threshold 70
 ### Forward-Compatible & Customizable
 
 **Forward-Compatible:**
+
 - Scores remain comparable as we add new tools
 - New tools are opt-in via `--tools` flag
 - Existing scores won't change when new tools launch
 - Historical trends stay valid
 
 **Fully Customizable:**
+
 - Adjust weights for your team's priorities
 - Run scoring with any tool combination
 - Override defaults via config files
 - Scoring is optional (backward compatible)
 
 **Examples:**
+
 ```bash
 # Only score patterns + context (no consistency)
 aiready scan . --tools patterns,context --score
@@ -267,7 +275,7 @@ See [Scoring Algorithm Details](./.github/plans/scoring-algorithm.md) for comple
 AIReady supports configuration files for persistent settings. Create one of these files in your project root:
 
 - `aiready.json`
-- `aiready.config.json` 
+- `aiready.config.json`
 - `.aiready.json`
 - `.aireadyrc.json`
 - `aiready.config.js`
@@ -352,6 +360,7 @@ pnpm dev
 ### Phase 1: OSS Detection Tools ✅ Complete
 
 The open-source CLI and packages provide:
+
 - ✅ Pattern detection and context cost analysis
 - ✅ Consistency checks (naming and patterns)
 - ✅ Interactive graph visualization (`aiready visualise`)
@@ -362,6 +371,7 @@ The open-source CLI and packages provide:
 ### Phase 2: SaaS Platform 🔜 In Planning
 
 On the roadmap:
+
 - **Private SaaS Platform** - Dashboard, teams, billing
 - **Automated Remediation** - AI agents that fix detected issues
 - **Human-in-the-Loop** - Expert review queue for complex fixes
@@ -375,28 +385,31 @@ See [Platform Documentation](./.github/platform/README.md) for details.
 
 Documentation follows the same hub-and-spoke pattern as the codebase:
 
-| Section | Location | Purpose |
-|---------|----------|---------|
-| **Hub Docs** | `.github/copilot-instructions.md` | Core context for all tasks |
-| **OSS Spokes** | `packages/*/README.md` | Individual package docs |
-| **Platform** | `.github/platform/` | SaaS platform documentation |
-| **Sub-instructions** | `.github/sub-instructions/` | Workflow guides |
-| **Plans** | `.github/plans/` | Architecture & strategy |
+| Section              | Location                          | Purpose                     |
+| -------------------- | --------------------------------- | --------------------------- |
+| **Hub Docs**         | `.github/copilot-instructions.md` | Core context for all tasks  |
+| **OSS Spokes**       | `packages/*/README.md`            | Individual package docs     |
+| **Platform**         | `.github/platform/`               | SaaS platform documentation |
+| **Sub-instructions** | `.github/sub-instructions/`       | Workflow guides             |
+| **Plans**            | `.github/plans/`                  | Architecture & strategy     |
 
 ### Quick Links
 
 **For Contributors:**
+
 - [Development Workflow](./.github/sub-instructions/development-workflow.md)
 - [Adding New Tools](./.github/sub-instructions/adding-new-tool.md)
 - [Git Workflow](./.github/sub-instructions/git-workflow.md)
 - [DevOps Best Practices](./.github/sub-instructions/devops-best-practices.md)
 
 **For Platform Development:**
+
 - [Platform Overview](./.github/platform/README.md)
 - [Platform Architecture](./.github/platform/architecture.md)
 - [Agent System](./.github/platform/agents/README.md)
 
 **Strategy & Planning:**
+
 - [SaaS Architecture](./.github/plans/saas-architecture.md)
 - [Monetization Strategy](./.github/plans/strategy/monetization-strategy-visualization.md)
 

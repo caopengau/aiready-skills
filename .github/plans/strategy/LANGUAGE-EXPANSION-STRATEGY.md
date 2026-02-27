@@ -3,14 +3,17 @@
 ## 📊 Current State Analysis
 
 ### Current Language Support
+
 **Fully Supported:** TypeScript/JavaScript (`.ts`, `.tsx`, `.js`, `.jsx`)
 
 **Market Coverage:**
+
 - **TypeScript:** #1 on GitHub by contributors (2.6M monthly, Aug 2025)
 - **JavaScript:** 66% of all developers (Stack Overflow 2025)
 - **Combined Coverage:** ~35-40% of total market
 
 ### Current Technical Approach
+
 - **Parser:** `@typescript-eslint/typescript-estree` (TS/JS only)
 - **AST Analysis:** Full TypeScript AST support
 - **Capabilities:**
@@ -26,26 +29,28 @@
 
 ### Top 10 Programming Languages by Market Share
 
-| Rank | Language | Market Share | GitHub Activity | Stack Overflow Usage | AI/ML Adoption |
-|------|----------|--------------|-----------------|----------------------|----------------|
-| 1 | **Python** | 26.14% | #1 (22.5% YoY growth) | 63%+ | ⭐⭐⭐⭐⭐ |
-| 2 | **JavaScript** | ~20% | #2 | 66% | ⭐⭐⭐⭐ |
-| 3 | **TypeScript** | ~18% | #1 by contributors | 48% | ⭐⭐⭐⭐ |
-| 4 | **Java** | ~15% | #4 | 35% | ⭐⭐⭐ |
-| 5 | **C#** | ~8% | #5 (Strong growth) | 28% | ⭐⭐⭐ |
-| 6 | **C++** | ~7% | #6 | 25% | ⭐⭐ |
-| 7 | **Go** | ~5% | #7 (+41% growth) | 15% | ⭐⭐⭐ |
-| 8 | **Rust** | ~3% | #8 (72% admired) | 14% | ⭐⭐⭐ |
-| 9 | **PHP** | ~3% | #9 | 23% | ⭐⭐ |
-| 10 | **Ruby** | ~2% | #10 | 8% | ⭐⭐ |
+| Rank | Language       | Market Share | GitHub Activity       | Stack Overflow Usage | AI/ML Adoption |
+| ---- | -------------- | ------------ | --------------------- | -------------------- | -------------- |
+| 1    | **Python**     | 26.14%       | #1 (22.5% YoY growth) | 63%+                 | ⭐⭐⭐⭐⭐     |
+| 2    | **JavaScript** | ~20%         | #2                    | 66%                  | ⭐⭐⭐⭐       |
+| 3    | **TypeScript** | ~18%         | #1 by contributors    | 48%                  | ⭐⭐⭐⭐       |
+| 4    | **Java**       | ~15%         | #4                    | 35%                  | ⭐⭐⭐         |
+| 5    | **C#**         | ~8%          | #5 (Strong growth)    | 28%                  | ⭐⭐⭐         |
+| 6    | **C++**        | ~7%          | #6                    | 25%                  | ⭐⭐           |
+| 7    | **Go**         | ~5%          | #7 (+41% growth)      | 15%                  | ⭐⭐⭐         |
+| 8    | **Rust**       | ~3%          | #8 (72% admired)      | 14%                  | ⭐⭐⭐         |
+| 9    | **PHP**        | ~3%          | #9                    | 23%                  | ⭐⭐           |
+| 10   | **Ruby**       | ~2%          | #10                   | 8%                   | ⭐⭐           |
 
-**Data Sources:** 
+**Data Sources:**
+
 - TIOBE Index (Dec 2025)
 - GitHub Octoverse 2025
 - Stack Overflow Developer Survey 2025
 - JetBrains Developer Ecosystem Survey 2025
 
 ### AIReady's Current Coverage
+
 - **Covered Languages:** TypeScript + JavaScript (~38% combined)
 - **Uncovered Market:** ~62% (all other languages)
 - **High-Impact Gap:** Python alone = 26.14% market
@@ -65,14 +70,14 @@
 ### Expansion Criteria Matrix
 
 | Language | Market Share | AI Tool Usage | Parser Maturity | Enterprise Use | Priority Score |
-|----------|--------------|---------------|-----------------|----------------|----------------|
-| Python | 26.14% | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **24/25** |
-| Java | 15% | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **21/25** |
-| Go | 5% | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | **18/25** |
-| Rust | 3% | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | **16/25** |
-| C# | 8% | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | **16/25** |
-| PHP | 3% | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | **10/25** |
-| Ruby | 2% | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | **9/25** |
+| -------- | ------------ | ------------- | --------------- | -------------- | -------------- |
+| Python   | 26.14%       | ⭐⭐⭐⭐⭐    | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐     | **24/25**      |
+| Java     | 15%          | ⭐⭐⭐        | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐     | **21/25**      |
+| Go       | 5%           | ⭐⭐⭐⭐      | ⭐⭐⭐⭐        | ⭐⭐⭐⭐       | **18/25**      |
+| Rust     | 3%           | ⭐⭐⭐⭐      | ⭐⭐⭐⭐⭐      | ⭐⭐⭐         | **16/25**      |
+| C#       | 8%           | ⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐⭐⭐     | **16/25**      |
+| PHP      | 3%           | ⭐⭐          | ⭐⭐⭐          | ⭐⭐⭐         | **10/25**      |
+| Ruby     | 2%           | ⭐⭐          | ⭐⭐⭐          | ⭐⭐⭐         | **9/25**       |
 
 ---
 
@@ -83,6 +88,7 @@
 **Target Coverage:** +26% market (total: ~64%)
 
 **Why Python First:**
+
 - Highest market share (26.14%)
 - Dominant in AI/ML (85% of AI devs use AI coding tools)
 - Excellent parser ecosystem (`ast` module, `libcst`, `tree-sitter`)
@@ -91,12 +97,14 @@
 **Implementation:**
 
 1. **Parser Integration**
+
    ```typescript
    // packages/core/src/utils/language-parsers/
    ├── typescript-parser.ts (existing)
    ├── python-parser.ts (new)
    └── parser-factory.ts (new)
    ```
+
    - Use `tree-sitter-python` for AST parsing
    - Alternative: `libcst` via WASM or Node bindings
 
@@ -108,6 +116,7 @@
    - ⚠️ Limited: Type analysis (requires type hints)
 
 3. **Python-Specific Analyzers**
+
    ```typescript
    // packages/consistency/src/analyzers/
    ├── naming-ast.ts (existing TS/JS)
@@ -124,6 +133,7 @@
    - [ ] Test coverage (real Python repos)
 
 **Success Metrics:**
+
 - Parse 95%+ valid Python files without errors
 - Detect common Python anti-patterns (duplicate class methods, similar functions)
 - 80%+ accuracy on PEP 8 naming violations
@@ -136,6 +146,7 @@
 **Target Coverage:** +15% market (total: ~79%)
 
 **Why Java Second:**
+
 - Large enterprise codebases
 - High AI tool ROI (complex legacy code)
 - Mature parser ecosystem (`tree-sitter-java`, `java-parser`)
@@ -168,6 +179,7 @@
    - [ ] Multi-language workspace support
 
 **Success Metrics:**
+
 - Parse 95%+ valid Java files (8, 11, 17, 21)
 - Detect Spring Boot anti-patterns
 - Identify God classes (>1000 LOC)
@@ -182,6 +194,7 @@
 **Languages:** Go, Rust (high growth, cloud infrastructure focus)
 
 **Why These:**
+
 - Go: +41% demand growth, cloud-native standard
 - Rust: 72% developer approval, systems programming
 - Both heavily used with AI coding assistants
@@ -190,18 +203,21 @@
 **Implementation:**
 
 #### Go Support
+
 - Parser: `tree-sitter-go`
 - Focus: Microservices patterns, goroutine detection
 - Naming: Go conventions (camelCase, exported PascalCase)
 - Special: Detect context propagation anti-patterns
 
 #### Rust Support
+
 - Parser: `tree-sitter-rust`
 - Focus: Lifetime issues, ownership patterns
 - Naming: Rust conventions (snake_case)
 - Special: Macro complexity analysis
 
 **Deliverables:**
+
 - [ ] Go + Rust parsers in `@aiready/core`
 - [ ] Language-specific analyzers
 - [ ] Cloud-native pattern detection
@@ -209,6 +225,7 @@
 - [ ] Multi-language repo examples
 
 **Success Metrics:**
+
 - Parse 90%+ valid Go/Rust files
 - Detect cloud-native anti-patterns
 - Handle workspace with 5+ languages
@@ -221,18 +238,21 @@
 **Target Coverage:** +8% market (total: ~95%)
 
 **Why C#:**
+
 - Strong growth (potential "Language of the Year 2025")
 - Enterprise adoption (Microsoft ecosystem)
 - .NET 6/7/8 modernization wave
 - Azure integration opportunities
 
 **Implementation:**
+
 - Parser: `tree-sitter-c-sharp` or Roslyn bindings
 - Focus: LINQ patterns, async/await anti-patterns
 - Naming: Microsoft C# conventions
 - Special: Unity game dev patterns (optional)
 
 **Deliverables:**
+
 - [ ] C# AST parser
 - [ ] .NET-specific analyzers
 - [ ] Azure deployment patterns
@@ -244,15 +264,16 @@
 
 **Optional Expansions (based on demand):**
 
-| Language | Market Share | Strategic Value | Implementation Complexity |
-|----------|--------------|-----------------|---------------------------|
-| PHP | 3% | Web backends (WordPress, Laravel) | Medium |
-| Ruby | 2% | Web apps (Rails) | Medium |
-| Kotlin | 2% | Android, server-side | Low (similar to Java) |
-| Swift | 1% | iOS, macOS | Medium |
-| C/C++ | 7% combined | Systems, embedded | High (complex AST) |
+| Language | Market Share | Strategic Value                   | Implementation Complexity |
+| -------- | ------------ | --------------------------------- | ------------------------- |
+| PHP      | 3%           | Web backends (WordPress, Laravel) | Medium                    |
+| Ruby     | 2%           | Web apps (Rails)                  | Medium                    |
+| Kotlin   | 2%           | Android, server-side              | Low (similar to Java)     |
+| Swift    | 1%           | iOS, macOS                        | Medium                    |
+| C/C++    | 7% combined  | Systems, embedded                 | High (complex AST)        |
 
 **Decision Criteria:**
+
 - 10+ customer requests OR
 - Strategic partnership opportunity OR
 - Competitive differentiation
@@ -277,13 +298,13 @@ export interface LanguageParser {
 
 export class ParserFactory {
   private parsers = new Map<string, LanguageParser>();
-  
+
   register(parser: LanguageParser): void {
-    parser.extensions.forEach(ext => {
+    parser.extensions.forEach((ext) => {
       this.parsers.set(ext, parser);
     });
   }
-  
+
   getParser(filePath: string): LanguageParser | null {
     const ext = getFileExtension(filePath);
     return this.parsers.get(ext) || null;
@@ -307,23 +328,24 @@ export async function analyzeMultiLanguage(
   options: AnalysisOptions
 ): Promise<MultiLanguageReport> {
   const files = await scanFiles(rootDir);
-  
+
   const reportsByLanguage = new Map<string, Report>();
-  
+
   for (const file of files) {
     const parser = ParserFactory.getParser(file);
     if (!parser) continue; // Skip unsupported files
-    
+
     const ast = parser.parse(await readFile(file), file);
     const analysis = await analyzeFile(ast, parser, options);
-    
+
     // Aggregate by language
     const lang = parser.name;
-    reportsByLanguage.set(lang, 
+    reportsByLanguage.set(
+      lang,
       mergeReports(reportsByLanguage.get(lang), analysis)
     );
   }
-  
+
   return {
     languages: Array.from(reportsByLanguage.keys()),
     reports: reportsByLanguage,
@@ -368,14 +390,14 @@ import { ParserFactory } from '@aiready/core';
 
 export async function detectPatterns(files: string[]) {
   const factory = ParserFactory.getInstance();
-  
+
   for (const file of files) {
     const parser = factory.getParser(file);
     if (!parser) {
       console.warn(`Skipping unsupported file: ${file}`);
       continue;
     }
-    
+
     const ast = parser.parse(await readFile(file), file);
     // ... pattern detection logic
   }
@@ -436,6 +458,7 @@ npx @aiready/pattern-detect ./src --languages ts,js,py
 ```
 
 **Strategy:**
+
 - Default behavior: Analyze all supported languages
 - Opt-out: `--languages ts,js` (restrict to specific languages)
 - Graceful degradation: Skip unsupported files with warnings
@@ -447,28 +470,31 @@ npx @aiready/pattern-detect ./src --languages ts,js,py
 
 ### Coverage by Phase
 
-| Phase | Languages Added | Cumulative Coverage | Market Impact |
-|-------|----------------|---------------------|---------------|
-| Current | TS, JS | 38% | Baseline |
-| Phase 1 | +Python | 64% | **+68% market** |
-| Phase 2 | +Java | 79% | **+108% market** |
-| Phase 3 | +Go, Rust | 87% | **+129% market** |
-| Phase 4 | +C# | 95% | **+150% market** |
+| Phase   | Languages Added | Cumulative Coverage | Market Impact    |
+| ------- | --------------- | ------------------- | ---------------- |
+| Current | TS, JS          | 38%                 | Baseline         |
+| Phase 1 | +Python         | 64%                 | **+68% market**  |
+| Phase 2 | +Java           | 79%                 | **+108% market** |
+| Phase 3 | +Go, Rust       | 87%                 | **+129% market** |
+| Phase 4 | +C#             | 95%                 | **+150% market** |
 
 ### Enterprise Value Proposition
 
 **Single-Language Shops:**
+
 - Current: Only serves JS/TS shops
 - Phase 1+: Serves Python-heavy (AI/ML) companies
 - Phase 2+: Serves Java enterprises (Fortune 500)
 
 **Multi-Language Shops (Most Valuable):**
+
 - Current: Limited value (only analyzes part of codebase)
 - Phase 1+: Can analyze frontend (TS/JS) + backend (Python)
 - Phase 2+: Can analyze entire stack (TS + Python + Java)
 - Phase 3+: Can analyze infrastructure (Go) + systems (Rust)
 
 **Example Multi-Language Stack:**
+
 ```
 ├── frontend/        (TypeScript + React)
 ├── backend/         (Python + FastAPI)
@@ -485,15 +511,15 @@ With Phase 3 complete, AIReady can analyze **100% of this codebase** vs. 20% tod
 
 ### Parser Libraries
 
-| Language | Primary Parser | Backup Option | License | NPM Package |
-|----------|---------------|---------------|---------|-------------|
-| TypeScript | `@typescript-eslint/typescript-estree` | - | BSD-2 | ✅ Existing |
-| JavaScript | `@typescript-eslint/typescript-estree` | - | BSD-2 | ✅ Existing |
-| Python | `tree-sitter-python` | `python-ast` (via WASM) | MIT | `web-tree-sitter` |
-| Java | `tree-sitter-java` | `java-parser` | MIT | `web-tree-sitter` |
-| Go | `tree-sitter-go` | - | MIT | `web-tree-sitter` |
-| Rust | `tree-sitter-rust` | - | MIT | `web-tree-sitter` |
-| C# | `tree-sitter-c-sharp` | Roslyn APIs | MIT | `web-tree-sitter` |
+| Language   | Primary Parser                         | Backup Option           | License | NPM Package       |
+| ---------- | -------------------------------------- | ----------------------- | ------- | ----------------- |
+| TypeScript | `@typescript-eslint/typescript-estree` | -                       | BSD-2   | ✅ Existing       |
+| JavaScript | `@typescript-eslint/typescript-estree` | -                       | BSD-2   | ✅ Existing       |
+| Python     | `tree-sitter-python`                   | `python-ast` (via WASM) | MIT     | `web-tree-sitter` |
+| Java       | `tree-sitter-java`                     | `java-parser`           | MIT     | `web-tree-sitter` |
+| Go         | `tree-sitter-go`                       | -                       | MIT     | `web-tree-sitter` |
+| Rust       | `tree-sitter-rust`                     | -                       | MIT     | `web-tree-sitter` |
+| C#         | `tree-sitter-c-sharp`                  | Roslyn APIs             | MIT     | `web-tree-sitter` |
 
 **Recommended:** Use `tree-sitter` for all new languages (consistent API, battle-tested, maintained by GitHub).
 
@@ -506,14 +532,14 @@ import Parser from 'web-tree-sitter';
 
 export class TreeSitterParser implements LanguageParser {
   private parser: Parser;
-  
+
   async initialize(languageWasm: string) {
     await Parser.init();
     this.parser = new Parser();
     const language = await Parser.Language.load(languageWasm);
     this.parser.setLanguage(language);
   }
-  
+
   parse(code: string): AST {
     const tree = this.parser.parse(code);
     return this.convertToCommonAST(tree.rootNode);
@@ -528,17 +554,21 @@ export class TreeSitterParser implements LanguageParser {
 ### Messaging by Phase
 
 **Phase 1 (Python Launch):**
+
 > "AIReady now supports Python! Analyze your full-stack codebases—TypeScript frontends, Python backends—with a single tool. Get AI-readiness scores across your entire repository, not just the JavaScript parts."
 
 **Phase 2 (Java Launch):**
+
 > "Enterprise-ready: AIReady now covers TypeScript, JavaScript, Python, and Java—79% of all production codebases. Get unified AI-readiness insights across your microservices, monorepos, and legacy systems."
 
 **Phase 3 (Go/Rust Launch):**
+
 > "Cloud-native complete: AIReady now analyzes Go and Rust alongside your web stack. Perfect for teams building modern infrastructure with polyglot codebases."
 
 ### Migration Guide for Users
 
 **Existing Users (TS/JS only):**
+
 ```bash
 # Before (still works identically)
 npx @aiready/cli scan ./src
@@ -549,6 +579,7 @@ npx @aiready/cli scan ./src
 ```
 
 **New Users (Multi-Language):**
+
 ```bash
 # Scan entire monorepo
 npx @aiready/cli scan ./
@@ -673,6 +704,7 @@ const STABLE_LANGUAGES = ['typescript', 'javascript'];
 **Recommendation: Execute Phase 1 (Python) in Q2 2026**
 
 **Why:**
+
 1. **Maximum Market Impact:** Python = +26% market coverage (+68% total)
 2. **Strategic Positioning:** Enables full-stack analysis (TS frontend + Python backend)
 3. **AI Alignment:** Python dominates AI/ML (our core audience)

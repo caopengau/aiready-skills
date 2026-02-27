@@ -14,6 +14,7 @@ The Context Analyzer measures and optimizes **context window usage** - how much 
 ## 🐛 Reporting Issues
 
 Found a bug or have a feature request? [Open an issue](https://github.com/caopengau/aiready-context-analyzer/issues) with:
+
 - Clear description of the problem or feature
 - Sample code that demonstrates the issue
 - Expected vs actual behavior
@@ -42,6 +43,7 @@ pnpm test
 ## 📝 Making Changes
 
 1. **Fork the repository** and create a new branch:
+
    ```bash
    git checkout -b fix/import-depth-calculation
    # or
@@ -55,15 +57,17 @@ pnpm test
    - Keep analysis logic modular and focused
 
 3. **Test your changes**:
+
    ```bash
    pnpm build
    pnpm test
-   
+
    # Test on real codebases
    ./dist/cli.js /path/to/test-repo
    ```
 
 4. **Commit using conventional commits**:
+
    ```bash
    git commit -m "fix: accurate import depth calculation"
    git commit -m "feat: add cohesion metric"
@@ -93,6 +97,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 - Verify output formats (console, JSON)
 
 Example test:
+
 ```typescript
 test('calculates import depth correctly', () => {
   const result = analyzeFile('src/utils/helper.ts', [...files]);
@@ -121,9 +126,10 @@ src/
 ### Adding a New Metric
 
 1. Create `src/metrics/your-metric.ts`:
+
    ```typescript
    import type { FileAnalysis } from '../types';
-   
+
    export function calculateYourMetric(file: FileAnalysis): number {
      // Your calculation logic
      return metricValue;
@@ -143,6 +149,7 @@ src/
 ## 🎯 Areas for Contribution
 
 Great places to start:
+
 - **New metrics**: Add new context quality measurements
 - **Better calculations**: Improve token estimation accuracy
 - **Language support**: Add analysis for more file types
@@ -167,6 +174,7 @@ Great places to start:
 ## 💡 Feature Ideas
 
 Looking for inspiration? Consider:
+
 - Language-specific context costs (TypeScript vs Python)
 - Framework-aware analysis (React hooks, Vue composables)
 - Bundle size estimation

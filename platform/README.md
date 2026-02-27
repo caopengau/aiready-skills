@@ -16,11 +16,11 @@ AIReady Platform Dashboard - Web application for monitoring and improving codeba
 
 SST uses stage-specific environment files:
 
-| File | Stage | Purpose |
-|------|-------|---------|
+| File         | Stage | Purpose                            |
+| ------------ | ----- | ---------------------------------- |
 | `.env.local` | local | Local development (localhost:8888) |
-| `.env.dev` | dev | Deployed dev environment |
-| `.env.prod` | prod | Production environment |
+| `.env.dev`   | dev   | Deployed dev environment           |
+| `.env.prod`  | prod  | Production environment             |
 
 Copy `.env.example` to the appropriate `.env.{stage}` file and fill in values.
 
@@ -30,11 +30,11 @@ Copy `.env.example` to the appropriate `.env.{stage}` file and fill in values.
 
 GitHub only allows 1 callback URL per OAuth app, so you need 3 apps:
 
-| Environment | Callback URL |
-|-------------|--------------|
-| Local | `http://localhost:8888/api/auth/callback/github` |
-| Dev | `https://dev.platform.getaiready.dev/api/auth/callback/github` |
-| Prod | `https://platform.getaiready.dev/api/auth/callback/github` |
+| Environment | Callback URL                                                   |
+| ----------- | -------------------------------------------------------------- |
+| Local       | `http://localhost:8888/api/auth/callback/github`               |
+| Dev         | `https://dev.platform.getaiready.dev/api/auth/callback/github` |
+| Prod        | `https://platform.getaiready.dev/api/auth/callback/github`     |
 
 #### Google OAuth (1 app with multiple URIs)
 
@@ -112,11 +112,11 @@ The `sst.config.ts` handles:
 
 ### Database Schema (DynamoDB Single Table)
 
-| Entity | PK | SK | GSI1 | GSI2 |
-|--------|----|----|------|------|
-| User | `USER#{id}` | `USER#{id}` | `EMAIL#{email}` | - |
-| Repo | `USER#{userId}` | `REPO#{repoId}` | `REPO#{url}` | - |
-| Analysis | `REPO#{repoId}` | `ANALYSIS#{timestamp}` | - | `USER#{userId}` |
+| Entity   | PK              | SK                     | GSI1            | GSI2            |
+| -------- | --------------- | ---------------------- | --------------- | --------------- |
+| User     | `USER#{id}`     | `USER#{id}`            | `EMAIL#{email}` | -               |
+| Repo     | `USER#{userId}` | `REPO#{repoId}`        | `REPO#{url}`    | -               |
+| Analysis | `REPO#{repoId}` | `ANALYSIS#{timestamp}` | -               | `USER#{userId}` |
 
 ### Stripe Integration
 

@@ -5,6 +5,7 @@ Thank you for your interest in contributing to AIReady Consistency Checker! We w
 ## 🐛 Reporting Issues
 
 Found a bug or have a feature request? [Open an issue](https://github.com/caopengau/aiready-consistency/issues) with:
+
 - Clear description of the problem or feature
 - Sample code that demonstrates the issue
 - Expected vs actual behavior
@@ -33,6 +34,7 @@ pnpm test
 ## 📝 Making Changes
 
 1. **Fork the repository** and create a new branch:
+
    ```bash
    git checkout -b fix/naming-detection
    # or
@@ -46,15 +48,17 @@ pnpm test
    - Keep analyzers modular and focused
 
 3. **Test your changes**:
+
    ```bash
    pnpm build
    pnpm test
-   
+
    # Test on real projects
    ./dist/cli.js path/to/test-project
    ```
 
 4. **Commit and push**:
+
    ```bash
    git add .
    git commit -m "feat: add camelCase detection for Python"
@@ -92,10 +96,13 @@ src/
 ### Adding a New Analyzer
 
 1. Create `src/analyzers/your-analyzer.ts`:
+
    ```typescript
    import type { YourIssueType } from '../types';
-   
-   export async function analyzeYourThing(files: string[]): Promise<YourIssueType[]> {
+
+   export async function analyzeYourThing(
+     files: string[]
+   ): Promise<YourIssueType[]> {
      // Your detection logic
      return issues;
    }

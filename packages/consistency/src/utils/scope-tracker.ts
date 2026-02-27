@@ -49,7 +49,7 @@ export class ScopeTracker {
       children: [],
       variables: new Map(),
     };
-    
+
     this.currentScope.children.push(newScope);
     this.currentScope = newScope;
     this.allScopes.push(newScope);
@@ -107,7 +107,7 @@ export class ScopeTracker {
    */
   findVariable(name: string): VariableInfo | null {
     let scope: Scope | null = this.currentScope;
-    
+
     while (scope) {
       const varInfo = scope.variables.get(name);
       if (varInfo) {
@@ -115,7 +115,7 @@ export class ScopeTracker {
       }
       scope = scope.parent;
     }
-    
+
     return null;
   }
 
@@ -131,11 +131,11 @@ export class ScopeTracker {
    */
   getAllVariables(): VariableInfo[] {
     const allVars: VariableInfo[] = [];
-    
+
     for (const scope of this.allScopes) {
       allVars.push(...Array.from(scope.variables.values()));
     }
-    
+
     return allVars;
   }
 
@@ -156,10 +156,10 @@ export class ScopeTracker {
 
     const declarationLine = varInfo.declarationLine;
     const maxUsageLine = Math.max(
-      ...varInfo.references.map(ref => ref.loc?.start.line ?? declarationLine)
+      ...varInfo.references.map((ref) => ref.loc?.start.line ?? declarationLine)
     );
 
-    return (maxUsageLine - declarationLine) <= maxLines;
+    return maxUsageLine - declarationLine <= maxLines;
   }
 
   /**
@@ -168,13 +168,13 @@ export class ScopeTracker {
   isLocallyScoped(varInfo: VariableInfo): boolean {
     // If all references are within a small scope (e.g., arrow function), it's locally scoped
     if (varInfo.references.length === 0) return false;
-    
+
     // Check if usage span is small
-    const lines = varInfo.references.map(ref => ref.loc?.start.line ?? 0);
+    const lines = varInfo.references.map((ref) => ref.loc?.start.line ?? 0);
     const minLine = Math.min(...lines);
     const maxLine = Math.max(...lines);
-    
-    return (maxLine - minLine) <= 3;
+
+    return maxLine - minLine <= 3;
   }
 
   /**

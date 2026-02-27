@@ -54,6 +54,8 @@ entries.forEach((entry) => {
   }
 });
 
-console.log(`\n✅ Post-build complete: ${successCount} files created${skippedCount ? `, ${skippedCount} skipped` : ''}${errorCount ? `, ${errorCount} errors` : ''}`);
+console.log(
+  `\n✅ Post-build complete: ${successCount} files created${skippedCount ? `, ${skippedCount} skipped` : ''}${errorCount ? `, ${errorCount} errors` : ''}`
+);
 
 if (errorCount > 0) process.exit(1);

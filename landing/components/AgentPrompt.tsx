@@ -1,100 +1,107 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AgentPromptProps {
-  variant?: "basic" | "detailed" | "fix";
+  variant?: 'basic' | 'detailed' | 'fix';
   className?: string;
 }
 
 const prompts = {
   basic: [
-    "Scan this codebase for AI readiness issues. Run:",
-    "",
-    "npx @aiready/cli scan",
-    "",
-    "Then visualise the results interactively:",
-    "npx @aiready/cli visualise",
-    "",
-    "Review the report and summarize:",
-    "1. Overall AI Readiness Score",
-    "2. Top 3 critical issues found",
-    "3. Quick wins we can fix immediately"
+    'Scan this codebase for AI readiness issues. Run:',
+    '',
+    'npx @aiready/cli scan',
+    '',
+    'Then visualise the results interactively:',
+    'npx @aiready/cli visualise',
+    '',
+    'Review the report and summarize:',
+    '1. Overall AI Readiness Score',
+    '2. Top 3 critical issues found',
+    '3. Quick wins we can fix immediately',
   ],
-  
+
   detailed: [
-    "Perform a comprehensive AI readiness analysis on this codebase:",
-    "",
-    "Step 1: Run the scan",
-    "npx @aiready/cli scan --score",
-    "",
-    "Step 2: Visualise dependency graph",
-    "npx @aiready/cli visualise",
-    "- Inspect clusters of tightly coupled files",
-    "- Identify deep import chains visually",
-    "- Note any isolated or orphaned modules",
-    "",
-    "Step 3: Review the report and identify:",
-    "- Semantic duplicates (wasted AI context tokens)",
-    "- High context budget files (too many dependencies)",
-    "- Naming inconsistencies (confuse AI models)",
-    "- Deep import chains (exceed context windows)",
-    "",
-    "Step 4: Prioritize fixes by impact:",
-    "- Which issues cause the most AI confusion?",
-    "- What quick wins exist (low effort, high impact)?",
-    "- What systemic patterns need addressing?",
-    "",
-    "Step 5: Provide actionable recommendations with file references."
+    'Perform a comprehensive AI readiness analysis on this codebase:',
+    '',
+    'Step 1: Run the scan',
+    'npx @aiready/cli scan --score',
+    '',
+    'Step 2: Visualise dependency graph',
+    'npx @aiready/cli visualise',
+    '- Inspect clusters of tightly coupled files',
+    '- Identify deep import chains visually',
+    '- Note any isolated or orphaned modules',
+    '',
+    'Step 3: Review the report and identify:',
+    '- Semantic duplicates (wasted AI context tokens)',
+    '- High context budget files (too many dependencies)',
+    '- Naming inconsistencies (confuse AI models)',
+    '- Deep import chains (exceed context windows)',
+    '',
+    'Step 4: Prioritize fixes by impact:',
+    '- Which issues cause the most AI confusion?',
+    '- What quick wins exist (low effort, high impact)?',
+    '- What systemic patterns need addressing?',
+    '',
+    'Step 5: Provide actionable recommendations with file references.',
   ],
 
   fix: [
-    "Fix AI readiness issues in this codebase:",
-    "",
-    "Step 1: Run analysis and visualise",
-    "npx @aiready/cli scan --score",
-    "npx @aiready/cli visualise",
-    "",
-    "Step 2: Use the graph to find hotspots, then fix:",
-    "- Semantic duplicates: Extract to shared utilities",
-    "- High context files: Break into smaller modules",
-    "- Naming issues: Use clear, consistent names",
-    "- Deep chains: Flatten or re-layer imports",
-    "",
-    "Step 3: Re-run to verify improvements",
-    "npx @aiready/cli scan --score",
-    "npx @aiready/cli visualise",
-    "",
-    "Step 4: Report before/after AI Readiness Score and changes made."
-  ]
+    'Fix AI readiness issues in this codebase:',
+    '',
+    'Step 1: Run analysis and visualise',
+    'npx @aiready/cli scan --score',
+    'npx @aiready/cli visualise',
+    '',
+    'Step 2: Use the graph to find hotspots, then fix:',
+    '- Semantic duplicates: Extract to shared utilities',
+    '- High context files: Break into smaller modules',
+    '- Naming issues: Use clear, consistent names',
+    '- Deep chains: Flatten or re-layer imports',
+    '',
+    'Step 3: Re-run to verify improvements',
+    'npx @aiready/cli scan --score',
+    'npx @aiready/cli visualise',
+    '',
+    'Step 4: Report before/after AI Readiness Score and changes made.',
+  ],
 };
 
 const promptTitles = {
-  basic: "Basic Scan",
-  detailed: "Detailed Analysis",
-  fix: "Fix Issues",
+  basic: 'Basic Scan',
+  detailed: 'Detailed Analysis',
+  fix: 'Fix Issues',
 };
 
 const agentIcons = [
-  { name: "Cline", emoji: "🤖" },
-  { name: "Claude Code", emoji: "🔮" },
-  { name: "Cursor", emoji: "⚡" },
-  { name: "Copilot", emoji: "🚀" },
-  { name: "ChatGPT", emoji: "💬" },
+  { name: 'Cline', emoji: '🤖' },
+  { name: 'Claude Code', emoji: '🔮' },
+  { name: 'Cursor', emoji: '⚡' },
+  { name: 'Copilot', emoji: '🚀' },
+  { name: 'ChatGPT', emoji: '💬' },
 ];
 
-export default function AgentPrompt({ variant = "basic", className = "" }: AgentPromptProps) {
+export default function AgentPrompt({
+  variant = 'basic',
+  className = '',
+}: AgentPromptProps) {
   const [copied, setCopied] = useState(false);
   const [visibleLines, setVisibleLines] = useState<number[]>([]);
   const promptLines = prompts[variant];
 
   useEffect(() => {
     // Animate lines appearing one by one
-    const delays = promptLines.map((_, index) => 
-      setTimeout(() => {
-        setVisibleLines(prev => [...prev, index]);
-      }, index * 100 + 500) // Start after 500ms, then 100ms between lines
+    const delays = promptLines.map(
+      (_, index) =>
+        setTimeout(
+          () => {
+            setVisibleLines((prev) => [...prev, index]);
+          },
+          index * 100 + 500
+        ) // Start after 500ms, then 100ms between lines
     );
 
     return () => delays.forEach(clearTimeout);
@@ -124,9 +131,11 @@ export default function AgentPrompt({ variant = "basic", className = "" }: Agent
             <div className="w-3 h-3 rounded-full bg-red-500" />
             <div className="w-3 h-3 rounded-full bg-yellow-500" />
             <div className="w-3 h-3 rounded-full bg-green-500" />
-            <span className="ml-2 text-sm text-slate-500 font-mono">agent prompt</span>
+            <span className="ml-2 text-sm text-slate-500 font-mono">
+              agent prompt
+            </span>
           </div>
-          
+
           {/* Copy button */}
           <motion.button
             onClick={handleCopy}
@@ -134,11 +143,11 @@ export default function AgentPrompt({ variant = "basic", className = "" }: Agent
             whileTap={{ scale: 0.95 }}
             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
               copied
-                ? "bg-green-500 text-white"
-                : "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg"
+                ? 'bg-green-500 text-white'
+                : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg'
             }`}
           >
-            {copied ? "✓ Copied!" : "📋 Copy Prompt"}
+            {copied ? '✓ Copied!' : '📋 Copy Prompt'}
           </motion.button>
         </div>
 
@@ -150,29 +159,30 @@ export default function AgentPrompt({ variant = "basic", className = "" }: Agent
               {promptTitles[variant]} Prompt
             </span>
           </div>
-          
+
           <AnimatePresence>
-            {promptLines.map((line, index) => (
-              visibleLines.includes(index) && (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`font-mono text-sm leading-relaxed ${
-                    line.startsWith('npx') || line.startsWith('Step') 
-                      ? 'text-cyan-400 font-semibold' 
-                      : line.startsWith('-') || line.match(/^\d\./)
-                      ? 'text-green-400 pl-4'
-                      : line === ''
-                      ? 'h-2'
-                      : 'text-slate-300 pl-4'
-                  }`}
-                >
-                  {line || '\u00A0'}
-                </motion.div>
-              )
-            ))}
+            {promptLines.map(
+              (line, index) =>
+                visibleLines.includes(index) && (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`font-mono text-sm leading-relaxed ${
+                      line.startsWith('npx') || line.startsWith('Step')
+                        ? 'text-cyan-400 font-semibold'
+                        : line.startsWith('-') || line.match(/^\d\./)
+                          ? 'text-green-400 pl-4'
+                          : line === ''
+                            ? 'h-2'
+                            : 'text-slate-300 pl-4'
+                    }`}
+                  >
+                    {line || '\u00A0'}
+                  </motion.div>
+                )
+            )}
           </AnimatePresence>
 
           {/* Blinking cursor at the end */}
@@ -196,7 +206,7 @@ export default function AgentPrompt({ variant = "basic", className = "" }: Agent
           transition={{
             duration: 3,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
         />
       </motion.div>
@@ -208,7 +218,9 @@ export default function AgentPrompt({ variant = "basic", className = "" }: Agent
         transition={{ delay: 1.5 }}
         className="flex items-center justify-center gap-2 mt-4 flex-wrap"
       >
-        <span className="text-xs text-slate-500 font-medium">Compatible with:</span>
+        <span className="text-xs text-slate-500 font-medium">
+          Compatible with:
+        </span>
         {agentIcons.map((agent, index) => (
           <motion.span
             key={agent.name}

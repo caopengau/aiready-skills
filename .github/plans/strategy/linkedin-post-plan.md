@@ -155,9 +155,9 @@ Use a predictable schema so GA reporting is clean.
 
 Track each post in this table weekly.
 
-| Date | Theme | Format | Link Type | Impressions | Reactions | Comments | Profile Visits | Link Clicks | Followers + | Notes |
-|------|-------|--------|-----------|-------------|-----------|----------|----------------|------------|-------------|-------|
-|      |       | text / poll / carousel | blog / home |             |           |          |                |            |             |       |
+| Date | Theme | Format                 | Link Type   | Impressions | Reactions | Comments | Profile Visits | Link Clicks | Followers + | Notes |
+| ---- | ----- | ---------------------- | ----------- | ----------- | --------- | -------- | -------------- | ----------- | ----------- | ----- |
+|      |       | text / poll / carousel | blog / home |             |           |          |                |             |             |       |
 
 ### KPI Targets (First 8 Weeks)
 
@@ -217,7 +217,8 @@ Humans still make the final call. But better metrics make those calls faster and
 
 Try the guided start: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day01-main-post>
 
-What’s one quality signal your team wishes you could measure better?  
+What’s one quality signal your team wishes you could measure better?
+
 # AI #DeveloperTools #CodeQuality
 
 ---
@@ -235,7 +236,8 @@ Measure your repo here: <https://getaiready.dev?utm_source=linkedin&utm_medium=s
 
 Human-in-the-loop is mission critical: AI drafts fast, humans choose the standard.
 
-Have you seen this in validation/auth code?  
+Have you seen this in validation/auth code?
+
 # AIEngineering #Refactoring #CodeQuality
 
 ---
@@ -250,7 +252,8 @@ The lesson: simplify module boundaries first. Fancy prompts come second.
 
 Try the guided flow: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day05-main-post>
 
-Where in your codebase would collapsing one domain save the most time?  
+Where in your codebase would collapsing one domain save the most time?
+
 # SoftwareEngineering #AI #TechDebt
 
 ---
@@ -269,7 +272,8 @@ AIReady’s mission is simple: make quality visible so human reviews are focused
 
 Start here: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day07-main-post>
 
-What review guardrail has saved your team most often?  
+What review guardrail has saved your team most often?
+
 # HumanInTheLoop #AI #EngineeringLeadership
 
 ---
@@ -287,7 +291,8 @@ If you want practical ways to simplify without over-refactoring, this one is for
 
 Tools + guided start: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day09-tools>
 
-Which module has the deepest import chain in your repo today?  
+Which module has the deepest import chain in your repo today?
+
 # AI #CodeQuality #DeveloperProductivity
 
 ---
@@ -303,7 +308,8 @@ The fix is making your architecture easier to read — for both models and human
 
 Measure first: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day11-main-post>
 
-What’s more effective in your team right now: prompt tuning or codebase simplification?  
+What’s more effective in your team right now: prompt tuning or codebase simplification?
+
 # AI #Architecture #CodeQuality
 
 ---
@@ -313,9 +319,9 @@ You don’t need to be a software architect to improve AI output quality.
 
 Start with 3 simple checks:
 
-1) Is the same logic repeated in multiple places?
-2) Is one feature spread across too many files?
-3) Can a new teammate explain this module in 60 seconds?
+1. Is the same logic repeated in multiple places?
+2. Is one feature spread across too many files?
+3. Can a new teammate explain this module in 60 seconds?
 
 If “no” on any of these, that’s your first refactor candidate.
 
@@ -323,7 +329,8 @@ Try the guided onboarding: <https://getaiready.dev?utm_source=linkedin&utm_mediu
 
 Human-in-loop remains non-negotiable: AI helps execute, humans decide standards.
 
-Which of these 3 checks fails most in your project?  
+Which of these 3 checks fails most in your project?
+
 # BuildInPublic #AI #DeveloperTools
 
 ---
@@ -341,7 +348,8 @@ Simpler module boundaries reduce context budget and improve both speed and quali
 
 Learn + run checks: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day15-main-post>
 
-Where do you feel context overload most: APIs, auth, or data layer?  
+Where do you feel context overload most: APIs, auth, or data layer?
+
 # AIEngineering #CodebaseHealth #Productivity
 
 ---
@@ -357,7 +365,8 @@ Try it: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campai
 
 Even with agentic workflows, keep humans in the loop for architecture and risk decisions.
 
-What’s your ideal onboarding: checklist, wizard, or AI guide?  
+What’s your ideal onboarding: checklist, wizard, or AI guide?
+
 # AgenticAI #DeveloperExperience #AI
 
 ---
@@ -374,7 +383,8 @@ That’s one reason I started AIReady: objective metrics for AI-native developme
 
 Explore the approach: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day19-main-post>
 
-What changed your team’s AI quality most: better prompts or better structure?  
+What changed your team’s AI quality most: better prompts or better structure?
+
 # FounderJourney #AI #CodeQuality
 
 ---
@@ -392,7 +402,8 @@ I’d love to learn from it and share practical patterns back with the community
 
 Start here: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day21-main-post>
 
-Comment “analyze” and I’ll DM details.  
+Comment “analyze” and I’ll DM details.
+
 # OpenSource #DeveloperCommunity #AI
 
 ---
@@ -407,7 +418,8 @@ Teaser + previous posts: <https://getaiready.dev/blog?utm_source=linkedin&utm_me
 
 In AI-native workflows, faster diagnosis means safer velocity — with humans steering the decisions.
 
-Want the next post to focus more on visual diagnostics or team workflow?  
+Want the next post to focus more on visual diagnostics or team workflow?
+
 # AI #EngineeringManagement #DevTools
 
 ---
@@ -427,7 +439,8 @@ Small structural wins create better AI suggestions and cleaner human reviews.
 
 Try this with guided steps: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_campaign=thought-leadership&utm_content=day25-main-post>
 
-Which domain are you cleaning first?  
+Which domain are you cleaning first?
+
 # Refactoring #AI #CodeQuality
 
 ---
@@ -446,7 +459,8 @@ If you want a practical baseline before improving, start here: <https://getairea
 
 Human-in-the-loop remains mission critical — especially for architecture and risk decisions.
 
-Vote + share your “why” in comments.  
+Vote + share your “why” in comments.
+
 # AIPoll #SoftwareEngineering #DeveloperTools
 
 ---

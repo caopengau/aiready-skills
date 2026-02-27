@@ -20,7 +20,7 @@ describe('Auto-detection from folder structure', () => {
 
     // Should detect 'payment' from processPayment (now part of auto-detected keywords)
     expect(paymentsNode?.exports[0].inferredDomain).toBe('payment');
-    
+
     // Should detect 'order' from createOrder
     expect(ordersNode?.exports[0].inferredDomain).toBe('order');
   });

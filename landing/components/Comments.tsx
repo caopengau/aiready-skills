@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useRef } from 'react';
 
@@ -39,7 +39,8 @@ export function Comments({ slug, title }: CommentsProps) {
           Join the Discussion
         </h2>
         <p className="text-center text-slate-600 dark:text-slate-400 mb-8">
-          Have questions or want to share your AI code quality story? Drop them below. I read every comment.
+          Have questions or want to share your AI code quality story? Drop them
+          below. I read every comment.
         </p>
 
         <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg border border-slate-200 dark:border-zinc-800 p-6">

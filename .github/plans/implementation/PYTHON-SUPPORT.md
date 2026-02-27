@@ -26,6 +26,7 @@ AIReady now supports **Python** in addition to TypeScript/JavaScript! This expan
 ### 3. Tool Integration
 
 #### @aiready/consistency
+
 - **New Analyzer**: `analyzers/naming-python.ts`
 - **Checks**: PEP 8 naming conventions
   - Variables: `snake_case`
@@ -36,6 +37,7 @@ AIReady now supports **Python** in addition to TypeScript/JavaScript! This expan
 - **Auto-suggestions**: Provides PEP 8-compliant name recommendations
 
 #### @aiready/pattern-detect
+
 - **New Extractor**: `extractors/python-extractor.ts`
 - **Features**:
   - Extract Python functions and classes
@@ -45,6 +47,7 @@ AIReady now supports **Python** in addition to TypeScript/JavaScript! This expan
 - **Metrics**: Weighted similarity (name 30%, imports 40%, type 10%, signature 20%)
 
 #### @aiready/context-analyzer
+
 - **New Analyzer**: `analyzers/python-context.ts`
 - **Capabilities**:
   - Build Python dependency graphs
@@ -149,6 +152,7 @@ from mypackage.models import User  # From project root
 ```
 
 The Python analyzer resolves both relative and absolute imports, checking:
+
 1. `module.py` in target directory
 2. `module/__init__.py` in target directory
 
@@ -199,6 +203,7 @@ All packages build successfully:
 ## Backward Compatibility
 
 ✅ **100% Backward Compatible**
+
 - All existing TypeScript/JavaScript analysis unchanged
 - Python support is additive, not breaking
 - Existing projects continue working as before
@@ -207,16 +212,19 @@ All packages build successfully:
 ## Next Steps (Phase 2-4)
 
 ### Phase 2: Java Support (Q3 2026)
+
 - Add JavaParser with tree-sitter
 - Support Maven/Gradle projects
 - Detect Spring Framework patterns
 
 ### Phase 3: Go & Rust (Q4 2026)
+
 - Add GoParser and RustParser
 - Support Go modules and Cargo
 - Detect concurrency patterns
 
 ### Phase 4: C# Support (Q1 2027)
+
 - Add CSharpParser
 - Support .NET projects
 - Detect LINQ patterns

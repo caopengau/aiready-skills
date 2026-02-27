@@ -18,7 +18,13 @@ export interface TestabilityOptions {
 export interface TestabilityIssue extends Issue {
   type: 'low-testability';
   /** Category of testability barrier */
-  dimension: 'test-coverage' | 'purity' | 'dependency-injection' | 'interface-focus' | 'observability' | 'framework';
+  dimension:
+    | 'test-coverage'
+    | 'purity'
+    | 'dependency-injection'
+    | 'interface-focus'
+    | 'observability'
+    | 'framework';
 }
 
 export interface TestabilityReport {

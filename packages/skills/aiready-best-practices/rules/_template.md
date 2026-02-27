@@ -17,7 +17,7 @@ Brief explanation of the rule and why it matters for AI comprehension. Focus on 
 // Bad code example here with clear explanation
 const badExample = () => {
   // Show the anti-pattern
-}
+};
 ```
 
 **Correct (description of what's right):**
@@ -26,7 +26,7 @@ const badExample = () => {
 // Good code example here with clear explanation
 const goodExample = () => {
   // Show the best practice
-}
+};
 ```
 
 Optional additional context or explanation after the examples.

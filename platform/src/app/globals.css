@@ -32,7 +32,8 @@ html {
 
 /* Custom animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -41,7 +42,8 @@ html {
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
@@ -52,7 +54,8 @@ html {
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -123,7 +126,7 @@ html {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(99, 102, 241, 0.3);
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(59, 130, 246, 0.1),
     0 0 40px rgba(6, 182, 212, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -131,15 +134,21 @@ html {
 
 /* Glow effects */
 .glow-blue {
-  box-shadow: 0 0 20px var(--glow-blue), 0 0 40px var(--glow-blue);
+  box-shadow:
+    0 0 20px var(--glow-blue),
+    0 0 40px var(--glow-blue);
 }
 
 .glow-cyan {
-  box-shadow: 0 0 20px var(--glow-cyan), 0 0 40px var(--glow-cyan);
+  box-shadow:
+    0 0 20px var(--glow-cyan),
+    0 0 40px var(--glow-cyan);
 }
 
 .glow-purple {
-  box-shadow: 0 0 20px var(--glow-purple), 0 0 40px var(--glow-purple);
+  box-shadow:
+    0 0 20px var(--glow-purple),
+    0 0 40px var(--glow-purple);
 }
 
 /* Text glow */
@@ -220,7 +229,7 @@ html {
 
 /* Background grid pattern */
 .bg-grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
@@ -258,14 +267,16 @@ html {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.3),
     0 0 30px rgba(59, 130, 246, 0.2);
 }
 
 /* Smooth transitions */
 * {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }

@@ -2,6 +2,7 @@
   "name": "@aiready/monorepo",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "Explains why AI tools struggle with your codebase and where small changes unlock outsized AI leverage",
   "workspaces": [
     "packages/*"
@@ -17,16 +18,22 @@
     "visualize": "node scripts/visualize.js"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/d3": "^7.4.3",
     "@types/node": "^24.10.13",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^10.0.2",
     "npm-check-updates": "^19.3.2",
     "nx": "^22.5.1",
     "ovsx": "^0.10.9",
+    "prettier": "^3.8.1",
     "semver": "^7.7.4",
     "turbo": "^2.8.9",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
   },
   "packageManager": "pnpm@10.30.3",

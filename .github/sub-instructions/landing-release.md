@@ -35,6 +35,7 @@ make release-status
 ```
 
 Output includes:
+
 ```
 Package                        Local           npm             Status
 -------                        -----           ---             ------
@@ -62,7 +63,7 @@ make release-landing TYPE=major
 4. **Monorepo Tag**: Creates annotated tag `landing-v0.2.0` in the monorepo
 5. **Subtree Split**: Creates a subtree split of the `landing/` directory
 6. **Sensitive File Removal**: Removes `sst.config.ts` and `.env` from the split (security)
-5. **Push to Sub-repo**: Force pushes to `aiready-landing` repository (main branch)
+7. **Push to Sub-repo**: Force pushes to `aiready-landing` repository (main branch)
 8. **Sub-repo Tag**: Creates version tag `v0.2.0` in the sub-repo (without "landing-" prefix)
 9. **Push Tags**: Pushes all tags to both monorepo and sub-repo
 
@@ -97,6 +98,7 @@ make sync
 ```
 
 This will:
+
 1. Push monorepo changes to origin
 2. Sync all package spokes to their public repos
 3. **Sync landing page to aiready-landing repo** (uses current version tag)
@@ -179,6 +181,7 @@ pnpm build
 ## Best Practices
 
 1. **Always test locally** before releasing:
+
    ```bash
    cd landing && pnpm build && pnpm start
    ```
@@ -189,6 +192,7 @@ pnpm build
    - **Major** (0.1.0 → 1.0.0): Breaking changes, major redesign
 
 3. **Deploy after releasing**:
+
    ```bash
    make release-landing TYPE=minor
    make deploy-landing-prod

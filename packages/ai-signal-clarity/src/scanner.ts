@@ -10,29 +10,44 @@
 import { readFileSync } from 'fs';
 import { parse } from '@typescript-eslint/typescript-estree';
 import type { TSESTree } from '@typescript-eslint/types';
-import type { AiSignalClarityIssue, FileAiSignalClarityResult, AiSignalClarityOptions } from './types';
+import type {
+  AiSignalClarityIssue,
+  FileAiSignalClarityResult,
+  AiSignalClarityOptions,
+} from './types';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
 const AMBIGUOUS_NAME_PATTERNS = [
-  /^[a-z]$/,                          // single letter: a, b, x, y
+  /^[a-z]$/, // single letter: a, b, x, y
   /^(tmp|temp|data|obj|val|res|ret|result|item|elem|thing|stuff|info|misc|util|helper|handler|cb|fn|func)$/i,
-  /^[a-z]\d+$/,                       // x1, x2, n3
+  /^[a-z]\d+$/, // x1, x2, n3
 ];
 
 const MAGIC_LITERAL_IGNORE = new Set([0, 1, -1, 2, 100, 1000, 1024]);
-const MAGIC_STRING_IGNORE = new Set(['', ' ', '\n', '\t', 'utf8', 'utf-8', 'hex', 'base64']);
+const MAGIC_STRING_IGNORE = new Set([
+  '',
+  ' ',
+  '\n',
+  '\t',
+  'utf8',
+  'utf-8',
+  'hex',
+  'base64',
+]);
 
-const VAGUE_FILE_PATTERNS = /\/(utils|helpers?|misc|common|shared|index)\.(ts|js|tsx|jsx)$/;
+const VAGUE_FILE_PATTERNS =
+  /\/(utils|helpers?|misc|common|shared|index)\.(ts|js|tsx|jsx)$/;
+void VAGUE_FILE_PATTERNS;
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function isAmbiguousName(name: string): boolean {
-  return AMBIGUOUS_NAME_PATTERNS.some(p => p.test(name));
+  return AMBIGUOUS_NAME_PATTERNS.some((p) => p.test(name));
 }
 
 function isMagicNumber(value: number): boolean {
@@ -46,18 +61,30 @@ function isMagicString(value: string): boolean {
   return value.length <= 20 && !/[/.]/.test(value) && !/^\s+$/.test(value);
 }
 
-function getSignature(node: TSESTree.FunctionDeclaration | TSESTree.FunctionExpression | TSESTree.ArrowFunctionExpression | TSESTree.TSDeclareFunction): string {
-  return node.params.map(p => JSON.stringify(p)).join(',');
+function getSignature(
+  node:
+    | TSESTree.FunctionDeclaration
+    | TSESTree.FunctionExpression
+    | TSESTree.ArrowFunctionExpression
+    | TSESTree.TSDeclareFunction
+): string {
+  return node.params.map((p) => JSON.stringify(p)).join(',');
 }
 
 function hasJSDoc(node: TSESTree.Node, code: string): boolean {
   const start = node.range?.[0] ?? 0;
   const preceding = code.slice(Math.max(0, start - 200), start);
-  return /\/\*\*[\s\S]*?\*\/\s*$/.test(preceding) || /\/\/[^\n]*\n\s*$/.test(preceding);
+  return (
+    /\/\*\*[\s\S]*?\*\/\s*$/.test(preceding) ||
+    /\/\/[^\n]*\n\s*$/.test(preceding)
+  );
 }
 
 function isVoidWithSideEffect(
-  node: TSESTree.FunctionDeclaration | TSESTree.FunctionExpression | TSESTree.ArrowFunctionExpression,
+  node:
+    | TSESTree.FunctionDeclaration
+    | TSESTree.FunctionExpression
+    | TSESTree.ArrowFunctionExpression
 ): boolean {
   // Heuristic: function returns nothing but contains assignments or calls that mutate external state
   // We look for: no explicit return with a value, AND contains assignment to non-local vars
@@ -78,7 +105,7 @@ function isVoidWithSideEffect(
       const child = (n as any)[key];
       if (child && typeof child === 'object') {
         if (Array.isArray(child)) {
-          child.forEach(c => c && c.type && walk(c));
+          child.forEach((c) => c && c.type && walk(c));
         } else if (child.type) {
           walk(child);
         }
@@ -87,7 +114,7 @@ function isVoidWithSideEffect(
   }
 
   if (node.body && node.body.type === 'BlockStatement') {
-    node.body.body.forEach(s => walk(s));
+    node.body.body.forEach((s) => walk(s));
   }
 
   return !hasReturn && hasMutation;
@@ -123,7 +150,7 @@ function getCallbackDepth(node: TSESTree.Node, depth = 0): number {
 
 export function scanFile(
   filePath: string,
-  options: AiSignalClarityOptions = { rootDir: '.' },
+  options: AiSignalClarityOptions = { rootDir: '.' }
 ): FileAiSignalClarityResult {
   let code: string;
   try {
@@ -168,12 +195,15 @@ export function scanFile(
     message: string,
     node: TSESTree.Node,
     suggestion?: string,
-    snippet?: string,
+    snippet?: string
   ) {
     issues.push({
-      type: category === 'magic-literal' ? 'magic-literal'
-        : category === 'boolean-trap' ? 'boolean-trap'
-          : 'ai-signal-clarity',
+      type:
+        category === 'magic-literal'
+          ? 'magic-literal'
+          : category === 'boolean-trap'
+            ? 'boolean-trap'
+            : 'ai-signal-clarity',
       category,
       severity,
       message,
@@ -200,16 +230,19 @@ export function scanFile(
             `Magic number ${node.value} — AI will invent wrong semantics. Extract to a named constant.`,
             node,
             `const MEANINGFUL_NAME = ${node.value};`,
-            code.slice(node.range?.[0] ?? 0, node.range?.[1] ?? 0),
+            code.slice(node.range?.[0] ?? 0, node.range?.[1] ?? 0)
           );
-        } else if (typeof node.value === 'string' && isMagicString(node.value)) {
+        } else if (
+          typeof node.value === 'string' &&
+          isMagicString(node.value)
+        ) {
           signals.magicLiterals++;
           reportIssue(
             'magic-literal',
             'info',
             `Magic string "${node.value}" — intent is ambiguous to AI. Consider a named constant.`,
             node,
-            `const CONSTANT_NAME = '${node.value}';`,
+            `const CONSTANT_NAME = '${node.value}';`
           );
         }
       }
@@ -222,7 +255,9 @@ export function scanFile(
         node.arguments
       ) {
         const boolArgs = node.arguments.filter(
-          a => a.type === 'Literal' && typeof (a as TSESTree.Literal).value === 'boolean',
+          (a) =>
+            a.type === 'Literal' &&
+            typeof (a as TSESTree.Literal).value === 'boolean'
         );
         if (boolArgs.length >= 1) {
           signals.booleanTraps++;
@@ -231,7 +266,7 @@ export function scanFile(
             'major',
             `Boolean trap: positional boolean argument(s) at call site. AI inverts intent ~30% of the time.`,
             node,
-            'Replace boolean arg with a named options object: { enabled: true }',
+            'Replace boolean arg with a named options object: { enabled: true }'
           );
         }
       }
@@ -239,26 +274,36 @@ export function scanFile(
 
     // --- Ambiguous / non-descriptive names ---
     if (options.checkAmbiguousNames !== false) {
-      if (node.type === 'VariableDeclarator' && node.id && node.id.type === 'Identifier') {
+      if (
+        node.type === 'VariableDeclarator' &&
+        node.id &&
+        node.id.type === 'Identifier'
+      ) {
         const name = node.id.name;
         if (isAmbiguousName(name)) {
           signals.ambiguousNames++;
-          if (signals.ambiguousNames <= 50) { // cap issue count per file
+          if (signals.ambiguousNames <= 50) {
+            // cap issue count per file
             reportIssue(
               'ambiguous-name',
               'info',
               `Ambiguous identifier "${name}" — AI cannot infer intent and will guess incorrectly.`,
               node.id,
-              'Use a domain-descriptive name instead.',
+              'Use a domain-descriptive name instead.'
             );
           }
         }
       }
-      if (node.type === 'FunctionDeclaration' && node.id && node.id.type === 'Identifier') {
+      if (
+        node.type === 'FunctionDeclaration' &&
+        node.id &&
+        node.id.type === 'Identifier'
+      ) {
         // also check function names and params
         if (isAmbiguousName(node.id.name)) signals.ambiguousNames++;
-        node.params.forEach(p => {
-          if (p.type === 'Identifier' && isAmbiguousName(p.name)) signals.ambiguousNames++;
+        node.params.forEach((p) => {
+          if (p.type === 'Identifier' && isAmbiguousName(p.name))
+            signals.ambiguousNames++;
         });
       }
 
@@ -301,32 +346,36 @@ export function scanFile(
             'major',
             'Function mutates external state without returning a value — AI misses this contract.',
             node,
-            'Make side-effects explicit in function name (e.g., updateX) or return a result.',
+            'Make side-effects explicit in function name (e.g., updateX) or return a result.'
           );
         }
       }
     }
 
     // --- Exports (for undocumented export detection) ---
-    if (node.type === 'ExportNamedDeclaration' || node.type === 'ExportDefaultDeclaration') {
+    if (
+      node.type === 'ExportNamedDeclaration' ||
+      node.type === 'ExportDefaultDeclaration'
+    ) {
       signals.totalExports++;
       const decl = (node as any).declaration;
       if (decl) {
         const name =
-          decl.id?.name ??
-          decl.declarations?.[0]?.id?.name ??
-          'anonymous';
+          decl.id?.name ?? decl.declarations?.[0]?.id?.name ?? 'anonymous';
         exportedNames.add(name);
 
         // Check JSDoc presence
-        if (options.checkUndocumentedExports !== false && !hasJSDoc(node, code)) {
+        if (
+          options.checkUndocumentedExports !== false &&
+          !hasJSDoc(node, code)
+        ) {
           signals.undocumentedExports++;
           reportIssue(
             'undocumented-export',
             'minor',
             `Public export "${name}" has no JSDoc — AI fabricates behavior from the name alone.`,
             node,
-            'Add a JSDoc comment describing parameters, return value, and side effects.',
+            'Add a JSDoc comment describing parameters, return value, and side effects.'
           );
         }
       }
@@ -363,7 +412,7 @@ export function scanFile(
         'major',
         `Callback nesting depth ${maxDepth} — AI loses control flow context beyond 3 levels.`,
         ast.body[0] ?? ast,
-        'Extract nested callbacks into named async functions or use async/await.',
+        'Extract nested callbacks into named async functions or use async/await.'
       );
     }
   }
@@ -377,7 +426,7 @@ export function scanFile(
         'critical',
         `Symbol "${name}" has ${sigs.size} overloaded signatures — AI picks the wrong one.`,
         ast.body[0] ?? ast,
-        `Rename each overload to a unique, descriptive name.`,
+        `Rename each overload to a unique, descriptive name.`
       );
     }
   }

@@ -1,22 +1,27 @@
 import { auth } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
-import { listUserRepositories, getLatestAnalysis, getUserByEmail, createUser } from '@/lib/db';
+import {
+  listUserRepositories,
+  getLatestAnalysis,
+  getUserByEmail,
+  createUser,
+} from '@/lib/db';
 import DashboardClient from './DashboardClient';
 
 export default async function DashboardPage() {
   const session = await auth();
-  
+
   if (!session?.user?.email) {
     redirect('/login');
   }
 
   let user;
   let repos: any[] = [];
-  
+
   try {
     // Ensure user exists in our database (lazy creation for OAuth users)
     user = await getUserByEmail(session.user.email);
-    
+
     if (!user) {
       // Create user from session data
       user = await createUser({
@@ -51,13 +56,19 @@ export default async function DashboardPage() {
   );
 
   // Calculate overall AI score (average of all repos)
-  const reposWithScores = reposWithAnalysis.filter(r => r.aiScore !== undefined);
-  const overallScore = reposWithScores.length > 0
-    ? Math.round(reposWithScores.reduce((sum, r) => sum + (r.aiScore || 0), 0) / reposWithScores.length)
-    : null;
+  const reposWithScores = reposWithAnalysis.filter(
+    (r) => r.aiScore !== undefined
+  );
+  const overallScore =
+    reposWithScores.length > 0
+      ? Math.round(
+          reposWithScores.reduce((sum, r) => sum + (r.aiScore || 0), 0) /
+            reposWithScores.length
+        )
+      : null;
 
   return (
-    <DashboardClient 
+    <DashboardClient
       user={{
         id: user.id,
         name: user.name,

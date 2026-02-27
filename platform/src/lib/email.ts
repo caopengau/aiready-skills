@@ -1,6 +1,6 @@
 /**
  * Email utilities using AWS SES
- * 
+ *
  * SES is configured in sst.config.ts with domain verification
  * Dev: noreply@dev.getaiready.dev
  * Prod: noreply@getaiready.dev
@@ -13,7 +13,9 @@ import {
 } from '@aws-sdk/client-ses';
 
 // Initialize SES client
-const sesClient = new SESClient({ region: process.env.AWS_REGION || 'ap-southeast-2' });
+const sesClient = new SESClient({
+  region: process.env.AWS_REGION || 'ap-southeast-2',
+});
 
 // Get from email based on environment
 const getFromEmail = () => {
@@ -31,9 +33,11 @@ interface EmailParams {
 /**
  * Send an email via SES
  */
-export async function sendEmail(params: EmailParams): Promise<{ success: boolean; messageId?: string; error?: string }> {
+export async function sendEmail(
+  params: EmailParams
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const { to, subject, htmlBody, textBody } = params;
-  
+
   const input: SendEmailCommandInput = {
     Source: getFromEmail(),
     Destination: {
@@ -62,7 +66,7 @@ export async function sendEmail(params: EmailParams): Promise<{ success: boolean
   try {
     const command = new SendEmailCommand(input);
     const response = await sesClient.send(command);
-    
+
     return {
       success: true,
       messageId: response.MessageId,
@@ -93,12 +97,14 @@ export async function sendAnalysisCompleteEmail(params: {
   dashboardUrl: string;
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const { to, repoName, aiScore, breakdown, summary, dashboardUrl } = params;
-  
-  const scoreColor = aiScore >= 80 ? '#10b981' : aiScore >= 60 ? '#f59e0b' : '#ef4444';
-  const scoreLabel = aiScore >= 80 ? 'Excellent' : aiScore >= 60 ? 'Good' : 'Needs Work';
-  
+
+  const scoreColor =
+    aiScore >= 80 ? '#10b981' : aiScore >= 60 ? '#f59e0b' : '#ef4444';
+  const scoreLabel =
+    aiScore >= 80 ? 'Excellent' : aiScore >= 60 ? 'Good' : 'Needs Work';
+
   const subject = `AIReady Analysis Complete: ${repoName} scored ${aiScore}/100`;
-  
+
   const htmlBody = `
 <!DOCTYPE html>
 <html>
@@ -129,13 +135,17 @@ export async function sendAnalysisCompleteEmail(params: {
     <!-- Breakdown Section -->
     <div style="padding: 0 24px 24px;">
       <h3 style="color: #e2e8f0; font-size: 14px; font-weight: 600; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em;">Score Breakdown</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-        ${Object.entries(breakdown).map(([key, value]) => `
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px;">
+        ${Object.entries(breakdown)
+          .map(
+            ([key, value]) => `
           <div style="background: rgba(30, 41, 59, 0.5); border-radius: 8px; padding: 12px; border: 1px solid rgba(100, 116, 139, 0.2);">
             <div style="font-size: 20px; font-weight: 700; color: ${value >= 70 ? '#10b981' : value >= 50 ? '#f59e0b' : '#ef4444'};">${value}</div>
             <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${formatBreakdownKey(key)}</div>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
     </div>
     
@@ -146,16 +156,24 @@ export async function sendAnalysisCompleteEmail(params: {
         <div style="color: #94a3b8; font-size: 14px;">
           <span style="color: #e2e8f0; font-weight: 600;">${summary.totalFiles}</span> files
         </div>
-        ${summary.criticalIssues > 0 ? `
+        ${
+          summary.criticalIssues > 0
+            ? `
           <div style="color: #ef4444; font-size: 14px;">
             <span style="font-weight: 600;">${summary.criticalIssues}</span> critical issues
           </div>
-        ` : ''}
-        ${summary.warnings > 0 ? `
+        `
+            : ''
+        }
+        ${
+          summary.warnings > 0
+            ? `
           <div style="color: #f59e0b; font-size: 14px;">
             <span style="font-weight: 600;">${summary.warnings}</span> warnings
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
     </div>
     
@@ -176,14 +194,16 @@ export async function sendAnalysisCompleteEmail(params: {
 </body>
 </html>
   `.trim();
-  
+
   const textBody = `
 AIReady Analysis Complete
 
 ${repoName} scored ${aiScore}/100 (${scoreLabel})
 
 Score Breakdown:
-${Object.entries(breakdown).map(([key, value]) => `  ${formatBreakdownKey(key)}: ${value}`).join('\n')}
+${Object.entries(breakdown)
+  .map(([key, value]) => `  ${formatBreakdownKey(key)}: ${value}`)
+  .join('\n')}
 
 Summary:
   - ${summary.totalFiles} files analyzed
@@ -194,7 +214,7 @@ View your full report: ${dashboardUrl}
 
 © 2026 AIReady
   `.trim();
-  
+
   return sendEmail({ to, subject, htmlBody, textBody });
 }
 
@@ -207,9 +227,9 @@ export async function sendWelcomeEmail(params: {
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const { to, name } = params;
   const firstName = name?.split(' ')[0] || 'Developer';
-  
+
   const subject = 'Welcome to AIReady! 🚀';
-  
+
   const htmlBody = `
 <!DOCTYPE html>
 <html>
@@ -259,7 +279,7 @@ export async function sendWelcomeEmail(params: {
 </body>
 </html>
   `.trim();
-  
+
   return sendEmail({ to, subject, htmlBody });
 }
 
@@ -271,9 +291,9 @@ export async function sendMagicLinkEmail(params: {
   magicLinkUrl: string;
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   const { to, magicLinkUrl } = params;
-  
+
   const subject = 'Sign in to AIReady';
-  
+
   const htmlBody = `
 <!DOCTYPE html>
 <html>
@@ -310,7 +330,7 @@ export async function sendMagicLinkEmail(params: {
 </body>
 </html>
   `.trim();
-  
+
   const textBody = `
 Sign in to AIReady
 
@@ -321,7 +341,7 @@ This link will expire in 15 minutes. If you didn't request this email, you can s
 
 © 2026 AIReady
   `.trim();
-  
+
   return sendEmail({ to, subject, htmlBody, textBody });
 }
 
@@ -331,6 +351,6 @@ This link will expire in 15 minutes. If you didn't request this email, you can s
 function formatBreakdownKey(key: string): string {
   return key
     .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, s => s.toUpperCase())
+    .replace(/^./, (s) => s.toUpperCase())
     .trim();
 }

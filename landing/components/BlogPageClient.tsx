@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 const containerVariants: any = {
   initial: { opacity: 0 },
@@ -19,12 +19,11 @@ const itemVariants: any = {
     y: 0,
     opacity: 1,
     transition: {
-      type: "spring",
+      type: 'spring',
       stiffness: 100,
     },
   },
 };
-
 
 interface BlogPostMeta {
   slug: string;
@@ -34,7 +33,6 @@ interface BlogPostMeta {
   tags: string[];
   readingTime: string;
 }
-
 
 interface BlogPageClientProps {
   posts: BlogPostMeta[];
@@ -57,7 +55,7 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
           >
             <motion.span
               animate={{ rotate: [0, 360] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             >
               ✍️
             </motion.span>
@@ -77,9 +75,12 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
             variants={itemVariants}
             className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed"
           >
-            Practical insights on making your codebase work better with AI tools.
+            Practical insights on making your codebase work better with AI
+            tools.
             <br />
-            <span className="text-slate-500">Learn from real-world experiences and measurable results.</span>
+            <span className="text-slate-500">
+              Learn from real-world experiences and measurable results.
+            </span>
           </motion.p>
         </div>
 
@@ -100,16 +101,26 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
                   {/* Post metadata */}
                   <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
                     <time dateTime={post.date} className="font-medium">
-                      {new Date(post.date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
+                      {new Date(post.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
                       })}
                     </time>
                     <span className="w-1 h-1 rounded-full bg-slate-400" />
                     <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                       {post.readingTime}
                     </span>
@@ -136,7 +147,9 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
                       </span>
                     ))}
                     {post.tags.length > 3 && (
-                      <span className="text-slate-500 text-sm">+{post.tags.length - 3} more</span>
+                      <span className="text-slate-500 text-sm">
+                        +{post.tags.length - 3} more
+                      </span>
                     )}
                   </div>
 
@@ -168,13 +181,20 @@ export function BlogPageClient({ posts }: BlogPageClientProps) {
 
         {/* Coming soon section */}
         {posts.length < 10 && (
-          <motion.div
-            variants={itemVariants}
-            className="mt-16 text-center"
-          >
+          <motion.div variants={itemVariants} className="mt-16 text-center">
             <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 rounded-full border border-slate-200">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
               <span className="font-medium">More articles coming soon</span>
             </div>

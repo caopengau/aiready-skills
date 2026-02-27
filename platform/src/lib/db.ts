@@ -1,34 +1,45 @@
 /**
  * DynamoDB Single-Table Design for AIReady Platform
- * 
+ *
  * Table: aiready-platform
- * 
+ *
  * PK Patterns:
  *   USER#<userId>           - User record
  *   TEAM#<teamId>           - Team record
  *   REPO#<repoId>           - Repository record
  *   ANALYSIS#<repoId>       - Analysis records for a repo
  *   REMEDIATION#<remId>     - Remediation request
- * 
+ *
  * SK Patterns:
  *   #METADATA               - Entity metadata
  *   #MEMBER#<userId>        - Team membership
  *   <timestamp>             - Analysis/remediation timestamp (sorted)
- * 
+ *
  * GSI1: List all repos for a user / List members for a team
  *   GSI1PK: USER#<userId> | TEAM#<teamId>
  *   GSI1SK: REPO#<repoId> | MEMBER#<userId>
- * 
+ *
  * GSI2: List all analyses for a repo / List remediations
  *   GSI2PK: ANALYSIS#<repoId> | REMEDIATION#<repoId>
  *   GSI2SK: <timestamp>
  */
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand, UpdateCommand, DeleteCommand, BatchWriteCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  DynamoDBDocumentClient,
+  PutCommand,
+  GetCommand,
+  QueryCommand,
+  UpdateCommand,
+  DeleteCommand,
+  BatchWriteCommand,
+  ScanCommand,
+} from '@aws-sdk/lib-dynamodb';
 
 // Initialize DynamoDB client
-const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'ap-southeast-2' });
+const client = new DynamoDBClient({
+  region: process.env.AWS_REGION || 'ap-southeast-2',
+});
 const doc = DynamoDBDocumentClient.from(client, {
   marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true },
   unmarshallOptions: { wrapNumbers: false },
@@ -97,6 +108,11 @@ export interface Analysis {
     contextFragmentation: number;
     namingConsistency: number;
     documentationHealth: number;
+    dependencyHealth: number;
+    aiSignalClarity: number;
+    agentGrounding: number;
+    testabilityIndex: number;
+    changeAmplification: number;
   };
   rawKey: string; // S3 key for raw JSON
   summary: {
@@ -151,29 +167,36 @@ export async function createUser(user: User): Promise<User> {
 }
 
 export async function getUser(userId: string): Promise<User | null> {
-  const result = await doc.send(new GetCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `USER#${userId}`, SK: '#METADATA' },
-  }));
+  const result = await doc.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `USER#${userId}`, SK: '#METADATA' },
+    })
+  );
 
-  return result.Item ? result.Item as User : null;
+  return result.Item ? (result.Item as User) : null;
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: 'GSI1',
-    KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :email',
-    ExpressionAttributeValues: {
-      ':pk': 'USERS',
-      ':email': email,
-    },
-  }));
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'GSI1',
+      KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :email',
+      ExpressionAttributeValues: {
+        ':pk': 'USERS',
+        ':email': email,
+      },
+    })
+  );
 
   return result.Items?.[0] as User | null;
 }
 
-export async function updateUser(userId: string, updates: Partial<User>): Promise<void> {
+export async function updateUser(
+  userId: string,
+  updates: Partial<User>
+): Promise<void> {
   const updateExpressions: string[] = [];
   const expressionAttributeNames: Record<string, string> = {};
   const expressionAttributeValues: Record<string, unknown> = {};
@@ -191,19 +214,21 @@ export async function updateUser(userId: string, updates: Partial<User>): Promis
   expressionAttributeNames['#updatedAt'] = 'updatedAt';
   expressionAttributeValues[':updatedAt'] = new Date().toISOString();
 
-  await doc.send(new UpdateCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `USER#${userId}`, SK: '#METADATA' },
-    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
-    ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
-  }));
+  await doc.send(
+    new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `USER#${userId}`, SK: '#METADATA' },
+      UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+    })
+  );
 }
 
 // Team operations
 export async function createTeam(team: Team, ownerId: string): Promise<Team> {
   const now = new Date().toISOString();
-  
+
   // Create team record
   const teamItem = {
     PK: `TEAM#${team.id}`,
@@ -227,14 +252,16 @@ export async function createTeam(team: Team, ownerId: string): Promise<Team> {
     joinedAt: now,
   };
 
-  await doc.send(new BatchWriteCommand({
-    RequestItems: {
-      [TABLE_NAME]: [
-        { PutRequest: { Item: teamItem } },
-        { PutRequest: { Item: memberItem } },
-      ],
-    },
-  }));
+  await doc.send(
+    new BatchWriteCommand({
+      RequestItems: {
+        [TABLE_NAME]: [
+          { PutRequest: { Item: teamItem } },
+          { PutRequest: { Item: memberItem } },
+        ],
+      },
+    })
+  );
 
   // Update user with teamId
   await updateUser(ownerId, { teamId: team.id, role: 'owner' });
@@ -243,37 +270,45 @@ export async function createTeam(team: Team, ownerId: string): Promise<Team> {
 }
 
 export async function getTeam(teamId: string): Promise<Team | null> {
-  const result = await doc.send(new GetCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `TEAM#${teamId}`, SK: '#METADATA' },
-  }));
+  const result = await doc.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `TEAM#${teamId}`, SK: '#METADATA' },
+    })
+  );
 
-  return result.Item ? result.Item as Team : null;
+  return result.Item ? (result.Item as Team) : null;
 }
 
 export async function getTeamBySlug(slug: string): Promise<Team | null> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: 'GSI1',
-    KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :slug',
-    ExpressionAttributeValues: {
-      ':pk': 'TEAMS',
-      ':slug': slug,
-    },
-  }));
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'GSI1',
+      KeyConditionExpression: 'GSI1PK = :pk AND GSI1SK = :slug',
+      ExpressionAttributeValues: {
+        ':pk': 'TEAMS',
+        ':slug': slug,
+      },
+    })
+  );
 
   return result.Items?.[0] as Team | null;
 }
 
-export async function listTeamMembers(teamId: string): Promise<(TeamMember & { user: User })[]> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
-    ExpressionAttributeValues: {
-      ':pk': `TEAM#${teamId}`,
-      ':prefix': '#MEMBER#',
-    },
-  }));
+export async function listTeamMembers(
+  teamId: string
+): Promise<(TeamMember & { user: User })[]> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
+      ExpressionAttributeValues: {
+        ':pk': `TEAM#${teamId}`,
+        ':prefix': '#MEMBER#',
+      },
+    })
+  );
 
   // Fetch user details for each member
   const members = result.Items || [];
@@ -287,9 +322,13 @@ export async function listTeamMembers(teamId: string): Promise<(TeamMember & { u
   return enrichedMembers;
 }
 
-export async function addTeamMember(teamId: string, userId: string, role: 'admin' | 'member' = 'member'): Promise<void> {
+export async function addTeamMember(
+  teamId: string,
+  userId: string,
+  role: 'admin' | 'member' = 'member'
+): Promise<void> {
   const now = new Date().toISOString();
-  
+
   const memberItem = {
     PK: `TEAM#${teamId}`,
     SK: `#MEMBER#${userId}`,
@@ -305,15 +344,23 @@ export async function addTeamMember(teamId: string, userId: string, role: 'admin
   await updateUser(userId, { teamId, role });
 }
 
-export async function removeTeamMember(teamId: string, userId: string): Promise<void> {
-  await doc.send(new DeleteCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `TEAM#${teamId}`, SK: `#MEMBER#${userId}` },
-  }));
+export async function removeTeamMember(
+  teamId: string,
+  userId: string
+): Promise<void> {
+  await doc.send(
+    new DeleteCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `TEAM#${teamId}`, SK: `#MEMBER#${userId}` },
+    })
+  );
   await updateUser(userId, { teamId: undefined, role: undefined });
 }
 
-export async function updateTeam(teamId: string, updates: Partial<Team>): Promise<void> {
+export async function updateTeam(
+  teamId: string,
+  updates: Partial<Team>
+): Promise<void> {
   const updateExpressions: string[] = [];
   const expressionAttributeNames: Record<string, string> = {};
   const expressionAttributeValues: Record<string, unknown> = {};
@@ -331,13 +378,15 @@ export async function updateTeam(teamId: string, updates: Partial<Team>): Promis
   expressionAttributeNames['#updatedAt'] = 'updatedAt';
   expressionAttributeValues[':updatedAt'] = new Date().toISOString();
 
-  await doc.send(new UpdateCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `TEAM#${teamId}`, SK: '#METADATA' },
-    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
-    ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
-  }));
+  await doc.send(
+    new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `TEAM#${teamId}`, SK: '#METADATA' },
+      UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+    })
+  );
 }
 
 // Repository operations
@@ -357,46 +406,61 @@ export async function createRepository(repo: Repository): Promise<Repository> {
   return repo;
 }
 
-export async function getRepository(repoId: string): Promise<Repository | null> {
-  const result = await doc.send(new GetCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `REPO#${repoId}`, SK: '#METADATA' },
-  }));
+export async function getRepository(
+  repoId: string
+): Promise<Repository | null> {
+  const result = await doc.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `REPO#${repoId}`, SK: '#METADATA' },
+    })
+  );
 
-  return result.Item ? result.Item as Repository : null;
+  return result.Item ? (result.Item as Repository) : null;
 }
 
-export async function listUserRepositories(userId: string): Promise<Repository[]> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: 'GSI1',
-    KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
-    ExpressionAttributeValues: {
-      ':pk': `USER#${userId}`,
-      ':prefix': 'REPO#',
-    },
-    ScanIndexForward: false,
-  }));
+export async function listUserRepositories(
+  userId: string
+): Promise<Repository[]> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'GSI1',
+      KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+      ExpressionAttributeValues: {
+        ':pk': `USER#${userId}`,
+        ':prefix': 'REPO#',
+      },
+      ScanIndexForward: false,
+    })
+  );
 
   return (result.Items || []) as Repository[];
 }
 
-export async function listTeamRepositories(teamId: string): Promise<Repository[]> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: 'GSI1',
-    KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
-    ExpressionAttributeValues: {
-      ':pk': `TEAM#${teamId}`,
-      ':prefix': 'REPO#',
-    },
-    ScanIndexForward: false,
-  }));
+export async function listTeamRepositories(
+  teamId: string
+): Promise<Repository[]> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'GSI1',
+      KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+      ExpressionAttributeValues: {
+        ':pk': `TEAM#${teamId}`,
+        ':prefix': 'REPO#',
+      },
+      ScanIndexForward: false,
+    })
+  );
 
   return (result.Items || []) as Repository[];
 }
 
-export async function updateRepository(repoId: string, updates: Partial<Repository>): Promise<void> {
+export async function updateRepository(
+  repoId: string,
+  updates: Partial<Repository>
+): Promise<void> {
   const updateExpressions: string[] = [];
   const expressionAttributeNames: Record<string, string> = {};
   const expressionAttributeValues: Record<string, unknown> = {};
@@ -414,30 +478,35 @@ export async function updateRepository(repoId: string, updates: Partial<Reposito
   expressionAttributeNames['#updatedAt'] = 'updatedAt';
   expressionAttributeValues[':updatedAt'] = new Date().toISOString();
 
-  await doc.send(new UpdateCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `REPO#${repoId}`, SK: '#METADATA' },
-    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
-    ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
-  }));
+  await doc.send(
+    new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `REPO#${repoId}`, SK: '#METADATA' },
+      UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+    })
+  );
 }
 
 export async function deleteRepository(repoId: string): Promise<void> {
-  await doc.send(new DeleteCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `REPO#${repoId}`, SK: '#METADATA' },
-  }));
+  await doc.send(
+    new DeleteCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `REPO#${repoId}`, SK: '#METADATA' },
+    })
+  );
 }
 
 // Analysis operations
 export async function createAnalysis(analysis: Analysis): Promise<Analysis> {
   const now = new Date().toISOString();
-  
+
   // Calculate TTL for Free tier (7 days retention)
   const retentionDays = 7; // Free tier retention
-  const ttlTimestamp = Math.floor(Date.now() / 1000) + (retentionDays * 24 * 60 * 60);
-  
+  const ttlTimestamp =
+    Math.floor(Date.now() / 1000) + retentionDays * 24 * 60 * 60;
+
   const item = {
     PK: `ANALYSIS#${analysis.repoId}`,
     SK: analysis.timestamp,
@@ -451,7 +520,7 @@ export async function createAnalysis(analysis: Analysis): Promise<Analysis> {
   };
 
   await doc.send(new PutCommand({ TableName: TABLE_NAME, Item: item }));
-  
+
   // Update repo's lastAnalysisAt and aiScore
   await updateRepository(analysis.repoId, {
     lastAnalysisAt: analysis.timestamp,
@@ -461,50 +530,68 @@ export async function createAnalysis(analysis: Analysis): Promise<Analysis> {
   return analysis;
 }
 
-export async function getAnalysis(repoId: string, timestamp: string): Promise<Analysis | null> {
-  const result = await doc.send(new GetCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `ANALYSIS#${repoId}`, SK: timestamp },
-  }));
+export async function getAnalysis(
+  repoId: string,
+  timestamp: string
+): Promise<Analysis | null> {
+  const result = await doc.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `ANALYSIS#${repoId}`, SK: timestamp },
+    })
+  );
 
-  return result.Item ? result.Item as Analysis : null;
+  return result.Item ? (result.Item as Analysis) : null;
 }
 
-export async function listRepositoryAnalyses(repoId: string, limit = 10): Promise<Analysis[]> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    KeyConditionExpression: 'PK = :pk',
-    ExpressionAttributeValues: {
-      ':pk': `ANALYSIS#${repoId}`,
-    },
-    Limit: limit,
-    ScanIndexForward: false,
-  }));
+export async function listRepositoryAnalyses(
+  repoId: string,
+  limit = 10
+): Promise<Analysis[]> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk',
+      ExpressionAttributeValues: {
+        ':pk': `ANALYSIS#${repoId}`,
+      },
+      Limit: limit,
+      ScanIndexForward: false,
+    })
+  );
 
   return (result.Items || []) as Analysis[];
 }
 
-export async function getLatestAnalysis(repoId: string): Promise<Analysis | null> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    KeyConditionExpression: 'PK = :pk',
-    ExpressionAttributeValues: {
-      ':pk': `ANALYSIS#${repoId}`,
-    },
-    Limit: 1,
-    ScanIndexForward: false,
-  }));
+export async function getLatestAnalysis(
+  repoId: string
+): Promise<Analysis | null> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: 'PK = :pk',
+      ExpressionAttributeValues: {
+        ':pk': `ANALYSIS#${repoId}`,
+      },
+      Limit: 1,
+      ScanIndexForward: false,
+    })
+  );
 
   return result.Items?.[0] as Analysis | null;
 }
 
 // Remediation operations
-export async function createRemediation(remediation: RemediationRequest): Promise<RemediationRequest> {
+export async function createRemediation(
+  remediation: RemediationRequest
+): Promise<RemediationRequest> {
   const now = new Date().toISOString();
   const item = {
     PK: `REMEDIATION#${remediation.id}`,
     SK: '#METADATA',
-    GSI1PK: remediation.teamId ? `TEAM#${remediation.teamId}` : `USER#${remediation.userId}`,
+    GSI1PK: remediation.teamId
+      ? `TEAM#${remediation.teamId}`
+      : `USER#${remediation.userId}`,
     GSI1SK: `REMEDIATION#${remediation.id}`,
     GSI2PK: `REMEDIATION#${remediation.repoId}`,
     GSI2SK: remediation.createdAt,
@@ -517,47 +604,64 @@ export async function createRemediation(remediation: RemediationRequest): Promis
   return remediation;
 }
 
-export async function getRemediation(remediationId: string): Promise<RemediationRequest | null> {
-  const result = await doc.send(new GetCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `REMEDIATION#${remediationId}`, SK: '#METADATA' },
-  }));
+export async function getRemediation(
+  remediationId: string
+): Promise<RemediationRequest | null> {
+  const result = await doc.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `REMEDIATION#${remediationId}`, SK: '#METADATA' },
+    })
+  );
 
-  return result.Item ? result.Item as RemediationRequest : null;
+  return result.Item ? (result.Item as RemediationRequest) : null;
 }
 
-export async function listRemediations(repoId: string, limit = 20): Promise<RemediationRequest[]> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: 'GSI2',
-    KeyConditionExpression: 'GSI2PK = :pk',
-    ExpressionAttributeValues: {
-      ':pk': `REMEDIATION#${repoId}`,
-    },
-    Limit: limit,
-    ScanIndexForward: false,
-  }));
+export async function listRemediations(
+  repoId: string,
+  limit = 20
+): Promise<RemediationRequest[]> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'GSI2',
+      KeyConditionExpression: 'GSI2PK = :pk',
+      ExpressionAttributeValues: {
+        ':pk': `REMEDIATION#${repoId}`,
+      },
+      Limit: limit,
+      ScanIndexForward: false,
+    })
+  );
 
   return (result.Items || []) as RemediationRequest[];
 }
 
-export async function listTeamRemediations(teamId: string, limit = 50): Promise<RemediationRequest[]> {
-  const result = await doc.send(new QueryCommand({
-    TableName: TABLE_NAME,
-    IndexName: 'GSI1',
-    KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
-    ExpressionAttributeValues: {
-      ':pk': `TEAM#${teamId}`,
-      ':prefix': 'REMEDIATION#',
-    },
-    Limit: limit,
-    ScanIndexForward: false,
-  }));
+export async function listTeamRemediations(
+  teamId: string,
+  limit = 50
+): Promise<RemediationRequest[]> {
+  const result = await doc.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: 'GSI1',
+      KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+      ExpressionAttributeValues: {
+        ':pk': `TEAM#${teamId}`,
+        ':prefix': 'REMEDIATION#',
+      },
+      Limit: limit,
+      ScanIndexForward: false,
+    })
+  );
 
   return (result.Items || []) as RemediationRequest[];
 }
 
-export async function updateRemediation(remediationId: string, updates: Partial<RemediationRequest>): Promise<void> {
+export async function updateRemediation(
+  remediationId: string,
+  updates: Partial<RemediationRequest>
+): Promise<void> {
   const updateExpressions: string[] = [];
   const expressionAttributeNames: Record<string, string> = {};
   const expressionAttributeValues: Record<string, unknown> = {};
@@ -575,17 +679,21 @@ export async function updateRemediation(remediationId: string, updates: Partial<
   expressionAttributeNames['#updatedAt'] = 'updatedAt';
   expressionAttributeValues[':updatedAt'] = new Date().toISOString();
 
-  await doc.send(new UpdateCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `REMEDIATION#${remediationId}`, SK: '#METADATA' },
-    UpdateExpression: `SET ${updateExpressions.join(', ')}`,
-    ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
-  }));
+  await doc.send(
+    new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `REMEDIATION#${remediationId}`, SK: '#METADATA' },
+      UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+    })
+  );
 }
 
 // Magic Link Token operations
-export async function createMagicLinkToken(token: MagicLinkToken): Promise<MagicLinkToken> {
+export async function createMagicLinkToken(
+  token: MagicLinkToken
+): Promise<MagicLinkToken> {
   const now = new Date().toISOString();
   const item = {
     PK: `MAGICLINK#${token.token}`,
@@ -600,23 +708,29 @@ export async function createMagicLinkToken(token: MagicLinkToken): Promise<Magic
   return token;
 }
 
-export async function getMagicLinkToken(token: string): Promise<MagicLinkToken | null> {
-  const result = await doc.send(new GetCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `MAGICLINK#${token}`, SK: '#METADATA' },
-  }));
+export async function getMagicLinkToken(
+  token: string
+): Promise<MagicLinkToken | null> {
+  const result = await doc.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `MAGICLINK#${token}`, SK: '#METADATA' },
+    })
+  );
 
-  return result.Item ? result.Item as MagicLinkToken : null;
+  return result.Item ? (result.Item as MagicLinkToken) : null;
 }
 
 export async function markMagicLinkUsed(token: string): Promise<void> {
-  await doc.send(new UpdateCommand({
-    TableName: TABLE_NAME,
-    Key: { PK: `MAGICLINK#${token}`, SK: '#METADATA' },
-    UpdateExpression: 'SET #used = :used',
-    ExpressionAttributeNames: { '#used': 'used' },
-    ExpressionAttributeValues: { ':used': true },
-  }));
+  await doc.send(
+    new UpdateCommand({
+      TableName: TABLE_NAME,
+      Key: { PK: `MAGICLINK#${token}`, SK: '#METADATA' },
+      UpdateExpression: 'SET #used = :used',
+      ExpressionAttributeNames: { '#used': 'used' },
+      ExpressionAttributeValues: { ':used': true },
+    })
+  );
 }
 
 export { doc, TABLE_NAME };

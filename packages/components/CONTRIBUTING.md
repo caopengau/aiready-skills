@@ -5,6 +5,7 @@ Thank you for your interest in contributing to AIReady Components! We welcome bu
 ## 🎯 What is Components?
 
 The Components package provides **reusable UI components** for building AIReady applications:
+
 - **UI Components**: Button, Card, Input, Label, Badge (shadcn/ui based)
 - **D3 Charts**: Interactive visualizations (LineChart, BarChart, ForceGraph)
 - **React Hooks**: Utility hooks (useDebounce, useTheme, useD3)
@@ -35,6 +36,7 @@ This package follows a modular design with granular exports for tree-shaking:
 ## 🐛 Reporting Issues
 
 Found a bug or have a feature request? [Open an issue](https://github.com/caopengau/aiready-components/issues) with:
+
 - Clear description of the problem or feature
 - Steps to reproduce (for bugs)
 - Expected vs actual behavior
@@ -63,6 +65,7 @@ pnpm test
 ## 📝 Making Changes
 
 1. **Fork the repository** and create a new branch:
+
    ```bash
    git checkout -b fix/button-props
    # or
@@ -76,15 +79,17 @@ pnpm test
    - Test accessibility
 
 3. **Test your changes**:
+
    ```bash
    pnpm build
    pnpm test
-   
+
    # Preview in Storybook (if available)
    pnpm storybook
    ```
 
 4. **Commit using conventional commits**:
+
    ```bash
    git commit -m "fix: correct button disabled state"
    git commit -m "feat: add new Modal component"
@@ -115,6 +120,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 - Test dark/light mode switching
 
 Example test:
+
 ```typescript
 import { render, screen } from '@testing-library/react';
 import { Button } from './button';
@@ -149,19 +155,21 @@ packages/components/
 ### Adding a New Component
 
 1. Create directory `src/your-component/`:
+
    ```bash
    mkdir -p src/your-component
    ```
 
 2. Create component file `src/your-component/your-component.tsx`:
+
    ```typescript
    import * as React from 'react';
-   
+
    export interface YourComponentProps {
      children?: React.ReactNode;
      variant?: 'default' | 'secondary';
    }
-   
+
    export function YourComponent({ children, variant = 'default' }: YourComponentProps) {
      return (
        <div className={cn('base-classes', variant === 'secondary' && 'secondary-classes')}>
@@ -172,6 +180,7 @@ packages/components/
    ```
 
 3. Create index export `src/your-component/index.ts`:
+
    ```typescript
    export { YourComponent } from './your-component';
    export type { YourComponentProps } from './your-component';
@@ -186,6 +195,7 @@ packages/components/
 ## 🎯 Areas for Contribution
 
 Great places to start:
+
 - **New UI components**: Modal, Dropdown, Tabs, Tooltip
 - **Form components**: Select, Checkbox, Radio, Switch
 - **D3 Charts**: LineChart, BarChart, ScatterPlot
@@ -219,6 +229,7 @@ Great places to start:
 ## 💡 Feature Ideas
 
 Looking for inspiration? Consider:
+
 - Data table component
 - Date picker
 - Charts (Area, Pie, Radar)

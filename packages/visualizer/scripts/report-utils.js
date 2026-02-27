@@ -9,20 +9,21 @@ const path = require('path');
 function findLatestReport(basePath) {
   const aireadyDir = path.resolve(basePath, '.aiready');
   if (!fs.existsSync(aireadyDir)) return null;
-  
-  const files = fs.readdirSync(aireadyDir)
-    .filter(f => f.startsWith('aiready-report-') && f.endsWith('.json'));
-  
+
+  const files = fs
+    .readdirSync(aireadyDir)
+    .filter((f) => f.startsWith('aiready-report-') && f.endsWith('.json'));
+
   if (files.length === 0) return null;
-  
+
   const sorted = files
-    .map(f => ({
+    .map((f) => ({
       name: f,
       path: path.resolve(aireadyDir, f),
-      mtime: fs.statSync(path.resolve(aireadyDir, f)).mtime
+      mtime: fs.statSync(path.resolve(aireadyDir, f)).mtime,
     }))
     .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
-  
+
   return sorted[0].path;
 }
 

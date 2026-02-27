@@ -7,6 +7,7 @@
 **DECISION:** Create ONE unified shared package (`@aiready/components`) containing UI components, D3 charts, and utilities for maximum simplicity and maintainability.
 
 **Why One Package:**
+
 - ✅ Simpler to manage (1 repo vs 3)
 - ✅ Single version tracking
 - ✅ Still tree-shakeable at module level
@@ -14,6 +15,7 @@
 - ✅ Can split later if needed (rare)
 
 **Consumer Applications:**
+
 - 🎨 Landing (existing - Next.js 16, public)
 - 🚀 SaaS Dashboard (future - Next.js 16, **private repo**)
 - 📊 Visualizer Web (Phase 2 - React 19 + Vite, public)
@@ -60,6 +62,7 @@ Consumer Apps:
 ```
 
 **Key Principles:**
+
 - ✅ Single package depends only on @aiready/core (if needed)
 - ✅ Independently useful and tree-shakeable
 - ✅ Published to npm as public package
@@ -69,12 +72,14 @@ Consumer Apps:
 ### Repository Visibility Strategy
 
 **Public Repositories (Open Source):**
+
 - All analysis tools (core, cli, pattern-detect, context-analyzer, consistency)
 - Visualizer package
 - **Components package** (NEW - public)
 - Landing site
 
 **Private Repository:**
+
 - **SaaS Dashboard** - separate from monorepo, business logic protected
 
 ## 📋 Implementation Phases
@@ -343,6 +348,7 @@ For each package release:
 ```
 
 **Dependency Rules:**
+
 - ✅ Internal subdirectories can import from `/utils`
 - ✅ `/charts` can use `/hooks` (e.g., useD3)
 - ✅ `/components` can use `/hooks` and `/utils`
@@ -360,12 +366,12 @@ For each package release:
 export const colors = {
   // Severity colors
   severity: {
-    critical: '#ef4444',  // red-500
-    major: '#f59e0b',     // amber-500
-    minor: '#eab308',     // yellow-500
-    info: '#60a5fa',      // blue-400
+    critical: '#ef4444', // red-500
+    major: '#f59e0b', // amber-500
+    minor: '#eab308', // yellow-500
+    info: '#60a5fa', // blue-400
   },
-  
+
   // Domain colors (for clustering)
   domain: [
     '#3b82f6', // blue-500
@@ -375,7 +381,7 @@ export const colors = {
     '#f59e0b', // amber-500
     '#06b6d4', // cyan-500
   ],
-  
+
   // UI colors (from Tailwind)
   background: {
     light: '#ffffff',
@@ -394,18 +400,24 @@ export const colors = {
 // Tailwind CSS 4 typography configuration
 export const typography = {
   fontFamily: {
-    sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+    sans: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      'Segoe UI',
+      'Roboto',
+      'sans-serif',
+    ],
     mono: ['Monaco', 'Courier New', 'monospace'],
   },
   fontSize: {
-    xs: '0.75rem',    // 12px
-    sm: '0.875rem',   // 14px
-    base: '1rem',     // 16px
-    lg: '1.125rem',   // 18px
-    xl: '1.25rem',    // 20px
-    '2xl': '1.5rem',  // 24px
+    xs: '0.75rem', // 12px
+    sm: '0.875rem', // 14px
+    base: '1rem', // 16px
+    lg: '1.125rem', // 18px
+    xl: '1.25rem', // 20px
+    '2xl': '1.5rem', // 24px
     '3xl': '1.875rem', // 30px
-    '4xl': '2.25rem',  // 36px
+    '4xl': '2.25rem', // 36px
   },
 };
 ```
@@ -414,13 +426,13 @@ export const typography = {
 
 ```typescript
 export const spacing = {
-  xs: '0.25rem',   // 4px
-  sm: '0.5rem',    // 8px
-  md: '1rem',      // 16px
-  lg: '1.5rem',    // 24px
-  xl: '2rem',      // 32px
-  '2xl': '3rem',   // 48px
-  '3xl': '4rem',   // 64px
+  xs: '0.25rem', // 4px
+  sm: '0.5rem', // 8px
+  md: '1rem', // 16px
+  lg: '1.5rem', // 24px
+  xl: '2rem', // 32px
+  '2xl': '3rem', // 48px
+  '3xl': '4rem', // 64px
 };
 ```
 
@@ -490,6 +502,7 @@ export const spacing = {
 ```
 
 **Key Features:**
+
 - ✅ Granular exports for tree-shaking
 - ✅ All UI, charts, hooks, and utils in one package
 - ✅ Import only what you need: `import { Button } from '@aiready/components/button'`
@@ -526,11 +539,12 @@ export const spacing = {
 
 ## 📝 Progress Tracking
 
-| Package | Status | Version | npm | GitHub | Notes |
-|---------|--------|---------|-----|--------|-------|
-| @aiready/components | 🔜 Not Started | - | - | [aiready-components](https://github.com/caopengau/aiready-components) (to be created) | Unified package: UI + Charts + Hooks + Utils |
+| Package             | Status         | Version | npm | GitHub                                                                                | Notes                                        |
+| ------------------- | -------------- | ------- | --- | ------------------------------------------------------------------------------------- | -------------------------------------------- |
+| @aiready/components | 🔜 Not Started | -       | -   | [aiready-components](https://github.com/caopengau/aiready-components) (to be created) | Unified package: UI + Charts + Hooks + Utils |
 
 **Legend:**
+
 - 🔜 Not Started
 - 🚧 In Progress
 - ✅ Complete

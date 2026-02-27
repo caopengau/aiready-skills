@@ -1,10 +1,10 @@
 ---
 name: aiready-best-practices
-description: Guidelines for writing AI-friendly code. Detects semantic duplicates, context fragmentation, naming inconsistencies. Use when writing new code, reviewing PRs, refactoring for AI adoption, or debugging AI assistant confusion. Helps minimize context waste and improve AI comprehension.
+description: Guidelines for writing AI-friendly code. Detects semantic duplicates, context fragmentation, naming inconsistencies, AI signal clarity issues, change amplification hotspots, agent grounding problems, and testability barriers. Use when writing new code, reviewing PRs, refactoring for AI adoption, or debugging AI assistant confusion. Helps minimize context waste and improve AI comprehension.
 license: MIT
 metadata:
   author: aiready
-  version: "0.1.0"
+  version: '0.2.0'
 ---
 
 # AIReady Best Practices
@@ -23,13 +23,17 @@ Reference these guidelines when:
 
 ## Rule Categories by Priority
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | Pattern Detection | CRITICAL | `patterns-` |
-| 2 | Context Optimization | HIGH | `context-` |
-| 3 | Consistency Checking | MEDIUM | `consistency-` |
-| 4 | Documentation | MEDIUM | `docs-` |
-| 5 | Dependencies | LOW | `deps-` |
+| Priority | Category               | Impact   | Prefix              |
+| -------- | ---------------------- | -------- | ------------------- |
+| 1        | Pattern Detection      | CRITICAL | `patterns-`         |
+| 2        | AI Signal Clarity      | CRITICAL | `signal-`           |
+| 3        | Context Optimization   | HIGH     | `context-`          |
+| 4        | Change Amplification   | HIGH     | `amplification-`    |
+| 5        | Agent Grounding        | HIGH     | `grounding-`        |
+| 6        | Consistency Checking   | MEDIUM   | `consistency-`      |
+| 7        | Documentation          | MEDIUM   | `docs-`             |
+| 8        | Testability            | MEDIUM   | `testability-`      |
+| 9        | Dependencies           | LOW      | `deps-`             |
 
 ## Quick Reference
 
@@ -39,44 +43,76 @@ Reference these guidelines when:
 - `patterns-consistent-naming` - Use consistent names for similar concepts
 - `patterns-interface-fragmentation` - Unify similar interfaces
 
-### 2. Context Optimization (HIGH)
+### 2. AI Signal Clarity (CRITICAL)
+
+- `signal-boolean-traps` - Avoid multi-boolean parameters that flip AI intent
+- `signal-magic-literals` - Name constants instead of using unnamed values
+- `signal-naming-entropy` - Avoid variable names with multiple interpretations
+
+### 3. Context Optimization (HIGH)
 
 - `context-import-depth` - Keep import chains shallow (max 3 levels)
 - `context-cohesion` - Group related functionality together
 - `context-file-size` - Split oversized files
 
-### 3. Consistency Checking (MEDIUM)
+### 4. Change Amplification (HIGH)
+
+- `amplification-hotspots` - Identify high fan-in/fan-out coupling files
+
+### 5. Agent Grounding (HIGH)
+
+- `grounding-context-boundaries` - Clear domain boundaries for AI retrieval
+- `grounding-readme-quality` - README provides sufficient agent context
+
+### 6. Consistency Checking (MEDIUM)
 
 - `consistency-naming-conventions` - Follow project-wide naming patterns
 - `consistency-error-handling` - Use consistent error patterns
-- `consistency-api-design` - Maintain consistent API shapes
 
-### 4. Documentation (MEDIUM)
+### 7. Documentation (MEDIUM)
 
 - `docs-code-sync` - Keep docs in sync with code changes
 - `docs-ai-context` - Document non-obvious AI context needs
 
-### 5. Dependencies (LOW)
+### 8. Testability (MEDIUM)
+
+- `testability-purity` - Avoid global state and side effects
+- `testability-verification` - Ensure tests exist for AI verification
+
+### 9. Dependencies (LOW)
 
 - `deps-circular` - Avoid circular dependencies
 - `deps-freshness` - Keep dependencies up to date
 
-## How to Use
+## Running the Unified Scan
 
-Read individual rule files for detailed explanations and code examples:
+To check your codebase for all AI-readiness issues at once, use the unified aiready CLI:
 
+```bash
+# Run all available checks
+aiready scan .
+
+# Run specific tools
+aiready scan . --tools pattern-detect,ai-signal-clarity,context-analyzer
+
+# Scan a specific directory
+aiready scan ./src
+
+# Output JSON for automation
+aiready scan . --output json
 ```
-rules/patterns-semantic-duplicates.md
-rules/context-import-depth.md
-rules/consistency-naming-conventions.md
-```
 
-Each rule file contains:
+The unified scan runs all analysis tools and provides a combined report with:
+- Pattern detection issues (semantic duplicates, interface fragmentation)
+- AI signal clarity issues (boolean traps, magic literals, naming entropy)
+- Context optimization issues (import depth, file size, cohesion)
+- Change amplification hotspots (high fan-in/fan-out files)
+- Agent grounding issues (context boundaries, README quality)
+- Consistency violations (naming, error handling)
+- Documentation drift (outdated comments)
+- Testability issues (purity, verification coverage)
 
-- Brief explanation of why it matters for AI
-- Incorrect code example with explanation
-- Correct code example with explanation
-- Impact metrics and references
+Each rule file references the specific tool that detects it, making it easy to focus on individual categories.
 
 ## Full Compiled Document
 
@@ -98,6 +134,11 @@ These guidelines complement the AIReady CLI tools:
 - **@aiready/pattern-detect** - Automated semantic duplicate detection
 - **@aiready/context-analyzer** - Context window cost analysis
 - **@aiready/consistency** - Naming convention checking
+- **@aiready/ai-signal-clarity** - Boolean traps, magic literals, naming entropy detection
+- **@aiready/change-amplification** - Coupling and hotspot analysis
+- **@aiready/agent-grounding** - Domain boundary and README quality
+- **@aiready/testability** - Purity and verification analysis
+- **@aiready/doc-drift** - Documentation freshness tracking
 - **@aiready/cli** - Unified analysis tool
 
 Learn more: [https://getaiready.dev](https://getaiready.dev)

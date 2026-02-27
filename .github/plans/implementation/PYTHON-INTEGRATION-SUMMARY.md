@@ -32,16 +32,19 @@ const result = parser.parse(code, 'script.py');
 ### 2. Python Support in All Tools
 
 #### @aiready/consistency
+
 - ✅ PEP 8 naming conventions
 - ✅ Auto-fix suggestions
 - ✅ snake_case, PascalCase, UPPER_CASE detection
 
 #### @aiready/pattern-detect
+
 - ✅ Extract Python functions/classes
 - ✅ Detect duplicate patterns
 - ✅ Similarity scoring
 
 #### @aiready/context-analyzer
+
 - ✅ Import chain analysis
 - ✅ Context budget estimation
 - ✅ Circular dependency detection
@@ -63,12 +66,14 @@ aiready analyze myproject --tools consistency,patterns
 ## Example Output
 
 ### Consistency (PEP 8)
+
 ```
 ❌ utils.py:10:5 (major)
    Function should use snake_case: validateEmail → validate_email
 ```
 
 ### Pattern Detection
+
 ```
 ⚠️  Duplicate pattern: 87% similar
    user_service.py:get_user_by_id (lines 10-21)
@@ -76,6 +81,7 @@ aiready analyze myproject --tools consistency,patterns
 ```
 
 ### Context Analysis
+
 ```
 ⚠️  user_service.py
    Import depth: 5, Context budget: 8,500 tokens
@@ -85,17 +91,20 @@ aiready analyze myproject --tools consistency,patterns
 ## Files Changed
 
 ### Core Package
+
 - `src/types/language.ts` - Language types and interfaces
 - `src/parsers/parser-factory.ts` - Parser registry
 - `src/parsers/python-parser.ts` - Python parser
 - `src/parsers/typescript-parser.ts` - Refactored for new architecture
 
 ### Analysis Tools
+
 - `consistency/src/analyzers/naming-python.ts` - PEP 8 analyzer
 - `pattern-detect/src/extractors/python-extractor.ts` - Pattern extractor
 - `context-analyzer/src/analyzers/python-context.ts` - Context analyzer
 
 ### Documentation
+
 - `docs/PYTHON-SUPPORT.md` - User guide
 - `docs/phase1-completion-report.md` - Implementation report
 - `packages/core/examples/python-demo/` - Example project
@@ -103,12 +112,14 @@ aiready analyze myproject --tools consistency,patterns
 ## Technical Details
 
 ### Parser Implementation
+
 - **Type**: Regex-based (tree-sitter planned for Phase 2)
 - **Performance**: ~10ms per file
 - **Coverage**: Functions, classes, imports, exports
 - **Naming**: PEP 8 conventions (snake_case, PascalCase, UPPER_CASE)
 
 ### Import Resolution
+
 ```python
 # Supported patterns
 from .module import func        # Relative import
@@ -117,6 +128,7 @@ from mypackage.models import User  # Absolute import
 ```
 
 ### Pattern Detection
+
 - **Similarity**: Weighted scoring (name 30%, imports 40%, type 10%, signature 20%)
 - **Anti-patterns**: Dead code, copy-paste detection
 - **Performance**: O(N+M) with approximate indexing
@@ -124,16 +136,19 @@ from mypackage.models import User  # Absolute import
 ## Next Steps
 
 ### Short Term (Phase 1+)
+
 1. Integration tests with real Python repos (Django, FastAPI)
 2. Update package READMEs with Python examples
 3. Performance benchmarks
 
 ### Medium Term (Phase 2 - Q3 2026)
+
 1. Java support with tree-sitter
 2. Maven/Gradle integration
 3. Spring Framework patterns
 
 ### Long Term (Phase 3-4)
+
 - Go & Rust (Q4 2026)
 - C# (Q1 2027)
 - TypeScript enhancements (decorators, generics)

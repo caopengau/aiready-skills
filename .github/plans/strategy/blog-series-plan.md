@@ -185,7 +185,7 @@ Moving from identifying the AI code debt crisis to providing concrete tools and 
 
 1. The problem with current tooling (lines of text).
 2. Introducing the Visualizer (force-directed graphs).
-3. "The Shape of Debt" - Case studies of what bad patterns *look* like.
+3. "The Shape of Debt" - Case studies of what bad patterns _look_ like.
 4. How to use it for architectural reviews.
 5. Setup for Part 7: Now that we can see it, where do we go next?
 

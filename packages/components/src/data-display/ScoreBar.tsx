@@ -3,7 +3,12 @@
 import { getRating as getCoreRating } from '@aiready/core/client';
 import { cn } from '../utils/cn';
 
-export type ScoreRating = 'excellent' | 'good' | 'fair' | 'needs-work' | 'critical';
+export type ScoreRating =
+  | 'excellent'
+  | 'good'
+  | 'fair'
+  | 'needs-work'
+  | 'critical';
 
 export interface ScoreBarProps {
   score: number;
@@ -14,11 +19,22 @@ export interface ScoreBarProps {
   className?: string;
 }
 
-const ratingConfig: Record<ScoreRating, { color: string; bgColor: string; label: string }> = {
-  excellent: { color: 'bg-green-500', bgColor: 'bg-green-100', label: 'Excellent' },
+const ratingConfig: Record<
+  ScoreRating,
+  { color: string; bgColor: string; label: string }
+> = {
+  excellent: {
+    color: 'bg-green-500',
+    bgColor: 'bg-green-100',
+    label: 'Excellent',
+  },
   good: { color: 'bg-emerald-500', bgColor: 'bg-emerald-100', label: 'Good' },
   fair: { color: 'bg-amber-500', bgColor: 'bg-amber-100', label: 'Fair' },
-  'needs-work': { color: 'bg-orange-500', bgColor: 'bg-orange-100', label: 'Needs Work' },
+  'needs-work': {
+    color: 'bg-orange-500',
+    bgColor: 'bg-orange-100',
+    label: 'Needs Work',
+  },
   critical: { color: 'bg-red-500', bgColor: 'bg-red-100', label: 'Critical' },
 };
 
@@ -26,11 +42,11 @@ const ratingConfig: Record<ScoreRating, { color: string; bgColor: string; label:
 function getRating(score: number): ScoreRating {
   const coreRating = getCoreRating(score);
   const ratingMap: Record<string, ScoreRating> = {
-    'Excellent': 'excellent',
-    'Good': 'good',
-    'Fair': 'fair',
+    Excellent: 'excellent',
+    Good: 'good',
+    Fair: 'fair',
     'Needs Work': 'needs-work',
-    'Critical': 'critical',
+    Critical: 'critical',
   };
   return ratingMap[coreRating] || 'critical';
 }
@@ -66,7 +82,11 @@ export function ScoreBar({
       </div>
       <div className={cn('w-full rounded-full bg-slate-200', sizes.height)}>
         <div
-          className={cn('rounded-full transition-all duration-500', config.color, sizes.height)}
+          className={cn(
+            'rounded-full transition-all duration-500',
+            config.color,
+            sizes.height
+          )}
           style={{ width: `${percentage}%` }}
         />
       </div>
@@ -85,15 +105,30 @@ export interface ScoreCardProps {
   className?: string;
 }
 
-export function ScoreCard({ score, title, breakdown, className }: ScoreCardProps) {
+export function ScoreCard({
+  score,
+  title,
+  breakdown,
+  className,
+}: ScoreCardProps) {
   const rating = getRating(score);
   const config = ratingConfig[rating];
 
   return (
-    <div className={cn('rounded-xl border-2 border-slate-200 bg-white p-6 shadow-lg', className)}>
+    <div
+      className={cn(
+        'rounded-xl border-2 border-slate-200 bg-white p-6 shadow-lg',
+        className
+      )}
+    >
       <div className="mb-4">
         <div className="text-4xl font-black text-slate-900">{score}/100</div>
-        <div className={cn('text-lg font-bold', `text-${rating === 'excellent' ? 'green' : rating === 'good' ? 'emerald' : rating === 'fair' ? 'amber' : rating === 'needs-work' ? 'orange' : 'red'}-600`)}>
+        <div
+          className={cn(
+            'text-lg font-bold',
+            `text-${rating === 'excellent' ? 'green' : rating === 'good' ? 'emerald' : rating === 'fair' ? 'amber' : rating === 'needs-work' ? 'orange' : 'red'}-600`
+          )}
+        >
           {config.label} Rating
         </div>
         {title && <p className="text-sm text-slate-600 mt-1">{title}</p>}
@@ -114,9 +149,11 @@ export function ScoreCard({ score, title, breakdown, className }: ScoreCardProps
 
       {breakdown && breakdown.length > 0 && (
         <div className="mt-4 text-xs text-slate-600 bg-slate-50 p-3 rounded-lg">
-          <strong>Formula:</strong> {breakdown.map(item => 
-            `${item.score}×${item.weight || 1}`
-          ).join(' + ')} / 100 = {score}
+          <strong>Formula:</strong>{' '}
+          {breakdown
+            .map((item) => `${item.score}×${item.weight || 1}`)
+            .join(' + ')}{' '}
+          / 100 = {score}
         </div>
       )}
     </div>

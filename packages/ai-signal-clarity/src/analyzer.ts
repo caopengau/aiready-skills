@@ -7,24 +7,44 @@ import { readdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 import { scanFile } from './scanner';
 import { calculateAiSignalClarity } from '@aiready/core';
-import type { AiSignalClarityOptions, AiSignalClarityReport, FileAiSignalClarityResult } from './types';
+import type {
+  AiSignalClarityOptions,
+  AiSignalClarityReport,
+  FileAiSignalClarityResult,
+} from './types';
 
 const SUPPORTED_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
-const DEFAULT_EXCLUDES = ['node_modules', 'dist', '.git', 'coverage', '.turbo', 'build', '__pycache__'];
+const DEFAULT_EXCLUDES = [
+  'node_modules',
+  'dist',
+  '.git',
+  'coverage',
+  '.turbo',
+  'build',
+  '__pycache__',
+];
 
-function shouldInclude(filePath: string, include?: string[], exclude?: string[]): boolean {
+function shouldInclude(
+  filePath: string,
+  include?: string[],
+  exclude?: string[]
+): boolean {
   const excludePatterns = [...DEFAULT_EXCLUDES, ...(exclude ?? [])];
   for (const ex of excludePatterns) {
     if (filePath.includes(ex)) return false;
   }
   if (!SUPPORTED_EXTENSIONS.has(extname(filePath))) return false;
   if (include && include.length > 0) {
-    return include.some(pat => filePath.includes(pat));
+    return include.some((pat) => filePath.includes(pat));
   }
   return true;
 }
 
-function collectFiles(dir: string, options: AiSignalClarityOptions, depth = 0): string[] {
+function collectFiles(
+  dir: string,
+  options: AiSignalClarityOptions,
+  depth = 0
+): string[] {
   if (depth > (options.maxDepth ?? 20)) return [];
   const files: string[] = [];
   let entries: string[];
@@ -43,7 +63,10 @@ function collectFiles(dir: string, options: AiSignalClarityOptions, depth = 0): 
     }
     if (stat.isDirectory()) {
       files.push(...collectFiles(full, options, depth + 1));
-    } else if (stat.isFile() && shouldInclude(full, options.include, options.exclude)) {
+    } else if (
+      stat.isFile() &&
+      shouldInclude(full, options.include, options.exclude)
+    ) {
       files.push(full);
     }
   }
@@ -51,7 +74,7 @@ function collectFiles(dir: string, options: AiSignalClarityOptions, depth = 0): 
 }
 
 export async function analyzeAiSignalClarity(
-  options: AiSignalClarityOptions,
+  options: AiSignalClarityOptions
 ): Promise<AiSignalClarityReport> {
   const files = collectFiles(options.rootDir, options);
   const results: FileAiSignalClarityResult[] = [];
@@ -91,17 +114,21 @@ export async function analyzeAiSignalClarity(
   });
 
   // Count severities
-  const allIssues = results.flatMap(r => r.issues);
-  const criticalSignals = allIssues.filter(i => i.severity === 'critical').length;
-  const majorSignals = allIssues.filter(i => i.severity === 'major').length;
-  const minorSignals = allIssues.filter(i => i.severity === 'minor').length;
+  const allIssues = results.flatMap((r) => r.issues);
+  const criticalSignals = allIssues.filter(
+    (i) => i.severity === 'critical'
+  ).length;
+  const majorSignals = allIssues.filter((i) => i.severity === 'major').length;
+  const minorSignals = allIssues.filter((i) => i.severity === 'minor').length;
 
   // Filter by minSeverity
   const severityOrder = { info: 0, minor: 1, major: 2, critical: 3 };
   const minSev = options.minSeverity ?? 'info';
-  const filteredResults = results.map(r => ({
+  const filteredResults = results.map((r) => ({
     ...r,
-    issues: r.issues.filter(i => severityOrder[i.severity] >= severityOrder[minSev]),
+    issues: r.issues.filter(
+      (i) => severityOrder[i.severity] >= severityOrder[minSev]
+    ),
   }));
 
   return {

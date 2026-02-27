@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
-import "./globals.css";
-import { 
-  generateOrganizationSchema, 
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
+import './globals.css';
+import {
+  generateOrganizationSchema,
   generateSoftwareApplicationSchema,
   generateTechArticleSchema,
   generateCollectionPageSchema,
@@ -11,42 +11,43 @@ import {
 } from '../lib/aeo-schema';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://getaiready.dev'),
   title: {
-    default: "AIReady - Make Your Codebase AI-Ready",
-    template: "%s | AIReady"
+    default: 'AIReady - Make Your Codebase AI-Ready',
+    template: '%s | AIReady',
   },
-  description: "Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency that AI models understand.",
+  description:
+    'Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency that AI models understand.',
   keywords: [
-    "AI codebase optimization",
-    "semantic duplicate detection",
-    "context window analysis",
-    "code consistency checker",
-    "AI readiness score",
-    "TypeScript analysis",
-    "JavaScript linting",
-    "developer tools",
-    "AI pair programming",
-    "code quality",
-    "static analysis",
-    "AST parsing",
-    "open source tools",
-    "free developer tools",
-    "AI collaboration"
+    'AI codebase optimization',
+    'semantic duplicate detection',
+    'context window analysis',
+    'code consistency checker',
+    'AI readiness score',
+    'TypeScript analysis',
+    'JavaScript linting',
+    'developer tools',
+    'AI pair programming',
+    'code quality',
+    'static analysis',
+    'AST parsing',
+    'open source tools',
+    'free developer tools',
+    'AI collaboration',
   ],
-  authors: [{ name: "AIReady Team", url: "https://getaiready.dev" }],
-  creator: "AIReady",
-  publisher: "AIReady",
+  authors: [{ name: 'AIReady Team', url: 'https://getaiready.dev' }],
+  creator: 'AIReady',
+  publisher: 'AIReady',
   formatDetection: {
     email: false,
     address: false,
@@ -60,42 +61,44 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/logo-transparent-bg.png", sizes: "32x32", type: "image/png" },
-      { url: "/logo-transparent-bg.png", sizes: "16x16", type: "image/png" },
+      { url: '/logo-transparent-bg.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo-transparent-bg.png', sizes: '16x16', type: 'image/png' },
     ],
     apple: [
-      { url: "/logo-transparent-bg.png", sizes: "180x180", type: "image/png" },
+      { url: '/logo-transparent-bg.png', sizes: '180x180', type: 'image/png' },
     ],
     other: [
       {
-        rel: "mask-icon",
-        url: "/logo-transparent-bg.png",
+        rel: 'mask-icon',
+        url: '/logo-transparent-bg.png',
       },
     ],
   },
   openGraph: {
-    title: "AIReady - Make Your Codebase AI-Ready",
-    description: "Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency.",
-    url: "https://getaiready.dev",
-    siteName: "AIReady",
+    title: 'AIReady - Make Your Codebase AI-Ready',
+    description:
+      'Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency.',
+    url: 'https://getaiready.dev',
+    siteName: 'AIReady',
     images: [
       {
-        url: "https://getaiready.dev/logo-text.png",
+        url: 'https://getaiready.dev/logo-text.png',
         width: 2046,
         height: 800,
-        alt: "AIReady - AI-Ready Codebase Tools",
+        alt: 'AIReady - AI-Ready Codebase Tools',
       },
     ],
-    locale: "en_US",
-    type: "website",
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "AIReady - Make Your Codebase AI-Ready",
-    description: "Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency that AI models understand.",
-    images: ["https://getaiready.dev/logo-text.png"],
-    creator: "@aireadytools",
-    site: "@aireadytools",
+    card: 'summary_large_image',
+    title: 'AIReady - Make Your Codebase AI-Ready',
+    description:
+      'Free tools to optimize your codebase for AI collaboration. Detect semantic duplicates, analyze context windows, and maintain consistency that AI models understand.',
+    images: ['https://getaiready.dev/logo-text.png'],
+    creator: '@aireadytools',
+    site: '@aireadytools',
   },
   robots: {
     index: true,
@@ -103,15 +106,15 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
-  category: "technology",
-  classification: "Developer Tools",
+  category: 'technology',
+  classification: 'Developer Tools',
   verification: {
-    google: "google-site-verification-token", // TODO: Replace with actual token
+    google: 'google-site-verification-token', // TODO: Replace with actual token
   },
   other: {
     // AI Search Engine specific meta tags for AEO
@@ -162,13 +165,15 @@ export default function RootLayout({
             gtag('config', 'G-TT5Y6V853G');
           `}
         </Script>
-        
+
         {/* Enhanced JSON-LD for Answer Engine Optimization */}
         <Script
           id="organization-schema"
           type="application/ld+json"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
         />
         <Script
           id="software-schema"
@@ -180,13 +185,17 @@ export default function RootLayout({
           id="tech-article-schema"
           type="application/ld+json"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(techArticleSchema),
+          }}
         />
         <Script
           id="collection-page-schema"
           type="application/ld+json"
           strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(collectionPageSchema),
+          }}
         />
         {/* Syntax highlighting stylesheet for code blocks */}
         <link

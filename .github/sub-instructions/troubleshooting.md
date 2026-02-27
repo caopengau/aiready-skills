@@ -14,7 +14,7 @@ Create the spoke repository first:
 gh repo create caopengau/aiready-{spoke-name} --public
 ```
 
-### "workspace:* protocol" error
+### "workspace:\* protocol" error
 
 You're using `npm publish` instead of `pnpm publish`. Use our Makefiles:
 

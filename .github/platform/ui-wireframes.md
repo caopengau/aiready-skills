@@ -29,6 +29,7 @@
 ```
 
 **Key elements:**
+
 - Repo cards with current score + trend direction (▼ good = fewer issues, ▲ bad = more issues)
 - Quick insights panel — surfaced from recommendation engine
 - Empty state → guide to connect first repo + run CLI

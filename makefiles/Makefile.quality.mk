@@ -37,19 +37,14 @@ lint: ## Run ESLint on all packages
 	@if command -v turbo >/dev/null 2>&1; then \
 		turbo run lint; \
 	else \
-		$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(ALL_SPOKES),lint-$(pkg)); \
+		$(MAKE) $(MAKE_PARALLEL) $(LINT_LEAF); \
 	fi
 	@$(call log_success,All lint checks passed.)
 
-lint-core:
-	@$(call log_info,Linting core (ESLint)...)
-	@$(PNPM) $(SILENT_PNPM) --filter @aiready/core lint
-	@$(call log_success,Core lint passed)
-
-lint-pattern-detect:
-	@$(call log_info,Linting pattern-detect (ESLint)...)
-	@$(PNPM) $(SILENT_PNPM) --filter @aiready/pattern-detect lint
-	@$(call log_success,Pattern-detect lint passed)
+lint-%:
+	@$(call log_info,Linting $* (ESLint)...)
+	@$(PNPM) $(SILENT_PNPM) --filter @aiready/$* lint
+	@$(call log_success,$* lint passed)
 
 # Lint fixes
 lint-fix: ## Run ESLint --fix on all packages
@@ -57,15 +52,10 @@ lint-fix: ## Run ESLint --fix on all packages
 	@$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(ALL_SPOKES),lint-fix-$(pkg))
 	@$(call log_success,All lint fixes completed)
 
-lint-fix-core:
-	@$(call log_info,Auto-fixing lint issues (core)...)
-	@$(PNPM) $(SILENT_PNPM) --filter @aiready/core exec eslint . --ext .ts --fix
-	@$(call log_success,Core ESLint auto-fix completed)
-
-lint-fix-pattern-detect:
-	@$(call log_info,Auto-fixing lint issues (pattern-detect)...)
-	@$(PNPM) $(SILENT_PNPM) --filter @aiready/pattern-detect exec eslint . --ext .ts --fix
-	@$(call log_success,Pattern-detect ESLint auto-fix completed)
+lint-fix-%:
+	@$(call log_info,Auto-fixing lint issues ($*)...)
+	@$(PNPM) $(SILENT_PNPM) --filter @aiready/$* exec eslint . --ext .ts --fix
+	@$(call log_success,$* ESLint auto-fix completed)
 
 # Format checks
 format-check: ## Check formatting across all packages
@@ -73,13 +63,9 @@ format-check: ## Check formatting across all packages
 	@$(MAKE) $(MAKE_PARALLEL) $(FORMAT_LEAF)
 	@$(call log_success,Formatting checks passed)
 
-format-check-core:
-	@$(call log_info,Checking formatting core...)
-	@$(PNPM) $(SILENT_PNPM) exec prettier --check ./packages/core --ignore-path ./.prettierignore || { $(call log_error,Core formatting issues); exit 1; }
-
-format-check-pattern-detect:
-	@$(call log_info,Checking formatting pattern-detect...)
-	@$(PNPM) $(SILENT_PNPM) exec prettier --check ./packages/pattern-detect --ignore-path ./.prettierignore || { $(call log_error,Pattern-detect formatting issues); exit 1; }
+format-check-%:
+	@$(call log_info,Checking formatting $*...)
+	@$(PNPM) $(SILENT_PNPM) exec prettier --check ./packages/$* --ignore-path ./.prettierignore || { $(call log_error,$* formatting issues); exit 1; }
 
 # Format fixes
 format: ## Format all packages with Prettier
@@ -87,15 +73,10 @@ format: ## Format all packages with Prettier
 	@$(MAKE) $(MAKE_PARALLEL) $(foreach pkg,$(ALL_SPOKES),format-$(pkg))
 	@$(call log_success,All packages formatted)
 
-format-core:
-	@$(call log_info,Formatting core...)
-	@$(PNPM) $(SILENT_PNPM) exec prettier --write ./packages/core --ignore-path ./.prettierignore
-	@$(call log_success,Core formatted)
-
-format-pattern-detect:
-	@$(call log_info,Formatting pattern-detect...)
-	@$(PNPM) $(SILENT_PNPM) exec prettier --write ./packages/pattern-detect --ignore-path ./.prettierignore
-	@$(call log_success,Pattern-detect formatted)
+format-%:
+	@$(call log_info,Formatting $*...)
+	@$(PNPM) $(SILENT_PNPM) exec prettier --write ./packages/$* --ignore-path ./.prettierignore
+	@$(call log_success,$* formatted)
 
 # Type checking
 type-check: ## Run TypeScript type-check on all packages
@@ -103,14 +84,9 @@ type-check: ## Run TypeScript type-check on all packages
 	@$(MAKE) $(MAKE_PARALLEL) $(TYPE_LEAF)
 	@$(call log_success,All type checks passed)
 
-type-check-core:
-	@$(call log_info,Type-checking core...)
-	@$(PNPM) $(SILENT_PNPM) --filter @aiready/core exec tsc --noEmit
-	@$(call log_success,Core type-check passed)
-
-type-check-pattern-detect:
-	@$(call log_info,Type-checking pattern-detect...)
-	@$(PNPM) $(SILENT_PNPM) --filter @aiready/pattern-detect exec tsc --noEmit
-	@$(call log_success,Pattern-detect type-check passed)
+type-check-%:
+	@$(call log_info,Type-checking $*...)
+	@$(PNPM) $(SILENT_PNPM) --filter @aiready/$* exec tsc --noEmit
+	@$(call log_success,$* type-check passed)
 
 type-check-all: type-check ## Alias for type-check

@@ -5,7 +5,12 @@ import Image from 'next/image';
 import { signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RocketIcon } from '@/components/Icons';
-import { scoreColor, scoreBg, scoreGlow, scoreLabel } from '@aiready/components';
+import {
+  scoreColor,
+  scoreBg,
+  scoreGlow,
+  scoreLabel,
+} from '@aiready/components';
 import type { Repository, Analysis } from '@/lib/db';
 
 type RepoWithAnalysis = Repository & { latestAnalysis: Analysis | null };
@@ -21,10 +26,19 @@ interface Props {
   overallScore: number | null;
 }
 
-export default function DashboardClient({ user, repos: initialRepos, overallScore }: Props) {
+export default function DashboardClient({
+  user,
+  repos: initialRepos,
+  overallScore,
+}: Props) {
   const [repos, setRepos] = useState<RepoWithAnalysis[]>(initialRepos);
   const [showAddRepo, setShowAddRepo] = useState(false);
-  const [addRepoForm, setAddRepoForm] = useState({ name: '', url: '', description: '', defaultBranch: 'main' });
+  const [addRepoForm, setAddRepoForm] = useState({
+    name: '',
+    url: '',
+    description: '',
+    defaultBranch: 'main',
+  });
   const [addRepoError, setAddRepoError] = useState<string | null>(null);
   const [addRepoLoading, setAddRepoLoading] = useState(false);
   const [uploadingRepoId, setUploadingRepoId] = useState<string | null>(null);
@@ -49,9 +63,14 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
       }
 
       const newRepo: RepoWithAnalysis = { ...data.repo, latestAnalysis: null };
-      setRepos(prev => [newRepo, ...prev]);
+      setRepos((prev) => [newRepo, ...prev]);
       setShowAddRepo(false);
-      setAddRepoForm({ name: '', url: '', description: '', defaultBranch: 'main' });
+      setAddRepoForm({
+        name: '',
+        url: '',
+        description: '',
+        defaultBranch: 'main',
+      });
     } catch {
       setAddRepoError('Network error. Please try again.');
     } finally {
@@ -64,7 +83,7 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
 
     const res = await fetch(`/api/repos?id=${repoId}`, { method: 'DELETE' });
     if (res.ok) {
-      setRepos(prev => prev.filter(r => r.id !== repoId));
+      setRepos((prev) => prev.filter((r) => r.id !== repoId));
     }
   }
 
@@ -96,11 +115,17 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
           return;
         }
 
-        setRepos(prev => prev.map(r =>
-          r.id === repoId
-            ? { ...r, latestAnalysis: result.analysis, aiScore: result.analysis.aiScore }
-            : r
-        ));
+        setRepos((prev) =>
+          prev.map((r) =>
+            r.id === repoId
+              ? {
+                  ...r,
+                  latestAnalysis: result.analysis,
+                  aiScore: result.analysis.aiScore,
+                }
+              : r
+          )
+        );
       } catch {
         setUploadError('Invalid JSON file or network error');
       } finally {
@@ -115,8 +140,14 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="orb orb-blue w-96 h-96 -top-48 -right-48" style={{ animationDelay: '0s' }} />
-        <div className="orb orb-purple w-80 h-80 bottom-0 -left-40" style={{ animationDelay: '3s' }} />
+        <div
+          className="orb orb-blue w-96 h-96 -top-48 -right-48"
+          style={{ animationDelay: '0s' }}
+        />
+        <div
+          className="orb orb-purple w-80 h-80 bottom-0 -left-40"
+          style={{ animationDelay: '3s' }}
+        />
       </div>
       <div className="absolute inset-0 bg-grid-pattern opacity-30" />
 
@@ -140,10 +171,16 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
                 />
               </motion.div>
               <nav className="hidden md:flex items-center gap-6 ml-6">
-                <a href="/dashboard" className="text-sm font-medium text-cyan-400 border-b-2 border-cyan-400 pb-0.5">
+                <a
+                  href="/dashboard"
+                  className="text-sm font-medium text-cyan-400 border-b-2 border-cyan-400 pb-0.5"
+                >
                   Dashboard
                 </a>
-                <a href="/docs" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+                <a
+                  href="/docs"
+                  className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
+                >
                   Docs
                 </a>
               </nav>
@@ -158,7 +195,9 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
                   className="w-8 h-8 rounded-full border-2 border-cyan-500/50"
                 />
               )}
-              <span className="text-sm text-slate-300 hidden sm:block">{user.name || user.email}</span>
+              <span className="text-sm text-slate-300 hidden sm:block">
+                {user.name || user.email}
+              </span>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="text-sm text-slate-400 hover:text-red-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-500/10"
@@ -195,12 +234,22 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
               className={`flex items-center gap-4 px-6 py-4 rounded-2xl border ${scoreBg(overallScore)} shadow-lg ${scoreGlow(overallScore)}`}
             >
               <div className="text-right">
-                <div className={`text-4xl font-black ${scoreColor(overallScore)}`}>{overallScore}</div>
+                <div
+                  className={`text-4xl font-black ${scoreColor(overallScore)}`}
+                >
+                  {overallScore}
+                </div>
                 <div className="text-xs text-slate-500 -mt-1">/ 100</div>
               </div>
               <div className="pl-4 border-l border-slate-700">
-                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Overall AI Score</div>
-                <div className={`text-sm font-semibold ${scoreColor(overallScore)}`}>{scoreLabel(overallScore)}</div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  Overall AI Score
+                </div>
+                <div
+                  className={`text-sm font-semibold ${scoreColor(overallScore)}`}
+                >
+                  {scoreLabel(overallScore)}
+                </div>
               </div>
             </motion.div>
           )}
@@ -214,19 +263,33 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
         >
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 uppercase tracking-wide">Repos</span>
-              <span className="text-lg font-bold text-white">{repos.length}</span>
+              <span className="text-xs text-slate-400 uppercase tracking-wide">
+                Repos
+              </span>
+              <span className="text-lg font-bold text-white">
+                {repos.length}
+              </span>
               <span className="text-xs text-slate-500">/ 3</span>
             </div>
             <div className="h-4 w-px bg-slate-700" />
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 uppercase tracking-wide">This Month</span>
-              <span className="text-lg font-bold text-white">{10 - repos.filter(r => r.latestAnalysis).length}</span>
+              <span className="text-xs text-slate-400 uppercase tracking-wide">
+                This Month
+              </span>
+              <span className="text-lg font-bold text-white">
+                {10 - repos.filter((r) => r.latestAnalysis).length}
+              </span>
               <span className="text-xs text-slate-500">runs left</span>
             </div>
           </div>
           <div className="text-xs text-slate-500">
-            Free plan · <a href="https://getaiready.dev/pricing" className="text-cyan-400 hover:underline">Upgrade</a>
+            Free plan ·{' '}
+            <a
+              href="https://getaiready.dev/pricing"
+              className="text-cyan-400 hover:underline"
+            >
+              Upgrade
+            </a>
           </div>
         </motion.div>
 
@@ -240,7 +303,12 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
               className="bg-red-900/30 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl flex justify-between items-center"
             >
               <span>{uploadError}</span>
-              <button onClick={() => setUploadError(null)} className="ml-4 font-bold text-xl leading-none hover:text-red-100">×</button>
+              <button
+                onClick={() => setUploadError(null)}
+                className="ml-4 font-bold text-xl leading-none hover:text-red-100"
+              >
+                ×
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -274,9 +342,12 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
                   <RocketIcon className="w-14 h-14" />
                 </div>
               </motion.div>
-              <h3 className="text-2xl font-bold text-white mb-3">Get Started with AIReady</h3>
+              <h3 className="text-2xl font-bold text-white mb-3">
+                Get Started with AIReady
+              </h3>
               <p className="text-slate-400 max-w-md mx-auto mb-8">
-                Add a repository, run the CLI, then upload the results to get your AI readiness score.
+                Add a repository, run the CLI, then upload the results to get
+                your AI readiness score.
               </p>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -306,18 +377,25 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
         </section>
 
         {/* CLI quickstart */}
-        {repos.length > 0 && repos.every(r => !r.latestAnalysis) && (
+        {repos.length > 0 && repos.every((r) => !r.latestAnalysis) && (
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="glass-card rounded-2xl p-6"
           >
-            <h3 className="font-semibold text-lg text-white mb-2">Run your first analysis</h3>
-            <p className="text-slate-400 text-sm mb-4">Generate a report JSON and upload it to see your AI readiness scores.</p>
+            <h3 className="font-semibold text-lg text-white mb-2">
+              Run your first analysis
+            </h3>
+            <p className="text-slate-400 text-sm mb-4">
+              Generate a report JSON and upload it to see your AI readiness
+              scores.
+            </p>
             <div className="font-mono text-sm space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-slate-500">$</span>
-                <span className="text-cyan-400">npx @aiready/cli scan . --output json{' > '}report.json</span>
+                <span className="text-cyan-400">
+                  npx @aiready/cli scan . --output json{' > '}report.json
+                </span>
               </div>
               <div className="text-slate-500 text-xs">
                 # then upload report.json via the button on your repo card
@@ -335,7 +413,9 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            onClick={e => { if (e.target === e.currentTarget) setShowAddRepo(false); }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShowAddRepo(false);
+            }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -344,8 +424,15 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
               className="glass-card rounded-2xl shadow-2xl w-full max-w-md"
             >
               <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-700/50">
-                <h3 className="text-lg font-semibold text-white">Add Repository</h3>
-                <button onClick={() => setShowAddRepo(false)} className="text-slate-400 hover:text-white text-xl leading-none">×</button>
+                <h3 className="text-lg font-semibold text-white">
+                  Add Repository
+                </h3>
+                <button
+                  onClick={() => setShowAddRepo(false)}
+                  className="text-slate-400 hover:text-white text-xl leading-none"
+                >
+                  ×
+                </button>
               </div>
               <form onSubmit={handleAddRepo} className="px-6 py-5 space-y-4">
                 {addRepoError && (
@@ -354,46 +441,69 @@ export default function DashboardClient({ user, repos: initialRepos, overallScor
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Repository Name</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Repository Name
+                  </label>
                   <input
                     type="text"
                     required
                     placeholder="my-awesome-project"
                     value={addRepoForm.name}
-                    onChange={e => setAddRepoForm(f => ({ ...f, name: e.target.value }))}
-                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Repository URL</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="https://github.com/user/repo"
-                    value={addRepoForm.url}
-                    onChange={e => setAddRepoForm(f => ({ ...f, url: e.target.value }))}
+                    onChange={(e) =>
+                      setAddRepoForm((f) => ({ ...f, name: e.target.value }))
+                    }
                     className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">
-                    Description <span className="text-slate-500 font-normal">(optional)</span>
+                    Repository URL
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://github.com/user/repo"
+                    value={addRepoForm.url}
+                    onChange={(e) =>
+                      setAddRepoForm((f) => ({ ...f, url: e.target.value }))
+                    }
+                    className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Description{' '}
+                    <span className="text-slate-500 font-normal">
+                      (optional)
+                    </span>
                   </label>
                   <input
                     type="text"
                     placeholder="What does this repo do?"
                     value={addRepoForm.description}
-                    onChange={e => setAddRepoForm(f => ({ ...f, description: e.target.value }))}
+                    onChange={(e) =>
+                      setAddRepoForm((f) => ({
+                        ...f,
+                        description: e.target.value,
+                      }))
+                    }
                     className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Default Branch</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Default Branch
+                  </label>
                   <input
                     type="text"
                     placeholder="main"
                     value={addRepoForm.defaultBranch}
-                    onChange={e => setAddRepoForm(f => ({ ...f, defaultBranch: e.target.value }))}
+                    onChange={(e) =>
+                      setAddRepoForm((f) => ({
+                        ...f,
+                        defaultBranch: e.target.value,
+                      }))
+                    }
                     className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
                   />
                 </div>
@@ -452,9 +562,13 @@ function RepoCard({
       {/* Repo header */}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="font-semibold text-white truncate text-lg">{repo.name}</h3>
+          <h3 className="font-semibold text-white truncate text-lg">
+            {repo.name}
+          </h3>
           {repo.description && (
-            <p className="text-xs text-slate-400 mt-0.5 truncate">{repo.description}</p>
+            <p className="text-xs text-slate-400 mt-0.5 truncate">
+              {repo.description}
+            </p>
           )}
           <a
             href={repo.url}
@@ -466,8 +580,14 @@ function RepoCard({
           </a>
         </div>
         {score != null && (
-          <div className={`flex-shrink-0 text-center px-4 py-2 rounded-xl border ${scoreBg(score)} shadow-lg`}>
-            <div className={`text-2xl font-black leading-none ${scoreColor(score)}`}>{score}</div>
+          <div
+            className={`flex-shrink-0 text-center px-4 py-2 rounded-xl border ${scoreBg(score)} shadow-lg`}
+          >
+            <div
+              className={`text-2xl font-black leading-none ${scoreColor(score)}`}
+            >
+              {score}
+            </div>
             <div className="text-xs text-slate-500 mt-0.5">/ 100</div>
           </div>
         )}
@@ -475,9 +595,13 @@ function RepoCard({
 
       {/* Breakdown grid */}
       {analysis?.breakdown && (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {Object.entries(analysis.breakdown).map(([key, val]) => (
-            <BreakdownItem key={key} label={formatBreakdownKey(key)} value={val as number} />
+            <BreakdownItem
+              key={key}
+              label={formatBreakdownKey(key)}
+              value={val as number}
+            />
           ))}
         </div>
       )}
@@ -487,16 +611,22 @@ function RepoCard({
         <div className="flex gap-4 text-xs text-slate-400">
           <span>{analysis.summary.totalFiles} files</span>
           {analysis.summary.criticalIssues > 0 && (
-            <span className="text-red-400 font-medium">{analysis.summary.criticalIssues} critical</span>
+            <span className="text-red-400 font-medium">
+              {analysis.summary.criticalIssues} critical
+            </span>
           )}
           {analysis.summary.warnings > 0 && (
-            <span className="text-amber-400">{analysis.summary.warnings} warnings</span>
+            <span className="text-amber-400">
+              {analysis.summary.warnings} warnings
+            </span>
           )}
         </div>
       )}
 
       {!analysis && (
-        <p className="text-xs text-slate-500 italic">No analysis yet — upload a report to get scored.</p>
+        <p className="text-xs text-slate-500 italic">
+          No analysis yet — upload a report to get scored.
+        </p>
       )}
 
       {/* Actions */}
@@ -508,7 +638,11 @@ function RepoCard({
           disabled={uploading}
           className="flex-1 px-3 py-2.5 bg-cyan-500/10 text-cyan-400 text-xs font-medium rounded-lg hover:bg-cyan-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-cyan-500/30"
         >
-          {uploading ? 'Uploading...' : analysis ? 'Update Analysis' : 'Upload Analysis'}
+          {uploading
+            ? 'Uploading...'
+            : analysis
+              ? 'Update Analysis'
+              : 'Upload Analysis'}
         </motion.button>
         <button
           onClick={onDelete}
@@ -530,9 +664,14 @@ function RepoCard({
 
 function BreakdownItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-slate-800/50 rounded-lg px-3 py-2 border border-slate-700/50">
-      <div className={`text-sm font-bold ${scoreColor(value)}`}>{value}</div>
-      <div className="text-xs text-slate-400 leading-tight">{label}</div>
+    <div className="bg-slate-800/50 rounded-lg px-2 py-1.5 border border-slate-700/50">
+      <div className={`text-xs font-bold ${scoreColor(value)}`}>{value}</div>
+      <div
+        className="text-[10px] text-slate-400 leading-tight truncate"
+        title={label}
+      >
+        {label}
+      </div>
     </div>
   );
 }
@@ -540,6 +679,6 @@ function BreakdownItem({ label, value }: { label: string; value: number }) {
 function formatBreakdownKey(key: string): string {
   return key
     .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, s => s.toUpperCase())
+    .replace(/^./, (s) => s.toUpperCase())
     .trim();
 }

@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: AI Readiness Check
         uses: caopengau/aiready-action@v1
         with:
@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: AI Readiness Check
         uses: caopengau/aiready-action@v1
         with:
@@ -90,25 +90,25 @@ If you're using this from within the AIReady monorepo:
 
 ## Inputs
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `directory` | Directory to analyze | No | `.` |
-| `threshold` | Minimum AI readiness score (0-100) | No | `70` |
-| `fail-on` | Fail on issues: `critical`, `major`, `any` | No | `critical` |
-| `tools` | Tools to run: `patterns,context,consistency` | No | `patterns,context,consistency` |
-| `upload-to-saas` | Upload to AIReady SaaS | No | `false` |
-| `api-key` | AIReady API key | No | - |
-| `repo-id` | Repository ID in SaaS | No | - |
+| Input            | Description                                  | Required | Default                        |
+| ---------------- | -------------------------------------------- | -------- | ------------------------------ |
+| `directory`      | Directory to analyze                         | No       | `.`                            |
+| `threshold`      | Minimum AI readiness score (0-100)           | No       | `70`                           |
+| `fail-on`        | Fail on issues: `critical`, `major`, `any`   | No       | `critical`                     |
+| `tools`          | Tools to run: `patterns,context,consistency` | No       | `patterns,context,consistency` |
+| `upload-to-saas` | Upload to AIReady SaaS                       | No       | `false`                        |
+| `api-key`        | AIReady API key                              | No       | -                              |
+| `repo-id`        | Repository ID in SaaS                        | No       | -                              |
 
 ## Outputs
 
-| Output | Description |
-|--------|-------------|
-| `score` | Overall AI readiness score (0-100) |
-| `passed` | Whether the check passed (`true`/`false`) |
-| `issues` | Total number of issues found |
-| `critical` | Number of critical issues |
-| `major` | Number of major issues |
+| Output     | Description                               |
+| ---------- | ----------------------------------------- |
+| `score`    | Overall AI readiness score (0-100)        |
+| `passed`   | Whether the check passed (`true`/`false`) |
+| `issues`   | Total number of issues found              |
+| `critical` | Number of critical issues                 |
+| `major`    | Number of major issues                    |
 
 ## Example Output
 
@@ -127,15 +127,19 @@ If you're using this from within the AIReady monorepo:
 ## What Gets Checked
 
 ### 🔍 Semantic Duplicate Detection
+
 Finds code fragments that are semantically similar but syntactically different - confusing for AI models.
 
 ### 📦 Context Window Analysis
+
 Measures the "context cost" of your imports and dependency chains.
 
 ### 🏷️ Naming Consistency
+
 Detects inconsistent naming patterns across your codebase.
 
 ### 📊 Visualizations
+
 Generates interactive graphs showing code relationships and problem areas.
 
 ## Requirements
@@ -146,28 +150,31 @@ Generates interactive graphs showing code relationships and problem areas.
 ## Installation Alternatives
 
 ### npm CLI
+
 ```bash
 npm install -g @aiready/cli
 aiready scan . --threshold 70
 ```
 
 ### Docker
+
 ```bash
 docker run --rm -v $(pwd):/workspace aiready/cli:latest
 ```
 
 ### npx (no install)
+
 ```bash
 npx @aiready/cli scan .
 ```
 
 ## Pricing
 
-| Plan | Price | Features |
-|------|-------|----------|
-| **Free** | $0 | CLI, local analysis |
-| **Team** | $99/mo | CI/CD integration, historical tracking |
-| **Enterprise** | $299+/mo | Custom rules, SSO, dedicated support |
+| Plan           | Price    | Features                               |
+| -------------- | -------- | -------------------------------------- |
+| **Free**       | $0       | CLI, local analysis                    |
+| **Team**       | $99/mo   | CI/CD integration, historical tracking |
+| **Enterprise** | $299+/mo | Custom rules, SSO, dedicated support   |
 
 Visit [getaiready.dev/pricing](https://getaiready.dev/pricing) for more details.
 
@@ -184,4 +191,4 @@ MIT © [AIReady](https://getaiready.dev)
 
 ---
 
-*Made with ❤️ for the AI-assisted coding community*
+_Made with ❤️ for the AI-assisted coding community_

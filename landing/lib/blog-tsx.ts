@@ -1,6 +1,3 @@
-
-
-
 import { posts as staticPosts } from '../../landing/content/blog-tsx/index';
 import React from 'react';
 

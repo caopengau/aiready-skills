@@ -7,7 +7,6 @@ import {
   getLineNumber,
   isCoverageContext,
   isLoopStatement,
-  isCallback,
 } from '../utils/ast-parser';
 import { ScopeTracker } from '../utils/scope-tracker';
 import {
@@ -22,14 +21,17 @@ import { loadNamingConfig } from '../utils/config-loader';
  * AST-based naming analyzer
  * Only supports TypeScript/JavaScript files (.ts, .tsx, .js, .jsx)
  */
-export async function analyzeNamingAST(files: string[]): Promise<NamingIssue[]> {
+export async function analyzeNamingAST(
+  files: string[]
+): Promise<NamingIssue[]> {
   const issues: NamingIssue[] = [];
 
   // Load and merge configuration
-  const { allAbbreviations, allShortWords, disabledChecks } = await loadNamingConfig(files);
+  const { allAbbreviations, allShortWords, disabledChecks } =
+    await loadNamingConfig(files);
 
   // Filter to only JS/TS files that the TypeScript parser can handle
-  const supportedFiles = files.filter(file => 
+  const supportedFiles = files.filter((file) =>
     /\.(js|jsx|ts|tsx)$/i.test(file)
   );
 
@@ -72,17 +74,29 @@ function analyzeFileNamingAST(
       ancestors.push(node);
 
       // Enter scopes
-      if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression') {
+      if (
+        node.type === 'FunctionDeclaration' ||
+        node.type === 'FunctionExpression' ||
+        node.type === 'ArrowFunctionExpression'
+      ) {
         scopeTracker.enterScope('function', node);
-        
+
         // Track parameters
         if ('params' in node) {
           for (const param of node.params) {
             if (param.type === 'Identifier') {
-              scopeTracker.declareVariable(param.name, param, getLineNumber(param), {
-                isParameter: true,
-              });
-            } else if (param.type === 'ObjectPattern' || param.type === 'ArrayPattern') {
+              scopeTracker.declareVariable(
+                param.name,
+                param,
+                getLineNumber(param),
+                {
+                  isParameter: true,
+                }
+              );
+            } else if (
+              param.type === 'ObjectPattern' ||
+              param.type === 'ArrayPattern'
+            ) {
               // Handle destructured parameters
               extractIdentifiersFromPattern(param, scopeTracker, true);
             }
@@ -97,21 +111,32 @@ function analyzeFileNamingAST(
       }
 
       // Track variable declarations
-      if (node.type === 'VariableDeclarator') {
+        if (node.type === 'VariableDeclarator') {
         if (node.id.type === 'Identifier') {
-          const isInCoverage = isCoverageContext(node, ancestors);
+          void isCoverageContext(node, ancestors);
           scopeTracker.declareVariable(
             node.id.name,
             node.id,
             getLineNumber(node.id),
             {
-              type: ('typeAnnotation' in node.id) ? (node.id as any).typeAnnotation : null,
+              type:
+                'typeAnnotation' in node.id
+                  ? (node.id as any).typeAnnotation
+                  : null,
               isDestructured: false,
               isLoopVariable: scopeTracker.getCurrentScopeType() === 'loop',
             }
           );
-        } else if (node.id.type === 'ObjectPattern' || node.id.type === 'ArrayPattern') {
-          extractIdentifiersFromPattern(node.id, scopeTracker, false, ancestors);
+        } else if (
+          node.id.type === 'ObjectPattern' ||
+          node.id.type === 'ArrayPattern'
+        ) {
+          extractIdentifiersFromPattern(
+            node.id,
+            scopeTracker,
+            false,
+            ancestors
+          );
         }
       }
 
@@ -154,25 +179,33 @@ function analyzeFileNamingAST(
     if (disabledChecks.has('abbreviation') && name.length <= 3) continue;
 
     // Check coverage context
-    const isInCoverage = ['s', 'b', 'f', 'l'].includes(name) && varInfo.isDestructured;
+    const isInCoverage =
+      ['s', 'b', 'f', 'l'].includes(name) && varInfo.isDestructured;
     if (isInCoverage) continue;
 
     // Check if acceptable in context
-    const functionComplexity = varInfo.node.type === 'Identifier' && 'parent' in varInfo.node
-      ? calculateComplexity(varInfo.node as any)
-      : context.complexity;
-      
-    if (isAcceptableInContext(name, context, {
-      isLoopVariable: varInfo.isLoopVariable || allAbbreviations.has(name),
-      isParameter: varInfo.isParameter,
-      isDestructured: varInfo.isDestructured,
-      complexity: functionComplexity,
-    })) {
+    const functionComplexity =
+      varInfo.node.type === 'Identifier' && 'parent' in varInfo.node
+        ? calculateComplexity(varInfo.node as any)
+        : context.complexity;
+
+    if (
+      isAcceptableInContext(name, context, {
+        isLoopVariable: varInfo.isLoopVariable || allAbbreviations.has(name),
+        isParameter: varInfo.isParameter,
+        isDestructured: varInfo.isDestructured,
+        complexity: functionComplexity,
+      })
+    ) {
       continue;
     }
 
     // Single letter check
-    if (name.length === 1 && !allAbbreviations.has(name) && !allShortWords.has(name)) {
+    if (
+      name.length === 1 &&
+      !allAbbreviations.has(name) &&
+      !allShortWords.has(name)
+    ) {
       // Check if short-lived
       const isShortLived = scopeTracker.isShortLived(varInfo, 5);
       if (!isShortLived) {
@@ -190,7 +223,10 @@ function analyzeFileNamingAST(
 
     // Abbreviation check (2-3 letters)
     if (name.length >= 2 && name.length <= 3) {
-      if (!allShortWords.has(name.toLowerCase()) && !allAbbreviations.has(name.toLowerCase())) {
+      if (
+        !allShortWords.has(name.toLowerCase()) &&
+        !allAbbreviations.has(name.toLowerCase())
+      ) {
         // Check if short-lived for abbreviations too
         const isShortLived = scopeTracker.isShortLived(varInfo, 5);
         if (!isShortLived) {
@@ -208,9 +244,18 @@ function analyzeFileNamingAST(
     }
 
     // Snake_case check for TypeScript/JavaScript
-    if (!disabledChecks.has('convention-mix') && file.match(/\.(ts|tsx|js|jsx)$/)) {
-      if (name.includes('_') && !name.startsWith('_') && name.toLowerCase() === name) {
-        const camelCase = name.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    if (
+      !disabledChecks.has('convention-mix') &&
+      file.match(/\.(ts|tsx|js|jsx)$/)
+    ) {
+      if (
+        name.includes('_') &&
+        !name.startsWith('_') &&
+        name.toLowerCase() === name
+      ) {
+        const camelCase = name.replace(/_([a-z])/g, (_, letter) =>
+          letter.toUpperCase()
+        );
         issues.push({
           file,
           line,
@@ -227,7 +272,10 @@ function analyzeFileNamingAST(
   if (!disabledChecks.has('unclear')) {
     traverseAST(ast, {
       enter: (node) => {
-        if (node.type === 'FunctionDeclaration' || node.type === 'MethodDefinition') {
+        if (
+          node.type === 'FunctionDeclaration' ||
+          node.type === 'MethodDefinition'
+        ) {
           const name = getFunctionName(node);
           if (!name) return;
 
@@ -237,27 +285,62 @@ function analyzeFileNamingAST(
           if (['main', 'init', 'setup', 'bootstrap'].includes(name)) return;
 
           // Check for action verbs and patterns
-          const hasActionVerb = name.match(/^(get|set|is|has|can|should|create|update|delete|fetch|load|save|process|handle|validate|check|find|search|filter|map|reduce|make|do|run|start|stop|build|parse|format|render|calculate|compute|generate|transform|convert|normalize|sanitize|encode|decode|compress|extract|merge|split|join|sort|compare|test|verify|ensure|apply|execute|invoke|call|emit|dispatch|trigger|listen|subscribe|unsubscribe|add|remove|clear|reset|toggle|enable|disable|open|close|connect|disconnect|send|receive|read|write|import|export|register|unregister|mount|unmount|track|store|persist|upsert|derive|classify|combine|discover|activate|require|assert|expect|mask|escape|sign|put|list|complete|page|safe|mock|pick|pluralize|text|count|detect|select)/);
-          
-          const isFactoryPattern = name.match(/(Factory|Builder|Creator|Generator|Provider|Adapter|Mock)$/);
+          const hasActionVerb = name.match(
+            /^(get|set|is|has|can|should|create|update|delete|fetch|load|save|process|handle|validate|check|find|search|filter|map|reduce|make|do|run|start|stop|build|parse|format|render|calculate|compute|generate|transform|convert|normalize|sanitize|encode|decode|compress|extract|merge|split|join|sort|compare|test|verify|ensure|apply|execute|invoke|call|emit|dispatch|trigger|listen|subscribe|unsubscribe|add|remove|clear|reset|toggle|enable|disable|open|close|connect|disconnect|send|receive|read|write|import|export|register|unregister|mount|unmount|track|store|persist|upsert|derive|classify|combine|discover|activate|require|assert|expect|mask|escape|sign|put|list|complete|page|safe|mock|pick|pluralize|text|count|detect|select)/
+          );
+
+          const isFactoryPattern = name.match(
+            /(Factory|Builder|Creator|Generator|Provider|Adapter|Mock)$/
+          );
           const isEventHandler = name.match(/^on[A-Z]/);
           const isDescriptiveLong = name.length > 15;
           const isReactHook = name.match(/^use[A-Z]/);
-          const isHelperPattern = name.match(/^(to|from|with|without|for|as|into)\w+/) || 
-                                  name.match(/^\w+(To|From|With|Without|For|As|Into)\w*$/); // xForY, xToY patterns
-          const isUtilityName = ['cn', 'proxy', 'sitemap', 'robots', 'gtag'].includes(name);
-          const isLanguageKeyword = ['constructor', 'toString', 'valueOf', 'toJSON'].includes(name);
-          const isFrameworkPattern = name.match(/^(goto|fill|click|select|submit|wait|expect)\w*/); // Page Object Model, test framework patterns
-          
+          const isHelperPattern =
+            name.match(/^(to|from|with|without|for|as|into)\w+/) ||
+            name.match(/^\w+(To|From|With|Without|For|As|Into)\w*$/); // xForY, xToY patterns
+          const isUtilityName = [
+            'cn',
+            'proxy',
+            'sitemap',
+            'robots',
+            'gtag',
+          ].includes(name);
+          const isLanguageKeyword = [
+            'constructor',
+            'toString',
+            'valueOf',
+            'toJSON',
+          ].includes(name);
+          const isFrameworkPattern = name.match(
+            /^(goto|fill|click|select|submit|wait|expect)\w*/
+          ); // Page Object Model, test framework patterns
+
           // Descriptive patterns: countX, totalX, etc.
-          const isDescriptivePattern = name.match(/^(default|total|count|sum|avg|max|min|initial|current|previous|next)\w+/) ||
-                                       name.match(/\w+(Count|Total|Sum|Average|List|Map|Set|Config|Settings|Options|Props|Data|Info|Details|State|Status|Response|Result)$/);
-          
+          const isDescriptivePattern =
+            name.match(
+              /^(default|total|count|sum|avg|max|min|initial|current|previous|next)\w+/
+            ) ||
+            name.match(
+              /\w+(Count|Total|Sum|Average|List|Map|Set|Config|Settings|Options|Props|Data|Info|Details|State|Status|Response|Result)$/
+            );
+
           // Count capital letters for compound detection
           const capitalCount = (name.match(/[A-Z]/g) || []).length;
           const isCompoundWord = capitalCount >= 3; // daysSinceLastCommit has 4 capitals
 
-          if (!hasActionVerb && !isFactoryPattern && !isEventHandler && !isDescriptiveLong && !isReactHook && !isHelperPattern && !isUtilityName && !isDescriptivePattern && !isCompoundWord && !isLanguageKeyword && !isFrameworkPattern) {
+          if (
+            !hasActionVerb &&
+            !isFactoryPattern &&
+            !isEventHandler &&
+            !isDescriptiveLong &&
+            !isReactHook &&
+            !isHelperPattern &&
+            !isUtilityName &&
+            !isDescriptivePattern &&
+            !isCompoundWord &&
+            !isLanguageKeyword &&
+            !isFrameworkPattern
+          ) {
             issues.push({
               file,
               line,
@@ -284,6 +367,8 @@ function extractIdentifiersFromPattern(
   isParameter: boolean,
   ancestors?: TSESTree.Node[]
 ): void {
+  // Ancestors parameter is accepted for future use; reference it to avoid lint warnings
+  void ancestors;
   if (pattern.type === 'ObjectPattern') {
     for (const prop of pattern.properties) {
       if (prop.type === 'Property' && prop.value.type === 'Identifier') {
@@ -296,7 +381,10 @@ function extractIdentifiersFromPattern(
             isDestructured: true,
           }
         );
-      } else if (prop.type === 'RestElement' && prop.argument.type === 'Identifier') {
+      } else if (
+        prop.type === 'RestElement' &&
+        prop.argument.type === 'Identifier'
+      ) {
         scopeTracker.declareVariable(
           prop.argument.name,
           prop.argument,

@@ -1,17 +1,29 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 export default function AnimatedStats() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   const stats = [
-    { value: "<3s", label: "Analysis Time", color: "from-blue-600 to-cyan-500" },
-    { value: "95%", label: "Detection Accuracy", color: "from-purple-600 to-pink-500" },
-    { value: "40%", label: "Context Token Savings", color: "from-orange-600 to-red-500" },
+    {
+      value: '<3s',
+      label: 'Analysis Time',
+      color: 'from-blue-600 to-cyan-500',
+    },
+    {
+      value: '95%',
+      label: 'Detection Accuracy',
+      color: 'from-purple-600 to-pink-500',
+    },
+    {
+      value: '40%',
+      label: 'Context Token Savings',
+      color: 'from-orange-600 to-red-500',
+    },
   ];
 
   return (
@@ -35,7 +47,11 @@ export default function AnimatedStats() {
             <motion.div
               initial={{ scale: 1 }}
               animate={isInView ? { scale: 1 } : {}}
-              transition={{ delay: idx * 0.2 + 0.3, type: "spring", stiffness: 100 }}
+              transition={{
+                delay: idx * 0.2 + 0.3,
+                type: 'spring',
+                stiffness: 100,
+              }}
               className={`text-5xl md:text-6xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3`}
             >
               {stat.value}

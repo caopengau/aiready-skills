@@ -19,19 +19,19 @@ High cohesion means related code stays together. AI can load the minimal context
 ```typescript
 // utils.ts - Everything dumped together
 export function hashPassword(password: string) {
-  return bcrypt.hash(password, 10)
+  return bcrypt.hash(password, 10);
 }
 
 export function formatDate(date: Date) {
-  return date.toISOString()
+  return date.toISOString();
 }
 
 export function validateEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 export function generateToken(userId: string) {
-  return jwt.sign({ userId }, SECRET)
+  return jwt.sign({ userId }, SECRET);
 }
 
 // AI must load ALL of this just to understand password hashing!
@@ -43,30 +43,30 @@ export function generateToken(userId: string) {
 ```typescript
 // auth/password.ts
 export function hashPassword(password: string) {
-  return bcrypt.hash(password, 10)
+  return bcrypt.hash(password, 10);
 }
 
 export function verifyPassword(password: string, hash: string) {
-  return bcrypt.compare(password, hash)
+  return bcrypt.compare(password, hash);
 }
 
 // auth/token.ts
 export function generateToken(userId: string) {
-  return jwt.sign({ userId }, SECRET)
+  return jwt.sign({ userId }, SECRET);
 }
 
 export function verifyToken(token: string) {
-  return jwt.verify(token, SECRET)
+  return jwt.verify(token, SECRET);
 }
 
 // validation/email.ts
 export function validateEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 // utils/date.ts
 export function formatDate(date: Date) {
-  return date.toISOString()
+  return date.toISOString();
 }
 
 // AI loads only auth/password.ts for password operations
@@ -74,14 +74,16 @@ export function formatDate(date: Date) {
 ```
 
 Cohesion metrics:
+
 - **High**: All functions in a file share the same data or serve the same feature
 - **Medium**: Functions loosely related (e.g., all string utilities)
 - **Low**: Functions have no relationship (avoid this)
 
 Benefits for AI:
+
 - 25-40% less context loaded per query
 - AI correctly selects relevant files
 - Reduces cross-file navigation
 - Makes refactoring suggestions more accurate
 
-Reference: [Cohesion (computer science)](https://en.wikipedia.org/wiki/Cohesion_(computer_science))
+Reference: [Cohesion (computer science)](<https://en.wikipedia.org/wiki/Cohesion_(computer_science)>)

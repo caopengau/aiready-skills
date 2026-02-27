@@ -8,7 +8,7 @@ let stripe: Stripe | null = null;
 function getStripe(): Stripe | null {
   if (!stripe && process.env.STRIPE_SECRET_KEY) {
     stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: '2026-02-25.clover',
     });
   }
   return stripe;
@@ -18,7 +18,10 @@ export async function POST(request: NextRequest) {
   try {
     const stripeClient = getStripe();
     if (!stripeClient) {
-      return NextResponse.json({ error: 'Billing not configured' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Billing not configured' },
+        { status: 400 }
+      );
     }
 
     const body = await request.text();
@@ -33,7 +36,11 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature
     let event: Stripe.Event;
     try {
-      event = stripeClient.webhooks.constructEvent(body, signature, webhookSecret);
+      event = stripeClient.webhooks.constructEvent(
+        body,
+        signature,
+        webhookSecret
+      );
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
@@ -42,9 +49,9 @@ export async function POST(request: NextRequest) {
     // Handle events
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as { 
-          metadata?: { teamId?: string; plan?: string }; 
-          customer: string; 
+        const session = event.data.object as {
+          metadata?: { teamId?: string; plan?: string };
+          customer: string;
           subscription: string;
           amount_total?: number;
         };

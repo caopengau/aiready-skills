@@ -8,6 +8,7 @@
 ## ✅ Completed
 
 ### 1. Core Architecture ✨
+
 - ✅ **Language abstraction layer** (`types/language.ts`)
   - Defined `Language` enum (TypeScript, JavaScript, Python, Java, Go, Rust, C#)
   - Created `LanguageParser` interface for all parsers
@@ -67,14 +68,14 @@
 
 ### Supported Languages
 
-| Language | Status | Parser | Naming Rules | File Extensions |
-|----------|--------|--------|--------------|-----------------|
-| TypeScript | ✅ Full | @typescript-eslint | camelCase/PascalCase | `.ts`, `.tsx` |
-| JavaScript | ✅ Full | @typescript-eslint | camelCase/PascalCase | `.js`, `.jsx` |
-| **Python** | ✅ **Basic** | **Regex (tree-sitter TBD)** | **PEP 8 (snake_case)** | **`.py`** |
-| Java | 🔲 Planned | - | - | `.java` |
-| Go | 🔲 Planned | - | - | `.go` |
-| Rust | 🔲 Planned | - | - | `.rs` |
+| Language   | Status       | Parser                      | Naming Rules           | File Extensions |
+| ---------- | ------------ | --------------------------- | ---------------------- | --------------- |
+| TypeScript | ✅ Full      | @typescript-eslint          | camelCase/PascalCase   | `.ts`, `.tsx`   |
+| JavaScript | ✅ Full      | @typescript-eslint          | camelCase/PascalCase   | `.js`, `.jsx`   |
+| **Python** | ✅ **Basic** | **Regex (tree-sitter TBD)** | **PEP 8 (snake_case)** | **`.py`**       |
+| Java       | 🔲 Planned   | -                           | -                      | `.java`         |
+| Go         | 🔲 Planned   | -                           | -                      | `.go`           |
+| Rust       | 🔲 Planned   | -                           | -                      | `.rs`           |
 
 ---
 
@@ -100,6 +101,7 @@ console.log(pyResult.imports); // ✅ Works!
 ### Python Parsing Capabilities
 
 **✅ Can extract:**
+
 - Module-level functions (`def function_name()`)
 - Classes (`class ClassName`)
 - Imports (`import module`, `from module import name`)
@@ -107,6 +109,7 @@ console.log(pyResult.imports); // ✅ Works!
 - Location information (line numbers)
 
 **✅ Naming conventions:**
+
 - Variables: `snake_case` (PEP 8)
 - Functions: `snake_case` (PEP 8)
 - Classes: `PascalCase`
@@ -114,10 +117,12 @@ console.log(pyResult.imports); // ✅ Works!
 - Exceptions: `__init__`, `__str__`, etc.
 
 **✅ Filters out:**
+
 - Private functions (`_private`)
 - Class methods (only module-level exports)
 
 **⚠️ Current limitations:**
+
 - Regex-based (not full AST parsing yet)
 - Doesn't handle complex multi-line imports
 - Doesn't extract decorators or type hints yet
@@ -171,12 +176,14 @@ Now:    TS/JS/Python = 64% market (+68% increase!)
 ### Unlocked Use Cases
 
 **✅ Now Possible:**
+
 - Analyze full-stack repos (React frontend + FastAPI backend)
 - Detect duplicate patterns across TS and Python
 - Unified AI-readiness score for multi-language projects
 - Context analysis for Python imports and dependencies
 
 **Example Projects:**
+
 ```
 my-app/
 ├── frontend/     (TypeScript + React)  ← ✅ Analyzed
@@ -229,22 +236,26 @@ npx @aiready/cli scan ./
 ## 🏆 Achievements
 
 ✨ **Architecture is production-ready!**
+
 - Clean separation of concerns
 - Extensible design (easy to add Java, Go, Rust next)
 - Type-safe interfaces
 - Backward compatible with existing tools
 
 ✨ **Python support is functional!**
+
 - Can parse real Python code
 - Extracts meaningful information
 - Ready to integrate into analysis tools
 
 ✨ **Tests are comprehensive!**
+
 - 40+ test cases for Python parser
 - Parser factory tests
 - Real-world code examples tested
 
 ✨ **Build is stable!**
+
 - No TypeScript errors
 - All exports working
 - Ready for integration
@@ -265,16 +276,19 @@ npx @aiready/cli scan ./
 ## 🔮 What's Coming
 
 ### This Week
+
 - Integrate Python into consistency checker
 - Add Python pattern detection
 - Update CLI for multi-language support
 
 ### Next Week
+
 - Beta release with opt-in flag
 - Documentation updates
 - Example projects
 
 ### Month 2
+
 - Tree-sitter integration (optional)
 - Performance optimizations
 - User feedback incorporation

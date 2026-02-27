@@ -2,15 +2,15 @@ import { ThemeColors, GraphData, Theme, BusinessMetrics } from '../types';
 
 // Icons as inline SVG components for the theme toggle
 const SunIcon = ({ className }: { className?: string }) => (
-  <svg 
+  <svg
     className={className}
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <circle cx="12" cy="12" r="4" />
@@ -26,15 +26,15 @@ const SunIcon = ({ className }: { className?: string }) => (
 );
 
 const MoonIcon = ({ className }: { className?: string }) => (
-  <svg 
+  <svg
     className={className}
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
@@ -42,15 +42,15 @@ const MoonIcon = ({ className }: { className?: string }) => (
 );
 
 const SystemIcon = ({ className }: { className?: string }) => (
-  <svg 
+  <svg
     className={className}
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <rect width="20" height="14" x="2" y="3" rx="2" />
@@ -67,37 +67,43 @@ interface NavbarProps {
   metadata?: BusinessMetrics;
 }
 
-export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps) {
+export function Navbar({
+  colors,
+  theme,
+  setTheme,
+  data,
+  metadata,
+}: NavbarProps) {
   return (
-    <nav 
+    <nav
       className="h-16 backdrop-blur-md border-b flex items-center justify-between px-6 z-50 relative"
-      style={{ 
-        backgroundColor: `${colors.panel}f5`, 
-        borderColor: colors.panelBorder 
+      style={{
+        backgroundColor: `${colors.panel}f5`,
+        borderColor: colors.panelBorder,
       }}
     >
       {/* Subtle gradient overlay */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: `linear-gradient(90deg, ${colors.panel}80 0%, transparent 50%, ${colors.panel}80 100%)`,
         }}
       />
-      
+
       <div className="flex items-center gap-5 relative z-10">
         <div className="flex items-center justify-center">
-          <img 
-            src="/logo-transparent-bg.png" 
-            alt="AIReady" 
-            className="h-9 w-auto" 
+          <img
+            src="/logo-transparent-bg.png"
+            alt="AIReady"
+            className="h-9 w-auto"
           />
         </div>
-        <div 
-          className="h-7 w-px" 
-          style={{ backgroundColor: colors.panelBorder }} 
+        <div
+          className="h-7 w-px"
+          style={{ backgroundColor: colors.panelBorder }}
         />
-        <h1 
-          className="text-sm font-semibold tracking-wide uppercase" 
+        <h1
+          className="text-sm font-semibold tracking-wide uppercase"
           style={{ color: colors.textMuted }}
         >
           Codebase
@@ -106,7 +112,14 @@ export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps)
 
       <div className="flex items-center gap-6 relative z-10">
         {/* Modern Theme Toggle */}
-        <div className="flex items-center rounded-lg border px-4 py-3" style={{ borderColor: colors.panelBorder, backgroundColor: `${colors.panel}80`, gap: '12px' }}>
+        <div
+          className="flex items-center rounded-lg border px-4 py-3"
+          style={{
+            borderColor: colors.panelBorder,
+            backgroundColor: `${colors.panel}80`,
+            gap: '12px',
+          }}
+        >
           {[
             { key: 'dark', icon: MoonIcon, label: 'Dark' },
             { key: 'light', icon: SunIcon, label: 'Light' },
@@ -125,7 +138,7 @@ export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps)
               }}
               title={`Switch to ${label} theme`}
             >
-              <Icon 
+              <Icon
                 className="transition-transform duration-200"
                 style={{ transform: theme === key ? 'scale(1.1)' : 'scale(1)' }}
               />
@@ -136,10 +149,10 @@ export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps)
 
         {data && (
           <div className="flex items-center" style={{ gap: '12px' }}>
-            <div 
+            <div
               className="rounded-lg border text-xs font-medium flex items-center"
-              style={{ 
-                backgroundColor: `${colors.cardBg}cc`, 
+              style={{
+                backgroundColor: `${colors.cardBg}cc`,
                 borderColor: colors.cardBorder,
                 padding: '8px 14px',
                 gap: '8px',
@@ -149,10 +162,10 @@ export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps)
               <span style={{ color: colors.textMuted }}>Files</span>
               <span style={{ color: colors.text }}>{data.nodes.length}</span>
             </div>
-            <div 
+            <div
               className="rounded-lg border text-xs font-medium flex items-center"
-              style={{ 
-                backgroundColor: `${colors.cardBg}cc`, 
+              style={{
+                backgroundColor: `${colors.cardBg}cc`,
                 borderColor: colors.cardBorder,
                 padding: '8px 14px',
                 gap: '8px',
@@ -163,10 +176,10 @@ export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps)
               <span style={{ color: colors.text }}>{data.edges.length}</span>
             </div>
             {metadata?.estimatedMonthlyCost !== undefined && (
-              <div 
+              <div
                 className="rounded-lg border text-xs font-medium flex items-center"
-                style={{ 
-                  backgroundColor: `${colors.cardBg}cc`, 
+                style={{
+                  backgroundColor: `${colors.cardBg}cc`,
                   borderColor: colors.cardBorder,
                   padding: '8px 14px',
                   gap: '8px',
@@ -178,7 +191,8 @@ export function Navbar({ colors, theme, setTheme, data, metadata }: NavbarProps)
                 <span style={{ color: '#f59e0b', fontWeight: 600 }}>
                   {metadata.estimatedMonthlyCost >= 1000
                     ? `$${(metadata.estimatedMonthlyCost / 1000).toFixed(1)}k`
-                    : `$${metadata.estimatedMonthlyCost.toFixed(0)}`}/mo
+                    : `$${metadata.estimatedMonthlyCost.toFixed(0)}`}
+                  /mo
                 </span>
               </div>
             )}

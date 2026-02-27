@@ -7,12 +7,14 @@
 ## Free — $0/month ✅ AVAILABLE NOW
 
 **Limits:**
+
 - 1 team
 - 3 repositories
 - 10 analysis runs/month
 - 7-day data retention
 
 **Features:**
+
 - Full open-source CLI tools (pattern-detect, context-analyzer, consistency)
 - Local visualization
 - JSON/HTML export
@@ -25,6 +27,7 @@
 ## Pro — $49/month 🚧 COMING SOON
 
 **Includes everything in Free, plus:**
+
 - 10 repositories
 - Unlimited analysis runs
 - 90-day data retention
@@ -35,13 +38,14 @@
 
 **Value prop:** Individual developers and small projects serious about AI-friendly code quality.
 
-*Join the waitlist: team@getaiready.dev*
+_Join the waitlist: team@getaiready.dev_
 
 ---
 
 ## Team — $99/month 🚧 COMING SOON
 
 **Includes everything in Pro, plus:**
+
 - Unlimited repositories
 - Unlimited team members
 - Team benchmarking (compare against similar repos)
@@ -53,13 +57,14 @@
 
 **Value prop:** Self-serve team plan with CI/CD gatekeeper — avoid the procurement nightmare while getting enterprise-grade protection.
 
-*Join the waitlist: team@getaiready.dev*
+_Join the waitlist: team@getaiready.dev_
 
 ---
 
 ## Enterprise — Custom (starts at $299/month) 🚧 COMING SOON
 
 **Includes everything in Team, plus:**
+
 - Unlimited teams/users
 - Unlimited refactoring plans
 - 1-year+ data retention
@@ -71,13 +76,14 @@
 
 **Value prop:** Large organizations with compliance requirements or strategic AI adoption programs.
 
-*Contact us: enterprise@getaiready.dev*
+_Contact us: enterprise@getaiready.dev_
 
 ---
 
 ## Expert Review Add-On — $150–300/hr
 
 Human AI consultant reviews complex remediations:
+
 - Architectural guidance
 - Custom remediation strategies
 - Pair programming sessions
@@ -89,34 +95,34 @@ Available to Pro and Enterprise customers.
 
 ## Add-Ons
 
-| Add-On | Price | Plan |
-|--------|-------|------|
-| Extra repositories | $5/repo/month | Pro |
-| Extended retention (+90 days) | $10/month | Pro |
-| White-label reports | $100/month | Enterprise |
+| Add-On                        | Price         | Plan       |
+| ----------------------------- | ------------- | ---------- |
+| Extra repositories            | $5/repo/month | Pro        |
+| Extended retention (+90 days) | $10/month     | Pro        |
+| White-label reports           | $100/month    | Enterprise |
 
 ---
 
 ## Plan Comparison
 
-| Feature | Free | Pro | Team | Enterprise |
-|---------|------|-----|------|------------|
-| Price | $0 | $49/mo | $99/mo | $299+/mo |
-| Teams | 1 | 1 | 1 | Unlimited |
-| Team members | 1 | 1 | Unlimited | Unlimited |
-| Repositories | 3 | 10 | Unlimited | Unlimited |
-| Runs/month | 10 | Unlimited | Unlimited | Unlimited |
-| Data retention | 7 days | 90 days | 90 days | 1 year+ |
-| Historical trends | ❌ | ✅ | ✅ | ✅ |
-| Team benchmarking | ❌ | ❌ | ✅ | ✅ |
-| AI refactoring plans | ❌ | 5/mo | 20/mo | Unlimited |
-| CI/CD integration | ❌ | ❌ | ✅ | ✅ |
-| **PR Gatekeeper** | ❌ | ❌ | ✅ | ✅ |
-| Custom rules | ❌ | ❌ | ❌ | ✅ |
-| API access | ❌ | ❌ | ❌ | ✅ |
-| SLA support | ❌ | Email | 24h | 4h |
-| SSO | ❌ | ❌ | ❌ | ✅ |
-| Dedicated account manager | ❌ | ❌ | ❌ | ✅ |
+| Feature                   | Free   | Pro       | Team      | Enterprise |
+| ------------------------- | ------ | --------- | --------- | ---------- |
+| Price                     | $0     | $49/mo    | $99/mo    | $299+/mo   |
+| Teams                     | 1      | 1         | 1         | Unlimited  |
+| Team members              | 1      | 1         | Unlimited | Unlimited  |
+| Repositories              | 3      | 10        | Unlimited | Unlimited  |
+| Runs/month                | 10     | Unlimited | Unlimited | Unlimited  |
+| Data retention            | 7 days | 90 days   | 90 days   | 1 year+    |
+| Historical trends         | ❌     | ✅        | ✅        | ✅         |
+| Team benchmarking         | ❌     | ❌        | ✅        | ✅         |
+| AI refactoring plans      | ❌     | 5/mo      | 20/mo     | Unlimited  |
+| CI/CD integration         | ❌     | ❌        | ✅        | ✅         |
+| **PR Gatekeeper**         | ❌     | ❌        | ✅        | ✅         |
+| Custom rules              | ❌     | ❌        | ❌        | ✅         |
+| API access                | ❌     | ❌        | ❌        | ✅         |
+| SLA support               | ❌     | Email     | 24h       | 4h         |
+| SSO                       | ❌     | ❌        | ❌        | ✅         |
+| Dedicated account manager | ❌     | ❌        | ❌        | ✅         |
 
 ---
 

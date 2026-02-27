@@ -7,15 +7,23 @@ import type { TestabilityOptions } from './types';
 import chalk from 'chalk';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { dirname } from 'path';
-import { loadConfig, mergeConfigWithDefaults, resolveOutputPath } from '@aiready/core';
+import {
+  loadConfig,
+  mergeConfigWithDefaults,
+  resolveOutputPath,
+} from '@aiready/core';
 
 const program = new Command();
 
 program
   .name('aiready-testability')
-  .description('Measure how safely AI-generated changes can be verified in your codebase')
+  .description(
+    'Measure how safely AI-generated changes can be verified in your codebase'
+  )
   .version('0.1.0')
-  .addHelpText('after', `
+  .addHelpText(
+    'after',
+    `
 DIMENSIONS MEASURED:
   Test Coverage       Ratio of test files to source files
   Function Purity     Pure functions are trivially AI-testable
@@ -33,10 +41,18 @@ EXAMPLES:
   aiready-testability .                        # Full analysis
   aiready-testability src/ --output json       # JSON report
   aiready-testability . --min-coverage 0.5     # Stricter 50% threshold
-`)
+`
+  )
   .argument('<directory>', 'Directory to analyze')
-  .option('--min-coverage <ratio>', 'Minimum acceptable test/source ratio (default: 0.3)', '0.3')
-  .option('--test-patterns <patterns>', 'Additional test file patterns (comma-separated)')
+  .option(
+    '--min-coverage <ratio>',
+    'Minimum acceptable test/source ratio (default: 0.3)',
+    '0.3'
+  )
+  .option(
+    '--test-patterns <patterns>',
+    'Additional test file patterns (comma-separated)'
+  )
   .option('--include <patterns>', 'File patterns to include (comma-separated)')
   .option('--exclude <patterns>', 'File patterns to exclude (comma-separated)')
   .option('-o, --output <format>', 'Output format: console|json', 'console')
@@ -52,7 +68,9 @@ EXAMPLES:
 
     const finalOptions: TestabilityOptions = {
       rootDir: directory,
-      minCoverageRatio: parseFloat(options.minCoverage ?? '0.3') || mergedConfig.minCoverageRatio,
+      minCoverageRatio:
+        parseFloat(options.minCoverage ?? '0.3') ||
+        mergedConfig.minCoverageRatio,
       testPatterns: options.testPatterns?.split(','),
       include: options.include?.split(','),
       exclude: options.exclude?.split(','),
@@ -67,7 +85,7 @@ EXAMPLES:
       const outputPath = resolveOutputPath(
         options.outputFile,
         `testability-report-${new Date().toISOString().split('T')[0]}.json`,
-        directory,
+        directory
       );
       const dir = dirname(outputPath);
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -82,21 +100,31 @@ program.parse();
 
 function safetyColor(rating: string) {
   switch (rating) {
-    case 'safe': return chalk.green;
-    case 'moderate-risk': return chalk.yellow;
-    case 'high-risk': return chalk.red;
-    case 'blind-risk': return chalk.bgRed.white;
-    default: return chalk.white;
+    case 'safe':
+      return chalk.green;
+    case 'moderate-risk':
+      return chalk.yellow;
+    case 'high-risk':
+      return chalk.red;
+    case 'blind-risk':
+      return chalk.bgRed.white;
+    default:
+      return chalk.white;
   }
 }
 
 function safetyIcon(rating: string) {
   switch (rating) {
-    case 'safe': return '✅';
-    case 'moderate-risk': return '⚠️ ';
-    case 'high-risk': return '🔴';
-    case 'blind-risk': return '💀';
-    default: return '❓';
+    case 'safe':
+      return '✅';
+    case 'moderate-risk':
+      return '⚠️ ';
+    case 'high-risk':
+      return '🔴';
+    case 'blind-risk':
+      return '💀';
+    default:
+      return '❓';
   }
 }
 
@@ -112,19 +140,33 @@ function displayConsoleReport(report: any, scoring: any, elapsed: string) {
   console.log(chalk.bold('\n🧪 Testability Analysis\n'));
 
   if (safetyRating === 'blind-risk') {
-    console.log(chalk.bgRed.white.bold(
-      '  💀 BLIND RISK — NO TESTS DETECTED. AI-GENERATED CHANGES CANNOT BE VERIFIED.  '
-    ));
+    console.log(
+      chalk.bgRed.white.bold(
+        '  💀 BLIND RISK — NO TESTS DETECTED. AI-GENERATED CHANGES CANNOT BE VERIFIED.  '
+      )
+    );
     console.log();
   } else if (safetyRating === 'high-risk') {
-    console.log(chalk.red.bold(`  🔴 HIGH RISK — Insufficient test coverage. AI changes may introduce silent bugs.`));
+    console.log(
+      chalk.red.bold(
+        `  🔴 HIGH RISK — Insufficient test coverage. AI changes may introduce silent bugs.`
+      )
+    );
     console.log();
   }
 
-  console.log(`AI Change Safety: ${safetyColor(safetyRating)(`${safetyIcon(safetyRating)} ${safetyRating.toUpperCase()}`)}`);
-  console.log(`Score:            ${chalk.bold(summary.score + '/100')} (${summary.rating})`);
-  console.log(`Source Files:     ${chalk.cyan(rawData.sourceFiles)}   Test Files: ${chalk.cyan(rawData.testFiles)}`);
-  console.log(`Coverage Ratio:   ${chalk.bold(Math.round(summary.coverageRatio * 100) + '%')}`);
+  console.log(
+    `AI Change Safety: ${safetyColor(safetyRating)(`${safetyIcon(safetyRating)} ${safetyRating.toUpperCase()}`)}`
+  );
+  console.log(
+    `Score:            ${chalk.bold(summary.score + '/100')} (${summary.rating})`
+  );
+  console.log(
+    `Source Files:     ${chalk.cyan(rawData.sourceFiles)}   Test Files: ${chalk.cyan(rawData.testFiles)}`
+  );
+  console.log(
+    `Coverage Ratio:   ${chalk.bold(Math.round(summary.coverageRatio * 100) + '%')}`
+  );
   console.log(`Analysis Time:    ${chalk.gray(elapsed + 's')}\n`);
 
   console.log(chalk.bold('📐 Dimension Scores\n'));
@@ -136,16 +178,25 @@ function displayConsoleReport(report: any, scoring: any, elapsed: string) {
     ['Observability', summary.dimensions.observabilityScore],
   ];
   for (const [name, val] of dims) {
-    const color = val >= 70 ? chalk.green : val >= 50 ? chalk.yellow : chalk.red;
+    const color =
+      val >= 70 ? chalk.green : val >= 50 ? chalk.yellow : chalk.red;
     console.log(`  ${name.padEnd(22)} ${color(scoreBar(val))} ${val}/100`);
   }
 
   if (issues.length > 0) {
     console.log(chalk.bold('\n⚠️  Issues\n'));
     for (const issue of issues) {
-      const sev = issue.severity === 'critical' ? chalk.red : issue.severity === 'major' ? chalk.yellow : chalk.blue;
+      const sev =
+        issue.severity === 'critical'
+          ? chalk.red
+          : issue.severity === 'major'
+            ? chalk.yellow
+            : chalk.blue;
       console.log(`${sev(issue.severity.toUpperCase())}  ${issue.message}`);
-      if (issue.suggestion) console.log(`       ${chalk.dim('→')} ${chalk.italic(issue.suggestion)}`);
+      if (issue.suggestion)
+        console.log(
+          `       ${chalk.dim('→')} ${chalk.italic(issue.suggestion)}`
+        );
       console.log();
     }
   }

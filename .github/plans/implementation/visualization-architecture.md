@@ -42,6 +42,7 @@ Following AIReady's architecture principles:
 ```
 
 **Key Principles**:
+
 - ✅ Spoke depends only on @aiready/core
 - ✅ Independently useful (can visualize any codebase graph)
 - ✅ CLI integration for unified interface
@@ -118,6 +119,7 @@ User Interactions (zoom, pan, filter, select)
 ### 3.1 Core Libraries
 
 #### Graph Data Structure & Algorithms
+
 - **[@dagrejs/graphlib](https://github.com/dagrejs/graphlib)** (3KB gzipped)
   - Directed graph data structure
   - Cycle detection, topological sort, shortest paths
@@ -125,6 +127,7 @@ User Interactions (zoom, pan, filter, select)
   - **Why**: Lightweight, battle-tested, perfect for dependency graphs
 
 #### Layout Engines
+
 - **[d3-force](https://d3js.org/d3-force)** (8KB gzipped, standalone)
   - Physics-based force-directed layout with multiple simulation types
   - Supports hierarchical layouts via custom forces
@@ -134,6 +137,7 @@ User Interactions (zoom, pan, filter, select)
 #### Rendering
 
 **Frontend (Browser)**:
+
 - **[React](https://react.dev/)** (45KB gzipped) - UI framework
 - **[react-force-graph](https://github.com/vasturiano/react-force-graph)** (40KB gzipped)
   - WebGL-accelerated graph rendering
@@ -146,11 +150,10 @@ User Interactions (zoom, pan, filter, select)
   - Better for complex interactions
   - **Trade-off**: Larger bundle, steeper learning curve
 
-
 ### 3.2 Interactive Features
 
-
 #### State Management (Frontend)
+
 - **[zustand](https://github.com/pmndrs/zustand)** (3KB gzipped)
   - Simple state management
   - Better than Redux for this use case
@@ -236,7 +239,7 @@ export interface GraphNode {
   id: string; // File path
   label: string; // Display name
   type: 'file' | 'directory' | 'external';
-  
+
   // Metrics (from analysis)
   metrics: {
     tokenCost: number;
@@ -248,19 +251,19 @@ export interface GraphNode {
     cohesionScore: number;
     fragmentationScore: number;
   };
-  
+
   // Issues (from analysis)
   issues: {
     severity: 'critical' | 'major' | 'minor' | 'info';
     count: number;
     types: string[]; // ['duplicate-pattern', 'circular-dep', etc.]
   };
-  
+
   // Visual properties (computed by layout)
   position?: { x: number; y: number };
   size?: number;
   color?: string;
-  
+
   // Domain/cluster assignment
   domain?: string;
   clusterId?: string;
@@ -271,11 +274,11 @@ export interface GraphEdge {
   target: string; // Node ID
   type: 'import' | 'export' | 'type-dependency';
   weight: number; // Strength of dependency
-  
+
   // Visual properties
   color?: string;
   width?: number;
-  
+
   // Flags
   isCircular?: boolean;
   isCriticalPath?: boolean;
@@ -290,7 +293,7 @@ export interface GraphCluster {
     avgCohesion: number;
     fragmentationScore: number;
   };
-  
+
   // Visual properties
   color?: string;
   bounds?: { x: number; y: number; width: number; height: number };
@@ -309,6 +312,7 @@ export interface GraphMetadata {
 ## 5. Visualization Modes
 
 ### 5.1 Dependency Graph (Default)
+
 - **Layout**: Force-directed with hierarchical forces
 - **Nodes**: Files
 - **Edges**: Imports
@@ -317,6 +321,7 @@ export interface GraphMetadata {
 - **Use Case**: Understand overall structure
 
 ### 5.2 Hotspot Heatmap
+
 - **Layout**: Force-directed
 - **Nodes**: Files (larger = more issues)
 - **Edges**: Dependencies
@@ -325,6 +330,7 @@ export interface GraphMetadata {
 - **Use Case**: Identify problem areas quickly
 
 ### 5.3 Circular Dependencies
+
 - **Layout**: Force-directed with radial constraints
 - **Nodes**: Only files in circular deps
 - **Edges**: Highlighted cycles
@@ -332,6 +338,7 @@ export interface GraphMetadata {
 - **Use Case**: Debug circular dependency chains
 
 ### 5.4 Domain Clusters
+
 - **Layout**: Force-directed with clustering
 - **Nodes**: Files grouped by domain
 - **Edges**: Cross-domain dependencies highlighted
@@ -340,6 +347,7 @@ export interface GraphMetadata {
 - **Use Case**: Understand modular boundaries
 
 ### 5.5 Impact Analysis
+
 - **Layout**: Force-directed with center gravity on selected node
 - **Nodes**: Selected file + all dependents/dependencies
 - **Edges**: Direct and transitive dependencies
@@ -349,6 +357,7 @@ export interface GraphMetadata {
 ## 6. Interactive Features
 
 ### 6.1 Basic Interactions
+
 - **Zoom/Pan**: Navigate large graphs
 - **Hover**: Show metrics tooltip
 - **Click**: Select node, show details panel
@@ -356,6 +365,7 @@ export interface GraphMetadata {
 - **Search**: Find files by name/path
 
 ### 6.2 Filters
+
 - **By Severity**: Show only critical/major issues
 - **By Type**: Filter by file type (.ts, .py, etc.)
 - **By Metrics**: Min/max thresholds (token cost, duplicates, etc.)
@@ -363,6 +373,7 @@ export interface GraphMetadata {
 - **Exclude External**: Hide node_modules, test files
 
 ### 6.3 Optimization Operations (Future)
+
 - **View Refactoring Suggestion**: For duplicate patterns
 - **Simulate Consolidation**: Preview cluster consolidation
 - **Export Subset**: Export filtered graph as new report
@@ -371,6 +382,7 @@ export interface GraphMetadata {
 ## 7. Implementation Phases
 
 ### Phase 1: Foundation & Core Visualization (Week 1-2)
+
 - [ ] Create @aiready/visualizer package structure
 - [ ] Implement graph builder (transform analysis → graph)
 - [ ] Set up Vite + React frontend with TailwindCSS
@@ -380,6 +392,7 @@ export interface GraphMetadata {
 - [ ] Add basic interactions (zoom, pan, hover)
 
 ### Phase 2: Interactive Features (Week 2-3)
+
 - [ ] Add node click for details panel
 - [ ] Implement filters panel (severity, type, metrics)
 - [ ] Add search and highlight functionality
@@ -388,6 +401,7 @@ export interface GraphMetadata {
 - [ ] Optimize rendering performance for large graphs
 
 ### Phase 3: Visualization Modes (Week 3-4)
+
 - [ ] Implement hotspot heatmap mode
 - [ ] Add circular dependency detection and highlighting
 - [ ] Implement domain cluster visualization
@@ -395,6 +409,7 @@ export interface GraphMetadata {
 - [ ] Create layout presets switcher
 
 ### Phase 4: Polish & Advanced Features (Week 4-5)
+
 - [ ] Add export capabilities (PNG, SVG from canvas)
 - [ ] Implement state persistence (URL parameters)
 - [ ] Add keyboard shortcuts
@@ -405,6 +420,7 @@ export interface GraphMetadata {
 ## 8. Technical Considerations
 
 ### 8.1 Performance
+
 - **Large Graphs**: Use WebGL rendering (react-force-graph)
 - **Lazy Loading**: Load nodes on-demand for huge codebases (10K+ files)
 - **Virtualization**: Only render visible nodes
@@ -412,6 +428,7 @@ export interface GraphMetadata {
 - **Worker Threads**: Compute layouts in background
 
 ### 8.2 Scalability
+
 - **Target**: Handle up to 10,000 files smoothly
 - **Strategy**:
   - Default filters to reduce initial load
@@ -419,11 +436,13 @@ export interface GraphMetadata {
   - Aggregation (show directories instead of files for overview)
 
 ### 8.3 Browser Compatibility
+
 - **Modern Browsers**: Chrome, Firefox, Safari, Edge (evergreen)
 - **No IE11**: Use ES2020+ features
 - **Mobile**: Basic support (not optimized for touch)
 
 ### 8.4 Accessibility
+
 - **Keyboard Navigation**: Tab through nodes
 - **Screen Readers**: Provide text alternatives
 - **Color Blindness**: Use patterns + colors (not just colors)
@@ -432,11 +451,13 @@ export interface GraphMetadata {
 ## 9. Bundle Size Estimate
 
 ### CLI Package (Node.js)
+
 - @aiready/core: Shared dependency
 - Graph builder utilities: ~10KB
 - **Total: ~10-20KB** (minimal, just data transformation)
 
 ### Frontend Bundle (Browser)
+
 - React: 45KB
 - react-force-graph: 40KB (or custom d3-force implementation: 15KB)
 - zustand: 3KB
@@ -445,6 +466,7 @@ export interface GraphMetadata {
 - **Total: ~100KB gzipped** (or ~80KB with custom d3-force)
 
 ### Generated HTML File
+
 - Frontend bundle: ~100KB (embedded inline or as data URI)
 - Graph data (JSON): Variable (10-500KB for typical projects)
 - **Total: ~110-600KB** (single HTML file, opens directly in browser, no server needed)
@@ -452,24 +474,28 @@ export interface GraphMetadata {
 ## 10. Alternatives Considered
 
 ### 10.1 Why Not Graphviz/DOT?
+
 - ❌ Requires external binary (not portable)
 - ❌ Limited interactivity
 - ❌ Less control over layout
 - ✅ But: Could add as export format
 
 ### 10.2 Why Not Mermaid?
+
 - ❌ Not designed for large graphs (slow beyond 100 nodes)
 - ❌ Limited layout control
 - ❌ Text-based (harder to generate programmatically)
 - ✅ But: Could add as export format for documentation
 
 ### 10.3 Why Not dagre for hierarchical layouts?
+
 - ✅ d3-force can achieve hierarchical layouts using custom forces
 - ✅ Single library for all layout needs (simpler dependency management)
 - ✅ More flexible and customizable
 - ✅ Better integration with interactive features
 
 ### 10.4 Why Not Three.js?
+
 - ❌ Overkill for 2D graphs
 - ❌ Larger bundle (600KB+)
 - ❌ More complex
@@ -478,12 +504,14 @@ export interface GraphMetadata {
 ## 11. Success Metrics
 
 ### 11.1 Technical Metrics
+
 - Load time < 2s for 1000 nodes
 - Smooth 60 FPS interactions
 - Bundle size < 150KB gzipped
 - Works with 10,000 nodes (with virtualization)
 
 ### 11.2 User Metrics
+
 - Identify circular dependencies in < 10 seconds
 - Find high-cost files in < 5 seconds
 - Understand codebase structure without documentation
@@ -491,12 +519,14 @@ export interface GraphMetadata {
 ## 12. Future Enhancements
 
 ### 12.1 Short-term (3-6 months)
+
 - Export to PNG/PDF
 - VS Code extension integration
 - GitHub Action for CI/CD visualization
 - Diff mode (compare before/after refactoring)
 
 ### 12.2 Long-term (6-12 months)
+
 - AI-powered suggestions (GPT integration)
 - 3D graph mode (for very large codebases)
 - Collaborative features (share annotations)
@@ -506,13 +536,15 @@ export interface GraphMetadata {
 ## 13. Recommended Decision
 
 ### Primary Stack
+
 ✅ **d3-force** for all graph layouts (hierarchical, force-directed, radial)  
 ✅ **React + Canvas** for high-performance rendering  
 ✅ **Vite** for building standalone HTML output  
 ✅ **No backend required** - pure frontend solution  
-✅ **Single HTML file** output with embedded data and bundle  
+✅ **Single HTML file** output with embedded data and bundle
 
 ### Why This Stack?
+
 1. **Simple**: Single dependency for layouts (d3-force)
 2. **Lightweight**: Total bundle ~80-100KB
 3. **Portable**: No server needed, works offline
@@ -521,6 +553,7 @@ export interface GraphMetadata {
 6. **Maintainable**: Fewer dependencies, simpler architecture
 
 ### Next Steps
+
 1. Set up @aiready/visualizer package structure
 2. Create Vite + React frontend with d3-force integration
 3. Implement graph builder in CLI package

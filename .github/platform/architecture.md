@@ -60,27 +60,27 @@ CLI Tool (Local)
 
 ## Tech Stack (Actual)
 
-| Layer | Technology | Notes |
-|-------|------------|-------|
-| **Framework** | Next.js 16 (App Router) | Deployed as `sst.aws.Nextjs` |
-| **Styling** | Tailwind CSS v4 | No shadcn/ui yet (planned) |
-| **Auth** | NextAuth v5 (`next-auth@beta`) | GitHub, Google, Email+Password, Magic Link |
-| **State** | TanStack Query + Zustand | In dependencies, dashboard uses server components |
-| **API** | Next.js App Router API routes | `src/app/api/` — no separate Lambda functions |
-| **Database** | DynamoDB (`sst.aws.Dynamo`) | Single-table, PAY_PER_REQUEST |
-| **Storage** | S3 (`sst.aws.Bucket`) | Raw analysis JSON |
-| **IaC** | SST v3 | `sst.config.ts` uses `$config`, `sst.aws.*` |
-| **DNS** | Cloudflare + CloudFront | Managed via SST Cloudflare provider |
-| **Payments** | Stripe v20 | Webhook + portal (portal is a stub currently) |
-| **Email** | AWS SES | Magic link emails implemented |
+| Layer         | Technology                     | Notes                                             |
+| ------------- | ------------------------------ | ------------------------------------------------- |
+| **Framework** | Next.js 16 (App Router)        | Deployed as `sst.aws.Nextjs`                      |
+| **Styling**   | Tailwind CSS v4                | No shadcn/ui yet (planned)                        |
+| **Auth**      | NextAuth v5 (`next-auth@beta`) | GitHub, Google, Email+Password, Magic Link        |
+| **State**     | TanStack Query + Zustand       | In dependencies, dashboard uses server components |
+| **API**       | Next.js App Router API routes  | `src/app/api/` — no separate Lambda functions     |
+| **Database**  | DynamoDB (`sst.aws.Dynamo`)    | Single-table, PAY_PER_REQUEST                     |
+| **Storage**   | S3 (`sst.aws.Bucket`)          | Raw analysis JSON                                 |
+| **IaC**       | SST v3                         | `sst.config.ts` uses `$config`, `sst.aws.*`       |
+| **DNS**       | Cloudflare + CloudFront        | Managed via SST Cloudflare provider               |
+| **Payments**  | Stripe v20                     | Webhook + portal (portal is a stub currently)     |
+| **Email**     | AWS SES                        | Magic link emails implemented                     |
 
 ## Deployment URLs
 
-| Stage | URL | Command |
-|-------|-----|---------|
-| **local** | `http://localhost:8888` | `pnpm run dev` (SST dev mode) |
-| **dev** | `https://dev.platform.getaiready.dev` | `pnpm run deploy` |
-| **prod** | `https://platform.getaiready.dev` | `pnpm run deploy:prod` |
+| Stage     | URL                                   | Command                       |
+| --------- | ------------------------------------- | ----------------------------- |
+| **local** | `http://localhost:8888`               | `pnpm run dev` (SST dev mode) |
+| **dev**   | `https://dev.platform.getaiready.dev` | `pnpm run deploy`             |
+| **prod**  | `https://platform.getaiready.dev`     | `pnpm run deploy:prod`        |
 
 ## Key Entities (Actual Types)
 
@@ -94,7 +94,7 @@ interface User {
   image?: string;
   githubId?: string;
   googleId?: string;
-  passwordHash?: string;    // for email/password auth
+  passwordHash?: string; // for email/password auth
   emailVerified?: string;
   teamId?: string;
   role?: 'owner' | 'admin' | 'member';
@@ -118,13 +118,13 @@ interface Team {
 interface Repository {
   id: string;
   teamId?: string;
-  userId: string;          // owner (individuals don't need a team)
+  userId: string; // owner (individuals don't need a team)
   name: string;
   url: string;
   description?: string;
   defaultBranch: string;
   lastAnalysisAt?: string;
-  aiScore?: number;        // cached from latest analysis
+  aiScore?: number; // cached from latest analysis
   createdAt: string;
   updatedAt: string;
 }
@@ -136,13 +136,18 @@ interface Analysis {
   timestamp: string;
   aiScore: number;
   breakdown: {
-    semanticDuplicates: number;     // 0-100
+    semanticDuplicates: number; // 0-100
     contextFragmentation: number;
     namingConsistency: number;
     documentationHealth: number;
   };
-  rawKey: string;  // S3 object key
-  summary: { totalFiles: number; totalIssues: number; criticalIssues: number; warnings: number };
+  rawKey: string; // S3 object key
+  summary: {
+    totalFiles: number;
+    totalIssues: number;
+    criticalIssues: number;
+    warnings: number;
+  };
   createdAt: string;
 }
 
@@ -168,18 +173,18 @@ interface RemediationRequest {
 
 All routes are Next.js App Router handlers in `platform/src/app/api/`.
 
-| Route | Methods | Status |
-|-------|---------|--------|
-| `/api/auth/[...nextauth]` | GET, POST | ✅ NextAuth v5 |
-| `/api/auth/register` | POST | ✅ Email/password registration |
-| `/api/auth/magic-link` | POST | ✅ Send magic link |
-| `/api/auth/verify` | POST | ✅ Verify magic link token |
-| `/api/repos` | GET, POST, DELETE | ✅ List / create / delete repos |
-| `/api/analysis/upload` | POST | ✅ Upload + store analysis |
-| `/api/remediation` | GET, POST | ✅ List / create remediations |
-| `/api/remediation/[id]` | PATCH | ✅ Update remediation status |
-| `/api/billing/webhook` | POST | ✅ Stripe webhook |
-| `/api/billing/portal` | GET | ⚠️ Stub (returns "not configured") |
+| Route                     | Methods           | Status                             |
+| ------------------------- | ----------------- | ---------------------------------- |
+| `/api/auth/[...nextauth]` | GET, POST         | ✅ NextAuth v5                     |
+| `/api/auth/register`      | POST              | ✅ Email/password registration     |
+| `/api/auth/magic-link`    | POST              | ✅ Send magic link                 |
+| `/api/auth/verify`        | POST              | ✅ Verify magic link token         |
+| `/api/repos`              | GET, POST, DELETE | ✅ List / create / delete repos    |
+| `/api/analysis/upload`    | POST              | ✅ Upload + store analysis         |
+| `/api/remediation`        | GET, POST         | ✅ List / create remediations      |
+| `/api/remediation/[id]`   | PATCH             | ✅ Update remediation status       |
+| `/api/billing/webhook`    | POST              | ✅ Stripe webhook                  |
+| `/api/billing/portal`     | GET               | ⚠️ Stub (returns "not configured") |
 
 ## Environment Variables
 
@@ -247,12 +252,14 @@ pnpm run remove
 **Decision:** Do not start with DAX. DynamoDB's sub-10ms latency is sufficient for dashboard use cases.
 
 **Rationale:**
+
 - DAX adds ~$40/mo minimum cost
 - Significant operational complexity
 - Dashboard use case doesn't require microsecond latency
 - Wait until thousands of concurrent users before considering
 
 **When to reconsider:**
+
 - User base exceeds 5,000 daily active users
 - Latency complaints from Enterprise customers
 - Real-time collaboration features require faster reads
@@ -262,12 +269,14 @@ pnpm run remove
 **Risk:** Enterprise client suddenly uploads 500 repos at once → throttling
 
 **Mitigation:**
+
 1. Set reserved concurrency on processing Lambda (e.g., 50)
 2. Use SQS queue for repo processing (built-in backpressure)
 3. Implement batch processing (max 10 repos per invocation)
 4. Add throttling alerts to CloudWatch
 
 **Implementation:**
+
 ```typescript
 // sst.config.ts
 const processingLambda = sst.aws.Function('ProcessRepos', {
@@ -284,12 +293,12 @@ const processingLambda = sst.aws.Function('ProcessRepos', {
 
 **Cost Projection (Monthly):**
 
-| Users | DynamoDB | Lambda | S3 | CloudFront | Total |
-|-------|----------|--------|-----|------------|-------|
-| 0 | $0 | $0 | $0 | $1 | ~$1 |
-| 100 | $5 | $10 | $2 | $5 | ~$22 |
-| 1,000 | $25 | $50 | $10 | $20 | ~$105 |
-| 10,000 | $150 | $300 | $50 | $100 | ~$600 |
+| Users  | DynamoDB | Lambda | S3  | CloudFront | Total |
+| ------ | -------- | ------ | --- | ---------- | ----- |
+| 0      | $0       | $0     | $0  | $1         | ~$1   |
+| 100    | $5       | $10    | $2  | $5         | ~$22  |
+| 1,000  | $25      | $50    | $10 | $20        | ~$105 |
+| 10,000 | $150     | $300   | $50 | $100       | ~$600 |
 
 **Compare to:** Traditional server (~$200-500/mo regardless of usage)
 
@@ -297,12 +306,15 @@ const processingLambda = sst.aws.Function('ProcessRepos', {
 
 ## Decisions Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-01 | Serverless (Lambda + DynamoDB) over Express + PostgreSQL | ~90% cost savings at low user counts, zero ops burden |
-| 2026-01 | Single-table DynamoDB design | Eliminates JOINs, serves all 15 access patterns from one table |
-| 2026-01 | SST for IaC | Already in use for landing, consistent toolchain |
-| 2026-02 | Phase 2 = agentic remediation + consulting hybrid | Closes gap between detection and fix; unique market position |
-| 2026-02 | No DAX at launch | Adds $40/mo minimum; DynamoDB latency sufficient for dashboards |
-| 2026-02 | Lambda reserved concurrency = 50 | Prevent cascade failures when Enterprise uploads many repos |
+| Date    | Decision                                                 | Rationale                                                       |
+| ------- | -------------------------------------------------------- | --------------------------------------------------------------- |
+| 2026-01 | Serverless (Lambda + DynamoDB) over Express + PostgreSQL | ~90% cost savings at low user counts, zero ops burden           |
+| 2026-01 | Single-table DynamoDB design                             | Eliminates JOINs, serves all 15 access patterns from one table  |
+| 2026-01 | SST for IaC                                              | Already in use for landing, consistent toolchain                |
+| 2026-02 | Phase 2 = agentic remediation + consulting hybrid        | Closes gap between detection and fix; unique market position    |
+| 2026-02 | No DAX at launch                                         | Adds $40/mo minimum; DynamoDB latency sufficient for dashboards |
+| 2026-02 | Lambda reserved concurrency = 50                         | Prevent cascade failures when Enterprise uploads many repos     |
+
+```
+
 ```

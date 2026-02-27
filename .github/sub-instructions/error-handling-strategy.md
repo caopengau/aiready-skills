@@ -18,13 +18,16 @@ try {
   await analyzer.analyze(directory, options);
 } catch (error) {
   console.error(
-    chalk.red(`Error: ${error instanceof Error ? error.message : String(error)}`)
+    chalk.red(
+      `Error: ${error instanceof Error ? error.message : String(error)}`
+    )
   );
   process.exit(1);
 }
 ```
 
 **Rules:**
+
 - ✅ Wrap main logic in try-catch
 - ✅ Log with chalk.red for visibility
 - ✅ Type-guard errors: `error instanceof Error`
@@ -42,7 +45,7 @@ export async function analyzeFile(filePath: string): Promise<Result> {
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
   }
-  
+
   try {
     const content = await fs.promises.readFile(filePath, 'utf-8');
     return parseContent(content);
@@ -55,6 +58,7 @@ export async function analyzeFile(filePath: string): Promise<Result> {
 ```
 
 **Rules:**
+
 - ✅ Throw errors with descriptive messages
 - ✅ Include file paths in error context
 - ✅ Wrap lower-level errors with additional context
@@ -75,7 +79,9 @@ export function loadConfig(dir: string): Config | null {
     if (!configPath) return null;
     return parseConfig(configPath);
   } catch (error) {
-    console.warn(`Failed to load config: ${error instanceof Error ? error.message : String(error)}`);
+    console.warn(
+      `Failed to load config: ${error instanceof Error ? error.message : String(error)}`
+    );
     return null;
   }
 }
@@ -85,12 +91,15 @@ export function parseAST(code: string): AST {
   try {
     return parse(code, { sourceType: 'module' });
   } catch (error) {
-    throw new Error(`Failed to parse code: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Failed to parse code: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 ```
 
 **Rules:**
+
 - ✅ Return `null` or default for optional operations
 - ✅ Throw for required operations
 - ✅ Log warnings for non-critical failures
@@ -106,12 +115,12 @@ export function parseAST(code: string): AST {
 export async function readFiles(pattern: string): Promise<string[]> {
   try {
     const files = await glob(pattern);
-    
+
     if (files.length === 0) {
       console.warn(`No files found matching: ${pattern}`);
       return [];
     }
-    
+
     return files;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
@@ -123,6 +132,7 @@ export async function readFiles(pattern: string): Promise<string[]> {
 ```
 
 **Rules:**
+
 - ✅ Handle ENOENT, EACCES gracefully
 - ✅ Return empty arrays for zero matches
 - ✅ Warn users about common issues
@@ -217,7 +227,7 @@ describe('analyzeFile', () => {
   it('throws on non-existent file', async () => {
     await expect(analyzeFile('/fake/path')).rejects.toThrow('File not found');
   });
-  
+
   it('throws on invalid syntax', async () => {
     await expect(analyzeFile('invalid.ts')).rejects.toThrow('Failed to parse');
   });

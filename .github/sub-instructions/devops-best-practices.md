@@ -11,7 +11,7 @@
 
 ### ❌ DON'T
 
-1. **Don't use `npm publish` directly** - Use `make npm-publish` (handles workspace:*)
+1. **Don't use `npm publish` directly** - Use `make npm-publish` (handles workspace:\*)
 2. **Don't skip `make push`** - Spoke repos will drift out of sync
 3. **Don't `git push` without `make push`** - Won't sync spoke repositories
 4. **Don't release spokes before core** - Core changes need to publish first

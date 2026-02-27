@@ -1,9 +1,9 @@
-import { getPostBySlug, getAllPosts } from "@/lib/blog-tsx";
-import { notFound } from "next/navigation";
-import { BlogPostClient } from "@/components/BlogPostClient";
-import type { Metadata } from "next";
-import Script from "next/script";
-import { generateArticleSchema } from "@/lib/seo";
+import { getPostBySlug, getAllPosts } from '@/lib/blog-tsx';
+import { notFound } from 'next/navigation';
+import { BlogPostClient } from '@/components/BlogPostClient';
+import type { Metadata } from 'next';
+import Script from 'next/script';
+import { generateArticleSchema } from '@/lib/seo';
 
 interface Params {
   params: { slug: string };

@@ -36,6 +36,7 @@
   - [ ] Unit tests for parser (50+ test cases)
 
 **Deliverables:**
+
 - `packages/core/src/parsers/python-parser.ts`
 - `packages/core/src/parsers/parser-factory.ts`
 - `packages/core/src/parsers/common-ast.ts`
@@ -63,6 +64,7 @@
   - [ ] Performance benchmarks (<5s for 1K files)
 
 **Deliverables:**
+
 - `packages/consistency/src/analyzers/naming-python.ts`
 - Updated README with Python examples
 - Test suite (100+ Python files from real repos)
@@ -88,6 +90,7 @@
   - [ ] Performance optimization (parallel processing)
 
 **Deliverables:**
+
 - `packages/pattern-detect/src/extractors/python-extractor.ts`
 - Python pattern detection in `@aiready/pattern-detect`
 - Case studies (3+ real Python repos analyzed)
@@ -113,6 +116,7 @@
   - [ ] Optimize memory usage (streaming parser)
 
 **Deliverables:**
+
 - `packages/context-analyzer/src/analyzers/python-context.ts`
 - Python support in `@aiready/context-analyzer`
 - Performance benchmarks (10K LOC in <30s)
@@ -137,6 +141,7 @@
   - [ ] JSON export with language metadata
 
 **Deliverables:**
+
 - Updated `@aiready/cli` with multi-language flags
 - Multi-language report templates
 - CLI documentation updates
@@ -162,6 +167,7 @@
   - [ ] Screenshot gallery (for website)
 
 **Deliverables:**
+
 - Updated READMEs across all packages
 - `examples/python-fastapi/` (sample project)
 - `examples/mixed-ts-python/` (sample monorepo)
@@ -187,6 +193,7 @@
   - [ ] Cross-platform testing (Windows, macOS, Linux)
 
 **Deliverables:**
+
 - Beta release published to npm
 - Beta testing feedback report
 - Bug tracker (GitHub issues)
@@ -213,6 +220,7 @@
   - [ ] Create demo video (YouTube)
 
 **Deliverables:**
+
 - GA release `v1.5.0` published to npm
 - Launch blog post
 - Marketing assets (screenshots, videos)
@@ -223,6 +231,7 @@
 ## 📦 Package Changes
 
 ### @aiready/core
+
 ```
 src/
 ├── parsers/
@@ -238,6 +247,7 @@ src/
 ```
 
 ### @aiready/consistency
+
 ```
 src/analyzers/
 ├── naming-ast.ts (existing, TS/JS)
@@ -246,6 +256,7 @@ src/analyzers/
 ```
 
 ### @aiready/pattern-detect
+
 ```
 src/extractors/
 ├── typescript-extractor.ts (existing)
@@ -254,6 +265,7 @@ src/extractors/
 ```
 
 ### @aiready/context-analyzer
+
 ```
 src/analyzers/
 ├── typescript-context.ts (existing)
@@ -262,6 +274,7 @@ src/analyzers/
 ```
 
 ### @aiready/cli
+
 ```
 src/
 ├── commands/scan.ts (updated with --languages flag)
@@ -275,18 +288,21 @@ src/
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - Parser tests (50+ cases per language)
 - Analyzer tests (100+ cases per tool)
 - Factory/dispatcher tests (routing logic)
 - Coverage target: 90%+
 
 ### Integration Tests
+
 - Real Python projects (FastAPI, Django, Flask apps)
 - Mixed-language repos (TS frontend + Python backend)
 - Large repos (10K+ LOC)
 - Performance benchmarks (latency, memory)
 
 ### Edge Cases
+
 - Python 2 syntax (warn + skip)
 - Syntax errors (graceful degradation)
 - Malformed imports (error recovery)
@@ -295,6 +311,7 @@ src/
 - Async/await patterns
 
 ### Regression Tests
+
 - Ensure TS/JS analysis unchanged (100% backward compat)
 - Compare reports before/after Python support
 - Performance: No slowdown for TS/JS-only repos
@@ -304,6 +321,7 @@ src/
 ## 📊 Success Metrics
 
 ### Technical Metrics
+
 - [ ] Parse 95%+ valid Python files without errors
 - [ ] Detect 80%+ PEP 8 naming violations (vs. pylint baseline)
 - [ ] Process 10K LOC mixed repo in <30 seconds
@@ -311,6 +329,7 @@ src/
 - [ ] Zero regressions in existing TS/JS analysis
 
 ### User Metrics
+
 - [ ] 50+ GitHub stars on announcement
 - [ ] 100+ npm downloads/week within first month
 - [ ] 10+ customer testimonials (Python users)
@@ -318,6 +337,7 @@ src/
 - [ ] <5% bug report rate (critical bugs)
 
 ### Business Metrics
+
 - [ ] Market coverage: 38% → 64% (+68%)
 - [ ] Total addressable repos: 2.5x increase
 - [ ] Multi-language repo analysis: 10+ customers
@@ -328,14 +348,14 @@ src/
 
 ## ⚠️ Risk Management
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| **Parser bugs crash analysis** | High | Medium | Wrap in try/catch, skip files, log errors |
-| **Python 2 compatibility issues** | Low | High | Detect Python 2, warn user, skip gracefully |
-| **Performance degrades on large repos** | Med | Low | Streaming parser, parallel processing, memory profiling |
-| **PEP 8 false positives** | Med | Med | Context-aware rules, user config for custom rules |
-| **Backward compat breaks** | High | Low | Extensive regression testing, feature flags |
-| **Beta feedback delays GA** | Med | Med | Buffer week for critical bugs, deprioritize minor issues |
+| Risk                                    | Impact | Probability | Mitigation                                               |
+| --------------------------------------- | ------ | ----------- | -------------------------------------------------------- |
+| **Parser bugs crash analysis**          | High   | Medium      | Wrap in try/catch, skip files, log errors                |
+| **Python 2 compatibility issues**       | Low    | High        | Detect Python 2, warn user, skip gracefully              |
+| **Performance degrades on large repos** | Med    | Low         | Streaming parser, parallel processing, memory profiling  |
+| **PEP 8 false positives**               | Med    | Med         | Context-aware rules, user config for custom rules        |
+| **Backward compat breaks**              | High   | Low         | Extensive regression testing, feature flags              |
+| **Beta feedback delays GA**             | Med    | Med         | Buffer week for critical bugs, deprioritize minor issues |
 
 **Rollback Plan:** If critical bugs found in GA, release hotfix `v1.5.1` with Python disabled by default (opt-in via flag).
 
@@ -344,10 +364,12 @@ src/
 ## 💰 Budget
 
 ### Engineering Time
+
 - **Total Effort:** 12 weeks × 1 FTE = 12 person-weeks
 - **Estimated Cost:** $60K - $72K (at $5K - $6K/week)
 
 ### Tools & Services
+
 - **tree-sitter WASM:** Free (open source)
 - **Testing Infrastructure:** $500/month × 3 months = $1,500
 - **Beta Testing:** $2,000 (incentives for testers)
@@ -355,6 +377,7 @@ src/
 **Total Budget:** ~$65K
 
 ### ROI
+
 - **Revenue Increase:** +68% market coverage → +68% potential customers
 - **Conservative Estimate:** 20 new customers at $5K/year = $100K ARR
 - **ROI:** $100K / $65K = **1.54x** (breakeven in 8 months)
@@ -364,12 +387,14 @@ src/
 ## 🚀 Launch Plan
 
 ### Pre-Launch (Week 11)
+
 - [ ] Beta announcement (GitHub, Twitter)
 - [ ] Recruit beta testers (Python communities)
 - [ ] Create demo video (5-min walkthrough)
 - [ ] Prepare marketing assets (screenshots, GIFs)
 
 ### Launch Day (Week 12)
+
 - [ ] Publish GA release to npm
 - [ ] Blog post on aiready.dev
 - [ ] Twitter thread (10+ tweets)
@@ -380,6 +405,7 @@ src/
 - [ ] Email blast (existing users)
 
 ### Post-Launch (Week 13+)
+
 - [ ] Monitor GitHub issues (respond <24h)
 - [ ] Collect user testimonials
 - [ ] Write case studies (3+ customers)
@@ -391,17 +417,20 @@ src/
 ## 📚 Resources
 
 ### Technical References
+
 - [PEP 8 Style Guide](https://peps.python.org/pep-0008/)
 - [tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python)
 - [Python AST Module](https://docs.python.org/3/library/ast.html)
 - [web-tree-sitter Documentation](https://tree-sitter.github.io/tree-sitter/)
 
 ### Competitive Analysis
+
 - [pylint](https://pylint.pycqa.org/) (naming conventions)
 - [flake8](https://flake8.pycqa.org/) (style checker)
 - [SonarQube Python](https://docs.sonarqube.org/latest/analysis/languages/python/) (code quality)
 
 ### Marketing References
+
 - [Python Developer Survey 2025](https://www.jetbrains.com/lp/devecosystem-2025/)
 - [Stack Overflow Developer Survey 2025](https://stackoverflow.blog/2025/developer-survey/)
 - [GitHub Octoverse 2025](https://github.blog/news-insights/octoverse/)

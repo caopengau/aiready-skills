@@ -38,8 +38,14 @@ describe('calculateImportDepth', () => {
   it('should calculate import depth correctly', () => {
     const files = [
       { file: 'a.ts', content: 'export const a = 1;' },
-      { file: 'b.ts', content: 'import { a } from "a.ts";\nexport const b = a;' },
-      { file: 'c.ts', content: 'import { b } from "b.ts";\nexport const c = b;' },
+      {
+        file: 'b.ts',
+        content: 'import { a } from "a.ts";\nexport const b = a;',
+      },
+      {
+        file: 'c.ts',
+        content: 'import { b } from "b.ts";\nexport const c = b;',
+      },
     ];
 
     const graph = buildDependencyGraph(files);
@@ -51,8 +57,14 @@ describe('calculateImportDepth', () => {
 
   it('should handle circular dependencies gracefully', () => {
     const files = [
-      { file: 'a.ts', content: 'import { b } from "./b";\nexport const a = 1;' },
-      { file: 'b.ts', content: 'import { a } from "./a";\nexport const b = 2;' },
+      {
+        file: 'a.ts',
+        content: 'import { b } from "./b";\nexport const a = 1;',
+      },
+      {
+        file: 'b.ts',
+        content: 'import { a } from "./a";\nexport const b = 2;',
+      },
     ];
 
     const graph = buildDependencyGraph(files);
@@ -67,8 +79,14 @@ describe('getTransitiveDependencies', () => {
   it('should get all transitive dependencies', () => {
     const files = [
       { file: 'a.ts', content: 'export const a = 1;' },
-      { file: 'b.ts', content: 'import { a } from "a.ts";\nexport const b = a;' },
-      { file: 'c.ts', content: 'import { b } from "b.ts";\nexport const c = b;' },
+      {
+        file: 'b.ts',
+        content: 'import { a } from "a.ts";\nexport const b = a;',
+      },
+      {
+        file: 'c.ts',
+        content: 'import { b } from "b.ts";\nexport const c = b;',
+      },
     ];
 
     const graph = buildDependencyGraph(files);
@@ -84,7 +102,10 @@ describe('calculateContextBudget', () => {
   it('should calculate total token cost including dependencies', () => {
     const files = [
       { file: 'a.ts', content: 'export const a = 1;'.repeat(10) }, // ~40 tokens
-      { file: 'b.ts', content: 'import { a } from "./a";\nexport const b = a;'.repeat(10) }, // ~60 tokens
+      {
+        file: 'b.ts',
+        content: 'import { a } from "./a";\nexport const b = a;'.repeat(10),
+      }, // ~60 tokens
     ];
 
     const graph = buildDependencyGraph(files);
@@ -98,8 +119,14 @@ describe('calculateContextBudget', () => {
 describe('detectCircularDependencies', () => {
   it('should detect circular dependencies', () => {
     const files = [
-      { file: 'a.ts', content: 'import { b } from "b.ts";\nexport const a = 1;' },
-      { file: 'b.ts', content: 'import { a } from "a.ts";\nexport const b = 2;' },
+      {
+        file: 'a.ts',
+        content: 'import { b } from "b.ts";\nexport const a = 1;',
+      },
+      {
+        file: 'b.ts',
+        content: 'import { a } from "a.ts";\nexport const b = 2;',
+      },
     ];
 
     const graph = buildDependencyGraph(files);
@@ -111,7 +138,10 @@ describe('detectCircularDependencies', () => {
   it('should return empty for no circular dependencies', () => {
     const files = [
       { file: 'a.ts', content: 'export const a = 1;' },
-      { file: 'b.ts', content: 'import { a } from "a.ts";\nexport const b = a;' },
+      {
+        file: 'b.ts',
+        content: 'import { a } from "a.ts";\nexport const b = a;',
+      },
     ];
 
     const graph = buildDependencyGraph(files);
@@ -123,7 +153,9 @@ describe('detectCircularDependencies', () => {
 
 describe('calculateCohesion', () => {
   it('should return 1 for single export', () => {
-    const exports = [{ name: 'foo', type: 'function' as const, inferredDomain: 'user' }];
+    const exports = [
+      { name: 'foo', type: 'function' as const, inferredDomain: 'user' },
+    ];
     expect(calculateCohesion(exports)).toBe(1);
   });
 
@@ -142,7 +174,11 @@ describe('calculateCohesion', () => {
     const exports = [
       { name: 'getUser', type: 'function' as const, inferredDomain: 'user' },
       { name: 'getOrder', type: 'function' as const, inferredDomain: 'order' },
-      { name: 'parseConfig', type: 'function' as const, inferredDomain: 'config' },
+      {
+        name: 'parseConfig',
+        type: 'function' as const,
+        inferredDomain: 'config',
+      },
     ];
 
     const cohesion = calculateCohesion(exports);
@@ -153,23 +189,39 @@ describe('calculateCohesion', () => {
     const exports = [
       { name: 'mockUser', type: 'function' as const, inferredDomain: 'user' },
       { name: 'mockOrder', type: 'function' as const, inferredDomain: 'order' },
-      { name: 'setupTestDb', type: 'function' as const, inferredDomain: 'helper' },
+      {
+        name: 'setupTestDb',
+        type: 'function' as const,
+        inferredDomain: 'helper',
+      },
     ];
 
     // Test file - should return 1 despite mixed domains
-    const cohesionTestFile = calculateCohesion(exports, 'src/__tests__/helpers.test.ts');
+    const cohesionTestFile = calculateCohesion(
+      exports,
+      'src/__tests__/helpers.test.ts'
+    );
     expect(cohesionTestFile).toBe(1);
 
     // Mock file - should return 1 despite mixed domains
-    const cohesionMockFile = calculateCohesion(exports, 'src/test-utils/mocks.ts');
+    const cohesionMockFile = calculateCohesion(
+      exports,
+      'src/test-utils/mocks.ts'
+    );
     expect(cohesionMockFile).toBe(1);
 
     // Fixture file - should return 1 despite mixed domains
-    const cohesionFixtureFile = calculateCohesion(exports, 'src/fixtures/data.ts');
+    const cohesionFixtureFile = calculateCohesion(
+      exports,
+      'src/fixtures/data.ts'
+    );
     expect(cohesionFixtureFile).toBe(1);
 
     // Regular file - should have low cohesion
-    const cohesionRegularFile = calculateCohesion(exports, 'src/utils/helpers.ts');
+    const cohesionRegularFile = calculateCohesion(
+      exports,
+      'src/utils/helpers.ts'
+    );
     expect(cohesionRegularFile).toBeLessThan(0.5);
   });
 });

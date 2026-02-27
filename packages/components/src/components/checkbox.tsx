@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { cn } from '../utils/cn';
 
-export interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface CheckboxProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'type'
+> {
   label?: string;
 }
 
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, label, id, ...props }, ref) => {
     const checkboxId = id || React.useId();
-    
+
     return (
       <div className="flex items-center">
         <input

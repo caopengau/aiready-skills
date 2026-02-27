@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import ParallaxSection from "./ParallaxSection";
+import { motion } from 'framer-motion';
+import ParallaxSection from './ParallaxSection';
 
 export function NotAnotherLinter() {
   return (
@@ -16,17 +16,18 @@ export function NotAnotherLinter() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
-              This is{" "}
+              This is{' '}
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
                 NOT
-              </span>{" "}
+              </span>{' '}
               Another Linter
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Linters check code correctness. AIReady checks AI understandability.
+              Linters check code correctness. AIReady checks AI
+              understandability.
             </p>
           </motion.div>
-          
+
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -36,7 +37,9 @@ export function NotAnotherLinter() {
               className="bg-white p-8 rounded-2xl border-2 border-slate-200 shadow-lg"
             >
               <div className="text-4xl mb-4">🔧</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">Traditional Linters</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                Traditional Linters
+              </h3>
               <ul className="space-y-3 text-slate-600">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 mt-1">→</span>
@@ -65,7 +68,9 @@ export function NotAnotherLinter() {
               className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-2xl border-2 border-blue-300 shadow-lg"
             >
               <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">AIReady</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                AIReady
+              </h3>
               <ul className="space-y-3 text-slate-700">
                 <li className="flex items-start gap-2">
                   <span className="text-purple-500 mt-1">→</span>
@@ -81,7 +86,9 @@ export function NotAnotherLinter() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-500 mt-1">✓</span>
-                  <span className="font-semibold">Optimize for AI collaboration</span>
+                  <span className="font-semibold">
+                    Optimize for AI collaboration
+                  </span>
                 </li>
               </ul>
             </motion.div>

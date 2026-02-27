@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import ParallaxSection from "./ParallaxSection";
-import AnimatedStats from "./AnimatedStats";
+import { motion } from 'framer-motion';
+import ParallaxSection from './ParallaxSection';
+import AnimatedStats from './AnimatedStats';
 
 export function Benefits() {
   const items = [
     {
-      icon: "💸",
-      title: "Reduce Context Cost",
-      desc: "Cut token usage by eliminating redundant context and optimizing prompts.",
-      color: "from-blue-600 to-cyan-600",
+      icon: '💸',
+      title: 'Reduce Context Cost',
+      desc: 'Cut token usage by eliminating redundant context and optimizing prompts.',
+      color: 'from-blue-600 to-cyan-600',
     },
     {
-      icon: "🎯",
-      title: "Boost AI Accuracy",
-      desc: "Improve model understanding with consistent naming and fewer duplicates.",
-      color: "from-purple-600 to-pink-600",
+      icon: '🎯',
+      title: 'Boost AI Accuracy',
+      desc: 'Improve model understanding with consistent naming and fewer duplicates.',
+      color: 'from-purple-600 to-pink-600',
     },
     {
-      icon: "⚡",
-      title: "Speed Up Reviews",
-      desc: "Surface hidden issues fast so humans and AI collaborate smoothly.",
-      color: "from-orange-500 to-red-500",
+      icon: '⚡',
+      title: 'Speed Up Reviews',
+      desc: 'Surface hidden issues fast so humans and AI collaborate smoothly.',
+      color: 'from-orange-500 to-red-500',
     },
     {
-      icon: "🔥",
-      title: "Stop Burning Tokens",
+      icon: '🔥',
+      title: 'Stop Burning Tokens',
       desc: "Don't let AI waste your budget. Find code that confuses AI and burns through tokens fast.",
-      color: "from-red-500 to-pink-600",
+      color: 'from-red-500 to-pink-600',
     },
   ];
 
@@ -45,7 +45,10 @@ export function Benefits() {
               className="text-center mb-12"
             >
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
-                Why <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">AIReady</span>
+                Why{' '}
+                <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  AIReady
+                </span>
               </h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto">
                 Practical benefits that compound across your team and workflows.
@@ -62,8 +65,14 @@ export function Benefits() {
                   viewport={{ once: true }}
                   className="relative bg-white border-2 border-slate-200 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all"
                 >
-                  <div className={`w-14 h-14 rounded-xl mb-4 flex items-center justify-center text-2xl shadow-lg bg-gradient-to-r ${item.color}`}>{item.icon}</div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{item.title}</h3>
+                  <div
+                    className={`w-14 h-14 rounded-xl mb-4 flex items-center justify-center text-2xl shadow-lg bg-gradient-to-r ${item.color}`}
+                  >
+                    {item.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    {item.title}
+                  </h3>
                   <p className="text-slate-600">{item.desc}</p>
                 </motion.div>
               ))}

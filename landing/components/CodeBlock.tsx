@@ -32,7 +32,9 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, lang }) => {
       // Attempt to coerce React children to a string for template literals
       try {
         raw = React.Children.toArray(children as React.ReactNode)
-          .map((c) => (typeof c === 'string' ? c : (typeof c === 'number' ? String(c) : '')))
+          .map((c) =>
+            typeof c === 'string' ? c : typeof c === 'number' ? String(c) : ''
+          )
           .join('');
       } catch (e) {
         return children;
@@ -60,9 +62,14 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, lang }) => {
       const m = line.match(/^\s*/)?.[0].length ?? 0;
       return Math.min(min, m);
     }, Infinity);
-    const dedented = minIndent === Infinity || minIndent === 0
-      ? relevantLines.join('\n')
-      : relevantLines.map((l) => (l.startsWith(' '.repeat(minIndent)) ? l.slice(minIndent) : l)).join('\n');
+    const dedented =
+      minIndent === Infinity || minIndent === 0
+        ? relevantLines.join('\n')
+        : relevantLines
+            .map((l) =>
+              l.startsWith(' '.repeat(minIndent)) ? l.slice(minIndent) : l
+            )
+            .join('\n');
     return dedented;
   })();
 
@@ -83,7 +90,9 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, lang }) => {
     return (
       <div className="group relative my-8 overflow-hidden rounded-2xl code-block shadow-lg">
         <pre className="rounded-2xl overflow-x-auto p-4 text-sm leading-snug">
-          <code className={`language-${language} font-mono block whitespace-pre`}>
+          <code
+            className={`language-${language} font-mono block whitespace-pre`}
+          >
             {cleanCode}
           </code>
         </pre>
@@ -105,15 +114,13 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, lang }) => {
             {language}
           </span>
         </div>
-        
+
         <CodeBlockCopyButton code={cleanCode} />
       </div>
 
       {/* Code body */}
-      <pre
-        className="rounded-b-2xl overflow-x-auto p-4 text-sm leading-snug"
-      >
-        <code 
+      <pre className="rounded-b-2xl overflow-x-auto p-4 text-sm leading-snug">
+        <code
           className={`language-${language} font-mono block whitespace-pre hljs`}
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />

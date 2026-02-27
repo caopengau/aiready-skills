@@ -13,10 +13,10 @@ const Post = () => (
     </p>
     <p>This isn't a bug in the AI. This is the new normal.</p>
     <p>
-      We're witnessing the fastest productivity boost in software
-      development history. AI coding assistants have made us 2-5x faster at
-      writing individual functions. But there's a dark side we're only
-      beginning to understand:{" "}
+      We're witnessing the fastest productivity boost in software development
+      history. AI coding assistants have made us 2-5x faster at writing
+      individual functions. But there's a dark side we're only beginning to
+      understand:{' '}
       <strong>
         AI-generated code creates tech debt at an unprecedented scale and speed.
       </strong>
@@ -30,28 +30,25 @@ const Post = () => (
 
     <h2>The Paradox: Going Fast While Falling Behind</h2>
     <p>
-      Here's what I observed while building{" "}
+      Here's what I observed while building{' '}
       <a href="https://receiptclaimer.com">receiptclaimer</a>, our receipt
       management SaaS:
     </p>
     <p>
-      <strong>Month 1-2:</strong> 🚀 Amazing! We're shipping features
-      daily. Copilot writes boilerplate, Claude helps with complex logic,
-      ChatGPT generates tests. We're moving 3x faster than any team
-      I've been on.
+      <strong>Month 1-2:</strong> 🚀 Amazing! We're shipping features daily.
+      Copilot writes boilerplate, Claude helps with complex logic, ChatGPT
+      generates tests. We're moving 3x faster than any team I've been on.
     </p>
     <p>
-      <strong>Month 3-4:</strong> 🤔 Hmm. Our AI assistants keep suggesting
-      we create utilities that... already exist? They're also suggesting
-      3 different patterns for the same API endpoint. Which one is
-      "right"?
+      <strong>Month 3-4:</strong> 🤔 Hmm. Our AI assistants keep suggesting we
+      create utilities that... already exist? They're also suggesting 3
+      different patterns for the same API endpoint. Which one is "right"?
     </p>
     <p>
       <strong>Month 5-6:</strong> 😰 Wait. Our codebase has 23 nearly-identical
       validation functions. Our import chains are 8 levels deep. AI tools are
-      now giving <em>worse</em> suggestions because they can't fit our
-      context into their windows. We've gone from 3x faster to 0.5x
-      slower.
+      now giving <em>worse</em> suggestions because they can't fit our context
+      into their windows. We've gone from 3x faster to 0.5x slower.
     </p>
     <p>
       <strong>The math:</strong> 4 months of 3x productivity = 12 months of
@@ -59,7 +56,7 @@ const Post = () => (
       tech debt. Net result? We're behind where we started.
     </p>
     <p>
-      This is the AI code debt paradox:{" "}
+      This is the AI code debt paradox:{' '}
       <strong>
         The faster AI helps you write code, the faster you accumulate debt you
         can't see.
@@ -67,25 +64,28 @@ const Post = () => (
     </p>
 
     <div className="my-12 max-w-2xl mx-auto">
-      <img 
-        src="/series-1-1-codebase-5-members-20-models.png" 
-        alt="Codebase fragmentation with multiple AI models" 
+      <img
+        src="/series-1-1-codebase-5-members-20-models.png"
+        alt="Codebase fragmentation with multiple AI models"
         className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
       />
-      <p className="text-center text-sm text-slate-500 mt-4 italic">When every team member uses a different AI model, your codebase becomes a fragmented Frankenstein.</p>
+      <p className="text-center text-sm text-slate-500 mt-4 italic">
+        When every team member uses a different AI model, your codebase becomes
+        a fragmented Frankenstein.
+      </p>
     </div>
 
     <h2>The Four Horsemen of AI Code Debt</h2>
     <p>
-      After analyzing dozens of AI-assisted projects (including my own),
-      I've identified four distinct problems that traditional metrics
-      completely miss:
+      After analyzing dozens of AI-assisted projects (including my own), I've
+      identified four distinct problems that traditional metrics completely
+      miss:
     </p>
 
     <div className="my-12 max-w-2xl mx-auto">
-      <img 
-        src="/series-1-the-horsemen-of-ai-code-debt.png" 
-        alt="The Four Horsemen of AI Code Debt" 
+      <img
+        src="/series-1-the-horsemen-of-ai-code-debt.png"
+        alt="The Four Horsemen of AI Code Debt"
         className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
       />
     </div>
@@ -119,10 +119,10 @@ app.get('/api/receipts', withAuth(async (req, res) => {
 }));
 `}</CodeBlock>
     <p>
-      AI didn't know about our <code>withAuth</code> middleware because it
-      was created 3 months after training cutoff. Result? 18 endpoints using the
-      old pattern, 12 using the new one. All written by AI. All technically
-      correct. All inconsistent.
+      AI didn't know about our <code>withAuth</code> middleware because it was
+      created 3 months after training cutoff. Result? 18 endpoints using the old
+      pattern, 12 using the new one. All written by AI. All technically correct.
+      All inconsistent.
     </p>
 
     <h3>2. Model Preference Drift (The Team Chaos Problem)</h3>
@@ -140,9 +140,18 @@ app.get('/api/receipts', withAuth(async (req, res) => {
       <strong>Real example:</strong>
     </p>
     <ul>
-      <li>Copilot likes this: <code>const user = await db.users.findById(userId)</code></li>
-      <li>Claude prefers: <code>const user = await getUserById(userId)</code> (wrapped in helper)</li>
-      <li>ChatGPT suggests: <code>const user = await User.findById(userId)</code> (ORM style)</li>
+      <li>
+        Copilot likes this:{' '}
+        <code>const user = await db.users.findById(userId)</code>
+      </li>
+      <li>
+        Claude prefers: <code>const user = await getUserById(userId)</code>{' '}
+        (wrapped in helper)
+      </li>
+      <li>
+        ChatGPT suggests: <code>const user = await User.findById(userId)</code>{' '}
+        (ORM style)
+      </li>
     </ul>
     <p>
       All three work. None are wrong. But when you have all three scattered
@@ -150,16 +159,18 @@ app.get('/api/receipts', withAuth(async (req, res) => {
       refactoring. Which pattern should they follow?
     </p>
 
-    <h3>3. Undetected Semantic Duplicates (The Invisible Repetition Problem)</h3>
+    <h3>
+      3. Undetected Semantic Duplicates (The Invisible Repetition Problem)
+    </h3>
     <p>
-      This is the most insidious one. AI generates code that <em>looks</em>{" "}
+      This is the most insidious one. AI generates code that <em>looks</em>{' '}
       different but <em>does the same thing.</em>
     </p>
     <p>
       Traditional duplicate detection tools (like jscpd) only catch copy-paste
-      duplicates—exact text matches. But AI never copy-pastes. It generates fresh
-      code every time, with different variable names, slightly different logic,
-      but functionally identical.
+      duplicates—exact text matches. But AI never copy-pastes. It generates
+      fresh code every time, with different variable names, slightly different
+      logic, but functionally identical.
     </p>
     <p>
       <strong>Real example from receiptclaimer:</strong>
@@ -191,14 +202,14 @@ class ReceiptValidator {
 }
 `}</CodeBlock>
     <p>
-      Three different files. Three different names. Three different syntaxes.{" "}
+      Three different files. Three different names. Three different syntaxes.{' '}
       <strong>Same exact logic.</strong>
     </p>
     <p>
       Traditional linters see zero duplication (0% text overlap). But they're
       wasting hundreds of AI tokens and confusing the models. When Copilot sees
-      all three, it doesn't know which pattern to follow, so it creates a
-      fourth variant.
+      all three, it doesn't know which pattern to follow, so it creates a fourth
+      variant.
     </p>
     <p>
       We found 23 of these in our codebase. That's 8,450 tokens of wasted
@@ -207,8 +218,8 @@ class ReceiptValidator {
 
     <h3>4. Context Fragmentation (The Token Budget Problem)</h3>
     <p>
-      AI models have limited context windows. GPT-4 Turbo has 128K tokens. Claude
-      3.5 has 200K. Sounds like a lot, right?
+      AI models have limited context windows. GPT-4 Turbo has 128K tokens.
+      Claude 3.5 has 200K. Sounds like a lot, right?
     </p>
     <p>Wrong.</p>
     <p>
@@ -254,8 +265,8 @@ export const getUser = async (id) => {
 
     <h2>Why Traditional Metrics Miss This Entirely</h2>
     <p>
-      If you're running SonarQube, CodeClimate, or similar tools, you feel pretty
-      confident about your code quality. You shouldn't be.
+      If you're running SonarQube, CodeClimate, or similar tools, you feel
+      pretty confident about your code quality. You shouldn't be.
     </p>
     <p>
       Traditional metrics were designed for <strong>human code review</strong>,
@@ -286,9 +297,7 @@ export const getUser = async (id) => {
       <li>How much does it cost AI to understand this file?</li>
       <li>Are there semantically similar patterns AI keeps recreating?</li>
       <li>Is this code organized in a way AI can consume efficiently?</li>
-      <li>
-        Will AI suggestions be consistent with our existing patterns?
-      </li>
+      <li>Will AI suggestions be consistent with our existing patterns?</li>
     </ul>
     <p>We're using 2015 metrics for 2025 problems.</p>
 
@@ -308,7 +317,9 @@ export const getUser = async (id) => {
         Time to onboard new AI patterns: ~2 hours of prompt engineering per
         feature
       </li>
-      <li>Developer frustration: High (AI keeps suggesting "wrong" patterns)</li>
+      <li>
+        Developer frustration: High (AI keeps suggesting "wrong" patterns)
+      </li>
     </ul>
     <p>
       <strong>Impact on velocity:</strong>
@@ -316,27 +327,27 @@ export const getUser = async (id) => {
     <ul>
       <li>Week 1-4: 3x faster than baseline ✅</li>
       <li>Week 5-12: 1.5x faster than baseline ⚠️</li>
-      <li>Week 13-20: 0.8x <em>slower</em> than baseline ❌</li>
+      <li>
+        Week 13-20: 0.8x <em>slower</em> than baseline ❌
+      </li>
       <li>Week 21+: Velocity crisis - considering partial rewrite</li>
     </ul>
     <p>
       <strong>The hidden cost:</strong> We spent 4 months going fast in the
-      wrong direction. The refactoring tax came due, and it was{" "}
+      wrong direction. The refactoring tax came due, and it was{' '}
       <strong>massive.</strong>
     </p>
 
     <h2>What Comes Next</h2>
     <p>
-      Here's the uncomfortable truth:{" "}
+      Here's the uncomfortable truth:{' '}
       <strong>
         Every team using AI coding assistants is accumulating this debt right
         now.
-      </strong>{" "}
+      </strong>{' '}
       The only difference is some realize it, most don't.
     </p>
-    <p>
-      The good news? This is measurable. Fixable. Preventable.
-    </p>
+    <p>The good news? This is measurable. Fixable. Preventable.</p>
     <p>Over the next few weeks, I'm going to break down:</p>
     <ul>
       <li>
@@ -361,10 +372,10 @@ export const getUser = async (id) => {
       designed for the AI-first development workflow.
     </p>
     <p>
-      Because here's what I learned:{" "}
+      Because here's what I learned:{' '}
       <strong>
-        Making your codebase AI-ready doesn't just make AI better. It makes
-        your code better for humans too.
+        Making your codebase AI-ready doesn't just make AI better. It makes your
+        code better for humans too.
       </strong>
     </p>
     <p>
@@ -374,24 +385,53 @@ export const getUser = async (id) => {
     <p>The tsunami is here. But we can learn to surf.</p>
 
     <div className="my-12 max-w-2xl mx-auto">
-      <img 
-        src="/series-1-the-ai-code-debt-tsunami.png" 
-        alt="The AI Code Debt Tsunami" 
+      <img
+        src="/series-1-the-ai-code-debt-tsunami.png"
+        alt="The AI Code Debt Tsunami"
         className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
       />
-      <p className="text-center text-sm text-slate-500 mt-4 italic">The wave is coming, and traditional metrics aren't built to detect it.</p>
+      <p className="text-center text-sm text-slate-500 mt-4 italic">
+        The wave is coming, and traditional metrics aren't built to detect it.
+      </p>
     </div>
 
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
-    <p><strong>Read the full series:</strong></p>
+    <p>
+      <strong>Read the full series:</strong>
+    </p>
     <ul className="list-disc pl-6 mb-4 space-y-2">
-      <li><strong>Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready) ← You are here</strong></li>
-      <li><a href="/blog/invisible-codebase">Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)</a></li>
-      <li><a href="/blog/metrics-that-actually-matter">Part 3: AI Code Quality Metrics That Actually Matter</a></li>
-      <li><a href="/blog/semantic-duplicate-detection">Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis</a></li>
-      <li><a href="/blog/hidden-cost-import-chains">Part 5: The Hidden Cost of Import Chains</a></li>
-      <li><a href="/blog/visualizing-invisible">Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt</a></li>
+      <li>
+        <strong>
+          Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready) ←
+          You are here
+        </strong>
+      </li>
+      <li>
+        <a href="/blog/invisible-codebase">
+          Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)
+        </a>
+      </li>
+      <li>
+        <a href="/blog/metrics-that-actually-matter">
+          Part 3: AI Code Quality Metrics That Actually Matter
+        </a>
+      </li>
+      <li>
+        <a href="/blog/semantic-duplicate-detection">
+          Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis
+        </a>
+      </li>
+      <li>
+        <a href="/blog/hidden-cost-import-chains">
+          Part 5: The Hidden Cost of Import Chains
+        </a>
+      </li>
+      <li>
+        <a href="/blog/visualizing-invisible">
+          Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt
+        </a>
+      </li>
     </ul>
 
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
@@ -405,19 +445,21 @@ npx @aiready/context-analyzer ./src
 `}</CodeBlock>
 
     <p>
-      <strong>Have questions or war stories about AI-generated tech debt?</strong>{" "}
+      <strong>
+        Have questions or war stories about AI-generated tech debt?
+      </strong>{' '}
       Drop them in the comments. I read every one.
     </p>
 
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p className="text-sm italic text-slate-500">
-      Peng Cao is the founder of{" "}
-      <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{" "}
-      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an open-source
-      suite for measuring and optimizing codebases for AI adoption. He's been
-      writing code for 15 years and learning to work with AI assistants for the
-      last 2.
+      Peng Cao is the founder of{' '}
+      <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{' '}
+      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
+      open-source suite for measuring and optimizing codebases for AI adoption.
+      He's been writing code for 15 years and learning to work with AI
+      assistants for the last 2.
     </p>
   </>
 );

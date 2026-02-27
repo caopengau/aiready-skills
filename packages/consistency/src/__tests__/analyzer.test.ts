@@ -39,7 +39,8 @@ const x = 10;
 const y = 20;
 const result = x + y;
 `;
-    // In a real test, we'd create temp files or mock file reading
+      void testCode;
+      // In a real test, we'd create temp files or mock file reading
     // For now, this is a placeholder structure
     expect(true).toBe(true);
   });
@@ -47,12 +48,45 @@ const result = x + y;
   it('should NOT flag acceptable abbreviations', () => {
     // These should all be acceptable and NOT flagged
     const acceptableAbbreviations = [
-      'env', 'req', 'res', 'ctx', 'err', 'api', 'url', 'id',
-      'max', 'min', 'now', 'utm', 'has', 'is', 'can',
-      'db', 'fs', 'os', 'ui', 'tmp', 'src', 'dst',
+      'env',
+      'req',
+      'res',
+      'ctx',
+      'err',
+      'api',
+      'url',
+      'id',
+      'max',
+      'min',
+      'now',
+      'utm',
+      'has',
+      'is',
+      'can',
+      'db',
+      'fs',
+      'os',
+      'ui',
+      'tmp',
+      'src',
+      'dst',
       // New additions from Phase 1
-      'img', 'txt', 'doc', 'md', 'ts', 'js', 'ddb', 's3',
-      'fcp', 'lcp', 'fps', 'po', 'dto', 'e2e', 'a11y', 'i18n'
+      'img',
+      'txt',
+      'doc',
+      'md',
+      'ts',
+      'js',
+      'ddb',
+      's3',
+      'fcp',
+      'lcp',
+      'fps',
+      'po',
+      'dto',
+      'e2e',
+      'a11y',
+      'i18n',
     ];
     // These abbreviations should not trigger warnings
     expect(acceptableAbbreviations.length).toBeGreaterThan(0);
@@ -61,8 +95,24 @@ const result = x + y;
   it('should NOT flag common short English words', () => {
     // Full words, not abbreviations - should be accepted
     const commonWords = [
-      'day', 'key', 'net', 'to', 'go', 'for', 'not', 'new', 'old',
-      'top', 'end', 'run', 'try', 'use', 'get', 'set', 'add', 'put'
+      'day',
+      'key',
+      'net',
+      'to',
+      'go',
+      'for',
+      'not',
+      'new',
+      'old',
+      'top',
+      'end',
+      'run',
+      'try',
+      'use',
+      'get',
+      'set',
+      'add',
+      'put',
     ];
     // These are full words and should not be flagged as abbreviations
     expect(commonWords.length).toBeGreaterThan(0);
@@ -73,6 +123,7 @@ const result = x + y;
 const user_name = 'John';
 const user_id = 123;
 `;
+    void testCode;
     // Test would check for convention-mix issues
     expect(true).toBe(true);
   });
@@ -82,6 +133,7 @@ const user_id = 123;
 const enabled: boolean = true;
 const active: boolean = false;
 `;
+    void testCode;
     // Should suggest prefixes like isEnabled, isActive
     expect(true).toBe(true);
   });
@@ -92,6 +144,7 @@ const id = '123';
 const url = 'https://example.com';
 const api = new ApiClient();
 `;
+    void testCode;
     // Should not flag these as issues
     expect(true).toBe(true);
   });
@@ -108,6 +161,7 @@ items.filter(
     item.valid
 )
 `;
+    void multiLineArrowCode;
     // 's' and 'item' should not be flagged as poor naming
     expect(true).toBe(true);
   });
@@ -119,6 +173,7 @@ const a = obj1;
 const b = obj2;
 return compare(a, b);
 `;
+    void shortLivedCode;
     // 'a' and 'b' should not be flagged as they're short-lived
     expect(true).toBe(true);
   });

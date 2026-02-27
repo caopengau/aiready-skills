@@ -3,38 +3,44 @@
 export default $config({
   app(input) {
     return {
-      name: "aiready-landing",
-      removal: input?.stage === "production" ? "retain" : "remove",
-      home: "aws",
+      name: 'aiready-landing',
+      removal: input?.stage === 'production' ? 'retain' : 'remove',
+      home: 'aws',
     };
   },
   async run() {
     // Storage for report submissions
-    const submissions = new sst.aws.Bucket("Submissions", {
+    const submissions = new sst.aws.Bucket('Submissions', {
       public: false,
     });
 
     // SES Email Domain Identity with DKIM
     // If the SES domain identity already exists (e.g. created previously), skip creating it
-    const domainName = "getaiready.dev";
+    const domainName = 'getaiready.dev';
     let emailDomain: any = undefined;
     try {
-      const cp = await import("child_process");
+      const cp = await import('child_process');
       const cmd = `aws sesv2 get-email-identity --email-identity ${domainName} --output json`;
       try {
-        const out = cp.execSync(cmd, { encoding: "utf8", env: process.env });
+        const out = cp.execSync(cmd, { encoding: 'utf8', env: process.env });
         if (out) {
-          console.log(`SES identity for ${domainName} already exists; skipping creation.`);
+          console.log(
+            `SES identity for ${domainName} already exists; skipping creation.`
+          );
           emailDomain = { sender: domainName };
         }
       } catch (e: any) {
         // If aws cli returns non-zero, assume identity not found and create via SST
-        const stderr = (e && e.stderr) ? String(e.stderr) : String(e || "");
-        if (stderr.includes("NotFoundException") || stderr.includes("not found") || stderr.includes("Not Found")) {
-          emailDomain = new sst.aws.Email("NotificationEmail", {
+        const stderr = e && e.stderr ? String(e.stderr) : String(e || '');
+        if (
+          stderr.includes('NotFoundException') ||
+          stderr.includes('not found') ||
+          stderr.includes('Not Found')
+        ) {
+          emailDomain = new sst.aws.Email('NotificationEmail', {
             sender: domainName,
             dns: sst.cloudflare.dns({
-              zone: "50eb7dcadc84c58ab34583742db0b671",
+              zone: '50eb7dcadc84c58ab34583742db0b671',
             }),
           });
         } else {
@@ -48,43 +54,43 @@ export default $config({
     }
 
     // API Gateway HTTP API for public form submissions
-    const api = new sst.aws.ApiGatewayV2("RequestApi", {
+    const api = new sst.aws.ApiGatewayV2('RequestApi', {
       cors: true,
     });
 
-    api.route("POST /", {
-      handler: "api/request-report.handler",
+    api.route('POST /', {
+      handler: 'api/request-report.handler',
       link: [submissions],
       environment: {
         SUBMISSIONS_BUCKET: submissions.name,
-        SES_TO_EMAIL: process.env.SES_TO_EMAIL || "",
+        SES_TO_EMAIL: process.env.SES_TO_EMAIL || '',
       },
       permissions: [
         {
-          actions: ["ses:SendEmail", "ses:SendRawEmail"],
-          resources: ["*"],
+          actions: ['ses:SendEmail', 'ses:SendRawEmail'],
+          resources: ['*'],
         },
       ],
     });
 
     // Deploy as static site - animations and charts work perfectly in client-side mode
-    const site = new sst.aws.StaticSite("AireadyLanding", {
-      path: "./",
+    const site = new sst.aws.StaticSite('AireadyLanding', {
+      path: './',
       build: {
-        command: "pnpm build",
-        output: "out",
+        command: 'pnpm build',
+        output: 'out',
       },
       environment: {
         NEXT_PUBLIC_REQUEST_URL: api.url,
       },
       domain: {
-        name: "getaiready.dev",
+        name: 'getaiready.dev',
         dns: sst.cloudflare.dns({
-          zone: "50eb7dcadc84c58ab34583742db0b671",
+          zone: '50eb7dcadc84c58ab34583742db0b671',
         }),
       },
       invalidation: {
-        paths: ["/*"],
+        paths: ['/*'],
         wait: true,
       },
     });

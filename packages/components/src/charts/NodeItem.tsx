@@ -56,10 +56,25 @@ export const NodeItem: React.FC<NodeItemProps> = ({
         opacity={isHovered || isSelected ? 1 : 0.9}
       />
       {pinned && (
-        <circle r={nodeSize + 4} fill="none" stroke="#ff6b6b" strokeWidth={1} opacity={0.5} className="pointer-events-none" />
+        <circle
+          r={nodeSize + 4}
+          fill="none"
+          stroke="#ff6b6b"
+          strokeWidth={1}
+          opacity={0.5}
+          className="pointer-events-none"
+        />
       )}
       {showLabel && node.label && (
-        <text y={nodeSize + 15} fill="#333" fontSize="12" textAnchor="middle" dominantBaseline="middle" pointerEvents="none" className="select-none">
+        <text
+          y={nodeSize + 15}
+          fill="#333"
+          fontSize="12"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          pointerEvents="none"
+          className="select-none"
+        >
           {node.label}
         </text>
       )}

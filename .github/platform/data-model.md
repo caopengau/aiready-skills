@@ -28,36 +28,36 @@ Note: TTL not yet configured — all records persist until manually deleted.
 
 ## Key Patterns
 
-| Entity | PK | SK | GSI1PK | GSI1SK | GSI2PK | GSI2SK |
-|--------|----|----|--------|--------|--------|--------|
-| User | `USER#<id>` | `#METADATA` | `USERS` | `<email>` | — | — |
-| Team | `TEAM#<id>` | `#METADATA` | `TEAMS` | `<slug>` | — | — |
-| Team Member | `TEAM#<teamId>` | `#MEMBER#<userId>` | `TEAM#<teamId>` | `MEMBER#<userId>` | — | — |
-| Repository | `REPO#<id>` | `#METADATA` | `USER#<userId>` or `TEAM#<teamId>` | `REPO#<id>` | — | — |
-| Analysis | `ANALYSIS#<repoId>` | `<timestamp>` | `USER#<userId>` | `ANALYSIS#<ts>` | `ANALYSIS#<repoId>` | `<timestamp>` |
-| Remediation | `REMEDIATION#<id>` | `#METADATA` | `USER#<userId>` or `TEAM#<teamId>` | `REMEDIATION#<id>` | `REMEDIATION#<repoId>` | `<createdAt>` |
-| Magic Link | `MAGICLINK#<token>` | `#METADATA` | — | — | — | — |
+| Entity      | PK                  | SK                 | GSI1PK                             | GSI1SK             | GSI2PK                 | GSI2SK        |
+| ----------- | ------------------- | ------------------ | ---------------------------------- | ------------------ | ---------------------- | ------------- |
+| User        | `USER#<id>`         | `#METADATA`        | `USERS`                            | `<email>`          | —                      | —             |
+| Team        | `TEAM#<id>`         | `#METADATA`        | `TEAMS`                            | `<slug>`           | —                      | —             |
+| Team Member | `TEAM#<teamId>`     | `#MEMBER#<userId>` | `TEAM#<teamId>`                    | `MEMBER#<userId>`  | —                      | —             |
+| Repository  | `REPO#<id>`         | `#METADATA`        | `USER#<userId>` or `TEAM#<teamId>` | `REPO#<id>`        | —                      | —             |
+| Analysis    | `ANALYSIS#<repoId>` | `<timestamp>`      | `USER#<userId>`                    | `ANALYSIS#<ts>`    | `ANALYSIS#<repoId>`    | `<timestamp>` |
+| Remediation | `REMEDIATION#<id>`  | `#METADATA`        | `USER#<userId>` or `TEAM#<teamId>` | `REMEDIATION#<id>` | `REMEDIATION#<repoId>` | `<createdAt>` |
+| Magic Link  | `MAGICLINK#<token>` | `#METADATA`        | —                                  | —                  | —                      | —             |
 
 ---
 
 ## Access Patterns
 
-| # | Pattern | Query |
-|---|---------|-------|
-| 1 | Get user by ID | Table `PK=USER#<id>` `SK=#METADATA` |
-| 2 | Get user by email | GSI1 `GSI1PK=USERS` `GSI1SK=<email>` |
-| 3 | Get team by ID | Table `PK=TEAM#<id>` `SK=#METADATA` |
-| 4 | Get team by slug | GSI1 `GSI1PK=TEAMS` `GSI1SK=<slug>` |
-| 5 | List team members | Table `PK=TEAM#<id>` `SK begins_with #MEMBER#` |
-| 6 | Get repo by ID | Table `PK=REPO#<id>` `SK=#METADATA` |
-| 7 | List repos for user | GSI1 `GSI1PK=USER#<id>` `GSI1SK begins_with REPO#` |
-| 8 | List repos for team | GSI1 `GSI1PK=TEAM#<id>` `GSI1SK begins_with REPO#` |
-| 9 | List analyses for repo (newest first) | Table `PK=ANALYSIS#<repoId>` `ScanIndexForward=false` |
-| 10 | Get latest analysis for repo | Table `PK=ANALYSIS#<repoId>` `Limit=1` `ScanIndexForward=false` |
-| 11 | List user's analyses (all repos) | GSI1 `GSI1PK=USER#<id>` `GSI1SK begins_with ANALYSIS#` |
-| 12 | List remediations for repo | GSI2 `GSI2PK=REMEDIATION#<repoId>` `ScanIndexForward=false` |
-| 13 | List remediations for team | GSI1 `GSI1PK=TEAM#<id>` `GSI1SK begins_with REMEDIATION#` |
-| 14 | Get magic link token | Table `PK=MAGICLINK#<token>` `SK=#METADATA` |
+| #   | Pattern                               | Query                                                           |
+| --- | ------------------------------------- | --------------------------------------------------------------- |
+| 1   | Get user by ID                        | Table `PK=USER#<id>` `SK=#METADATA`                             |
+| 2   | Get user by email                     | GSI1 `GSI1PK=USERS` `GSI1SK=<email>`                            |
+| 3   | Get team by ID                        | Table `PK=TEAM#<id>` `SK=#METADATA`                             |
+| 4   | Get team by slug                      | GSI1 `GSI1PK=TEAMS` `GSI1SK=<slug>`                             |
+| 5   | List team members                     | Table `PK=TEAM#<id>` `SK begins_with #MEMBER#`                  |
+| 6   | Get repo by ID                        | Table `PK=REPO#<id>` `SK=#METADATA`                             |
+| 7   | List repos for user                   | GSI1 `GSI1PK=USER#<id>` `GSI1SK begins_with REPO#`              |
+| 8   | List repos for team                   | GSI1 `GSI1PK=TEAM#<id>` `GSI1SK begins_with REPO#`              |
+| 9   | List analyses for repo (newest first) | Table `PK=ANALYSIS#<repoId>` `ScanIndexForward=false`           |
+| 10  | Get latest analysis for repo          | Table `PK=ANALYSIS#<repoId>` `Limit=1` `ScanIndexForward=false` |
+| 11  | List user's analyses (all repos)      | GSI1 `GSI1PK=USER#<id>` `GSI1SK begins_with ANALYSIS#`          |
+| 12  | List remediations for repo            | GSI2 `GSI2PK=REMEDIATION#<repoId>` `ScanIndexForward=false`     |
+| 13  | List remediations for team            | GSI1 `GSI1PK=TEAM#<id>` `GSI1SK begins_with REMEDIATION#`       |
+| 14  | Get magic link token                  | Table `PK=MAGICLINK#<token>` `SK=#METADATA`                     |
 
 ---
 
@@ -232,18 +232,21 @@ The `rawKey` field on Analysis records contains the full S3 object key.
 
 ```typescript
 // platform/sst.config.ts
-const bucket = new sst.aws.Bucket("AnalysisBucket");
+const bucket = new sst.aws.Bucket('AnalysisBucket');
 
-const table = new sst.aws.Dynamo("MainTable", {
+const table = new sst.aws.Dynamo('MainTable', {
   fields: {
-    PK: "string", SK: "string",
-    GSI1PK: "string", GSI1SK: "string",
-    GSI2PK: "string", GSI2SK: "string",
+    PK: 'string',
+    SK: 'string',
+    GSI1PK: 'string',
+    GSI1SK: 'string',
+    GSI2PK: 'string',
+    GSI2SK: 'string',
   },
-  primaryIndex: { hashKey: "PK", rangeKey: "SK" },
+  primaryIndex: { hashKey: 'PK', rangeKey: 'SK' },
   globalIndexes: {
-    GSI1: { hashKey: "GSI1PK", rangeKey: "GSI1SK" },
-    GSI2: { hashKey: "GSI2PK", rangeKey: "GSI2SK" },
+    GSI1: { hashKey: 'GSI1PK', rangeKey: 'GSI1SK' },
+    GSI2: { hashKey: 'GSI2PK', rangeKey: 'GSI2SK' },
   },
   // Note: TTL not yet configured
 });
@@ -285,3 +288,4 @@ new QueryCommand({
   ExpressionAttributeValues: { ':pk': 'REMEDIATION#r1e2p3o4' },
   ScanIndexForward: false,
 });
+```

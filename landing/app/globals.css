@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Critical: Ensure all content is visible by default (no hidden animations) */
 * {
@@ -44,7 +44,8 @@ html {
 
 /* Custom animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -53,7 +54,8 @@ html {
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -120,7 +122,8 @@ html {
 
 /* Smooth transitions for all interactive elements */
 * {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -154,7 +157,9 @@ h3 {
 
 .code-block code {
   color: #f0f6fc !important;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Helvetica Neue", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono',
+    'Helvetica Neue', monospace;
   font-size: 0.92rem;
   line-height: 1.35; /* tighter lines */
 }

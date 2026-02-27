@@ -11,21 +11,25 @@ AIReady is a free command-line tool that analyzes your codebase to identify issu
 ## Key Features
 
 ### 1. Semantic Duplicate Detection
+
 - Identifies functionally similar code patterns across your codebase
 - Finds variations that waste AI context window tokens
 - Language: TypeScript/JavaScript (Python & Java coming soon)
 
-### 2. Context Window Analysis  
+### 2. Context Window Analysis
+
 - Calculates token usage for AI models (GPT-4, Claude, etc.)
 - Identifies context fragmentation issues
 - Optimizes file organization for better AI understanding
 
 ### 3. Code Consistency Checking
+
 - Detects pattern inconsistencies that confuse AI models
 - Ensures naming conventions and code structure are learnable
 - Checks for anti-patterns in AI-assisted development
 
 ### 4. AI Readiness Score
+
 - Quantifies how well your code works with AI tools
 - Provides actionable recommendations
 - Tracks improvement over time
@@ -107,7 +111,7 @@ A: Yes. MIT license allows commercial use.
 # npm
 npm install -g @aiready/cli
 
-# pnpm  
+# pnpm
 pnpm add -g @aiready/cli
 
 # yarn
@@ -117,6 +121,7 @@ yarn global add @aiready/cli
 ## Output Format
 
 AIReady generates detailed JSON and Markdown reports including:
+
 - AI Readiness Score (0-100)
 - List of semantic duplicates with similarity scores
 - Context window analysis with token counts

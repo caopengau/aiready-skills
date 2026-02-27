@@ -9,18 +9,21 @@
 AI coding assistants are limited by context windows, but teams unknowingly structure code in ways that maximize context consumption:
 
 - **Scattered implementations** - Related logic fragmented across many files
-- **Deep import chains** - Need to load dozens of files to understand one function  
+- **Deep import chains** - Need to load dozens of files to understand one function
 - **Bloated files** - Individual files that consume excessive tokens
 - **Poor cohesion** - Files mixing unrelated concerns, wasting context budget
 
 ### Impact
+
 Every time an AI tool needs to help with a module, it must load all related files. Fragmented code means:
+
 - Higher token costs ($)
 - Context limit failures
 - Incomplete AI responses
 - Slower development velocity
 
 ### Example Scenario
+
 ```
 Before: User validation spread across 8 files = 12,450 tokens (context limit hit)
 After: Consolidated into 2 cohesive files = 2,100 tokens (complete AI assistance)
@@ -31,16 +34,19 @@ Result: 83% reduction in context cost, faster AI responses, better code understa
 ## 📊 Core Metrics
 
 ### File-Level Metrics
+
 - **Token Cost** - Total tokens in this file (~4 chars per token)
 - **Import Depth** - Longest chain of transitive dependencies
 - **Dependency Count** - Total files needed to understand this one
 
-### Module-Level Metrics  
+### Module-Level Metrics
+
 - **Fragmentation Score** (0-100%) - How scattered related code is
 - **Cohesion Score** (0-100%) - How well grouped related logic is
 - **Context Budget** - Total tokens AI needs to load for this module
 
 ### Actionable Insights
+
 - **Hot Paths** - Files frequently needed together
 - **Context Hogs** - Individual files consuming excessive tokens
 - **Refactoring Opportunities** - Specific consolidation recommendations
@@ -53,34 +59,34 @@ Result: 83% reduction in context cost, faster AI responses, better code understa
 // packages/context-analyzer/src/types.ts
 export interface ContextAnalysisResult {
   file: string;
-  
+
   // Basic metrics
   tokenCost: number;
   linesOfCode: number;
-  
+
   // Dependency analysis
-  importDepth: number;        // Max depth of import tree
-  dependencyCount: number;    // Total transitive deps
-  dependencyList: string[];   // All files in dep tree
-  
+  importDepth: number; // Max depth of import tree
+  dependencyCount: number; // Total transitive deps
+  dependencyList: string[]; // All files in dep tree
+
   // Cohesion analysis
-  cohesionScore: number;      // 0-1, how related are exports
-  domains: string[];          // Detected domain categories
+  cohesionScore: number; // 0-1, how related are exports
+  domains: string[]; // Detected domain categories
   exportCount: number;
-  
+
   // AI context impact
-  contextBudget: number;      // Total tokens to understand this file
+  contextBudget: number; // Total tokens to understand this file
   fragmentationScore: number; // 0-1, how scattered is this domain
-  relatedFiles: string[];     // Files that should be loaded together
-  
+  relatedFiles: string[]; // Files that should be loaded together
+
   // Recommendations
   severity: 'critical' | 'major' | 'minor' | 'info';
   recommendations: string[];
-  potentialSavings: number;   // Estimated token savings
+  potentialSavings: number; // Estimated token savings
 }
 
 export interface ModuleCluster {
-  domain: string;             // e.g., "user-management", "auth"
+  domain: string; // e.g., "user-management", "auth"
   files: string[];
   totalTokens: number;
   fragmentationScore: number;
@@ -102,7 +108,7 @@ export interface ModuleCluster {
 function buildDependencyGraph(files: FileContent[]): DependencyGraph {
   const nodes = new Map<string, DependencyNode>();
   const edges = new Map<string, Set<string>>();
-  
+
   // First pass: create nodes
   for (const { file, content } of files) {
     const imports = extractImportsFromContent(content);
@@ -112,11 +118,11 @@ function buildDependencyGraph(files: FileContent[]): DependencyGraph {
       imports,
       exports,
       tokenCost: estimateTokens(content),
-      linesOfCode: content.split('\n').length
+      linesOfCode: content.split('\n').length,
     });
     edges.set(file, new Set(imports));
   }
-  
+
   return { nodes, edges };
 }
 ```
@@ -135,26 +141,27 @@ function calculateImportDepth(
   depth = 0
 ): number {
   if (visited.has(file)) return depth; // Cycle detection
-  
+
   const dependencies = graph.edges.get(file);
   if (!dependencies || dependencies.size === 0) {
     return depth; // Leaf node
   }
-  
+
   visited.add(file);
   let maxDepth = depth;
-  
+
   for (const dep of dependencies) {
     const depDepth = calculateImportDepth(dep, graph, visited, depth + 1);
     maxDepth = Math.max(maxDepth, depDepth);
   }
-  
+
   visited.delete(file); // Backtrack for other paths
   return maxDepth;
 }
 ```
 
 **Formula:**
+
 ```
 depth(file) = 1 + max(depth(dependencies))
 where base case: depth(leaf) = 0
@@ -167,28 +174,26 @@ where base case: depth(leaf) = 0
 **Algorithm:** Sum token costs across entire dependency tree
 
 ```typescript
-function calculateContextBudget(
-  file: string,
-  graph: DependencyGraph
-): number {
+function calculateContextBudget(file: string, graph: DependencyGraph): number {
   const node = graph.nodes.get(file);
   if (!node) return 0;
-  
+
   let totalTokens = node.tokenCost;
   const deps = getTransitiveDependencies(file, graph);
-  
+
   for (const dep of deps) {
     const depNode = graph.nodes.get(dep);
     if (depNode) {
       totalTokens += depNode.tokenCost;
     }
   }
-  
+
   return totalTokens;
 }
 ```
 
 **Formula:**
+
 ```
 budget(file) = tokens(file) + Σ tokens(transitive_deps)
 ```
@@ -202,26 +207,26 @@ budget(file) = tokens(file) + Σ tokens(transitive_deps)
 ```typescript
 function calculateCohesion(exports: ExportInfo[]): number {
   if (exports.length <= 1) return 1; // Perfect cohesion
-  
+
   // Group by inferred domain
-  const domains = exports.map(e => e.inferredDomain || 'unknown');
+  const domains = exports.map((e) => e.inferredDomain || 'unknown');
   const domainCounts = new Map<string, number>();
-  
+
   for (const domain of domains) {
     domainCounts.set(domain, (domainCounts.get(domain) || 0) + 1);
   }
-  
+
   // Calculate Shannon entropy
   const total = domains.length;
   let entropy = 0;
-  
+
   for (const count of domainCounts.values()) {
     const p = count / total;
     if (p > 0) {
       entropy -= p * Math.log2(p);
     }
   }
-  
+
   // Normalize to 0-1 (higher = better cohesion)
   const maxEntropy = Math.log2(total);
   return maxEntropy > 0 ? 1 - entropy / maxEntropy : 1;
@@ -229,6 +234,7 @@ function calculateCohesion(exports: ExportInfo[]): number {
 ```
 
 **Shannon Entropy Formula:**
+
 ```
 H(X) = -Σ p(x_i) × log₂(p(x_i))
 
@@ -241,6 +247,7 @@ Cohesion score = 1 - (H / H_max)
 ```
 
 **Example:**
+
 ```typescript
 // File with mixed concerns (low cohesion)
 export function getUserById(id) { ... }     // domain: user
@@ -264,23 +271,21 @@ export function deleteUser(id) { ... }      // domain: user
 **Algorithm:** Measure how scattered a domain is across directories
 
 ```typescript
-function calculateFragmentation(
-  files: string[],
-  domain: string
-): number {
+function calculateFragmentation(files: string[], domain: string): number {
   if (files.length <= 1) return 0; // Single file = no fragmentation
-  
+
   // Extract unique directories
   const directories = new Set(
-    files.map(f => f.split('/').slice(0, -1).join('/'))
+    files.map((f) => f.split('/').slice(0, -1).join('/'))
   );
-  
+
   // Fragmentation ratio
   return (directories.size - 1) / (files.length - 1);
 }
 ```
 
 **Formula:**
+
 ```
 fragmentation = (unique_directories - 1) / (total_files - 1)
 
@@ -290,6 +295,7 @@ where:
 ```
 
 **Example:**
+
 ```typescript
 // Low fragmentation (good)
 files = [
@@ -316,13 +322,11 @@ fragmentation = (4 - 1) / (4 - 1) = 3 / 3 = 1.0
 **Algorithm:** DFS with recursion stack
 
 ```typescript
-function detectCircularDependencies(
-  graph: DependencyGraph
-): string[][] {
+function detectCircularDependencies(graph: DependencyGraph): string[][] {
   const cycles: string[][] = [];
   const visited = new Set<string>();
   const recursionStack = new Set<string>();
-  
+
   function dfs(file: string, path: string[]): void {
     if (recursionStack.has(file)) {
       // Found a cycle
@@ -332,29 +336,29 @@ function detectCircularDependencies(
       }
       return;
     }
-    
+
     if (visited.has(file)) return;
-    
+
     visited.add(file);
     recursionStack.add(file);
     path.push(file);
-    
+
     const dependencies = graph.edges.get(file);
     if (dependencies) {
       for (const dep of dependencies) {
         dfs(dep, [...path]);
       }
     }
-    
+
     recursionStack.delete(file); // Backtrack
   }
-  
+
   for (const file of graph.nodes.keys()) {
     if (!visited.has(file)) {
       dfs(file, []);
     }
   }
-  
+
   return cycles;
 }
 ```
@@ -369,82 +373,85 @@ function detectCircularDependencies(
 function buildDependencyGraph(entryFile: string): DependencyGraph {
   const graph = new Map<string, Set<string>>();
   const visited = new Set<string>();
-  
+
   function traverse(file: string, depth: number) {
     if (visited.has(file)) return;
     visited.add(file);
-    
+
     const imports = extractImports(file);
     graph.set(file, new Set(imports));
-    
+
     for (const imp of imports) {
       traverse(imp, depth + 1);
     }
   }
-  
+
   traverse(entryFile, 0);
   return graph;
 }
 ```
 
 #### 2. Fragmentation Detection
+
 ```typescript
 // Identify scattered domain implementations
 function analyzeFragmentation(files: string[]): ModuleCluster[] {
   // 1. Categorize files by domain using AST analysis
   const domainMap = categorizeDomains(files);
-  
+
   // 2. For each domain, calculate scatter
   return Object.entries(domainMap).map(([domain, files]) => {
-    const locations = files.map(f => path.dirname(f));
+    const locations = files.map((f) => path.dirname(f));
     const uniqueDirs = new Set(locations);
-    
+
     // Fragmentation = how many different directories
     const fragmentationScore = uniqueDirs.size / files.length;
     const totalTokens = sumTokens(files);
-    
+
     return {
       domain,
       files,
       totalTokens,
       fragmentationScore,
-      suggestedStructure: generateConsolidationPlan(files)
+      suggestedStructure: generateConsolidationPlan(files),
     };
   });
 }
 ```
 
 #### 3. Cohesion Analysis
+
 ```typescript
 // Measure how related exports are within a file
 function analyzeCohesion(file: string): number {
   const exports = extractExports(file);
-  const domains = exports.map(e => inferDomain(e.name, e.usage));
-  
+  const domains = exports.map((e) => inferDomain(e.name, e.usage));
+
   // Calculate entropy - low entropy = high cohesion
   const domainCounts = countBy(domains);
   const total = domains.length;
-  
+
   const entropy = Object.values(domainCounts)
-    .map(count => {
+    .map((count) => {
       const p = count / total;
       return -p * Math.log2(p);
     })
     .reduce((sum, val) => sum + val, 0);
-  
+
   // Normalize to 0-1 (higher = better cohesion)
   const maxEntropy = Math.log2(domains.length);
-  return 1 - (entropy / maxEntropy);
+  return 1 - entropy / maxEntropy;
 }
 ```
 
 #### 4. Context Budget Calculation
+
 ```typescript
 // Calculate total tokens AI needs to understand this file
 function calculateContextBudget(file: string): number {
   const depGraph = buildDependencyGraph(file);
   const allDeps = Array.from(depGraph.keys());
-  
+
   // Sum tokens across entire dependency tree
   return allDeps.reduce((sum, f) => {
     return sum + estimateTokens(readFileSync(f, 'utf-8'));
@@ -480,12 +487,12 @@ import { analyzeContext, generateClusters } from '@aiready/context-analyzer';
 const results = await analyzeContext({
   rootDir: './src',
   maxDepth: 5,
-  maxContextBudget: 10000
+  maxContextBudget: 10000,
 });
 
 // Find fragmented modules
 const clusters = generateClusters(results);
-const fragmented = clusters.filter(c => c.fragmentationScore > 0.6);
+const fragmented = clusters.filter((c) => c.fragmentationScore > 0.6);
 
 // Generate refactoring plan
 const plan = generateRefactoringPlan(fragmented);
@@ -496,6 +503,7 @@ const plan = generateRefactoringPlan(fragmented);
 ### Dashboard Views
 
 #### 1. **Dependency Graph Visualization**
+
 ```
 Interactive force-directed graph:
 - Nodes = files (sized by token cost)
@@ -513,6 +521,7 @@ Library: Cytoscape.js or D3.js force layout
 ```
 
 #### 2. **Context Budget Sunburst**
+
 ```
 Hierarchical view of token costs:
 - Center = root directory
@@ -529,6 +538,7 @@ Library: D3.js sunburst
 ```
 
 #### 3. **Fragmentation Heatmap**
+
 ```
 Matrix showing domain scatter:
 - Rows = domains (user, auth, order, etc.)
@@ -545,6 +555,7 @@ Library: Plotly.js heatmap
 ```
 
 #### 4. **Import Depth Histogram**
+
 ```
 Distribution of import depths:
 - X-axis = depth (0, 1, 2, ... 10+)
@@ -561,6 +572,7 @@ Library: Chart.js bar chart
 ```
 
 #### 5. **Cohesion Scatter Plot**
+
 ```
 Cohesion vs Fragmentation:
 - X-axis = cohesion score (0-1)
@@ -578,6 +590,7 @@ Library: D3.js scatter plot
 ```
 
 #### 6. **Circular Dependency Diagram**
+
 ```
 Chord diagram for cycles:
 - Arc segments = files
@@ -594,6 +607,7 @@ Library: D3.js chord diagram
 ```
 
 #### 7. **Time-Series Trends (Pro)**
+
 ```
 Context cost over time:
 - X-axis = commit dates
@@ -612,6 +626,7 @@ Library: Chart.js time series
 ### Real-Time Analytics
 
 **Live Monitoring (Pro/Enterprise):**
+
 - WebSocket updates on git push
 - Real-time context budget calculator (type in editor → see impact)
 - Team dashboard: current metrics per repo
@@ -620,6 +635,7 @@ Library: Chart.js time series
 ### Export Formats
 
 **Interactive Exports:**
+
 - HTML with embedded visualizations (works offline)
 - PDF reports with static charts (for stakeholders)
 - Mermaid diagrams for documentation
@@ -629,11 +645,13 @@ Library: Chart.js time series
 ### Comparative Views
 
 **Before/After Refactoring:**
+
 - Side-by-side comparison
 - Animated transitions (watch fragmentation decrease)
 - ROI calculator: "Consolidated 12 files → saved 8,450 tokens"
 
 **Team Benchmarks:**
+
 - Compare repos within organization
 - Industry averages by language/framework
 - Gamification: "Your repo is 35% more optimized than average"
@@ -641,17 +659,18 @@ Library: Chart.js time series
 ## 💰 SaaS Monetization Strategy
 
 ### Free Tier: CLI Analysis
+
 - One-time snapshot analysis
 - Basic metrics and recommendations
 - JSON/HTML export
 - **Goal:** Hook users with value, show what's possible
 
 ### Pro Tier ($49/month)
+
 1. **Historical Trends**
    - Track fragmentation over time
    - Measure improvement after refactoring
    - Visualize context cost changes
-   
 2. **Team Benchmarks**
    - Compare against similar codebases
    - Industry standard metrics
@@ -668,6 +687,7 @@ Library: Chart.js time series
    - Export to other tools
 
 ### Enterprise Tier (Custom Pricing)
+
 1. **AI Usage Correlation**
    - Integrate with GitHub Copilot metrics
    - Show $ spent on context waste
@@ -705,28 +725,33 @@ Shows trends, benchmarks
 ### Key Messaging
 
 **Free → Pro:**
-> "You're wasting 12,450 tokens on fragmented user management. 
+
+> "You're wasting 12,450 tokens on fragmented user management.
 > Track trends and get refactoring plans → Upgrade to Pro"
 
 **Pro → Enterprise:**
+
 > "Your team hits context limits 120x/week costing $X/month.
 > Block regressions in CI/CD → Book Enterprise Demo"
 
 ## 🎯 Success Metrics
 
 ### Tool Adoption
+
 - Downloads/installs per month
 - GitHub stars
 - npm weekly downloads
 - Community contributions
 
 ### SaaS Conversion
+
 - Free → Pro conversion rate (target: 3-5%)
 - Pro → Enterprise pipeline (target: 10+ demos/month)
 - MRR growth
 - Churn rate (target: <5%)
 
 ### User Value Delivered
+
 - Average context cost reduction (target: 40-60%)
 - Time saved per developer (tracked via surveys)
 - AI assistance quality improvement
@@ -735,6 +760,7 @@ Shows trends, benchmarks
 ## 📋 Development Phases
 
 ### Phase 1: MVP (Week 1-2)
+
 - [ ] Core dependency graph builder
 - [ ] Basic token cost calculation
 - [ ] Import depth analysis
@@ -742,6 +768,7 @@ Shows trends, benchmarks
 - [ ] Unit tests
 
 ### Phase 2: Advanced Analysis (Week 3-4)
+
 - [ ] Fragmentation detection
 - [ ] Cohesion scoring
 - [ ] Module clustering
@@ -749,6 +776,7 @@ Shows trends, benchmarks
 - [ ] HTML report generation
 
 ### Phase 3: Polish (Week 5)
+
 - [ ] Comprehensive README
 - [ ] CLI presets and examples
 - [ ] Performance optimization
@@ -756,6 +784,7 @@ Shows trends, benchmarks
 - [ ] Publish to npm
 
 ### Phase 4: SaaS Foundation (Future)
+
 - [ ] API endpoint for analysis upload
 - [ ] Database schema for historical data
 - [ ] Authentication system
@@ -765,22 +794,25 @@ Shows trends, benchmarks
 ## 🔗 Integration Points
 
 ### With @aiready/core
+
 ```typescript
 import {
   scanFiles,
   readFileContent,
   estimateTokens,
   buildAST,
-  extractImports
+  extractImports,
 } from '@aiready/core';
 ```
 
 ### With @aiready/pattern-detect
+
 - Cross-reference fragmented modules with duplicate patterns
 - Combined reports showing both issues
 - Unified recommendations
 
 ### With Future Tools
+
 - **@aiready/doc-drift:** Include stale docs in context cost
 - **@aiready/consistency:** Factor naming patterns into cohesion
 - **@aiready/deps:** Use dependency analysis for import depth
@@ -788,11 +820,13 @@ import {
 ## 🚀 Competitive Positioning
 
 ### What Exists (Don't Compete)
+
 - **madge** - Circular dependency detection (different focus)
 - **dependency-cruiser** - Dependency validation rules (different angle)
 - **cost-of-modules** - npm package size (not about AI context)
 
 ### Our Unique Value
+
 1. **AI-Context Focus** - Only tool measuring context window impact
 2. **Fragmentation Detection** - Identifies scattered implementations
 3. **Token Cost Quantification** - Shows exact $ waste
@@ -800,13 +834,15 @@ import {
 5. **SaaS Historical Tracking** - Trend analysis over time
 
 ### Marketing Message
-> "AI tools are only as good as your code structure. 
+
+> "AI tools are only as good as your code structure.
 > Stop wasting context tokens on fragmented code.
 > AIReady Context Analyzer shows you exactly where to consolidate."
 
 ## 📚 References
 
 When implementing, refer to:
+
 - `.github/copilot-instructions.md` - Overall architecture guidelines
 - `packages/core/src/` - Shared utilities (scanFiles, estimateTokens, etc.)
 - `packages/pattern-detect/` - Reference spoke implementation

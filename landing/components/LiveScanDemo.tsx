@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
@@ -12,53 +12,97 @@ interface ScanIssue {
 }
 
 const issuesList: ScanIssue[] = [
-  { id: 1, type: 'duplicate', file: 'src/utils/helpers.ts', severity: 'high', message: 'Semantic duplicate detected' },
-  { id: 2, type: 'context', file: 'src/components/Auth.tsx', severity: 'medium', message: 'Context fragmentation detected' },
-  { id: 3, type: 'consistency', file: 'src/api/users.ts', severity: 'high', message: 'Inconsistent naming pattern' },
-  { id: 4, type: 'duplicate', file: 'src/lib/validation.ts', severity: 'medium', message: 'Similar logic found in 3 files' },
-  { id: 5, type: 'context', file: 'src/services/payment.ts', severity: 'low', message: 'High context window cost' },
-  { id: 6, type: 'consistency', file: 'src/models/Product.ts', severity: 'medium', message: 'Style inconsistency detected' },
+  {
+    id: 1,
+    type: 'duplicate',
+    file: 'src/utils/helpers.ts',
+    severity: 'high',
+    message: 'Semantic duplicate detected',
+  },
+  {
+    id: 2,
+    type: 'context',
+    file: 'src/components/Auth.tsx',
+    severity: 'medium',
+    message: 'Context fragmentation detected',
+  },
+  {
+    id: 3,
+    type: 'consistency',
+    file: 'src/api/users.ts',
+    severity: 'high',
+    message: 'Inconsistent naming pattern',
+  },
+  {
+    id: 4,
+    type: 'duplicate',
+    file: 'src/lib/validation.ts',
+    severity: 'medium',
+    message: 'Similar logic found in 3 files',
+  },
+  {
+    id: 5,
+    type: 'context',
+    file: 'src/services/payment.ts',
+    severity: 'low',
+    message: 'High context window cost',
+  },
+  {
+    id: 6,
+    type: 'consistency',
+    file: 'src/models/Product.ts',
+    severity: 'medium',
+    message: 'Style inconsistency detected',
+  },
 ];
 
 const getSeverityColor = (severity: string) => {
   switch (severity) {
-    case 'high': return {
-      border: 'border-red-500/30',
-      bg: 'bg-gradient-to-r from-red-950/40 to-red-900/20',
-      text: 'text-red-400',
-      glow: 'shadow-[0_0_15px_rgba(239,68,68,0.3)]',
-      badge: 'bg-red-500/20 text-red-400 border border-red-500/30'
-    };
-    case 'medium': return {
-      border: 'border-yellow-500/30',
-      bg: 'bg-gradient-to-r from-yellow-950/40 to-yellow-900/20',
-      text: 'text-yellow-400',
-      glow: 'shadow-[0_0_15px_rgba(234,179,8,0.3)]',
-      badge: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-    };
-    case 'low': return {
-      border: 'border-blue-500/30',
-      bg: 'bg-gradient-to-r from-blue-950/40 to-blue-900/20',
-      text: 'text-blue-400',
-      glow: 'shadow-[0_0_15px_rgba(59,130,246,0.3)]',
-      badge: 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-    };
-    default: return {
-      border: 'border-slate-500/30',
-      bg: 'bg-gradient-to-r from-slate-900/40 to-slate-800/20',
-      text: 'text-slate-400',
-      glow: 'shadow-[0_0_15px_rgba(100,116,139,0.3)]',
-      badge: 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
-    };
+    case 'high':
+      return {
+        border: 'border-red-500/30',
+        bg: 'bg-gradient-to-r from-red-950/40 to-red-900/20',
+        text: 'text-red-400',
+        glow: 'shadow-[0_0_15px_rgba(239,68,68,0.3)]',
+        badge: 'bg-red-500/20 text-red-400 border border-red-500/30',
+      };
+    case 'medium':
+      return {
+        border: 'border-yellow-500/30',
+        bg: 'bg-gradient-to-r from-yellow-950/40 to-yellow-900/20',
+        text: 'text-yellow-400',
+        glow: 'shadow-[0_0_15px_rgba(234,179,8,0.3)]',
+        badge: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
+      };
+    case 'low':
+      return {
+        border: 'border-blue-500/30',
+        bg: 'bg-gradient-to-r from-blue-950/40 to-blue-900/20',
+        text: 'text-blue-400',
+        glow: 'shadow-[0_0_15px_rgba(59,130,246,0.3)]',
+        badge: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+      };
+    default:
+      return {
+        border: 'border-slate-500/30',
+        bg: 'bg-gradient-to-r from-slate-900/40 to-slate-800/20',
+        text: 'text-slate-400',
+        glow: 'shadow-[0_0_15px_rgba(100,116,139,0.3)]',
+        badge: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
+      };
   }
 };
 
 const getTypeIcon = (type: string) => {
   switch (type) {
-    case 'duplicate': return '🔄';
-    case 'context': return '📊';
-    case 'consistency': return '⚡';
-    default: return '🔍';
+    case 'duplicate':
+      return '🔄';
+    case 'context':
+      return '📊';
+    case 'consistency':
+      return '⚡';
+    default:
+      return '🔍';
   }
 };
 
@@ -80,9 +124,9 @@ export default function LiveScanDemo() {
     }
 
     setIsScanning(true);
-    
+
     const scoreInterval = setInterval(() => {
-      setScore(prev => {
+      setScore((prev) => {
         if (prev >= 67) {
           clearInterval(scoreInterval);
           return 67;
@@ -92,7 +136,7 @@ export default function LiveScanDemo() {
     }, 30);
 
     const progressInterval = setInterval(() => {
-      setProgress(prev => {
+      setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           setIsScanning(false);
@@ -103,9 +147,12 @@ export default function LiveScanDemo() {
     }, 30);
 
     issuesList.forEach((issue, index) => {
-      setTimeout(() => {
-        setVisibleIssues(prev => [...prev, issue]);
-      }, 500 + index * 600);
+      setTimeout(
+        () => {
+          setVisibleIssues((prev) => [...prev, issue]);
+        },
+        500 + index * 600
+      );
     });
 
     return () => {
@@ -115,20 +162,29 @@ export default function LiveScanDemo() {
   }, [isInView]);
 
   const getScoreColor = () => {
-    if (score >= 80) return { stroke: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' };
-    if (score >= 60) return { stroke: '#eab308', glow: 'rgba(234, 179, 8, 0.3)' };
+    if (score >= 80)
+      return { stroke: '#10b981', glow: 'rgba(16, 185, 129, 0.3)' };
+    if (score >= 60)
+      return { stroke: '#eab308', glow: 'rgba(234, 179, 8, 0.3)' };
     return { stroke: '#ef4444', glow: 'rgba(239, 68, 68, 0.3)' };
   };
 
   const scoreColor = getScoreColor();
 
   return (
-    <section ref={ref} className="py-20 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <section
+      ref={ref}
+      className="py-20 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden"
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-purple-900/20" />
-      <div className="absolute inset-0" style={{
-        backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)'
-      }} />
-      
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%)',
+        }}
+      />
+
       <div className="container mx-auto px-4 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -142,23 +198,26 @@ export default function LiveScanDemo() {
             </span>
           </h2>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            Watch AIReady analyze your codebase and surface issues that confuse AI models
+            Watch AIReady analyze your codebase and surface issues that confuse
+            AI models
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            animate={
+              isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }
+            }
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col items-center justify-center"
           >
             <div className="relative w-64 h-64 md:w-80 md:h-80">
-              <div 
+              <div
                 className="absolute inset-0 rounded-full blur-2xl opacity-50 transition-all duration-500"
                 style={{ backgroundColor: scoreColor.glow }}
               />
-              
+
               <svg className="w-full h-full transform -rotate-90 relative z-10">
                 {Array.from({ length: 20 }).map((_, i) => {
                   const angle = (i * 360) / 20;
@@ -166,14 +225,26 @@ export default function LiveScanDemo() {
                   const radius = 90;
                   const strokeWidth = 8;
                   const gapAngle = 4;
-                  
-                  const startX = 50 + radius * Math.cos((startAngle * Math.PI) / 180);
-                  const startY = 50 + radius * Math.sin((startAngle * Math.PI) / 180);
-                  const endX = 50 + radius * Math.cos(((startAngle + (360/20) - gapAngle) * Math.PI) / 180);
-                  const endY = 50 + radius * Math.sin(((startAngle + (360/20) - gapAngle) * Math.PI) / 180);
-                  
+
+                  const startX =
+                    50 + radius * Math.cos((startAngle * Math.PI) / 180);
+                  const startY =
+                    50 + radius * Math.sin((startAngle * Math.PI) / 180);
+                  const endX =
+                    50 +
+                    radius *
+                      Math.cos(
+                        ((startAngle + 360 / 20 - gapAngle) * Math.PI) / 180
+                      );
+                  const endY =
+                    50 +
+                    radius *
+                      Math.sin(
+                        ((startAngle + 360 / 20 - gapAngle) * Math.PI) / 180
+                      );
+
                   const isActive = (i / 20) * 100 <= progress;
-                  
+
                   return (
                     <motion.line
                       key={i}
@@ -185,9 +256,11 @@ export default function LiveScanDemo() {
                       strokeWidth={strokeWidth}
                       strokeLinecap="round"
                       initial={{ opacity: 0.3 }}
-                      animate={{ 
+                      animate={{
                         opacity: isActive ? 1 : 0.3,
-                        filter: isActive ? `drop-shadow(0 0 4px ${scoreColor.stroke})` : 'none'
+                        filter: isActive
+                          ? `drop-shadow(0 0 4px ${scoreColor.stroke})`
+                          : 'none',
                       }}
                       transition={{ duration: 0.3 }}
                     />
@@ -202,11 +275,11 @@ export default function LiveScanDemo() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="text-center"
                 >
-                  <motion.div 
+                  <motion.div
                     className="text-6xl md:text-7xl font-black mb-2"
                     style={{ color: scoreColor.stroke }}
-                    animate={{ 
-                      textShadow: `0 0 20px ${scoreColor.glow}, 0 0 40px ${scoreColor.glow}`
+                    animate={{
+                      textShadow: `0 0 20px ${scoreColor.glow}, 0 0 40px ${scoreColor.glow}`,
                     }}
                   >
                     {score}
@@ -214,7 +287,10 @@ export default function LiveScanDemo() {
                   <div className="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-400 mb-1">
                     AI Readiness
                   </div>
-                  <div className="text-xl md:text-2xl font-black tracking-tight" style={{ color: scoreColor.stroke }}>
+                  <div
+                    className="text-xl md:text-2xl font-black tracking-tight"
+                    style={{ color: scoreColor.stroke }}
+                  >
                     SCORE
                   </div>
                 </motion.div>
@@ -231,7 +307,11 @@ export default function LiveScanDemo() {
                 <>
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
                     className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full"
                   />
                   <span className="text-sm font-bold text-cyan-400 uppercase tracking-wide">
@@ -261,15 +341,15 @@ export default function LiveScanDemo() {
             className="space-y-3"
           >
             <div className="flex items-center gap-3 mb-6">
-              <motion.div 
-                className="w-2 h-2 bg-cyan-400 rounded-full" 
-                animate={{ 
+              <motion.div
+                className="w-2 h-2 bg-cyan-400 rounded-full"
+                animate={{
                   scale: [1, 1.5, 1],
                   boxShadow: [
                     '0 0 10px rgba(34, 211, 238, 0.5)',
                     '0 0 20px rgba(34, 211, 238, 0.8)',
-                    '0 0 10px rgba(34, 211, 238, 0.5)'
-                  ]
+                    '0 0 10px rgba(34, 211, 238, 0.5)',
+                  ],
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
@@ -282,7 +362,7 @@ export default function LiveScanDemo() {
             <div className="relative">
               {/* Sci-fi border effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 rounded-lg blur-sm" />
-              
+
               <div className="relative space-y-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-slate-800/50 scrollbar-thumb-cyan-500/30 hover:scrollbar-thumb-cyan-500/50">
                 {visibleIssues.map((issue, index) => {
                   const colors = getSeverityColor(issue.severity);
@@ -300,31 +380,37 @@ export default function LiveScanDemo() {
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent"
                         initial={{ x: '-100%' }}
                         animate={{ x: '200%' }}
-                        transition={{ 
-                          duration: 3, 
-                          repeat: Infinity, 
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
                           repeatDelay: 5,
-                          ease: "linear" 
+                          ease: 'linear',
                         }}
                       />
-                      
+
                       {/* Corner decorations */}
                       <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500/50" />
                       <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan-500/50" />
                       <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan-500/50" />
                       <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500/50" />
-                      
+
                       <div className="flex items-start gap-3 relative z-10">
-                        <motion.span 
+                        <motion.span
                           className="text-2xl"
                           animate={{ rotate: [0, 10, 0, -10, 0] }}
-                          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatDelay: 3,
+                          }}
                         >
                           {getTypeIcon(issue.type)}
                         </motion.span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${colors.badge}`}>
+                            <span
+                              className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${colors.badge}`}
+                            >
                               {issue.severity}
                             </span>
                             <div className="h-px w-2 bg-slate-600" />
@@ -332,12 +418,14 @@ export default function LiveScanDemo() {
                               {issue.file}
                             </span>
                           </div>
-                          <p className={`text-sm font-medium ${colors.text} leading-relaxed`}>
+                          <p
+                            className={`text-sm font-medium ${colors.text} leading-relaxed`}
+                          >
                             {issue.message}
                           </p>
-                          
+
                           {/* Progress indicator */}
-                          <motion.div 
+                          <motion.div
                             className="mt-2 h-1 bg-slate-800 rounded-full overflow-hidden"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -365,20 +453,20 @@ export default function LiveScanDemo() {
                 <motion.div
                   className="absolute inset-0 flex items-center justify-center"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
                 >
                   <div className="w-32 h-32 border-2 border-cyan-500/20 rounded-full" />
                 </motion.div>
                 <motion.div
                   className="absolute inset-0 flex items-center justify-center"
                   animate={{ rotate: -360 }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
                 >
                   <div className="w-24 h-24 border-2 border-blue-500/20 rounded-full" />
                 </motion.div>
-                
+
                 <div className="relative z-10">
-                  <motion.div 
+                  <motion.div
                     className="text-5xl mb-3"
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
@@ -394,7 +482,11 @@ export default function LiveScanDemo() {
                         key={i}
                         className="w-1 h-1 bg-cyan-400 rounded-full"
                         animate={{ opacity: [0.3, 1, 0.3] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: i * 0.3,
+                        }}
                       />
                     ))}
                   </div>

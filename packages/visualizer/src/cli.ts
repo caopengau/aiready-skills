@@ -2,10 +2,10 @@
 
 /**
  * CLI for generating visualizations
- * 
+ *
  * Usage:
  *   aiready-visualize                    # Start dev server (default)
- *   aiready-visualize --dev              # Start dev server  
+ *   aiready-visualize --dev              # Start dev server
  *   aiready-visualize -o file.html       # Generate static HTML
  *   aiready-visualize sample -o file.html # Generate sample visualization
  */
@@ -36,7 +36,7 @@ const WEB_PORT = 8000;
  */
 function startDevServer(rootDir: string): void {
   const webDir = resolve(__dirname, '../web');
-  
+
   console.log('🎯 AIReady Visualizer');
   console.log('🚀 Starting interactive web application...');
   console.log();
@@ -55,7 +55,7 @@ function startDevServer(rootDir: string): void {
     cwd: webDir,
     stdio: 'inherit',
     shell: true,
-    env: { ...process.env, FORCE_COLOR: '1' }
+    env: { ...process.env, FORCE_COLOR: '1' },
   });
 
   vite.on('error', (err) => {
@@ -78,7 +78,11 @@ function generateSampleGraph(rootDir: string): GraphData {
   // Add some edges
   builder.addEdge('src/index.ts', 'src/components/App.tsx', 'dependency');
   builder.addEdge('src/index.ts', 'src/utils/helper.ts', 'dependency');
-  builder.addEdge('src/components/App.tsx', 'src/utils/helper.ts', 'dependency');
+  builder.addEdge(
+    'src/components/App.tsx',
+    'src/utils/helper.ts',
+    'dependency'
+  );
 
   return builder.build();
 }
@@ -97,7 +101,7 @@ function parseArgs(args: string[]): CLIOptions {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg === '--dev' || arg === '-d') {
       options.dev = true;
     } else if (arg === '--output' || arg === '-o') {
@@ -154,7 +158,7 @@ Examples:
  */
 async function main() {
   const args = process.argv.slice(2);
-  
+
   // Show help if requested
   if (args.includes('--help') || args.includes('-h')) {
     printHelp();
@@ -182,7 +186,9 @@ async function main() {
   console.log('🔨 Building graph...');
   const graph = generateSampleGraph(rootDir);
 
-  console.log(`✅ Graph built: ${graph.nodes.length} nodes, ${graph.edges.length} edges`);
+  console.log(
+    `✅ Graph built: ${graph.nodes.length} nodes, ${graph.edges.length} edges`
+  );
   console.log();
 
   // Generate HTML
@@ -198,12 +204,17 @@ async function main() {
 
   if (options.open) {
     console.log('🌐 Opening in browser...');
-    const opener = process.platform === 'darwin' ? 'open' :
-                   process.platform === 'win32' ? 'start' :
-                   'xdg-open';
+    const opener =
+      process.platform === 'darwin'
+        ? 'open'
+        : process.platform === 'win32'
+          ? 'start'
+          : 'xdg-open';
     exec(`${opener} "${resolvedPath}"`);
   } else {
-    console.log(`💡 Open ${resolvedPath} in your browser to view the visualization`);
+    console.log(
+      `💡 Open ${resolvedPath} in your browser to view the visualization`
+    );
   }
 }
 

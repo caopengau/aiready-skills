@@ -16,7 +16,10 @@ export async function PATCH(
     const remediation = await getRemediation(id);
 
     if (!remediation) {
-      return NextResponse.json({ error: 'Remediation not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Remediation not found' },
+        { status: 404 }
+      );
     }
 
     // Only allow the remediation owner to reject
@@ -32,6 +35,9 @@ export async function PATCH(
     return NextResponse.json({ success: true, status: 'rejected' });
   } catch (error) {
     console.error('Error rejecting remediation:', error);
-    return NextResponse.json({ error: 'Failed to reject remediation' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to reject remediation' },
+      { status: 500 }
+    );
   }
 }

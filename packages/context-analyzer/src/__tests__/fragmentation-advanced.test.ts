@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  calculatePathEntropy,
-  calculateDirectoryDistance,
-} from '../analyzer';
+import { calculatePathEntropy, calculateDirectoryDistance } from '../analyzer';
 
 describe('advanced fragmentation heuristics', () => {
   it('path entropy is low when most files are in one directory', () => {
@@ -25,13 +22,7 @@ describe('advanced fragmentation heuristics', () => {
   });
 
   it('path entropy is high when files are evenly distributed', () => {
-    const files = [
-      'a/f1.ts',
-      'b/f2.ts',
-      'c/f3.ts',
-      'd/f4.ts',
-      'e/f5.ts',
-    ];
+    const files = ['a/f1.ts', 'b/f2.ts', 'c/f3.ts', 'd/f4.ts', 'e/f5.ts'];
 
     const entropy = calculatePathEntropy(files);
     expect(entropy).toBeGreaterThan(0.8);

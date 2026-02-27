@@ -13,10 +13,10 @@ describe('Language File Filtering', () => {
       '/path/to/file.tsx',
       '/path/to/file.js',
       '/path/to/file.jsx',
-      '/path/to/file.py',     // Should be filtered out
-      '/path/to/file.java',   // Should be filtered out
-      '/path/to/file.rb',     // Should be filtered out
-      '/path/to/file.go',     // Should be filtered out
+      '/path/to/file.py', // Should be filtered out
+      '/path/to/file.java', // Should be filtered out
+      '/path/to/file.rb', // Should be filtered out
+      '/path/to/file.go', // Should be filtered out
     ];
 
     // This test verifies that the function doesn't crash on non-JS/TS files
@@ -26,10 +26,7 @@ describe('Language File Filtering', () => {
   });
 
   it('should filter out Python files before parsing', async () => {
-    const files = [
-      '/path/to/script.py',
-      '/path/to/another.py',
-    ];
+    const files = ['/path/to/script.py', '/path/to/another.py'];
 
     // Should not attempt to parse Python files
     const result = await analyzeNamingAST(files);
@@ -42,7 +39,7 @@ describe('Language File Filtering', () => {
       'test.jsx',
       'test.ts',
       'test.tsx',
-      'TEST.JS',  // Test case-insensitive
+      'TEST.JS', // Test case-insensitive
       'TEST.TS',
     ];
 

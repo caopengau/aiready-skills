@@ -16,13 +16,13 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 Rules are organized by priority/impact:
 
-| Section | Impact | Prefix | Examples |
-|---------|--------|--------|----------|
-| Pattern Detection | CRITICAL | `patterns-` | Semantic duplicates, naming |
-| Context Optimization | HIGH | `context-` | Import depth, cohesion |
-| Consistency | MEDIUM | `consistency-` | Naming conventions, errors |
-| Documentation | MEDIUM | `docs-` | Code-doc sync |
-| Dependencies | LOW | `deps-` | Circular deps |
+| Section              | Impact   | Prefix         | Examples                    |
+| -------------------- | -------- | -------------- | --------------------------- |
+| Pattern Detection    | CRITICAL | `patterns-`    | Semantic duplicates, naming |
+| Context Optimization | HIGH     | `context-`     | Import depth, cohesion      |
+| Consistency          | MEDIUM   | `consistency-` | Naming conventions, errors  |
+| Documentation        | MEDIUM   | `docs-`        | Code-doc sync               |
+| Dependencies         | LOW      | `deps-`        | Circular deps               |
 
 ### 2. Use the Template
 
@@ -34,7 +34,7 @@ cp aiready-best-practices/rules/_template.md aiready-best-practices/rules/patter
 
 ### 3. Fill in Required Fields
 
-```markdown
+````markdown
 ---
 title: Descriptive Rule Title
 impact: CRITICAL | HIGH | MEDIUM | LOW
@@ -52,18 +52,24 @@ Brief explanation of why this rule matters and its impact on AI comprehension.
 
 ```typescript
 // Bad code example with clear explanation
-const badExample = () => { /* ... */ }
+const badExample = () => {
+  /* ... */
+};
 ```
+````
 
 **Correct:**
 
 ```typescript
 // Good code example with clear explanation
-const goodExample = () => { /* ... */ }
+const goodExample = () => {
+  /* ... */
+};
 ```
 
 Reference: [Link to documentation](https://example.com)
-```
+
+````
 
 ### 4. Guidelines for Good Rules
 
@@ -95,7 +101,7 @@ pnpm run build
 # - GitHub Copilot
 # - Cursor
 # - Claude Code
-```
+````
 
 ## Impact Levels
 
@@ -112,12 +118,20 @@ Choose the appropriate impact level:
 
 ```typescript
 // ❌ Incorrect: Multiple implementations of same concept
-function getUserData() { return fetch('/api/user') }
-function fetchUserInfo() { return fetch('/api/user') }
-function loadUser() { return fetch('/api/user') }
+function getUserData() {
+  return fetch('/api/user');
+}
+function fetchUserInfo() {
+  return fetch('/api/user');
+}
+function loadUser() {
+  return fetch('/api/user');
+}
 
 // ✅ Correct: Single, consistent implementation
-function getUser() { return fetch('/api/user') }
+function getUser() {
+  return fetch('/api/user');
+}
 ```
 
 ### Explanation Style

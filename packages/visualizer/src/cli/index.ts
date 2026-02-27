@@ -2,7 +2,7 @@
 
 /**
  * CLI for AIReady Visualizer
- * 
+ *
  * Usage:
  *   aiready visualise                # Start dev server (default)
  */
@@ -24,7 +24,9 @@ const program = new Command();
 
 program
   .name('aiready-visualize')
-  .description('Generate interactive visualizations from AIReady analysis results')
+  .description(
+    'Generate interactive visualizations from AIReady analysis results'
+  )
   .version('0.1.0')
   .option('-d, --dev', 'Start interactive web application (default)', true)
   .option('-o, --output <file>', 'Output HTML file for static generation')
@@ -35,7 +37,7 @@ program
  */
 function startDevServer(rootDir: string): void {
   const webDir = resolve(__dirname, '../web');
-  
+
   console.log('🎯 AIReady Visualizer');
   console.log('🚀 Starting interactive web application...');
   console.log();
@@ -54,7 +56,7 @@ function startDevServer(rootDir: string): void {
     cwd: webDir,
     stdio: 'inherit',
     shell: true,
-    env: { ...process.env, FORCE_COLOR: '1' }
+    env: { ...process.env, FORCE_COLOR: '1' },
   });
 
   vite.on('error', (err) => {
@@ -62,7 +64,6 @@ function startDevServer(rootDir: string): void {
     process.exit(1);
   });
 }
-
 
 program
   .command('sample')
@@ -72,20 +73,27 @@ program
   .action(async (options) => {
     const { writeFileSync } = await import('fs');
     const { exec } = await import('child_process');
-    
+
     console.log('Generating sample visualization...');
     const graph = createSampleGraph();
-    
-    console.log(`\nSample graph created with ${graph.nodes.length} nodes and ${graph.edges.length} edges`);
-    
+
+    console.log(
+      `\nSample graph created with ${graph.nodes.length} nodes and ${graph.edges.length} edges`
+    );
+
     const html = generateHTML(graph);
     const outputPath = resolve(options.output);
     writeFileSync(outputPath, html);
-    
+
     console.log(`✅ HTML saved to: ${outputPath}`);
-    
+
     if (options.open) {
-      const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+      const opener =
+        process.platform === 'darwin'
+          ? 'open'
+          : process.platform === 'win32'
+            ? 'start'
+            : 'xdg-open';
       exec(`${opener} "${outputPath}"`);
     }
   });
@@ -99,30 +107,40 @@ program
   .action(async (input, options) => {
     const { readFileSync, writeFileSync } = await import('fs');
     const { exec } = await import('child_process');
-    
+
     console.log(`Reading analysis results from: ${input}`);
     const report = JSON.parse(readFileSync(input, 'utf-8'));
-    
+
     const rootDir = process.cwd();
     const graph = GraphBuilder.buildFromReport(report, rootDir);
-    
-    console.log(`Graph built: ${graph.nodes.length} nodes, ${graph.edges.length} edges`);
-    
+
+    console.log(
+      `Graph built: ${graph.nodes.length} nodes, ${graph.edges.length} edges`
+    );
+
     const html = generateHTML(graph);
     const outputPath = resolve(options.output);
     writeFileSync(outputPath, html);
-    
+
     console.log(`✅ HTML saved to: ${outputPath}`);
-    
+
     if (options.open) {
-      const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+      const opener =
+        process.platform === 'darwin'
+          ? 'open'
+          : process.platform === 'win32'
+            ? 'start'
+            : 'xdg-open';
       exec(`${opener} "${outputPath}"`);
     }
   });
 
 // Handle default case: start dev server when no arguments provided
 const args = process.argv.slice(2);
-if (args.length === 0 || (args.length === 1 && (args[0] === '--dev' || args[0] === '-d'))) {
+if (
+  args.length === 0 ||
+  (args.length === 1 && (args[0] === '--dev' || args[0] === '-d'))
+) {
   startDevServer(process.cwd());
 } else {
   program.parse();

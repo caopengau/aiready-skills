@@ -11,23 +11,27 @@ interface OnboardingProps {
 const steps = [
   {
     title: 'Welcome to AIReady!',
-    description: 'Let\'s make your codebase AI-ready. I\'ll guide you through the basics.',
+    description:
+      "Let's make your codebase AI-ready. I'll guide you through the basics.",
     icon: '🚀',
   },
   {
     title: 'Add a Repository',
-    description: 'Click "Add Repository" to connect your first project. You can add up to 3 repos on the Free plan.',
+    description:
+      'Click "Add Repository" to connect your first project. You can add up to 3 repos on the Free plan.',
     icon: '📁',
   },
   {
     title: 'Run the CLI',
-    description: 'Install and run our CLI to analyze your codebase. It works locally and keeps your code private.',
+    description:
+      'Install and run our CLI to analyze your codebase. It works locally and keeps your code private.',
     icon: '💻',
     code: 'npx @aiready/cli scan . --output json > report.json',
   },
   {
     title: 'Upload & Learn',
-    description: 'Upload the report.json file to see your AI Readiness Score. We\'ll show you what to fix.',
+    description:
+      "Upload the report.json file to see your AI Readiness Score. We'll show you what to fix.",
     icon: '📊',
   },
 ];
@@ -41,7 +45,7 @@ export default function Onboarding({ onComplete, userName }: OnboardingProps) {
     if (isLastStep) {
       onComplete();
     } else {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
@@ -67,7 +71,9 @@ export default function Onboarding({ onComplete, userName }: OnboardingProps) {
           <div className="h-1 bg-slate-800">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+              animate={{
+                width: `${((currentStep + 1) / steps.length) * 100}%`,
+              }}
               className="h-full bg-gradient-to-r from-blue-600 to-cyan-600"
             />
           </div>
@@ -95,7 +101,7 @@ export default function Onboarding({ onComplete, userName }: OnboardingProps) {
                   {step.title}
                 </h2>
                 <p className="text-slate-400 mb-6">{step.description}</p>
-                
+
                 {step.code && (
                   <div className="bg-slate-800/50 rounded-lg p-4 font-mono text-sm text-cyan-400 mb-6 border border-slate-700">
                     <div className="flex items-center gap-2">

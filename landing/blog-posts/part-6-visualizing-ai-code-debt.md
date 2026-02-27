@@ -8,7 +8,7 @@ When we talk about technical debt, we usually talk about lists. A linter report 
 
 But for AI-generated code, lists are deceiving. "15 duplicates" sounds manageable—until you realize they are all slight variations of your core authentication logic spread across five different micro-frontends.
 
-Text-based metrics fail to convey **structural complexity**. They tell you *what* is wrong, but not *where* it fits in the bigger picture. In the age of "vibe coding," where code is generated faster than it can be read, we need a new way to understand our systems. We need to see the shape of our debt.
+Text-based metrics fail to convey **structural complexity**. They tell you _what_ is wrong, but not _where_ it fits in the bigger picture. In the age of "vibe coding," where code is generated faster than it can be read, we need a new way to understand our systems. We need to see the shape of our debt.
 
 ## The Solution: Introducing the AIReady Visualizer
 
@@ -47,7 +47,8 @@ When we run the visualizer on "vibe-coded" projects, three distinct patterns eme
 **What it looks like:** A single node with massive connections radiating out (high fan-out) or pointing in (high fan-in). Often seen in files named `utils/index.ts` or `types/common.ts`.
 
 **The Problem:** These files are bottlenecks and context bloat.
-- **High Fan-In:** Changing this file breaks *everything*. AI agents struggle to predict the blast radius of changes here.
+
+- **High Fan-In:** Changing this file breaks _everything_. AI agents struggle to predict the blast radius of changes here.
 - **High Fan-Out:** Importing this file brings in a massive tree of unnecessary dependencies, polluting the AI's context window with irrelevant code.
 
 **The Fix:** Split these "god objects" into smaller, deeper modules.
@@ -62,10 +63,11 @@ Under the hood, the AIReady Visualizer combines two powerful tools:
 ## Use Case: Bridging the "Vibe" Gap
 
 We're seeing a growing divide in engineering teams:
-- **The "Vibe Coders":** Junior devs or founders using AI to ship features at breakneck speed. Their focus is *output*.
-- **The Engineering Managers:** Seniors trying to maintain stability and scalability. Their focus is *structure*.
 
-The visualizer bridges this gap. It's hard to explain abstract architectural principles to a junior dev who just wants to "ship it." It's much easier to show them a giant, tangled "Hairball" and say, *"See this knot? This is why your build takes 15 minutes and why the AI keeps getting confused."*
+- **The "Vibe Coders":** Junior devs or founders using AI to ship features at breakneck speed. Their focus is _output_.
+- **The Engineering Managers:** Seniors trying to maintain stability and scalability. Their focus is _structure_.
+
+The visualizer bridges this gap. It's hard to explain abstract architectural principles to a junior dev who just wants to "ship it." It's much easier to show them a giant, tangled "Hairball" and say, _"See this knot? This is why your build takes 15 minutes and why the AI keeps getting confused."_
 
 Visuals turn abstract "best practices" into concrete, observable reality.
 
@@ -74,6 +76,7 @@ Visuals turn abstract "best practices" into concrete, observable reality.
 Don't let your codebase become a black box. You can visualize your own project's shape today.
 
 Run the analysis on your repository:
+
 ```bash
 npx aiready visualise
 ```

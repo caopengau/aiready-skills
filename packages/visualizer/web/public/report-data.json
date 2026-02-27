@@ -1,11 +1,7 @@
 {
   "summary": {
     "totalIssues": 134,
-    "toolsRun": [
-      "patterns",
-      "context",
-      "consistency"
-    ],
+    "toolsRun": ["patterns", "context", "consistency"],
     "executionTime": 479
   },
   "patterns": [
@@ -741,13 +737,7 @@
       "linesOfCode": 846,
       "importDepth": 1,
       "dependencyCount": 5,
-      "dependencyList": [
-        "commander",
-        "./index",
-        "chalk",
-        "fs",
-        "path"
-      ],
+      "dependencyList": ["commander", "./index", "chalk", "fs", "path"],
       "circularDeps": [],
       "cohesionScore": 1,
       "domains": [],
@@ -768,12 +758,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 2989
     },
     {
@@ -791,9 +777,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 7322,
       "fragmentationScore": 0.2926829268292683,
@@ -841,12 +825,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 2196
     },
     {
@@ -885,12 +865,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 1674
     },
     {
@@ -899,16 +875,10 @@
       "linesOfCode": 729,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "@aiready/core",
-        "./semantic-analysis",
-        "..."
-      ],
+      "dependencyList": ["@aiready/core", "./semantic-analysis", "..."],
       "circularDeps": [],
       "cohesionScore": 0.5801587301587302,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 10,
       "contextBudget": 5040,
       "fragmentationScore": 0.5,
@@ -966,12 +936,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 1493
     },
     {
@@ -980,15 +946,10 @@
       "linesOfCode": 412,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "react"
-      ],
+      "dependencyList": ["framer-motion", "react"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 4439,
       "fragmentationScore": 0.2926829268292683,
@@ -1036,12 +997,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 1331
     },
     {
@@ -1050,15 +1007,10 @@
       "linesOfCode": 509,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aiready/core",
-        "./context-rules"
-      ],
+      "dependencyList": ["@aiready/core", "./context-rules"],
       "circularDeps": [],
       "cohesionScore": 0.4,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 3,
       "contextBudget": 4131,
       "fragmentationScore": 0.5,
@@ -1087,15 +1039,10 @@
       "linesOfCode": 548,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aiready/core",
-        "./scoring"
-      ],
+      "dependencyList": ["@aiready/core", "./scoring"],
       "circularDeps": [],
       "cohesionScore": 0.4461538461538462,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 2,
       "contextBudget": 4114,
       "fragmentationScore": 0.5,
@@ -1124,15 +1071,10 @@
       "linesOfCode": 465,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "./detector",
-        "./context-rules"
-      ],
+      "dependencyList": ["./detector", "./context-rules"],
       "circularDeps": [],
       "cohesionScore": 0.6333333333333333,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 5,
       "contextBudget": 3608,
       "fragmentationScore": 0.2926829268292683,
@@ -1196,16 +1138,10 @@
       "linesOfCode": 293,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "@aiready/core",
-        "../types",
-        "../utils/config-loader"
-      ],
+      "dependencyList": ["@aiready/core", "../types", "../utils/config-loader"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 1,
       "contextBudget": 3212,
       "fragmentationScore": 0.5,
@@ -1218,12 +1154,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/patterns.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (50%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (50%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 963
     },
     {
@@ -1240,9 +1172,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 0.45833333333333337,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 4,
       "contextBudget": 3175,
       "fragmentationScore": 0.5,
@@ -1279,9 +1209,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "config"
-      ],
+      "domains": ["config"],
       "exportCount": 1,
       "contextBudget": 3030,
       "fragmentationScore": 1,
@@ -1291,12 +1219,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/utils/config-loader.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 909
     },
     {
@@ -1334,12 +1258,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 722
     },
     {
@@ -1351,10 +1271,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 0.7892419038528016,
-      "domains": [
-        "user",
-        "app"
-      ],
+      "domains": ["user", "app"],
       "exportCount": 7,
       "contextBudget": 2326,
       "fragmentationScore": 0.2926829268292683,
@@ -1418,14 +1335,10 @@
       "linesOfCode": 288,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "./types"
-      ],
+      "dependencyList": ["./types"],
       "circularDeps": [],
       "cohesionScore": 0.5733333333333334,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 7,
       "contextBudget": 2284,
       "fragmentationScore": 0.2926829268292683,
@@ -1489,15 +1402,10 @@
       "linesOfCode": 228,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "react",
-        "framer-motion"
-      ],
+      "dependencyList": ["react", "framer-motion"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 2205,
       "fragmentationScore": 0.2926829268292683,
@@ -1545,12 +1453,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 661
     },
     {
@@ -1562,9 +1466,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 7,
       "contextBudget": 2138,
       "fragmentationScore": 0.2926829268292683,
@@ -1612,12 +1514,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 641
     },
     {
@@ -1653,12 +1551,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 621
     },
     {
@@ -1667,14 +1561,10 @@
       "linesOfCode": 277,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "@typescript-eslint/typescript-estree"
-      ],
+      "dependencyList": ["@typescript-eslint/typescript-estree"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 8,
       "contextBudget": 2003,
       "fragmentationScore": 0.2926829268292683,
@@ -1722,12 +1612,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 600
     },
     {
@@ -1742,9 +1628,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 0.85,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 9,
       "contextBudget": 1989,
       "fragmentationScore": 0.2926829268292683,
@@ -1811,11 +1695,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 0.6918972432045607,
-      "domains": [
-        "user",
-        "config",
-        "core"
-      ],
+      "domains": ["user", "config", "core"],
       "exportCount": 13,
       "contextBudget": 1930,
       "fragmentationScore": 0.2926829268292683,
@@ -1879,15 +1759,10 @@
       "linesOfCode": 150,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "./ParallaxSection"
-      ],
+      "dependencyList": ["framer-motion", "./ParallaxSection"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "core"
-      ],
+      "domains": ["core"],
       "exportCount": 1,
       "contextBudget": 1877,
       "fragmentationScore": 1,
@@ -1898,12 +1773,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/scoring.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 563
     },
     {
@@ -1912,16 +1783,10 @@
       "linesOfCode": 228,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "@aiready/core",
-        "../types",
-        "..."
-      ],
+      "dependencyList": ["@aiready/core", "../types", "..."],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 2,
       "contextBudget": 1803,
       "fragmentationScore": 0.5,
@@ -1934,12 +1799,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (50%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (50%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 540
     },
     {
@@ -1948,10 +1809,7 @@
       "linesOfCode": 179,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "fs",
-        "path"
-      ],
+      "dependencyList": ["fs", "path"],
       "circularDeps": [],
       "cohesionScore": 1,
       "domains": [],
@@ -1972,12 +1830,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 528
     },
     {
@@ -1994,9 +1848,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 0.4,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 2,
       "contextBudget": 1572,
       "fragmentationScore": 0.2926829268292683,
@@ -2060,15 +1912,10 @@
       "linesOfCode": 171,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "react"
-      ],
+      "dependencyList": ["framer-motion", "react"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 1506,
       "fragmentationScore": 0.2926829268292683,
@@ -2116,12 +1963,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 451
     },
     {
@@ -2133,9 +1976,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 1503,
       "fragmentationScore": 0.2926829268292683,
@@ -2183,12 +2024,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 450
     },
     {
@@ -2205,9 +2042,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 0.4,
-      "domains": [
-        "aiready"
-      ],
+      "domains": ["aiready"],
       "exportCount": 4,
       "contextBudget": 1499,
       "fragmentationScore": 0.5,
@@ -2236,15 +2071,10 @@
       "linesOfCode": 177,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aws-sdk/client-s3",
-        "@aws-sdk/client-ses"
-      ],
+      "dependencyList": ["@aws-sdk/client-s3", "@aws-sdk/client-ses"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "cli"
-      ],
+      "domains": ["cli"],
       "exportCount": 1,
       "contextBudget": 1468,
       "fragmentationScore": 1,
@@ -2252,12 +2082,8 @@
         "/Users/pengcao/projects/aiready/packages/core/src/utils/cli-helpers.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 440
     },
     {
@@ -2266,15 +2092,10 @@
       "linesOfCode": 183,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@typescript-eslint/typescript-estree",
-        "fs"
-      ],
+      "dependencyList": ["@typescript-eslint/typescript-estree", "fs"],
       "circularDeps": [],
       "cohesionScore": 0.92,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 10,
       "contextBudget": 1291,
       "fragmentationScore": 0.2926829268292683,
@@ -2322,12 +2143,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 387
     },
     {
@@ -2336,14 +2153,10 @@
       "linesOfCode": 222,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "@typescript-eslint/typescript-estree"
-      ],
+      "dependencyList": ["@typescript-eslint/typescript-estree"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 4,
       "contextBudget": 1284,
       "fragmentationScore": 0.2926829268292683,
@@ -2391,12 +2204,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 385
     },
     {
@@ -2405,15 +2214,10 @@
       "linesOfCode": 163,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aiready/core",
-        "./types"
-      ],
+      "dependencyList": ["@aiready/core", "./types"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "core"
-      ],
+      "domains": ["core"],
       "exportCount": 1,
       "contextBudget": 1263,
       "fragmentationScore": 1,
@@ -2424,12 +2228,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/scoring.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 378
     },
     {
@@ -2438,16 +2238,10 @@
       "linesOfCode": 150,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "fs/promises",
-        "path",
-        "./types.js"
-      ],
+      "dependencyList": ["fs/promises", "path", "./types.js"],
       "circularDeps": [],
       "cohesionScore": 0.55,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 2,
       "contextBudget": 1215,
       "fragmentationScore": 0.2926829268292683,
@@ -2511,15 +2305,10 @@
       "linesOfCode": 112,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "./ParallaxSection"
-      ],
+      "dependencyList": ["framer-motion", "./ParallaxSection"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 1187,
       "fragmentationScore": 0.2926829268292683,
@@ -2567,12 +2356,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 356
     },
     {
@@ -2581,16 +2366,10 @@
       "linesOfCode": 124,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "framer-motion",
-        "react",
-        "recharts"
-      ],
+      "dependencyList": ["framer-motion", "react", "recharts"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 1152,
       "fragmentationScore": 0.2926829268292683,
@@ -2638,12 +2417,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 345
     },
     {
@@ -2655,9 +2430,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 4,
       "contextBudget": 1139,
       "fragmentationScore": 0.2926829268292683,
@@ -2705,12 +2478,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/utils/ast-parser.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 341
     },
     {
@@ -2743,9 +2512,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "core"
-      ],
+      "domains": ["core"],
       "exportCount": 1,
       "contextBudget": 1108,
       "fragmentationScore": 1,
@@ -2756,12 +2523,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/scoring.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 332
     },
     {
@@ -2770,14 +2533,10 @@
       "linesOfCode": 109,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "http"
-      ],
+      "dependencyList": ["http"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 1091,
       "fragmentationScore": 0.2926829268292683,
@@ -2825,12 +2584,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 327
     },
     {
@@ -2839,15 +2594,10 @@
       "linesOfCode": 137,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aiready/core",
-        "./detector"
-      ],
+      "dependencyList": ["@aiready/core", "./detector"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "core"
-      ],
+      "domains": ["core"],
       "exportCount": 1,
       "contextBudget": 1075,
       "fragmentationScore": 1,
@@ -2858,12 +2608,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/scoring.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 322
     },
     {
@@ -2872,15 +2618,10 @@
       "linesOfCode": 129,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aiready/core",
-        "./types"
-      ],
+      "dependencyList": ["@aiready/core", "./types"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "core"
-      ],
+      "domains": ["core"],
       "exportCount": 1,
       "contextBudget": 1066,
       "fragmentationScore": 1,
@@ -2891,12 +2632,8 @@
         "/Users/pengcao/projects/aiready/packages/context-analyzer/src/scoring.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 319
     },
     {
@@ -2905,16 +2642,10 @@
       "linesOfCode": 99,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "next/script",
-        "framer-motion",
-        "./ParallaxSection"
-      ],
+      "dependencyList": ["next/script", "framer-motion", "./ParallaxSection"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 951,
       "fragmentationScore": 0.2926829268292683,
@@ -2962,12 +2693,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 285
     },
     {
@@ -2979,11 +2706,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 0.5907767681049402,
-      "domains": [
-        "config",
-        "user",
-        "product"
-      ],
+      "domains": ["config", "user", "product"],
       "exportCount": 7,
       "contextBudget": 950,
       "fragmentationScore": 1,
@@ -3009,15 +2732,10 @@
       "linesOfCode": 91,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "./ParallaxSection"
-      ],
+      "dependencyList": ["framer-motion", "./ParallaxSection"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 941,
       "fragmentationScore": 0.2926829268292683,
@@ -3065,12 +2783,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 282
     },
     {
@@ -3082,10 +2796,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 0.8188118522668012,
-      "domains": [
-        "user",
-        "aiready"
-      ],
+      "domains": ["user", "aiready"],
       "exportCount": 8,
       "contextBudget": 873,
       "fragmentationScore": 0.2926829268292683,
@@ -3149,15 +2860,10 @@
       "linesOfCode": 76,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "./ParallaxSection"
-      ],
+      "dependencyList": ["framer-motion", "./ParallaxSection"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 785,
       "fragmentationScore": 0.2926829268292683,
@@ -3205,12 +2911,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 235
     },
     {
@@ -3219,18 +2921,10 @@
       "linesOfCode": 119,
       "importDepth": 1,
       "dependencyCount": 5,
-      "dependencyList": [
-        "glob",
-        "fs/promises",
-        "fs",
-        "path",
-        "../types"
-      ],
+      "dependencyList": ["glob", "fs/promises", "fs", "path", "../types"],
       "circularDeps": [],
       "cohesionScore": 0.52,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 5,
       "contextBudget": 769,
       "fragmentationScore": 0.2926829268292683,
@@ -3297,9 +2991,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 738,
       "fragmentationScore": 0.2926829268292683,
@@ -3347,12 +3039,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 221
     },
     {
@@ -3361,17 +3049,10 @@
       "linesOfCode": 95,
       "importDepth": 1,
       "dependencyCount": 4,
-      "dependencyList": [
-        "fs",
-        "path",
-        "url",
-        "../types"
-      ],
+      "dependencyList": ["fs", "path", "url", "../types"],
       "circularDeps": [],
       "cohesionScore": 0.4857142857142857,
-      "domains": [
-        "config"
-      ],
+      "domains": ["config"],
       "exportCount": 2,
       "contextBudget": 718,
       "fragmentationScore": 1,
@@ -3397,12 +3078,7 @@
       "linesOfCode": 104,
       "importDepth": 1,
       "dependencyCount": 4,
-      "dependencyList": [
-        "fs/promises",
-        "path",
-        "./parser.js",
-        "./config.js"
-      ],
+      "dependencyList": ["fs/promises", "path", "./parser.js", "./config.js"],
       "circularDeps": [],
       "cohesionScore": 1,
       "domains": [],
@@ -3423,12 +3099,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 213
     },
     {
@@ -3437,18 +3109,10 @@
       "linesOfCode": 106,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "fs",
-        "path",
-        "../index"
-      ],
+      "dependencyList": ["fs", "path", "../index"],
       "circularDeps": [],
       "cohesionScore": 0.29420981285103054,
-      "domains": [
-        "cli",
-        "user",
-        "config"
-      ],
+      "domains": ["cli", "user", "config"],
       "exportCount": 6,
       "contextBudget": 698,
       "fragmentationScore": 1,
@@ -3479,9 +3143,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 696,
       "fragmentationScore": 0.2926829268292683,
@@ -3529,12 +3191,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 208
     },
     {
@@ -3543,16 +3201,10 @@
       "linesOfCode": 76,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "framer-motion",
-        "react",
-        "recharts"
-      ],
+      "dependencyList": ["framer-motion", "react", "recharts"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 673,
       "fragmentationScore": 0.2926829268292683,
@@ -3600,12 +3252,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 201
     },
     {
@@ -3614,16 +3262,10 @@
       "linesOfCode": 68,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "framer-motion",
-        "react",
-        "recharts"
-      ],
+      "dependencyList": ["framer-motion", "react", "recharts"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 659,
       "fragmentationScore": 0.2926829268292683,
@@ -3671,12 +3313,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 197
     },
     {
@@ -3685,16 +3323,10 @@
       "linesOfCode": 58,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "next/link",
-        "next/image",
-        "framer-motion"
-      ],
+      "dependencyList": ["next/link", "next/image", "framer-motion"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 570,
       "fragmentationScore": 0.2926829268292683,
@@ -3742,12 +3374,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 171
     },
     {
@@ -3756,15 +3384,10 @@
       "linesOfCode": 50,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "react"
-      ],
+      "dependencyList": ["framer-motion", "react"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 501,
       "fragmentationScore": 0.2926829268292683,
@@ -3812,12 +3435,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 150
     },
     {
@@ -3826,15 +3445,10 @@
       "linesOfCode": 53,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "next/link",
-        "framer-motion"
-      ],
+      "dependencyList": ["next/link", "framer-motion"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 470,
       "fragmentationScore": 0.2926829268292683,
@@ -3882,12 +3496,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 141
     },
     {
@@ -3896,14 +3506,10 @@
       "linesOfCode": 81,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "next"
-      ],
+      "dependencyList": ["next"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 2,
       "contextBudget": 454,
       "fragmentationScore": 0.2926829268292683,
@@ -3951,12 +3557,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 136
     },
     {
@@ -3965,16 +3567,10 @@
       "linesOfCode": 65,
       "importDepth": 1,
       "dependencyCount": 3,
-      "dependencyList": [
-        "next/link",
-        "framer-motion",
-        "next/script"
-      ],
+      "dependencyList": ["next/link", "framer-motion", "next/script"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 441,
       "fragmentationScore": 0.2926829268292683,
@@ -4022,12 +3618,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 132
     },
     {
@@ -4036,15 +3628,10 @@
       "linesOfCode": 63,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "@aiready/core"
-      ],
+      "dependencyList": ["@aiready/core"],
       "circularDeps": [],
       "cohesionScore": 0.24525887710618335,
-      "domains": [
-        "consistency",
-        "aiready"
-      ],
+      "domains": ["consistency", "aiready"],
       "exportCount": 6,
       "contextBudget": 438,
       "fragmentationScore": 0,
@@ -4052,9 +3639,7 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzer.ts"
       ],
       "severity": "major",
-      "issues": [
-        "Very low cohesion (25%) - mixed concerns"
-      ],
+      "issues": ["Very low cohesion (25%) - mixed concerns"],
       "recommendations": [
         "Split file by domain - separate unrelated functionality"
       ],
@@ -4066,15 +3651,10 @@
       "linesOfCode": 49,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "@aiready/core",
-        "path"
-      ],
+      "dependencyList": ["@aiready/core", "path"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "config"
-      ],
+      "domains": ["config"],
       "exportCount": 2,
       "contextBudget": 415,
       "fragmentationScore": 1,
@@ -4084,12 +3664,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-ast.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (100%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (100%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 124
     },
     {
@@ -4098,27 +3674,17 @@
       "linesOfCode": 49,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "path",
-        "url"
-      ],
+      "dependencyList": ["path", "url"],
       "circularDeps": [],
       "cohesionScore": 0.8749401251591399,
-      "domains": [
-        "skill",
-        "user"
-      ],
+      "domains": ["skill", "user"],
       "exportCount": 9,
       "contextBudget": 376,
       "fragmentationScore": 0,
       "relatedFiles": [],
       "severity": "minor",
-      "issues": [
-        "Low cohesion (87%)"
-      ],
-      "recommendations": [
-        "Consider grouping related exports together"
-      ],
+      "issues": ["Low cohesion (87%)"],
+      "recommendations": ["Consider grouping related exports together"],
       "potentialSavings": 37
     },
     {
@@ -4127,14 +3693,10 @@
       "linesOfCode": 54,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "framer-motion"
-      ],
+      "dependencyList": ["framer-motion"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 369,
       "fragmentationScore": 0.2926829268292683,
@@ -4182,12 +3744,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 110
     },
     {
@@ -4203,9 +3761,7 @@
       ],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 306,
       "fragmentationScore": 0.2926829268292683,
@@ -4253,12 +3809,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 91
     },
     {
@@ -4270,10 +3822,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 0.7485370014199393,
-      "domains": [
-        "user",
-        "doc"
-      ],
+      "domains": ["user", "doc"],
       "exportCount": 6,
       "contextBudget": 264,
       "fragmentationScore": 0.2926829268292683,
@@ -4337,15 +3886,10 @@
       "linesOfCode": 27,
       "importDepth": 1,
       "dependencyCount": 2,
-      "dependencyList": [
-        "framer-motion",
-        "react"
-      ],
+      "dependencyList": ["framer-motion", "react"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 171,
       "fragmentationScore": 0.2926829268292683,
@@ -4393,12 +3937,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 51
     },
     {
@@ -4407,14 +3947,10 @@
       "linesOfCode": 23,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "next"
-      ],
+      "dependencyList": ["next"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 2,
       "contextBudget": 166,
       "fragmentationScore": 0.2926829268292683,
@@ -4462,12 +3998,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 49
     },
     {
@@ -4476,9 +4008,7 @@
       "linesOfCode": 26,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "sst"
-      ],
+      "dependencyList": ["sst"],
       "circularDeps": [],
       "cohesionScore": 1,
       "domains": [],
@@ -4499,12 +4029,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 40
     },
     {
@@ -4534,12 +4060,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 38
     },
     {
@@ -4548,14 +4070,10 @@
       "linesOfCode": 23,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "next"
-      ],
+      "dependencyList": ["next"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 2,
       "contextBudget": 112,
       "fragmentationScore": 0.2926829268292683,
@@ -4603,12 +4121,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 33
     },
     {
@@ -4617,14 +4131,10 @@
       "linesOfCode": 14,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "next"
-      ],
+      "dependencyList": ["next"],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 67,
       "fragmentationScore": 0.2926829268292683,
@@ -4672,12 +4182,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 20
     },
     {
@@ -4686,9 +4192,7 @@
       "linesOfCode": 7,
       "importDepth": 1,
       "dependencyCount": 1,
-      "dependencyList": [
-        "./.next/types/routes.d.ts"
-      ],
+      "dependencyList": ["./.next/types/routes.d.ts"],
       "circularDeps": [],
       "cohesionScore": 1,
       "domains": [],
@@ -4709,12 +4213,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 18
     },
     {
@@ -4744,12 +4244,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 17
     },
     {
@@ -4761,9 +4257,7 @@
       "dependencyList": [],
       "circularDeps": [],
       "cohesionScore": 1,
-      "domains": [
-        "user"
-      ],
+      "domains": ["user"],
       "exportCount": 1,
       "contextBudget": 49,
       "fragmentationScore": 0.2926829268292683,
@@ -4811,12 +4305,8 @@
         "/Users/pengcao/projects/aiready/packages/consistency/src/analyzers/naming-constants.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (29%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (29%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 14
     },
     {
@@ -4846,12 +4336,8 @@
         "/Users/pengcao/projects/aiready/packages/cli/src/cli.ts"
       ],
       "severity": "minor",
-      "issues": [
-        "High fragmentation (64%) - scattered implementation"
-      ],
-      "recommendations": [
-        "Consolidate with related files in same domain"
-      ],
+      "issues": ["High fragmentation (64%) - scattered implementation"],
+      "recommendations": ["Consolidate with related files in same domain"],
       "potentialSavings": 14
     }
   ],
@@ -5715,11 +5201,7 @@
     "overall": 87,
     "rating": "Good",
     "timestamp": "2026-01-31T06:02:28.672Z",
-    "toolsUsed": [
-      "pattern-detect",
-      "context-analyzer",
-      "consistency"
-    ],
+    "toolsUsed": ["pattern-detect", "context-analyzer", "consistency"],
     "breakdown": [
       {
         "toolName": "pattern-detect",

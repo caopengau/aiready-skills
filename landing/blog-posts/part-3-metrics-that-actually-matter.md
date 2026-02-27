@@ -11,6 +11,7 @@ That’s why we built **AIReady**: to measure what actually matters for AI-drive
 ## Why Existing Tools Fall Short
 
 Tools like **madge** and **dependency-cruiser** are great for visualizing dependencies and spotting cycles, but they don’t answer the questions that matter for AI:
+
 - How much of your codebase is semantically duplicated?
 - How fragmented is your domain logic across files?
 - How consistent are your naming and patterns?
@@ -22,24 +23,30 @@ Traditional metrics miss these AI-specific pain points.
 AIReady focuses on three core metrics:
 
 ### 1. Semantic Similarity (`pattern-detect`)
+
 - **What it is:** Finds code that does the same thing, even if it looks different.
 - **How:** Uses Jaccard similarity on AST tokens to detect “semantic duplicates.”
 - **Why it matters:** AI models waste context window on repeated logic, making suggestions less relevant and increasing maintenance cost.
 
 **Example:**
+
 ```typescript
 // File 1
-function validateUser(u) { return u.id && u.email.includes('@'); }
+function validateUser(u) {
+  return u.id && u.email.includes('@');
+}
 // File 2
 const isValidUser = (user) => user.id && user.email.indexOf('@') !== -1;
 ```
 
 ### 2. Context Budget (`context-analyzer`)
+
 - **What it is:** Measures the “token cost” of understanding a feature or file.
 - **How:** Analyzes import chains, file size, and fragmentation to estimate how much context an AI needs to answer a question about your code.
 - **Why it matters:** The more fragmented your logic, the more tokens are needed—quickly exceeding the model’s window and leading to hallucinations or missed context.
 
 **Example:**
+
 ```typescript
 // src/api/users.ts
 import { getUserById } from '../services/user-service'; // +2,100 tokens
@@ -48,16 +55,19 @@ import { validateUser } from '../utils/user-validation'; // +1,800 tokens
 ```
 
 ### 3. Consistency Scoring (`consistency`)
+
 - **What it is:** Quantifies naming and pattern drift across your codebase.
 - **How:** Tracks how often similar things are named or structured differently.
 - **Why it matters:** Inconsistent code confuses both humans and AIs, reducing the quality of suggestions and increasing onboarding time.
 
 **Example:**
+
 - `getUserById`, `fetchUser`, `retrieveUser` — all for the same operation.
 
 ## Hub-and-Spoke Architecture: Flexibility by Design
 
 AIReady uses a **hub-and-spoke** model:
+
 - **Hub:** Shared utilities, types, and the CLI interface.
 - **Spokes:** Each metric is a focused tool (pattern-detect, context-analyzer, consistency), independently useful and pluggable.
 
@@ -70,6 +80,7 @@ By default, AIReady surfaces the ~10 most serious issues in each category. No mo
 ## Open Source and Configurable
 
 AIReady is open source and designed for customization:
+
 - Tweak thresholds, add or remove metrics, and integrate with your CI/CD.
 - Teams can adapt the tools to their own context and priorities.
 
@@ -78,6 +89,7 @@ AIReady is open source and designed for customization:
 If you’re still measuring code quality with tools built for humans, you’re missing the real blockers to AI productivity. AIReady gives you the metrics that actually matter—so you can build codebases that are ready for the future.
 
 **Try it yourself:**
+
 ```bash
 npx @aiready/pattern-detect ./src
 npx @aiready/context-analyzer ./src
@@ -90,16 +102,18 @@ npx @aiready/context-analyzer ./src
 **Try it yourself:**
 
 **Unified Analysis (Recommended):**
+
 ```bash
 npx @aiready/cli scan --score
 ```
 
 **Individual Tools:**
+
 ```bash
 # Pattern detection
 npx @aiready/cli patterns
 
-# Context analysis  
+# Context analysis
 npx @aiready/cli context
 
 # Code consistency
@@ -115,4 +129,4 @@ npx @aiready/cli consistency
 
 ---
 
-*Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimizing codebases for AI adoption.*
+_Peng Cao is the founder of [receiptclaimer](https://receiptclaimer.com) and creator of [aiready](https://github.com/caopengau/aiready-cli), an open-source suite for measuring and optimizing codebases for AI adoption._

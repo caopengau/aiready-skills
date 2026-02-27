@@ -40,7 +40,8 @@ export class GraphBuilder {
   private extractReferencedPaths(message: string): string[] {
     if (!message || typeof message !== 'string') return [];
     const reAbs = /\/(?:[\w\-.]+\/)+[\w\-.]+\.(?:ts|tsx|js|jsx|py|java|go)/g;
-    const reRel = /(?:\.\/|\.\.\/)(?:[\w\-.]+\/)+[\w\-.]+\.(?:ts|tsx|js|jsx|py|java|go)/g;
+    const reRel =
+      /(?:\.\/|\.\.\/)(?:[\w\-.]+\/)+[\w\-.]+\.(?:ts|tsx|js|jsx|py|java|go)/g;
     const abs = (message.match(reAbs) || []) as string[];
     const rel = (message.match(reRel) || []) as string[];
     return abs.concat(rel);
@@ -50,7 +51,8 @@ export class GraphBuilder {
     if (!fp) return null;
     const parts = fp.split(path.sep);
     const pkgIdx = parts.indexOf('packages');
-    if (pkgIdx >= 0 && parts.length > pkgIdx + 1) return `packages/${parts[pkgIdx + 1]}`;
+    if (pkgIdx >= 0 && parts.length > pkgIdx + 1)
+      return `packages/${parts[pkgIdx + 1]}`;
     const landingIdx = parts.indexOf('landing');
     if (landingIdx >= 0) return 'landing';
     const scriptsIdx = parts.indexOf('scripts');
@@ -86,7 +88,7 @@ export class GraphBuilder {
     if (a === b) return;
     const key = `${a}->${b}`;
     if (!this.edgesSet.has(key)) {
-      this.edges.push({ source: a, target: b, type: (type as any) });
+      this.edges.push({ source: a, target: b, type: type as any });
       this.edgesSet.add(key);
     }
   }
@@ -96,7 +98,10 @@ export class GraphBuilder {
    */
   build(): GraphData {
     const nodes = Array.from(this.nodesMap.values());
-    const edges = this.edges.map((e) => ({ source: e.source, target: e.target, type: e.type } as DependencyEdge));
+    const edges = this.edges.map(
+      (e) =>
+        ({ source: e.source, target: e.target, type: e.type }) as DependencyEdge
+    );
     return {
       nodes,
       edges,
@@ -122,7 +127,10 @@ export class GraphBuilder {
     const builder = new GraphBuilder(rootDir);
 
     // Map to collect per-file issue aggregates
-    const fileIssues: Map<string, { count: number; maxSeverity: IssueSeverity | null; duplicates: number }> = new Map();
+    const fileIssues: Map<
+      string,
+      { count: number; maxSeverity: IssueSeverity | null; duplicates: number }
+    > = new Map();
 
     const rankSeverity = (s?: string | null): IssueSeverity | null => {
       if (!s) return null;
@@ -137,12 +145,17 @@ export class GraphBuilder {
     const bumpIssue = (file: string, sev?: IssueSeverity | null) => {
       if (!file) return;
       const id = path.resolve(rootDir, file);
-      if (!fileIssues.has(id)) fileIssues.set(id, { count: 0, maxSeverity: null, duplicates: 0 });
+      if (!fileIssues.has(id))
+        fileIssues.set(id, { count: 0, maxSeverity: null, duplicates: 0 });
       const rec = fileIssues.get(id)!;
       rec.count += 1;
       if (sev) {
-        const order = { critical: 3, major: 2, minor: 1, info: 0 } as Record<IssueSeverity, number>;
-        if (!rec.maxSeverity || order[sev] > order[rec.maxSeverity]) rec.maxSeverity = sev;
+        const order = { critical: 3, major: 2, minor: 1, info: 0 } as Record<
+          IssueSeverity,
+          number
+        >;
+        if (!rec.maxSeverity || order[sev] > order[rec.maxSeverity])
+          rec.maxSeverity = sev;
       }
     };
 
@@ -157,12 +170,18 @@ export class GraphBuilder {
     // 1. Process patterns
     (report.patterns || []).forEach((entry: any) => {
       const file = entry.fileName;
-      builder.addNode(file, `Issues: ${(entry.issues || []).length}`, (entry.metrics && entry.metrics.tokenCost) || 5);
+      builder.addNode(
+        file,
+        `Issues: ${(entry.issues || []).length}`,
+        (entry.metrics && entry.metrics.tokenCost) || 5
+      );
 
       // record aggregate for this file
       if ((entry.issues || []).length > 0) {
         (entry.issues || []).forEach((issue: any) => {
-          const sev = rankSeverity(issue.severity || issue.severityLevel || null);
+          const sev = rankSeverity(
+            issue.severity || issue.severityLevel || null
+          );
           bumpIssue(file, sev);
         });
       }
@@ -184,11 +203,15 @@ export class GraphBuilder {
         // Fuzzy matching heuristics
         const percMatch = (message.match(/(\d+)%/) || [])[1];
         const perc = percMatch ? parseInt(percMatch, 10) : null;
-        const wantFuzzy = issue.type === 'duplicate-pattern' || /similar/i.test(message) || (perc && perc >= 50);
+        const wantFuzzy =
+          issue.type === 'duplicate-pattern' ||
+          /similar/i.test(message) ||
+          (perc && perc >= 50);
         if (wantFuzzy) {
           const fileGroup = builder.getPackageGroup(file as any);
           for (const [base, pathsSet] of basenameMap.entries()) {
-            if (!message.includes(base) || base === path.basename(file)) continue;
+            if (!message.includes(base) || base === path.basename(file))
+              continue;
             for (const target of pathsSet) {
               const targetGroup = builder.getPackageGroup(target as any);
               if (fileGroup !== targetGroup && !(perc && perc >= 80)) continue;
@@ -208,8 +231,10 @@ export class GraphBuilder {
       // count duplicates as issues (no explicit severity available)
       const f1 = path.resolve(rootDir, dup.file1);
       const f2 = path.resolve(rootDir, dup.file2);
-      if (!fileIssues.has(f1)) fileIssues.set(f1, { count: 0, maxSeverity: null, duplicates: 0 });
-      if (!fileIssues.has(f2)) fileIssues.set(f2, { count: 0, maxSeverity: null, duplicates: 0 });
+      if (!fileIssues.has(f1))
+        fileIssues.set(f1, { count: 0, maxSeverity: null, duplicates: 0 });
+      if (!fileIssues.has(f2))
+        fileIssues.set(f2, { count: 0, maxSeverity: null, duplicates: 0 });
       fileIssues.get(f1)!.duplicates += 1;
       fileIssues.get(f2)!.duplicates += 1;
     });
@@ -222,7 +247,9 @@ export class GraphBuilder {
       // context-level issues
       if (ctx.issues && Array.isArray(ctx.issues)) {
         ctx.issues.forEach((issue: any) => {
-          const sev = rankSeverity(issue.severity || issue.severityLevel || null);
+          const sev = rankSeverity(
+            issue.severity || issue.severityLevel || null
+          );
           bumpIssue(file, sev);
         });
       }
@@ -231,13 +258,21 @@ export class GraphBuilder {
       // avoid clutter. Instead, increase the related node's prominence so the
       // layout reflects contextual proximity without extra lines.
       (ctx.relatedFiles || []).forEach((rel: string) => {
-        const resolvedRel = path.isAbsolute(rel) ? rel : path.resolve(path.dirname(file), rel);
+        const resolvedRel = path.isAbsolute(rel)
+          ? rel
+          : path.resolve(path.dirname(file), rel);
         const keyA = `${path.resolve(builder.rootDir, file)}->${path.resolve(builder.rootDir, resolvedRel)}`;
         const keyB = `${path.resolve(builder.rootDir, resolvedRel)}->${path.resolve(builder.rootDir, file)}`;
-        if ((builder as any).edgesSet.has(keyA) || (builder as any).edgesSet.has(keyB)) return;
+        if (
+          (builder as any).edgesSet.has(keyA) ||
+          (builder as any).edgesSet.has(keyB)
+        )
+          return;
         builder.addNode(resolvedRel, 'Related file', 5);
         // bump size to reflect relatedness
-        const n = (builder as any).nodesMap.get(path.resolve(builder.rootDir, resolvedRel));
+        const n = (builder as any).nodesMap.get(
+          path.resolve(builder.rootDir, resolvedRel)
+        );
         if (n) n.size = (n.size || 1) + 2;
         // Also add a visual 'related' edge so that built/packed visualizations
         // (which use this GraphBuilder) include related connections rather
@@ -364,7 +399,11 @@ export function createSampleGraph(): GraphData {
   builder.addNode('src/components/Button.tsx', 'Button', 15);
   builder.addNode('src/utils/helpers.ts', 'helpers', 12);
   builder.addNode('src/services/api.ts', 'api', 18);
-  builder.addEdge('src/components/Button.tsx', 'src/utils/helpers.ts', 'dependency');
+  builder.addEdge(
+    'src/components/Button.tsx',
+    'src/utils/helpers.ts',
+    'dependency'
+  );
   builder.addEdge('src/utils/helpers.ts', 'src/services/api.ts', 'dependency');
   return builder.build();
 }

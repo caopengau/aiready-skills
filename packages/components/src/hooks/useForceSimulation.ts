@@ -112,7 +112,11 @@ export interface ForceSimulationOptions {
   /**
    * Optional tick callback invoked on each simulation tick with current nodes/links and the simulation instance
    */
-  onTick?: (nodes: SimulationNode[], links: SimulationLink[], sim: d3.Simulation<SimulationNode, SimulationLink>) => void;
+  onTick?: (
+    nodes: SimulationNode[],
+    links: SimulationLink[],
+    sim: d3.Simulation<SimulationNode, SimulationLink>
+  ) => void;
 }
 
 export interface UseForceSimulationReturn {
@@ -226,14 +230,14 @@ export function useForceSimulation(
     alphaTarget = 0,
     warmAlpha = 0.3,
     alphaMin = 0.01,
-    // @ts-ignore allow extra option
+    // @ts-expect-error allow extra option
     stabilizeOnStop = true,
     onTick,
     // Optional throttle in milliseconds for tick updates (reduce React re-renders)
     // Lower values = smoother but more CPU; default ~30ms (~33fps)
-    // @ts-ignore allow extra option
+    // @ts-expect-error allow extra option
     tickThrottleMs = 33,
-    // @ts-ignore allow extra option
+    // @ts-expect-error allow extra option
     maxSimulationTimeMs = 3000,
   } = options;
 
@@ -242,18 +246,23 @@ export function useForceSimulation(
   const [isRunning, setIsRunning] = useState(false);
   const [alpha, setAlpha] = useState(1);
 
-  const simulationRef = useRef<d3.Simulation<SimulationNode, SimulationLink> | null>(null);
+  const simulationRef = useRef<d3.Simulation<
+    SimulationNode,
+    SimulationLink
+  > | null>(null);
   const stopTimeoutRef = useRef<number | null>(null);
 
   // Create lightweight keys for nodes/links so we only recreate the simulation
   // when the actual identity/content of inputs change (not when parent passes
   // new array references on each render).
   const nodesKey = initialNodes.map((n) => n.id).join('|');
-  const linksKey = (initialLinks || []).map((l) => {
-    const s = typeof l.source === 'string' ? l.source : (l.source as any)?.id;
-    const t = typeof l.target === 'string' ? l.target : (l.target as any)?.id;
-    return `${s}->${t}:${(l as any).type || ''}`;
-  }).join('|');
+  const linksKey = (initialLinks || [])
+    .map((l) => {
+      const s = typeof l.source === 'string' ? l.source : (l.source as any)?.id;
+      const t = typeof l.target === 'string' ? l.target : (l.target as any)?.id;
+      return `${s}->${t}:${(l as any).type || ''}`;
+    })
+    .join('|');
 
   useEffect(() => {
     // Create a copy of nodes and links to avoid mutating the original data
@@ -277,6 +286,7 @@ export function useForceSimulation(
         (n as any).vy = (Math.random() - 0.5) * 2;
       });
     } catch (e) {
+      void e;
       // If error, fall back to random positions
       nodesCopy.forEach((n) => {
         n.x = Math.random() * width;
@@ -287,35 +297,75 @@ export function useForceSimulation(
     }
 
     // Create the simulation
-    const simulation = (d3.forceSimulation(nodesCopy as any) as unknown) as d3.Simulation<SimulationNode, SimulationLink>;
+    const simulation = d3.forceSimulation(
+      nodesCopy as any
+    ) as unknown as d3.Simulation<SimulationNode, SimulationLink>;
 
     // Configure link force separately to avoid using generic type args on d3 helpers
     try {
-      const linkForce = (d3.forceLink(linksCopy as any) as unknown) as d3.ForceLink<SimulationNode, SimulationLink>;
-      linkForce.id((d: any) => d.id).distance((d: any) => (d && d.distance != null ? d.distance : linkDistance)).strength(linkStrength);
+      const linkForce = d3.forceLink(
+        linksCopy as any
+      ) as unknown as d3.ForceLink<SimulationNode, SimulationLink>;
+      linkForce
+        .id((d: any) => d.id)
+        .distance((d: any) =>
+          d && d.distance != null ? d.distance : linkDistance
+        )
+        .strength(linkStrength);
       simulation.force('link', linkForce as any);
     } catch (e) {
+      void e;
       // fallback: attach a plain link force
-      try { simulation.force('link', d3.forceLink(linksCopy as any) as any); } catch (e) {}
+      try {
+        simulation.force('link', d3.forceLink(linksCopy as any) as any);
+      } catch (e) {
+        void e;
+      }
     }
-      ;
-
     try {
-      simulation.force('charge', d3.forceManyBody().strength(chargeStrength) as any);
-      simulation.force('center', d3.forceCenter(width / 2, height / 2).strength(centerStrength) as any);
-      const collide = d3.forceCollide().radius((d: any) => {
-        const nodeSize = (d && d.size) ? d.size : 10;
-        return nodeSize + collisionRadius;
-      }).strength(collisionStrength as any) as any;
+      simulation.force(
+        'charge',
+        d3.forceManyBody().strength(chargeStrength) as any
+      );
+      simulation.force(
+        'center',
+        d3.forceCenter(width / 2, height / 2).strength(centerStrength) as any
+      );
+      const collide = d3
+        .forceCollide()
+        .radius((d: any) => {
+          const nodeSize = d && d.size ? d.size : 10;
+          return nodeSize + collisionRadius;
+        })
+        .strength(collisionStrength as any) as any;
       simulation.force('collision', collide);
-      simulation.force('x', d3.forceX(width / 2).strength(Math.max(0.02, centerStrength * 0.5)) as any);
-      simulation.force('y', d3.forceY(height / 2).strength(Math.max(0.02, centerStrength * 0.5)) as any);
+      simulation.force(
+        'x',
+        d3
+          .forceX(width / 2)
+          .strength(Math.max(0.02, centerStrength * 0.5)) as any
+      );
+      simulation.force(
+        'y',
+        d3
+          .forceY(height / 2)
+          .strength(Math.max(0.02, centerStrength * 0.5)) as any
+      );
       simulation.alphaDecay(alphaDecay);
       simulation.velocityDecay(velocityDecay);
       simulation.alphaMin(alphaMin);
-      try { simulation.alphaTarget(alphaTarget); } catch (e) {}
-      try { simulation.alpha(warmAlpha); } catch (e) {}
+      try {
+        simulation.alphaTarget(alphaTarget);
+      } catch (e) {
+        void e;
+      }
+      try {
+        simulation.alpha(warmAlpha);
+      } catch (e) {
+        void e;
+      }
     } catch (e) {
+      void e;
       // ignore force configuration errors
     }
 
@@ -323,7 +373,11 @@ export function useForceSimulation(
 
     // Force-stop timeout to ensure simulation doesn't run forever.
     if (stopTimeoutRef.current != null) {
-      try { (globalThis.clearTimeout as any)(stopTimeoutRef.current); } catch (e) {}
+      try {
+        (globalThis.clearTimeout as any)(stopTimeoutRef.current);
+      } catch (e) {
+        void e;
+      }
       stopTimeoutRef.current = null;
     }
     if (maxSimulationTimeMs && maxSimulationTimeMs > 0) {
@@ -339,7 +393,9 @@ export function useForceSimulation(
           }
           simulation.alpha(0);
           simulation.stop();
-        } catch (e) {}
+        } catch (e) {
+          void e;
+        }
         setIsRunning(false);
         setNodes([...nodesCopy]);
         setLinks([...linksCopy]);
@@ -352,9 +408,10 @@ export function useForceSimulation(
     let lastUpdate = 0;
     const tickHandler = () => {
       try {
-        if (typeof onTick === 'function') onTick(nodesCopy, linksCopy, simulation);
+        if (typeof onTick === 'function')
+          onTick(nodesCopy, linksCopy, simulation);
       } catch (e) {
-        // ignore user tick errors
+        void e;
       }
 
       // If simulation alpha has cooled below the configured minimum, stop it to
@@ -371,7 +428,9 @@ export function useForceSimulation(
               });
             }
             simulation.stop();
-          } catch (e) {}
+          } catch (e) {
+            void e;
+          }
           setAlpha(simulation.alpha());
           setIsRunning(false);
           setNodes([...nodesCopy]);
@@ -379,13 +438,16 @@ export function useForceSimulation(
           return;
         }
       } catch (e) {
-        // ignore
+        void e;
       }
 
       const now = Date.now();
       const shouldUpdate = now - lastUpdate >= (tickThrottleMs as number);
       if (rafId == null && shouldUpdate) {
-        rafId = (globalThis.requestAnimationFrame || ((cb: FrameRequestCallback) => setTimeout(cb, 16)))(() => {
+        rafId = (
+          globalThis.requestAnimationFrame ||
+          ((cb: FrameRequestCallback) => setTimeout(cb, 16))
+        )(() => {
           rafId = null;
           lastUpdate = Date.now();
           setNodes([...nodesCopy]);
@@ -406,13 +468,26 @@ export function useForceSimulation(
     return () => {
       try {
         simulation.on('tick', null as any);
-      } catch (e) {}
+      } catch (e) {
+        void e;
+      }
       if (stopTimeoutRef.current != null) {
-        try { (globalThis.clearTimeout as any)(stopTimeoutRef.current); } catch (e) {}
+        try {
+          (globalThis.clearTimeout as any)(stopTimeoutRef.current);
+        } catch (e) {
+          void e;
+        }
         stopTimeoutRef.current = null;
       }
       if (rafId != null) {
-        try { (globalThis.cancelAnimationFrame || ((id: number) => clearTimeout(id)))(rafId); } catch (e) {}
+        try {
+          (
+            globalThis.cancelAnimationFrame ||
+            ((id: number) => clearTimeout(id))
+          )(rafId);
+        } catch (e) {
+          void e;
+        }
         rafId = null;
       }
       simulation.stop();
@@ -441,16 +516,29 @@ export function useForceSimulation(
     if (simulationRef.current) {
       // Reheat the simulation to a modest alpha target rather than forcing
       // full heat; this matches the Observable pattern and helps stability.
-      try { simulationRef.current.alphaTarget(warmAlpha).restart(); } catch (e) { simulationRef.current.restart(); }
+      try {
+        simulationRef.current.alphaTarget(warmAlpha).restart();
+      } catch {
+        simulationRef.current.restart();
+      }
       setIsRunning(true);
       // Reset safety timeout when simulation is manually restarted
       if (stopTimeoutRef.current != null) {
-        try { (globalThis.clearTimeout as any)(stopTimeoutRef.current); } catch (e) {}
+        try {
+          (globalThis.clearTimeout as any)(stopTimeoutRef.current);
+        } catch (e) {
+          void e;
+        }
         stopTimeoutRef.current = null;
       }
       if (maxSimulationTimeMs && maxSimulationTimeMs > 0) {
         stopTimeoutRef.current = (globalThis.setTimeout as any)(() => {
-          try { simulationRef.current?.alpha(0); simulationRef.current?.stop(); } catch (e) {}
+          try {
+            simulationRef.current?.alpha(0);
+            simulationRef.current?.stop();
+          } catch (e) {
+            void e;
+          }
           setIsRunning(false);
         }, maxSimulationTimeMs) as unknown as number;
       }
@@ -464,7 +552,11 @@ export function useForceSimulation(
     }
   };
 
-  const originalForcesRef = useRef({ charge: chargeStrength, link: linkStrength, collision: collisionStrength });
+  const originalForcesRef = useRef({
+    charge: chargeStrength,
+    link: linkStrength,
+    collision: collisionStrength,
+  });
   const forcesEnabledRef = useRef(true);
 
   const setForcesEnabled = (enabled: boolean) => {
@@ -486,7 +578,7 @@ export function useForceSimulation(
         link.strength(enabled ? originalForcesRef.current.link : 0);
       }
     } catch (e) {
-      // ignore
+      void e;
     }
   };
 
@@ -530,7 +622,9 @@ export function useForceSimulation(
  * }
  * ```
  */
-export function useDrag(simulation: d3.Simulation<SimulationNode, any> | null | undefined) {
+export function useDrag(
+  simulation: d3.Simulation<SimulationNode, any> | null | undefined
+) {
   const dragStarted = (event: any, node: SimulationNode) => {
     if (!simulation) return;
     if (!event.active) simulation.alphaTarget(0.3).restart();

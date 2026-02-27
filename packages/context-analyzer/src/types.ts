@@ -46,18 +46,18 @@ export interface ContextAnalysisResult {
  * Classification of file type for analysis context
  * Helps distinguish real issues from false positives
  */
-export type FileClassification = 
-  | 'barrel-export'    // Re-exports from other modules (index.ts files)
-  | 'type-definition'  // Primarily type/interface definitions
-  | 'cohesive-module'  // Single domain, high cohesion (acceptable large files)
-  | 'utility-module'   // Utility/helper files with cohesive purpose despite multi-domain
-  | 'service-file'     // Service files orchestrating multiple dependencies
-  | 'lambda-handler'   // Lambda/API handlers with single business purpose
-  | 'email-template'   // Email templates/layouts with structural cohesion
-  | 'parser-file'      // Parser/transformer files with single transformation purpose
-  | 'nextjs-page'      // Next.js App Router page with SEO/structured data exports
-  | 'mixed-concerns'   // Multiple domains, potential refactoring candidate
-  | 'unknown';         // Unable to classify
+export type FileClassification =
+  | 'barrel-export' // Re-exports from other modules (index.ts files)
+  | 'type-definition' // Primarily type/interface definitions
+  | 'cohesive-module' // Single domain, high cohesion (acceptable large files)
+  | 'utility-module' // Utility/helper files with cohesive purpose despite multi-domain
+  | 'service-file' // Service files orchestrating multiple dependencies
+  | 'lambda-handler' // Lambda/API handlers with single business purpose
+  | 'email-template' // Email templates/layouts with structural cohesion
+  | 'parser-file' // Parser/transformer files with single transformation purpose
+  | 'nextjs-page' // Next.js App Router page with SEO/structured data exports
+  | 'mixed-concerns' // Multiple domains, potential refactoring candidate
+  | 'unknown'; // Unable to classify
 
 export interface ModuleCluster {
   domain: string; // e.g., "user-management", "auth"
@@ -159,4 +159,3 @@ export interface TypeDependency {
   definedIn: string; // file where type is defined
   usedBy: string[]; // files that reference this type
 }
-

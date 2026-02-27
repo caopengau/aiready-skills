@@ -89,7 +89,6 @@ export const GraphControls: React.FC<GraphControlsProps> = ({
   position = 'top-left',
   className,
 }) => {
-
   if (!visible) return null;
 
   const positionClasses: Record<string, string> = {
@@ -150,7 +149,11 @@ export const GraphControls: React.FC<GraphControlsProps> = ({
           onClick={() => onManualLayoutToggle?.(!manualLayout)}
           active={manualLayout}
           icon="🔧"
-          label={manualLayout ? 'Manual layout: ON (drag freely)' : 'Manual layout: OFF (forces active)'}
+          label={
+            manualLayout
+              ? 'Manual layout: ON (drag freely)'
+              : 'Manual layout: OFF (forces active)'
+          }
         />
 
         {/* Divider */}

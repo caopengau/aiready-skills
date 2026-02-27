@@ -7,15 +7,23 @@ import type { AiSignalClarityOptions } from './types';
 import chalk from 'chalk';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { dirname } from 'path';
-import { loadConfig, mergeConfigWithDefaults, resolveOutputPath, formatScore } from '@aiready/core';
+import {
+  loadConfig,
+  mergeConfigWithDefaults,
+  resolveOutputPath,
+} from '@aiready/core';
 
 const program = new Command();
 
 program
   .name('aiready-ai-signal-clarity')
-  .description('Detect code patterns that cause AI models to hallucinate incorrect implementations')
+  .description(
+    'Detect code patterns that cause AI models to hallucinate incorrect implementations'
+  )
   .version('0.1.0')
-  .addHelpText('after', `
+  .addHelpText(
+    'after',
+    `
 SIGNAL TYPES DETECTED:
   Magic Literals      Unnamed numbers/strings confuse AI intent inference
   Boolean Traps       Positional boolean args cause AI to invert intent
@@ -29,7 +37,8 @@ EXAMPLES:
   aiready-ai-signal-clarity .                        # Full scan
   aiready-ai-signal-clarity src/ --output json       # JSON report
   aiready-ai-signal-clarity . --min-severity major   # Only major+
-`)
+`
+  )
   .argument('<directory>', 'Directory to analyze')
   .option('--no-magic-literals', 'Skip magic literal detection')
   .option('--no-boolean-traps', 'Skip boolean trap detection')
@@ -37,10 +46,18 @@ EXAMPLES:
   .option('--no-undocumented-exports', 'Skip undocumented export detection')
   .option('--no-implicit-side-effects', 'Skip implicit side-effect detection')
   .option('--no-deep-callbacks', 'Skip deep callback detection')
-  .option('--min-severity <level>', 'Minimum severity: info|minor|major|critical', 'info')
+  .option(
+    '--min-severity <level>',
+    'Minimum severity: info|minor|major|critical',
+    'info'
+  )
   .option('--include <patterns>', 'File patterns to include (comma-separated)')
   .option('--exclude <patterns>', 'File patterns to exclude (comma-separated)')
-  .option('-o, --output <format>', 'Output format: console|json|markdown', 'console')
+  .option(
+    '-o, --output <format>',
+    'Output format: console|json|markdown',
+    'console'
+  )
   .option('--output-file <path>', 'Output file path (for json/markdown)')
   .action(async (directory, options) => {
     console.log(chalk.blue('🧠 Analyzing AI signal clarity...\n'));
@@ -79,7 +96,7 @@ EXAMPLES:
       const outputPath = resolveOutputPath(
         options.outputFile,
         `ai-signal-clarity-report-${new Date().toISOString().split('T')[0]}.json`,
-        directory,
+        directory
       );
       const dir = dirname(outputPath);
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -94,21 +111,31 @@ program.parse();
 
 function ratingColor(rating: string) {
   switch (rating) {
-    case 'minimal': return chalk.green;
-    case 'low': return chalk.cyan;
-    case 'moderate': return chalk.yellow;
-    case 'high': return chalk.red;
-    case 'severe': return chalk.bgRed.white;
-    default: return chalk.white;
+    case 'minimal':
+      return chalk.green;
+    case 'low':
+      return chalk.cyan;
+    case 'moderate':
+      return chalk.yellow;
+    case 'high':
+      return chalk.red;
+    case 'severe':
+      return chalk.bgRed.white;
+    default:
+      return chalk.white;
   }
 }
 
 function severityColor(sev: string) {
   switch (sev) {
-    case 'critical': return chalk.red;
-    case 'major': return chalk.yellow;
-    case 'minor': return chalk.blue;
-    default: return chalk.gray;
+    case 'critical':
+      return chalk.red;
+    case 'major':
+      return chalk.yellow;
+    case 'minor':
+      return chalk.blue;
+    default:
+      return chalk.gray;
   }
 }
 
@@ -116,15 +143,23 @@ function displayConsoleReport(report: any, scoring: any, elapsed: string) {
   const { summary, aggregateSignals, recommendations, results } = report;
 
   console.log(chalk.bold('\n🧠 AI Signal Clarity Analysis\n'));
-  console.log(`Score:           ${chalk.bold(scoring.score + '/100')} (${ratingColor(summary.rating)(summary.rating.toUpperCase())})`);
+  console.log(
+    `Score:           ${chalk.bold(scoring.score + '/100')} (${ratingColor(summary.rating)(summary.rating.toUpperCase())})`
+  );
   console.log(`Files Analyzed:  ${chalk.cyan(summary.filesAnalyzed)}`);
   console.log(`Total Signals:   ${chalk.yellow(summary.totalSignals)}`);
-  console.log(`  Critical: ${chalk.red(summary.criticalSignals)}  Major: ${chalk.yellow(summary.majorSignals)}  Minor: ${chalk.blue(summary.minorSignals)}`);
+  console.log(
+    `  Critical: ${chalk.red(summary.criticalSignals)}  Major: ${chalk.yellow(summary.majorSignals)}  Minor: ${chalk.blue(summary.minorSignals)}`
+  );
   console.log(`Top Risk:        ${chalk.italic(summary.topRisk)}`);
   console.log(`Analysis Time:   ${chalk.gray(elapsed + 's')}\n`);
 
   if (summary.totalSignals === 0) {
-    console.log(chalk.green('✨ No AI signal clarity signals found! Your codebase is AI-safe.\n'));
+    console.log(
+      chalk.green(
+        '✨ No AI signal clarity signals found! Your codebase is AI-safe.\n'
+      )
+    );
     return;
   }
 
@@ -140,7 +175,7 @@ function displayConsoleReport(report: any, scoring: any, elapsed: string) {
     ['Overloaded Symbols', sigs.overloadedSymbols],
   ];
   for (const [name, count] of rows) {
-    if (count as number > 0) {
+    if ((count as number) > 0) {
       console.log(`  ${String(name).padEnd(22)} ${chalk.yellow(count)}`);
     }
   }
@@ -156,7 +191,7 @@ function displayConsoleReport(report: any, scoring: any, elapsed: string) {
     for (const issue of topIssues) {
       console.log(
         `${severityColor(issue.severity)(issue.severity.toUpperCase())} ` +
-        `${chalk.dim(`${issue.location.file}:${issue.location.line}`)}`
+          `${chalk.dim(`${issue.location.file}:${issue.location.line}`)}`
       );
       console.log(`  ${issue.message}`);
       if (issue.suggestion) {

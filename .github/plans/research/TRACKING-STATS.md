@@ -24,6 +24,7 @@ make stats-weekly
 ## Current Numbers (as of 2026-01-16)
 
 **📦 NPM Downloads (Last 7 Days):**
+
 - Total: **12,847 downloads/week** 🚀
 - @aiready/pattern-detect: 3,321
 - @aiready/core: 2,987
@@ -32,6 +33,7 @@ make stats-weekly
 - @aiready/consistency: 1,179
 
 **⭐ GitHub:**
+
 - Stars: 1
 - Forks: 0
 - Open Issues: 1
@@ -65,7 +67,7 @@ Or create a GitHub Action:
 name: Track Stats
 on:
   schedule:
-    - cron: '0 9 * * 1'  # Every Monday 9am
+    - cron: '0 9 * * 1' # Every Monday 9am
   workflow_dispatch:
 
 jobs:
@@ -76,7 +78,7 @@ jobs:
       - run: make stats-export
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "📊 Weekly stats update"
+          commit_message: '📊 Weekly stats update'
           file_pattern: .aiready/stats/*.json
 ```
 
@@ -87,6 +89,7 @@ make stats-compare
 ```
 
 Output:
+
 ```
 📈 Growth Comparison
 Comparing 2026-01-09 → 2026-01-16
@@ -102,20 +105,20 @@ GitHub Stars:
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `make stats` | Quick stats summary (NPM + GitHub) |
-| `make stats-npm` | NPM downloads (last 7 days) |
-| `make stats-npm-detailed` | NPM downloads with trends |
-| `make stats-github` | GitHub repository stats |
-| `make stats-github-detailed` | Detailed GitHub analytics |
-| `make stats-all` | All detailed statistics |
-| `make stats-weekly` | Weekly stats report with growth tips |
-| `make stats-export` | Export stats to JSON file |
-| `make stats-compare` | Compare current stats with last week |
-| `make stats-trends` | Show historical trends (requires data) |
-| `make stats-dashboard` | Open NPM/GitHub stats in browser |
-| `make stats-setup` | Check/install required tools |
+| Command                      | Description                            |
+| ---------------------------- | -------------------------------------- |
+| `make stats`                 | Quick stats summary (NPM + GitHub)     |
+| `make stats-npm`             | NPM downloads (last 7 days)            |
+| `make stats-npm-detailed`    | NPM downloads with trends              |
+| `make stats-github`          | GitHub repository stats                |
+| `make stats-github-detailed` | Detailed GitHub analytics              |
+| `make stats-all`             | All detailed statistics                |
+| `make stats-weekly`          | Weekly stats report with growth tips   |
+| `make stats-export`          | Export stats to JSON file              |
+| `make stats-compare`         | Compare current stats with last week   |
+| `make stats-trends`          | Show historical trends (requires data) |
+| `make stats-dashboard`       | Open NPM/GitHub stats in browser       |
+| `make stats-setup`           | Check/install required tools           |
 
 ## Required Tools
 
@@ -152,11 +155,13 @@ Stats are exported to `.aiready/stats/YYYY-MM-DD.json`:
 ## External Dashboards
 
 ### NPM Stats
+
 - **npm-stat.com**: https://npm-stat.com/charts.html?package=@aiready/cli&from=2024-01-01
 - **npmtrends**: https://npmtrends.com/@aiready/cli-vs-@aiready/pattern-detect
 - **npms.io**: https://npms.io/search?q=%40aiready
 
 ### GitHub Insights
+
 - **Pulse**: https://github.com/caopengau/aiready-cli/pulse
 - **Traffic**: https://github.com/caopengau/aiready-cli/graphs/traffic
 - **Community**: https://github.com/caopengau/aiready-cli/pulse
@@ -168,17 +173,20 @@ Quick access: `make stats-dashboard`
 ### Weekly Routine
 
 **Monday (Export baseline):**
+
 ```bash
 make stats-export
 make stats-compare
 ```
 
 **Tuesday-Thursday (Content creation):**
+
 - Analyze popular repos with your tools
 - Post findings to Twitter/Reddit
 - Write blog posts with data
 
 **Friday (Review):**
+
 ```bash
 make stats-weekly
 ```
@@ -186,12 +194,14 @@ make stats-weekly
 ### What to Track
 
 **Leading Indicators (predict future growth):**
+
 - GitHub stars/forks
 - Issues/PRs opened
 - Community engagement (comments)
 - Social media mentions
 
 **Lagging Indicators (measure current success):**
+
 - NPM downloads
 - Package versions
 - Dependencies (who depends on you)
@@ -210,12 +220,14 @@ make stats-weekly
 ## Privacy & Ethics
 
 Our stats tracking is:
+
 - ✅ Public data only (NPM API, GitHub API)
 - ✅ No user tracking without consent
 - ✅ No personally identifiable information
 - ✅ Aggregate metrics only
 
 For CLI telemetry (future):
+
 - Opt-in only
 - Anonymous user IDs
 - Minimal data collection
@@ -224,23 +236,27 @@ For CLI telemetry (future):
 ## Troubleshooting
 
 **"jq: command not found"**
+
 ```bash
 brew install jq
 ```
 
 **"gh: command not found"**
+
 ```bash
 brew install gh
 gh auth login
 ```
 
 **"No historical data for comparison"**
+
 ```bash
 # Run stats-export regularly to build history
 make stats-export
 ```
 
 **GitHub API rate limiting**
+
 ```bash
 # Set GitHub token for higher limits
 export GITHUB_TOKEN=ghp_your_token_here

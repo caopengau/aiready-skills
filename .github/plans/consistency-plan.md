@@ -15,7 +15,9 @@ AI coding assistants work best with consistent codebases, but teams using AI too
 - **Incremental additions** - Each feature adds new patterns without checking existing conventions
 
 ### Impact
+
 Every inconsistency in naming, patterns, or architecture reduces AI effectiveness:
+
 - **Reduced comprehension** - AI models struggle with mixed conventions (camelCase vs snake_case)
 - **Incorrect suggestions** - AI can't predict which pattern to follow
 - **Context confusion** - Multiple ways of doing the same thing waste context tokens
@@ -23,6 +25,7 @@ Every inconsistency in naming, patterns, or architecture reduces AI effectivenes
 - **Onboarding friction** - New developers see no clear conventions to follow
 
 ### Example Scenario
+
 ```
 Team uses AI for 6 months:
 - Error handling: 4 different strategies (try-catch, returns, callbacks, null)
@@ -50,6 +53,7 @@ Result:
 5. **Growing concern** - More AI usage = more style drift = more critical
 
 ### Metrics That Matter:
+
 - **Naming Issues** - Variable/function naming problems (single letters, unclear, mixed conventions)
 - **Pattern Issues** - Inconsistent code patterns (error handling, async, imports)
 - **Architecture Issues** - Structural inconsistencies (file organization, module design)
@@ -100,17 +104,20 @@ Result:
 ### Performance Characteristics
 
 **Designed for speed:**
+
 - Regex-based detection (no heavy AST parsing initially)
 - Line-by-line analysis with early exits
 - Minimal memory footprint
 - Sub-second analysis for most projects
 
 **Benchmarks:**
+
 - Small repo (50 files): ~0.01s
 - Medium repo (500 files): ~0.10s
 - Large repo (2000+ files): ~0.50s
 
 ### Package Structure
+
 ```
 packages/consistency/
 ├── src/
@@ -133,6 +140,7 @@ packages/consistency/
 ### Key Files Breakdown
 
 #### 1. `src/types.ts` - Type System
+
 **Purpose:** Unified type definitions for consistency analysis
 
 ```typescript
@@ -144,8 +152,11 @@ export interface ConsistencyOptions extends ScanOptions {
 }
 
 export interface ConsistencyIssue extends Issue {
-  type: 'naming-inconsistency' | 'naming-quality' 
-      | 'pattern-inconsistency' | 'architecture-inconsistency';
+  type:
+    | 'naming-inconsistency'
+    | 'naming-quality'
+    | 'pattern-inconsistency'
+    | 'architecture-inconsistency';
   category: 'naming' | 'patterns' | 'architecture';
   examples?: string[];
   suggestion?: string;
@@ -165,93 +176,112 @@ export interface ConsistencyReport {
 ```
 
 #### 2. `src/analyzers/naming.ts` - Naming Analysis
+
 **Purpose:** Detect naming quality and convention issues
 
 **Key Patterns Detected:**
+
 1. **Single-letter variables**
+
    ```typescript
-   const x = 10;  // ❌ Poor naming
-   const count = 10;  // ✅ Descriptive
+   const x = 10; // ❌ Poor naming
+   const count = 10; // ✅ Descriptive
    ```
 
 2. **Convention mixing**
+
    ```typescript
-   const user_name = 'John';  // ❌ snake_case in JS/TS
-   const userName = 'John';   // ✅ camelCase
+   const user_name = 'John'; // ❌ snake_case in JS/TS
+   const userName = 'John'; // ✅ camelCase
    ```
 
 3. **Boolean naming**
+
    ```typescript
-   const active: boolean;     // ❌ Unclear
-   const isActive: boolean;   // ✅ Clear intent
+   const active: boolean; // ❌ Unclear
+   const isActive: boolean; // ✅ Clear intent
    ```
 
 4. **Function verbs**
    ```typescript
-   function user() { }        // ❌ No action verb
-   function getUser() { }     // ✅ Clear action
+   function user() {} // ❌ No action verb
+   function getUser() {} // ✅ Clear action
    ```
 
 **Implementation Strategy:**
+
 - Regex-based pattern matching
 - Line-by-line scanning
 - Context-aware (skip common abbreviations: id, url, api, db)
 - File-type specific rules (TypeScript vs Python)
 
 #### 3. `src/analyzers/patterns.ts` - Pattern Analysis
+
 **Purpose:** Detect inconsistent code patterns across codebase
 
 **Key Patterns Detected:**
 
 1. **Error Handling Strategies**
+
    ```typescript
    // Pattern 1: try-catch
-   try { await fetch() } catch (e) { }
-   
+   try {
+     await fetch();
+   } catch (e) {}
+
    // Pattern 2: return null
    if (error) return null;
-   
+
    // Pattern 3: return error object
    return { error: 'failed' };
-   
+
    // ⚠️ Mixed strategies = inconsistency
    ```
 
 2. **Async Patterns**
+
    ```typescript
    // Pattern 1: async/await
-   async function getData() { await fetch() }
-   
+   async function getData() {
+     await fetch();
+   }
+
    // Pattern 2: promise chains
-   getData().then(r => r).catch(e => e)
-   
+   getData()
+     .then((r) => r)
+     .catch((e) => e);
+
    // Pattern 3: callbacks
-   getData((err, data) => { })
-   
+   getData((err, data) => {});
+
    // ⚠️ Modern code should prefer async/await
    ```
 
 3. **Import Styles**
+
    ```typescript
    // Pattern 1: ES modules
    import { utils } from './utils';
-   
+
    // Pattern 2: CommonJS
    const utils = require('./utils');
-   
+
    // ⚠️ Should be consistent across project
    ```
 
 **Implementation Strategy:**
+
 - Content-based pattern detection
 - Aggregate patterns across files
 - Calculate consistency ratios
 - Generate consolidation recommendations
 
 #### 4. `src/analyzer.ts` - Main Orchestrator
+
 **Purpose:** Coordinate all analysis types and generate unified report
 
 **Key Responsibilities:**
+
 - File scanning via `@aiready/core`
 - Delegate to specialized analyzers
 - Convert issues to standard format
@@ -259,19 +289,24 @@ export interface ConsistencyReport {
 - Generate actionable recommendations
 
 **Scoring Algorithm:**
+
 ```typescript
 function calculateConsistencyScore(issues: ConsistencyIssue[]): number {
   const weights = { critical: 10, major: 5, minor: 2, info: 1 };
-  const totalWeight = issues.reduce((sum, issue) => 
-    sum + weights[issue.severity], 0);
+  const totalWeight = issues.reduce(
+    (sum, issue) => sum + weights[issue.severity],
+    0
+  );
   return Math.max(0, 1 - totalWeight / 100);
 }
 ```
 
 #### 5. `src/cli.ts` - CLI Interface
+
 **Purpose:** User-friendly command-line interface
 
 **Features:**
+
 - Flexible options: `--naming`, `--patterns`, `--min-severity`
 - Multiple output formats: console, JSON, markdown
 - Config file support via `aiready.json`
@@ -279,6 +314,7 @@ function calculateConsistencyScore(issues: ConsistencyIssue[]): number {
 - Recommendation summary
 
 **Usage Examples:**
+
 ```bash
 # Full analysis
 aiready-consistency ./src
@@ -299,18 +335,22 @@ aiready-consistency ./src --output markdown --output-file report.md
 ## 📈 Results & Validation
 
 ### Test Coverage
+
 - ✅ 14/14 tests passing
 - Unit tests for analyzer functions
 - Integration tests for CLI
 - Real codebase validation
 
 ### Real-World Testing
+
 Tested on actual AIReady packages:
+
 - `@aiready/consistency` (self-testing): 26 issues found
-- `@aiready/pattern-detect`: 43 issues found  
+- `@aiready/pattern-detect`: 43 issues found
 - `@aiready/core`: 18 issues found (2 pattern inconsistencies)
 
 ### Performance Metrics
+
 - Small project (50 files): ~0.01s
 - Medium project (500 files): ~0.10s
 - Zero false positives on test suite
@@ -342,6 +382,7 @@ Tested on actual AIReady packages:
 ### Integration Strategy
 
 **Unified CLI Integration:**
+
 ```bash
 # Via unified CLI
 aiready scan ./src -t consistency
@@ -354,6 +395,7 @@ aiready-consistency ./src
 ```
 
 **Programmatic API:**
+
 ```typescript
 import { analyzeConsistency } from '@aiready/consistency';
 
@@ -361,7 +403,7 @@ const report = await analyzeConsistency({
   rootDir: './src',
   checkNaming: true,
   checkPatterns: true,
-  minSeverity: 'minor'
+  minSeverity: 'minor',
 });
 
 console.log(`Found ${report.summary.totalIssues} issues`);
@@ -402,11 +444,13 @@ console.log(`Found ${report.summary.totalIssues} issues`);
 ## 🔄 Integration with AIReady Ecosystem
 
 ### Unified CLI Support
+
 - Added to `aiready scan -t consistency`
 - Dedicated command: `aiready consistency`
 - Consistent with other tools (patterns, context)
 
 ### Core Types Extension
+
 - Added new issue types to `@aiready/core`:
   - `naming-quality`
   - `naming-inconsistency`
@@ -414,6 +458,7 @@ console.log(`Found ${report.summary.totalIssues} issues`);
   - `architecture-inconsistency`
 
 ### Config File Support
+
 ```json
 {
   "consistency": {
@@ -428,6 +473,7 @@ console.log(`Found ${report.summary.totalIssues} issues`);
 ## 📝 Documentation
 
 ### README Structure
+
 1. Quick Start - Get running in 30 seconds
 2. What It Does - Problem + solution
 3. Usage Examples - Common scenarios
@@ -437,6 +483,7 @@ console.log(`Found ${report.summary.totalIssues} issues`);
 7. Why It Matters - AI context benefits
 
 ### CONTRIBUTING.md
+
 - Development setup
 - Testing guidelines
 - Adding new analyzers
@@ -445,6 +492,7 @@ console.log(`Found ${report.summary.totalIssues} issues`);
 ## 🚀 Release Strategy
 
 ### Version 0.1.0 (Initial Release)
+
 - ✅ Naming analysis (complete)
 - ✅ Pattern analysis (complete)
 - ✅ CLI interface (complete)
@@ -454,6 +502,7 @@ console.log(`Found ${report.summary.totalIssues} issues`);
 - ⏳ Architecture analysis (future)
 
 ### Roadmap
+
 - **v0.2.0** - Architecture consistency analysis
 - **v0.3.0** - Auto-fix capabilities
 - **v0.4.0** - Custom rule support
@@ -462,16 +511,19 @@ console.log(`Found ${report.summary.totalIssues} issues`);
 ## 📊 Success Metrics
 
 ### Adoption Metrics
+
 - npm downloads per week
 - GitHub stars on spoke repo
 - CLI usage via telemetry (opt-in)
 
 ### Effectiveness Metrics
+
 - Average issues found per project
 - Resolution rate (issues fixed vs reported)
 - User-reported false positive rate (<5% target)
 
 ### AI Impact Metrics
+
 - Consistency score improvement over time
 - User feedback on AI suggestion quality
 - Team velocity improvement

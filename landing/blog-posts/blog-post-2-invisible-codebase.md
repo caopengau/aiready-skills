@@ -8,7 +8,7 @@ I watched GitHub Copilot suggest the same validation logic three times in one we
 
 The AI wasn't broken. My codebase was invisible.
 
-Here's the problem: AI can write code, but it can't *see* your patterns. Not the way humans do. When you have the same logic scattered across different files with different names, AI treats each one as unique. It doesn't know you've already solved this problem. So it solves it again. And again.
+Here's the problem: AI can write code, but it can't _see_ your patterns. Not the way humans do. When you have the same logic scattered across different files with different names, AI treats each one as unique. It doesn't know you've already solved this problem. So it solves it again. And again.
 
 This isn't just annoying. It's expensive.
 
@@ -21,6 +21,7 @@ Let me show you a real example from building ReceiptClaimer.
 ### Example 1: User Validation - The Hard Way
 
 I had user validation logic spread across 8 files:
+
 - `api/auth/validate-email.ts`
 - `api/auth/validate-password.ts`
 - `api/users/check-email-exists.ts`
@@ -33,6 +34,7 @@ I had user validation logic spread across 8 files:
 Each file: 80-150 lines. Different patterns. Different error handling. Different import chains.
 
 When AI needed to help with user validation, it had to:
+
 1. Read the current file (200 tokens)
 2. Follow imports to understand the pattern (3,200 tokens)
 3. Pull in dependencies to match types (5,800 tokens)
@@ -45,12 +47,14 @@ At GPT-4 pricing (~$0.03/1K tokens), that's **$0.37 per code suggestion**.
 ### Example 2: User Validation - The Smart Way
 
 After refactoring, I consolidated to 2 files:
+
 - `lib/user-validation/index.ts` - All validation logic
 - `lib/user-validation/types.ts` - Shared types
 
 Each file: 200-250 lines. Single pattern. Clear error handling. Minimal imports.
 
 Same AI assistance, new cost:
+
 1. Read the current file (200 tokens)
 2. Read the validation module (900 tokens)
 3. Read type definitions (1,000 tokens)
@@ -60,6 +64,7 @@ Same AI assistance, new cost:
 **That's an 83% reduction.** From $0.37 to $0.06 per suggestion.
 
 If your team makes 50 AI-assisted edits per day, that's:
+
 - **Before:** $18.50/day = $555/month = $6,660/year
 - **After:** $3/day = $90/month = $1,080/year
 
@@ -87,9 +92,7 @@ function checkReceiptData(data: any): boolean {
 
 // File: lib/validators/receipt-validator.ts
 export function isValidReceipt(receipt: ReceiptInput): boolean {
-  const hasRequiredFields = receipt.merchant && 
-                           receipt.amount && 
-                           receipt.date;
+  const hasRequiredFields = receipt.merchant && receipt.amount && receipt.date;
   const hasPositiveAmount = receipt.amount > 0;
   return hasRequiredFields && hasPositiveAmount;
 }
@@ -112,6 +115,7 @@ Every time you split a single responsibility across multiple files, you fragment
 Here's what fragmentation looked like in my codebase:
 
 **Receipt Processing (fragmented):**
+
 ```
 src/
   api/
@@ -134,6 +138,7 @@ src/
 8 files. 7 different import paths. To understand receipt processing, AI needs to load all of them.
 
 **Receipt Processing (consolidated):**
+
 ```
 src/
   domains/
@@ -153,7 +158,7 @@ src/
 
 This is the "God file" problem, but inverted.
 
-Instead of one file doing everything, you have files that do *unrelated* things. AI can't figure out what the file is *for*.
+Instead of one file doing everything, you have files that do _unrelated_ things. AI can't figure out what the file is _for_.
 
 Example from my early codebase:
 
@@ -210,7 +215,7 @@ function validateUser(user) {
   return true;
 }
 
-// Function B  
+// Function B
 function checkUserValid(data) {
   const hasEmail = !!data.email;
   const hasPassword = !!data.password;
@@ -219,6 +224,7 @@ function checkUserValid(data) {
 ```
 
 After normalization:
+
 ```
 Function A tokens: [if, not, property, return, false, return, true]
 Function B tokens: [const, property, return, and]
@@ -235,6 +241,7 @@ Anything above 0.70? Probably a semantic duplicate worth reviewing.
 Context budget tells you how many tokens AI needs to understand a file.
 
 I built `@aiready/context-analyzer` to measure:
+
 1. **Import depth** - How many levels deep do imports go?
 2. **Context budget** - Total tokens needed to understand this file
 3. **Cohesion score** - Are imports related to each other?
@@ -261,6 +268,7 @@ The third dimension: pattern consistency.
 Do you handle errors the same way everywhere? Use the same naming conventions? Follow the same async patterns?
 
 I'm building `@aiready/consistency` to detect:
+
 - Mixed error handling patterns (try-catch vs callbacks vs promises)
 - Inconsistent naming (camelCase vs snake_case)
 - Import style drift (ES modules vs require)
@@ -273,6 +281,7 @@ I'm building `@aiready/consistency` to detect:
 I ran these tools on my own codebase — [ReceiptClaimer](https://receiptclaimer.com.au/), an AI-powered receipt tracker for Australian taxpayers. Here's what I found:
 
 ### Before Measurement
+
 - **Semantic duplicates:** 23 patterns repeated 87 times
 - **Average import depth:** 5.8 levels
 - **Average context budget:** 8,200 tokens per file
@@ -280,6 +289,7 @@ I ran these tools on my own codebase — [ReceiptClaimer](https://receiptclaimer
 - **Monthly AI costs:** ~$380 (estimated)
 
 ### After Refactoring (4 weeks)
+
 - **Semantic duplicates:** 3 patterns repeated 8 times (-87%)
 - **Average import depth:** 2.9 levels (-50%)
 - **Average context budget:** 2,100 tokens per file (-74%)
@@ -307,6 +317,7 @@ npx @aiready/pattern-detect
 ```
 
 Look for:
+
 - Similarity scores > 70%
 - Patterns repeated 3+ times
 - Core domains (auth, validation, API handlers)
@@ -318,6 +329,7 @@ npx @aiready/context-analyzer
 ```
 
 Look for:
+
 - Import depth > 5 levels
 - Context budget > 8,000 tokens
 - Cohesion score < 0.50
@@ -326,6 +338,7 @@ Look for:
 ### Step 3: Pick ONE Domain to Fix
 
 Don't refactor everything. Pick your most painful domain:
+
 - The one where AI suggestions are worst
 - The one where code reviews take longest
 - The one where new developers get confused
@@ -345,6 +358,7 @@ Code that AI can understand. Code that humans can maintain. Code that doesn't wa
 In Part 3, I'll dive deep into the technical details: **"Building AIReady: Metrics That Actually Matter"**
 
 We'll explore:
+
 - Why traditional metrics (cyclomatic complexity, code coverage) miss AI problems
 - How Jaccard similarity works on AST tokens (with diagrams)
 - The three dimensions of AI-readiness and how they interact
@@ -360,19 +374,22 @@ Until then, run the tools. Measure your codebase. See how invisible it really is
 ---
 
 **Try it yourself:**
+
 - GitHub: [github.com/caopengau/aiready-cli](https://github.com/caopengau/aiready-cli)
 - Docs: [aiready.dev](https://aiready.dev)
 
 **Want to support this work?**
+
 - ⭐ Star the repo
 - 🐛 Report issues you find
 - 💬 Share your results (I read every comment)
 
 ---
 
-*Peng Cao is building open source tools for AI-ready development. He's also the creator of ReceiptClaimer, an AI-powered receipt tracker for Australian taxpayers. Follow along as he builds in public.*
+_Peng Cao is building open source tools for AI-ready development. He's also the creator of ReceiptClaimer, an AI-powered receipt tracker for Australian taxpayers. Follow along as he builds in public._
 
 **Read the series:**
+
 - [Part 1: The AI Code Debt Tsunami is Here](link-to-part-1)
 - **Part 2: Why Your Codebase is Invisible to AI** ← You are here
 - Part 3: Building AIReady - Metrics That Actually Matter (coming Feb 7)

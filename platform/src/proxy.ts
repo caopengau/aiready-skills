@@ -11,12 +11,16 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public routes
-  if (publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))) {
+  if (
+    publicRoutes.some(
+      (route) => pathname === route || pathname.startsWith(route + '/')
+    )
+  ) {
     return NextResponse.next();
   }
 
   // Allow public API routes (auth callbacks, etc.)
-  if (publicApiRoutes.some(route => pathname.startsWith(route))) {
+  if (publicApiRoutes.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
@@ -30,7 +34,8 @@ export function proxy(request: NextRequest) {
   }
 
   // Check for session token (NextAuth v5 uses 'authjs.*' cookie names)
-  const sessionToken = request.cookies.get('authjs.session-token')?.value ||
+  const sessionToken =
+    request.cookies.get('authjs.session-token')?.value ||
     request.cookies.get('__Secure-authjs.session-token')?.value;
 
   // If no session and trying to access protected route, redirect to login

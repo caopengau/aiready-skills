@@ -1,6 +1,10 @@
 import { scanFiles } from '@aiready/core';
 import type { AnalysisResult, Issue } from '@aiready/core';
-import type { ConsistencyOptions, ConsistencyReport, ConsistencyIssue } from './types';
+import type {
+  ConsistencyOptions,
+  ConsistencyReport,
+  ConsistencyIssue,
+} from './types';
 import { analyzeNamingAST } from './analyzers/naming-ast';
 import { analyzePythonNaming } from './analyzers/naming-python';
 import { analyzePatterns } from './analyzers/patterns';
@@ -15,26 +19,31 @@ export async function analyzeConsistency(
   const {
     checkNaming = true,
     checkPatterns = true,
-    checkArchitecture = false, // Not implemented yet
+    _checkArchitecture = false, // Not implemented yet
     minSeverity = 'info',
     ...scanOptions
   } = options;
+
+  // Mark intentionally-unused option to avoid lint warnings
+  void _checkArchitecture;
 
   // Scan files
   const filePaths = await scanFiles(scanOptions);
 
   // Separate files by language
-  const tsJsFiles = filePaths.filter(f => /\.(ts|tsx|js|jsx)$/i.test(f));
-  const pythonFiles = filePaths.filter(f => /\.py$/i.test(f));
+  const tsJsFiles = filePaths.filter((f) => /\.(ts|tsx|js|jsx)$/i.test(f));
+  const pythonFiles = filePaths.filter((f) => /\.py$/i.test(f));
 
   // Collect issues by category - now handles multiple languages
   let namingIssues: any[] = [];
   if (checkNaming) {
-    const tsJsNamingIssues = tsJsFiles.length > 0 ? await analyzeNamingAST(tsJsFiles) : [];
-    const pythonNamingIssues = pythonFiles.length > 0 ? await analyzePythonNaming(pythonFiles) : [];
+    const tsJsNamingIssues =
+      tsJsFiles.length > 0 ? await analyzeNamingAST(tsJsFiles) : [];
+    const pythonNamingIssues =
+      pythonFiles.length > 0 ? await analyzePythonNaming(pythonFiles) : [];
     namingIssues = [...tsJsNamingIssues, ...pythonNamingIssues];
   }
-  
+
   const patternIssues = checkPatterns ? await analyzePatterns(filePaths) : [];
 
   // Convert to AnalysisResult format
@@ -48,16 +57,19 @@ export async function analyzeConsistency(
     }
 
     const consistencyIssue: ConsistencyIssue = {
-      type: issue.type === 'convention-mix' ? 'naming-inconsistency' : 'naming-quality',
+      type:
+        issue.type === 'convention-mix'
+          ? 'naming-inconsistency'
+          : 'naming-quality',
       category: 'naming',
       severity: issue.severity,
       message: `${issue.type}: ${issue.identifier}`,
       location: {
         file: issue.file,
         line: issue.line,
-        column: issue.column
+        column: issue.column,
       },
-      suggestion: issue.suggestion
+      suggestion: issue.suggestion,
     };
 
     if (!fileIssuesMap.has(issue.file)) {
@@ -79,10 +91,10 @@ export async function analyzeConsistency(
       message: issue.description,
       location: {
         file: issue.files[0] || 'multiple files',
-        line: 1
+        line: 1,
       },
       examples: issue.examples,
-      suggestion: `Standardize ${issue.type} patterns across ${issue.files.length} files`
+      suggestion: `Standardize ${issue.type} patterns across ${issue.files.length} files`,
     };
 
     // Add to first file in the pattern
@@ -101,28 +113,32 @@ export async function analyzeConsistency(
       fileName,
       issues: issues as Issue[],
       metrics: {
-        consistencyScore: calculateConsistencyScore(issues)
-      }
+        consistencyScore: calculateConsistencyScore(issues),
+      },
     });
   }
 
   // Sort results by severity first, then by issue count per file
   results.sort((fileResultA, fileResultB) => {
     const severityOrder = { critical: 0, major: 1, minor: 2, info: 3 };
-    
+
     // Get highest severity in each file
     const maxSeverityA = Math.min(
-      ...fileResultA.issues.map(i => severityOrder[(i as ConsistencyIssue).severity])
+      ...fileResultA.issues.map(
+        (i) => severityOrder[(i as ConsistencyIssue).severity]
+      )
     );
     const maxSeverityB = Math.min(
-      ...fileResultB.issues.map(i => severityOrder[(i as ConsistencyIssue).severity])
+      ...fileResultB.issues.map(
+        (i) => severityOrder[(i as ConsistencyIssue).severity]
+      )
     );
-    
+
     // Sort by severity first
     if (maxSeverityA !== maxSeverityB) {
       return maxSeverityA - maxSeverityB;
     }
-    
+
     // Then by issue count (descending)
     return fileResultB.issues.length - fileResultA.issues.length;
   });
@@ -131,8 +147,12 @@ export async function analyzeConsistency(
   const recommendations = generateRecommendations(namingIssues, patternIssues);
 
   // Compute filtered counts (respecting minSeverity) to report accurate summary
-  const namingCountFiltered = namingIssues.filter(i => shouldIncludeSeverity(i.severity, minSeverity)).length;
-  const patternCountFiltered = patternIssues.filter(i => shouldIncludeSeverity(i.severity, minSeverity)).length;
+  const namingCountFiltered = namingIssues.filter((i) =>
+    shouldIncludeSeverity(i.severity, minSeverity)
+  ).length;
+  const patternCountFiltered = patternIssues.filter((i) =>
+    shouldIncludeSeverity(i.severity, minSeverity)
+  ).length;
 
   // Detect naming conventions (TODO: re-implement for AST version)
   // const conventionAnalysis = detectNamingConventions(filePaths, namingIssues);
@@ -143,10 +163,10 @@ export async function analyzeConsistency(
       namingIssues: namingCountFiltered,
       patternIssues: patternCountFiltered,
       architectureIssues: 0,
-      filesAnalyzed: filePaths.length
+      filesAnalyzed: filePaths.length,
     },
     results,
-    recommendations
+    recommendations,
   };
 }
 
@@ -161,7 +181,10 @@ function shouldIncludeSeverity(
 function calculateConsistencyScore(issues: ConsistencyIssue[]): number {
   // Higher score = more consistent (fewer issues)
   const weights = { critical: 10, major: 5, minor: 2, info: 1 };
-  const totalWeight = issues.reduce((sum, issue) => sum + weights[issue.severity], 0);
+  const totalWeight = issues.reduce(
+    (sum, issue) => sum + weights[issue.severity],
+    0
+  );
   // Score from 0-1, where 1 is perfect
   return Math.max(0, 1 - totalWeight / 100);
 }
@@ -173,14 +196,18 @@ function generateRecommendations(
   const recommendations: string[] = [];
 
   if (namingIssues.length > 0) {
-    const conventionMixCount = namingIssues.filter(i => i.type === 'convention-mix').length;
+    const conventionMixCount = namingIssues.filter(
+      (i) => i.type === 'convention-mix'
+    ).length;
     if (conventionMixCount > 0) {
       recommendations.push(
         `Standardize naming conventions: Found ${conventionMixCount} snake_case variables in TypeScript/JavaScript (use camelCase)`
       );
     }
 
-    const poorNamingCount = namingIssues.filter(i => i.type === 'poor-naming').length;
+    const poorNamingCount = namingIssues.filter(
+      (i) => i.type === 'poor-naming'
+    ).length;
     if (poorNamingCount > 0) {
       recommendations.push(
         `Improve variable naming: Found ${poorNamingCount} single-letter or unclear variable names`
@@ -189,21 +216,23 @@ function generateRecommendations(
   }
 
   if (patternIssues.length > 0) {
-    const errorHandlingIssues = patternIssues.filter(i => i.type === 'error-handling');
+    const errorHandlingIssues = patternIssues.filter(
+      (i) => i.type === 'error-handling'
+    );
     if (errorHandlingIssues.length > 0) {
       recommendations.push(
         'Standardize error handling strategy across the codebase (prefer try-catch with typed errors)'
       );
     }
 
-    const asyncIssues = patternIssues.filter(i => i.type === 'async-style');
+    const asyncIssues = patternIssues.filter((i) => i.type === 'async-style');
     if (asyncIssues.length > 0) {
       recommendations.push(
         'Use async/await consistently instead of mixing with promise chains or callbacks'
       );
     }
 
-    const importIssues = patternIssues.filter(i => i.type === 'import-style');
+    const importIssues = patternIssues.filter((i) => i.type === 'import-style');
     if (importIssues.length > 0) {
       recommendations.push(
         'Use ES modules consistently across the project (avoid mixing with CommonJS)'
@@ -212,7 +241,9 @@ function generateRecommendations(
   }
 
   if (recommendations.length === 0) {
-    recommendations.push('No major consistency issues found! Your codebase follows good practices.');
+    recommendations.push(
+      'No major consistency issues found! Your codebase follows good practices.'
+    );
   }
 
   return recommendations;

@@ -41,7 +41,13 @@ export function ErrorDisplay({
           onClick={retry}
           className="mt-2 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -65,13 +71,20 @@ export interface EmptyStateProps {
   };
 }
 
-export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  description,
+  icon,
+  action,
+}: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[200px] gap-4 p-8">
       {icon && <div className="rounded-full bg-slate-100 p-3">{icon}</div>}
       <div className="text-center">
         <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-        {description && <p className="mt-2 text-sm text-slate-500">{description}</p>}
+        {description && (
+          <p className="mt-2 text-sm text-slate-500">{description}</p>
+        )}
       </div>
       {action && (
         <button

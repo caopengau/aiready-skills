@@ -11,10 +11,10 @@
 
 ## Core Narrative Arc
 
-* **Phase 1 (Weeks 1-2): The Wake Up Call.** Exposing the hidden cost of AI code.
-* **Phase 2 (Weeks 3-4): The Metrics.** Why old metrics fail and what "AI-Ready" actually means.
-* **Phase 3 (Weeks 5-6): The Solution.** Visualizing the mess and fixing it with tooling.
-* **Phase 4 (Weeks 7-8): The Standard.** Call to arms to join the community and build the future of dev standards.
+- **Phase 1 (Weeks 1-2): The Wake Up Call.** Exposing the hidden cost of AI code.
+- **Phase 2 (Weeks 3-4): The Metrics.** Why old metrics fail and what "AI-Ready" actually means.
+- **Phase 3 (Weeks 5-6): The Solution.** Visualizing the mess and fixing it with tooling.
+- **Phase 4 (Weeks 7-8): The Standard.** Call to arms to join the community and build the future of dev standards.
 
 ---
 
@@ -76,7 +76,7 @@
 
 **Theme:** Technical Deep Dive.
 **Hook:** The hardest bug to find is the one that works correctly 5 times.
-**Body:** AI doesn't copy-paste. It "re-imagines". That's why traditional duplicate detectors fail. We use AST-based Jaccard similarity to find code that *means* the same thing, even if it *looks* completely different.
+**Body:** AI doesn't copy-paste. It "re-imagines". That's why traditional duplicate detectors fail. We use AST-based Jaccard similarity to find code that _means_ the same thing, even if it _looks_ completely different.
 **Visual:** Code snippet comparison highlighting "Semantic Match: 98%".
 **CTA:** Find your invisible duplicates.
 

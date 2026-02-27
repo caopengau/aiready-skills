@@ -27,7 +27,10 @@ describe('fragmentation coupling discount', () => {
     const cluster = clusters.find((c) => c.domain === 'billing');
     expect(cluster).toBeDefined();
 
-    const base = calculateFragmentation(files.map(f => f.file), 'billing');
+    const base = calculateFragmentation(
+      files.map((f) => f.file),
+      'billing'
+    );
     // With no import similarity the coupling discount should be 0 -> fragmentation unchanged
     expect(cluster!.fragmentationScore).toBeCloseTo(base, 6);
   });
@@ -53,7 +56,10 @@ describe('fragmentation coupling discount', () => {
     const cluster = clusters.find((c) => c.domain === 'billing');
     expect(cluster).toBeDefined();
 
-    const base = calculateFragmentation(files.map(f => f.file), 'billing');
+    const base = calculateFragmentation(
+      files.map((f) => f.file),
+      'billing'
+    );
     const expected = base * 0.8; // full cohesion => 20% discount
 
     // Allow small FP tolerance

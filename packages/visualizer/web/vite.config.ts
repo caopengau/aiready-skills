@@ -34,7 +34,10 @@ export default defineConfig(async ({ command }) => {
       server.middlewares.use(async (req: any, res: any, next: any) => {
         try {
           const url = req.url || '';
-          if (url === '/report-data.json' || url.startsWith('/report-data.json?')) {
+          if (
+            url === '/report-data.json' ||
+            url.startsWith('/report-data.json?')
+          ) {
             const { promises: fsp } = await import('fs');
             if (!existsSync(reportPath)) {
               res.statusCode = 404;
@@ -44,7 +47,7 @@ export default defineConfig(async ({ command }) => {
             }
             let data = await fsp.readFile(reportPath, 'utf8');
             const report = JSON.parse(data);
-            
+
             // Inject visualizer config from env if available
             if (visualizerConfigStr) {
               try {
@@ -54,7 +57,7 @@ export default defineConfig(async ({ command }) => {
                 // Silently ignore parse errors
               }
             }
-            
+
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
             res.end(JSON.stringify(report));
@@ -90,7 +93,9 @@ export default defineConfig(async ({ command }) => {
     resolve: {
       alias: {
         // during dev resolve to source for HMR; during build use the built dist
-        '@aiready/components': isDev ? componentsPath : resolve(__dirname, '../../components/dist'),
+        '@aiready/components': isDev
+          ? componentsPath
+          : resolve(__dirname, '../../components/dist'),
       },
     },
   };

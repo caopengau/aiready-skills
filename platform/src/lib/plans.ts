@@ -1,8 +1,8 @@
 /**
  * Plan Limits and Feature Gating
- * 
+ *
  * Plan hierarchy: free < pro < team < enterprise
- * 
+ *
  * MVP Launch: Only Free tier is active. Pro, Team, and Enterprise are "Coming Soon".
  * All users default to 'free' plan.
  */
@@ -25,7 +25,8 @@ export const MVP_FREE_ONLY = true;
 /**
  * Coming soon message for premium features
  */
-export const COMING_SOON_MESSAGE = 'This feature is coming soon. Join the waitlist: team@getaiready.dev';
+export const COMING_SOON_MESSAGE =
+  'This feature is coming soon. Join the waitlist: team@getaiready.dev';
 
 export interface PlanLimits {
   maxRepos: number;
@@ -134,13 +135,16 @@ export const planLimits: Record<Plan, PlanLimits> = {
 /**
  * Check if a plan has access to a feature
  */
-export function hasFeature(plan: Plan, feature: keyof PlanLimits['features']): boolean {
+export function hasFeature(
+  plan: Plan,
+  feature: keyof PlanLimits['features']
+): boolean {
   const limits = planLimits[plan];
   const value = limits.features[feature];
-  
+
   // Boolean features
   if (typeof value === 'boolean') return value;
-  
+
   // Numeric features (like aiRefactoringPlans)
   return value !== 0;
 }
@@ -148,14 +152,21 @@ export function hasFeature(plan: Plan, feature: keyof PlanLimits['features']): b
 /**
  * Check if plan meets minimum required level
  */
-export function meetsPlanRequirement(currentPlan: Plan, requiredPlan: Plan): boolean {
+export function meetsPlanRequirement(
+  currentPlan: Plan,
+  requiredPlan: Plan
+): boolean {
   return planHierarchy[currentPlan] >= planHierarchy[requiredPlan];
 }
 
 /**
  * Get upgrade prompt for a feature
  */
-export function getUpgradePrompt(feature: string): { requiredPlan: Plan; message: string; cta: string } {
+export function getUpgradePrompt(feature: string): {
+  requiredPlan: Plan;
+  message: string;
+  cta: string;
+} {
   const featureToPlan: Record<string, Plan> = {
     historicalTrends: 'pro',
     teamBenchmarking: 'team',
@@ -167,7 +178,7 @@ export function getUpgradePrompt(feature: string): { requiredPlan: Plan; message
   };
 
   const requiredPlan = featureToPlan[feature] || 'pro';
-  
+
   const messages: Record<Plan, string> = {
     free: 'Upgrade to access this feature',
     pro: `$49/mo — Perfect for individual developers`,
@@ -205,7 +216,9 @@ export function formatPlanName(plan: Plan): string {
 /**
  * Get plan price
  */
-export function getPlanPrice(plan: Plan): { monthly: number; annual: number } | null {
+export function getPlanPrice(
+  plan: Plan
+): { monthly: number; annual: number } | null {
   const prices: Record<Plan, { monthly: number; annual: number } | null> = {
     free: null,
     pro: { monthly: 49, annual: 470 }, // ~20% discount

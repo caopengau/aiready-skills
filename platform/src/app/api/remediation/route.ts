@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
-import { 
-  createRemediation, 
-  listRemediations, 
+import {
+  createRemediation,
+  listRemediations,
   listTeamRemediations,
   getRemediation,
   updateRemediation,
-  RemediationRequest 
+  RemediationRequest,
 } from '@/lib/db';
 import { randomUUID } from 'crypto';
 
@@ -31,18 +31,24 @@ export async function GET(request: NextRequest) {
     } else if (repoId) {
       remediations = await listRemediations(repoId, limit);
     } else {
-      return NextResponse.json({ error: 'repoId or teamId is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'repoId or teamId is required' },
+        { status: 400 }
+      );
     }
 
     // Filter by status if provided
     if (status) {
-      remediations = remediations.filter(r => r.status === status);
+      remediations = remediations.filter((r) => r.status === status);
     }
 
     return NextResponse.json({ remediations });
   } catch (error) {
     console.error('Error listing remediations:', error);
-    return NextResponse.json({ error: 'Failed to list remediations' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to list remediations' },
+      { status: 500 }
+    );
   }
 }
 
@@ -55,31 +61,40 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { 
-      repoId, 
-      teamId, 
-      type, 
-      risk, 
-      title, 
-      description, 
-      affectedFiles, 
-      estimatedSavings 
+    const {
+      repoId,
+      teamId,
+      type,
+      risk,
+      title,
+      description,
+      affectedFiles,
+      estimatedSavings,
     } = body;
 
     if (!repoId || !type || !risk || !title) {
-      return NextResponse.json({ 
-        error: 'repoId, type, risk, and title are required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'repoId, type, risk, and title are required',
+        },
+        { status: 400 }
+      );
     }
 
     const validTypes = ['consolidation', 'rename', 'restructure', 'refactor'];
     if (!validTypes.includes(type)) {
-      return NextResponse.json({ error: 'Invalid remediation type' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid remediation type' },
+        { status: 400 }
+      );
     }
 
     const validRisks = ['low', 'medium', 'high', 'critical'];
     if (!validRisks.includes(risk)) {
-      return NextResponse.json({ error: 'Invalid risk level' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid risk level' },
+        { status: 400 }
+      );
     }
 
     const remediation = await createRemediation({
@@ -101,6 +116,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ remediation }, { status: 201 });
   } catch (error) {
     console.error('Error creating remediation:', error);
-    return NextResponse.json({ error: 'Failed to create remediation' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create remediation' },
+      { status: 500 }
+    );
   }
 }

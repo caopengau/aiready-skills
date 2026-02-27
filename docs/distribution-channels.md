@@ -4,14 +4,14 @@ This document outlines the distribution strategy for AIReady tools and the statu
 
 ## Quick Status
 
-| Channel | Status | Package | Priority |
-|---------|--------|---------|----------|
-| **npm** | ✅ Published | `@aiready/cli` | Done |
-| **Docker Hub** | 🟡 Ready | `aiready/cli` | High |
-| **ghcr.io** | 🟡 Ready | `ghcr.io/caopengau/aiready` | High |
-| **GitHub Marketplace** | ✅ Published | `caopengau/aiready-action` | Done |
-| **VS Code Extension** | 🟡 Scaffold Ready | `aiready.aiready` | Medium |
-| **Homebrew** | 🟡 Formula Ready | `aiready` | Medium |
+| Channel                | Status            | Package                     | Priority |
+| ---------------------- | ----------------- | --------------------------- | -------- |
+| **npm**                | ✅ Published      | `@aiready/cli`              | Done     |
+| **Docker Hub**         | 🟡 Ready          | `aiready/cli`               | High     |
+| **ghcr.io**            | 🟡 Ready          | `ghcr.io/caopengau/aiready` | High     |
+| **GitHub Marketplace** | ✅ Published      | `caopengau/aiready-action`  | Done     |
+| **VS Code Extension**  | 🟡 Scaffold Ready | `aiready.aiready`           | Medium   |
+| **Homebrew**           | 🟡 Formula Ready  | `aiready`                   | Medium   |
 
 ## Makefile Commands
 
@@ -45,16 +45,17 @@ make distribution-all
 ## 1. npm Packages ✅
 
 ### Current Status
+
 All packages are published to npm:
 
-| Package | Version | Status |
-|---------|---------|--------|
-| `@aiready/cli` | v0.9.26 | ✅ Published |
-| `@aiready/core` | Latest | ✅ Published |
-| `@aiready/pattern-detect` | Latest | ✅ Published |
-| `@aiready/context-analyzer` | Latest | ✅ Published |
-| `@aiready/consistency` | Latest | ✅ Published |
-| `@aiready/visualizer` | Latest | ✅ Published |
+| Package                     | Version | Status       |
+| --------------------------- | ------- | ------------ |
+| `@aiready/cli`              | v0.9.26 | ✅ Published |
+| `@aiready/core`             | Latest  | ✅ Published |
+| `@aiready/pattern-detect`   | Latest  | ✅ Published |
+| `@aiready/context-analyzer` | Latest  | ✅ Published |
+| `@aiready/consistency`      | Latest  | ✅ Published |
+| `@aiready/visualizer`       | Latest  | ✅ Published |
 
 ### Installation
 
@@ -88,6 +89,7 @@ make release-all
 ## 2. Docker 🟡 Ready
 
 ### Files Created
+
 - `docker/Dockerfile` - Multi-stage build from source
 - `docker/Dockerfile.slim` - Installs from npm (smaller image)
 - `.github/workflows/docker.yml` - Automated build & push workflow
@@ -134,6 +136,7 @@ docker run --rm -v $(pwd):/workspace aiready/cli:latest \
 ### CI/CD Pipeline
 
 Docker images are automatically built and pushed on releases via `.github/workflows/docker.yml`:
+
 - Triggers on GitHub releases
 - Builds for `linux/amd64` and `linux/arm64`
 - Pushes to both Docker Hub and ghcr.io
@@ -144,6 +147,7 @@ Docker images are automatically built and pushed on releases via `.github/workfl
 ## 3. GitHub Actions Marketplace 🟡 Ready
 
 ### Files Created
+
 - `action-marketplace/` - Standalone action directory
 - `action-marketplace/action.yml` - Action definition
 - `action-marketplace/src/index.ts` - Action source
@@ -196,33 +200,35 @@ jobs:
 
 ### Inputs
 
-| Input | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `directory` | No | `.` | Directory to analyze |
-| `threshold` | No | `70` | Minimum AI readiness score (0-100) |
-| `fail-on` | No | `critical` | Fail on severity: `critical`, `major`, `any`, `none` |
-| `tools` | No | `patterns,context,consistency` | Tools to run |
+| Input       | Required | Default                        | Description                                          |
+| ----------- | -------- | ------------------------------ | ---------------------------------------------------- |
+| `directory` | No       | `.`                            | Directory to analyze                                 |
+| `threshold` | No       | `70`                           | Minimum AI readiness score (0-100)                   |
+| `fail-on`   | No       | `critical`                     | Fail on severity: `critical`, `major`, `any`, `none` |
+| `tools`     | No       | `patterns,context,consistency` | Tools to run                                         |
 
 ### Outputs
 
-| Output | Description |
-|--------|-------------|
-| `score` | Overall AI readiness score (0-100) |
-| `passed` | Whether the check passed |
-| `issues` | Total issues found |
-| `critical` | Critical issues count |
-| `major` | Major issues count |
+| Output     | Description                        |
+| ---------- | ---------------------------------- |
+| `score`    | Overall AI readiness score (0-100) |
+| `passed`   | Whether the check passed           |
+| `issues`   | Total issues found                 |
+| `critical` | Critical issues count              |
+| `major`    | Major issues count                 |
 
 ---
 
 ## 4. VS Code Extension 🟡 Scaffold Ready
 
 ### Files Created
+
 - `packages/vscode-extension/package.json` - Extension manifest
 - `packages/vscode-extension/src/extension.ts` - Extension source
 - `packages/vscode-extension/README.md` - Extension README
 
 ### Features
+
 - 🛡️ Real-time AI readiness score in status bar
 - 📊 Issue explorer in sidebar
 - ⚡ Quick scan current file
@@ -246,28 +252,29 @@ vsce publish
 
 ### Configuration
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `aiready.threshold` | `70` | Minimum score to pass |
-| `aiready.failOn` | `critical` | Severity to fail on |
-| `aiready.tools` | `["patterns", "context", "consistency"]` | Tools to run |
-| `aiready.autoScan` | `false` | Auto-scan on save |
-| `aiready.showStatusBar` | `true` | Show score in status bar |
+| Setting                 | Default                                  | Description              |
+| ----------------------- | ---------------------------------------- | ------------------------ |
+| `aiready.threshold`     | `70`                                     | Minimum score to pass    |
+| `aiready.failOn`        | `critical`                               | Severity to fail on      |
+| `aiready.tools`         | `["patterns", "context", "consistency"]` | Tools to run             |
+| `aiready.autoScan`      | `false`                                  | Auto-scan on save        |
+| `aiready.showStatusBar` | `true`                                   | Show score in status bar |
 
 ### Commands
 
-| Command | Description |
-|---------|-------------|
+| Command                   | Description         |
+| ------------------------- | ------------------- |
 | `AIReady: Scan Workspace` | Full workspace scan |
-| `AIReady: Quick Scan` | Current file only |
-| `AIReady: Show Report` | Open output panel |
-| `AIReady: Open Settings` | Configure options |
+| `AIReady: Quick Scan`     | Current file only   |
+| `AIReady: Show Report`    | Open output panel   |
+| `AIReady: Open Settings`  | Configure options   |
 
 ---
 
 ## 5. Homebrew 🟡 Formula Ready
 
 ### Files Created
+
 - `homebrew/aiready.rb` - Homebrew formula
 
 ### Publishing Steps
@@ -319,23 +326,23 @@ brew install --build-from-source homebrew/aiready.rb
 
 ## 6. Other Potential Channels
 
-| Channel | Priority | Effort | Status | Notes |
-|---------|----------|--------|--------|-------|
-| **Snap** | Low | Medium | Not started | Linux desktop users |
-| **Chocolatey** | Low | Low | Not started | Windows users |
-| **AUR** | Low | Low | Not started | Arch Linux users |
-| **Scoop** | Low | Low | Not started | Windows users |
+| Channel        | Priority | Effort | Status      | Notes               |
+| -------------- | -------- | ------ | ----------- | ------------------- |
+| **Snap**       | Low      | Medium | Not started | Linux desktop users |
+| **Chocolatey** | Low      | Low    | Not started | Windows users       |
+| **AUR**        | Low      | Low    | Not started | Arch Linux users    |
+| **Scoop**      | Low      | Low    | Not started | Windows users       |
 
 ---
 
 ## Versioning Strategy
 
-| Component | Versioning | Example |
-|-----------|------------|---------|
-| npm packages | Semantic | `0.9.26` |
-| GitHub Action | Major tag | `v1`, `v1.1` |
-| Docker | Semantic + latest | `0.9.26`, `latest` |
-| VS Code Extension | Semantic | `0.1.0` |
+| Component         | Versioning        | Example            |
+| ----------------- | ----------------- | ------------------ |
+| npm packages      | Semantic          | `0.9.26`           |
+| GitHub Action     | Major tag         | `v1`, `v1.1`       |
+| Docker            | Semantic + latest | `0.9.26`, `latest` |
+| VS Code Extension | Semantic          | `0.1.0`            |
 
 ---
 
@@ -351,35 +358,41 @@ brew install --build-from-source homebrew/aiready.rb
 ## Release Checklist
 
 ### Before Release
+
 - [ ] Update all package versions
 - [ ] Update CHANGELOG.md
 - [ ] Run `make pre-commit`
 - [ ] Run `make test`
 
 ### Release npm
+
 - [ ] Run `make release-all`
 - [ ] Verify packages on npmjs.com
 
 ### Release Docker
+
 - [ ] Run `make docker-push`
 - [ ] Verify images on Docker Hub and ghcr.io
 
 ### Release GitHub Action
+
 - [ ] Copy to `aiready-action` repo
 - [ ] Create new release tag
 - [ ] Publish to Marketplace
 
 ### Release VS Code Extension
+
 - [ ] Run `make vscode-publish`
 - [ ] Verify on Marketplace
 
 ### Release Homebrew
+
 - [ ] Update SHA256 in formula
 - [ ] Push to homebrew-tap
 - [ ] Test installation
 
 ---
 
-*Last updated: February 2026*
+_Last updated: February 2026_
 </task_progress>
 </write_to_file>

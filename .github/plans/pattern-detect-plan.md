@@ -15,20 +15,23 @@ AI coding assistants (GitHub Copilot, ChatGPT, Claude) generate functionally sim
 - **No pattern memory** - Each AI session starts fresh, recreating similar logic
 
 ### Impact
+
 Every time AI generates similar-but-different code, you accumulate:
+
 - **Token waste** - Loading duplicate implementations costs 2-3x context tokens
 - **Maintenance burden** - Bug fixes need to be applied to multiple variations
 - **Inconsistent patterns** - Same logic implemented 5 different ways confuses developers AND AI
 - **Refactoring debt** - Technical debt that grows with every AI-generated file
 
 ### Example Scenario
+
 ```
 Team uses Copilot for 3 months:
 - 12 API handlers with similar structure (different frameworks, patterns)
 - 8 validation functions doing the same thing
 - 15 utility helpers that could be 3 functions
 
-Result: 
+Result:
 - 8,500 wasted tokens loading redundant code
 - Bug fixes require 12 file changes instead of 1
 - New team members confused by inconsistent patterns
@@ -48,6 +51,7 @@ Result:
 5. **Growing problem** - More AI usage = more duplicates = more urgent
 
 ### Metrics That Matter:
+
 - **Pattern Count** - Total semantic duplicates found
 - **Token Cost** - Wasted context tokens (maps to $ for AI APIs)
 - **Pattern Types** - Categorized by type (API handlers, validators, utilities)
@@ -71,27 +75,30 @@ Result:
 #### Mathematical Foundation
 
 **Jaccard Index Formula:**
+
 ```
 J(A, B) = |A ∩ B| / |A ∪ B|
 ```
 
 Where:
+
 - A = token set from code block 1
 - B = token set from code block 2
 - |A ∩ B| = number of shared tokens
 - |A ∪ B| = total unique tokens across both sets
 
 **Example:**
+
 ```typescript
 // Code Block 1
-async function getUser(id) { 
-  return await db.find(id); 
+async function getUser(id) {
+  return await db.find(id);
 }
 // Tokens: [async, function, get, user, id, return, await, db, find]
 
 // Code Block 2
-function getUserData(userId) { 
-  return database.findOne(userId); 
+function getUserData(userId) {
+  return database.findOne(userId);
 }
 // Tokens: [function, get, user, data, userId, return, database, findOne]
 
@@ -103,27 +110,29 @@ function getUserData(userId) {
 #### Data Structures
 
 **CodeBlock:**
+
 ```typescript
 interface CodeBlock {
-  file: string;           // Source file path
-  startLine: number;      // Starting line number
-  endLine: number;        // Ending line number
-  content: string;        // Original code
-  normalized: string;     // Whitespace/comments removed
-  tokens: Set<string>;    // Semantic tokens
-  type: PatternType;      // Categorization
-  tokenCost: number;      // Estimated AI tokens
+  file: string; // Source file path
+  startLine: number; // Starting line number
+  endLine: number; // Ending line number
+  content: string; // Original code
+  normalized: string; // Whitespace/comments removed
+  tokens: Set<string>; // Semantic tokens
+  type: PatternType; // Categorization
+  tokenCost: number; // Estimated AI tokens
 }
 ```
 
 **DuplicatePattern:**
+
 ```typescript
 interface DuplicatePattern {
   file1: string;
   file2: string;
-  similarity: number;     // 0.0 to 1.0
-  type: PatternType;      // Shared category
-  tokenCost: number;      // Wasted tokens
+  similarity: number; // 0.0 to 1.0
+  type: PatternType; // Shared category
+  tokenCost: number; // Wasted tokens
   blocks: [CodeBlock, CodeBlock];
   recommendation: string; // Refactoring advice
 }
@@ -144,17 +153,20 @@ interface DuplicatePattern {
 **Problem:** Comparing all pairs is O(n²) - 500 files = 125,000 comparisons
 
 **Solutions Implemented:**
+
 - **Candidate filtering** - Only compare blocks with >N shared tokens (default: 8)
 - **Batching** - Process in chunks to prevent memory issues
 - **Streaming results** - Output duplicates as found, don't wait for full scan
 - **Approximate mode** - Trade 5% accuracy for 60-80% speed improvement
 
 **Benchmarks:**
+
 - Small repo (50 files): ~0.5s
 - Medium repo (500 files): ~2-3s with approx mode
 - Large repo (2000+ files): ~15-20s with batching
 
 ### Package Structure
+
 ```
 packages/pattern-detect/
 ├── src/
@@ -173,6 +185,7 @@ packages/pattern-detect/
 ### Key Files Breakdown
 
 #### 1. `src/index.ts` - Public API
+
 **Purpose:** Clean interface for programmatic usage
 
 ```typescript
@@ -186,11 +199,13 @@ export type { PatternType, DuplicatePattern } from './detector';
 ```
 
 **Key Functions:**
+
 - `analyzePatterns(options)` - Main analysis entry point
 - `generateSummary(results)` - Aggregate results for reporting
 - Integration with `@aiready/core` types (`AnalysisResult`, `Issue`)
 
 #### 2. `src/detector.ts` - Core Algorithm
+
 **Purpose:** The heavy lifting - semantic similarity detection
 
 **Key Components:**
@@ -218,23 +233,26 @@ export type { PatternType, DuplicatePattern } from './detector';
    - **Streaming results** - Output duplicates as found (optional)
 
 **Critical Algorithm:**
+
 ```typescript
 // Jaccard similarity with early exit
 function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
   const tokens1 = new Set(tokenize(block1.normalized));
   const tokens2 = new Set(tokenize(block2.normalized));
-  
-  const intersection = [...tokens1].filter(t => tokens2.has(t)).length;
+
+  const intersection = [...tokens1].filter((t) => tokens2.has(t)).length;
   const union = tokens1.size + tokens2.size - intersection;
-  
+
   return intersection / union;
 }
 ```
 
 #### 3. `src/cli.ts` - Command-Line Interface
+
 **Purpose:** User-facing tool with rich output
 
 **Features Implemented:**
+
 - Argument parsing with `commander`
 - Color output with `chalk`
 - Three output formats: console, JSON, HTML
@@ -244,6 +262,7 @@ function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
 - Summary statistics
 
 **CLI Options:**
+
 ```bash
 -s, --similarity <number>      # Threshold (0-1, default 0.40)
 -l, --min-lines <number>       # Min lines (default 5)
@@ -259,6 +278,7 @@ function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
 ```
 
 **Console Output Design:**
+
 - Summary section (files, patterns, token cost, time)
 - Patterns by type breakdown
 - Top 10 duplicates with severity highlighting
@@ -266,7 +286,9 @@ function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
 - Upsell message to SaaS
 
 #### 4. `src/__tests__/detector.test.ts` - Test Suite
+
 **Coverage:**
+
 - ✅ Exact duplicate detection
 - ✅ Similar (not identical) function detection
 - ✅ Pattern categorization (API handlers, validators)
@@ -280,15 +302,17 @@ function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
 ### Dependencies
 
 #### Production Dependencies
+
 ```json
 {
-  "@aiready/core": "workspace:*",  // Hub utilities
-  "commander": "^12.1.0",          // CLI framework
-  "chalk": "^5.3.0"                // Terminal colors
+  "@aiready/core": "workspace:*", // Hub utilities
+  "commander": "^12.1.0", // CLI framework
+  "chalk": "^5.3.0" // Terminal colors
 }
 ```
 
 #### Dev Dependencies
+
 ```json
 {
   "tsup": "^8.3.5",               // Build tool (CJS + ESM)
@@ -303,84 +327,104 @@ function calculateSimilarity(block1: CodeBlock, block2: CodeBlock): number {
 
 #### 1. **Pattern Network Graph**
 ```
+
 Visualize similarity relationships as force-directed graph:
+
 - Nodes = code blocks (sized by token cost)
 - Edges = similarity > threshold (thickness = similarity score)
 - Color = pattern type (API=blue, validator=green, etc.)
 - Clusters = groups of similar patterns
 
 Interaction:
+
 - Click node → show code diff
 - Hover edge → similarity score tooltip
 - Filter by pattern type
 - Time slider → show evolution
 
 Library: D3.js force simulation
+
 ```
 
 #### 2. **Similarity Heatmap**
 ```
+
 Matrix view of all-vs-all similarity:
+
 - X/Y axes = files
 - Cell color = similarity intensity (white=0, red=1)
 - Diagonal = self-similarity (always 1)
 - Clusters visible as red blocks
 
 Interaction:
+
 - Click cell → side-by-side code comparison
 - Reorder by: similarity, file path, pattern type
 - Export to CSV/PDF
 
 Library: Plotly.js heatmap
+
 ```
 
 #### 3. **Token Cost Treemap**
 ```
+
 Hierarchical view of wasted tokens:
+
 - Rectangle size = token cost
 - Color = pattern type
 - Nesting = directory structure
 - Label = file name + cost
 
 Interaction:
+
 - Drill down into directories
 - Sort by: cost, similarity, count
 - Show/hide pattern types
 
 Library: D3.js treemap
+
 ```
 
 #### 4. **Trend Line Chart**
 ```
+
 Time-series analysis (Pro tier):
+
 - X-axis = commit dates
 - Y-axis = duplicate count / token cost
 - Multiple lines = pattern types
 - Annotations = refactoring events
 
 Interaction:
+
 - Zoom to date range
 - Compare branches
 - Overlay team activity
 
 Library: Chart.js time series
+
 ```
 
 #### 5. **Refactoring Priority List**
 ```
+
 Sortable table with filters:
+
 - Pattern type | Files | Similarity | Token cost | ROI
 - Sort by any column
 - Filter by threshold, type, directory
 - Export to Jira/Linear/GitHub Issues
 
 Interaction:
+
 - Click row → open refactoring plan
 - Bulk select → create batch task
 - Mark as "won't fix" → hide from reports
 
 Library: AG Grid / TanStack Table
-```
+
+````
 
 ### Real-Time Analytics
 
@@ -416,11 +460,12 @@ npx @aiready/pattern-detect ./src
 💡 Recommendations:
   • Extract common middleware or create base handler class
   • Consolidate validation into shared schemas (Zod/Yup)
-```
+````
 
 **Goal:** Hook users with value, show token waste, provide actionable insights
 
 ### Pro Tier ($49/month)
+
 1. **Historical Trend Analysis**
    - Track pattern growth over time
    - "Your duplicates increased 35% this quarter"
@@ -445,6 +490,7 @@ npx @aiready/pattern-detect ./src
    - Export data to analytics tools
 
 ### Enterprise Tier (Custom Pricing)
+
 1. **CI/CD Integration**
    - Block PRs that introduce high-similarity duplicates
    - Enforce pattern consistency rules
@@ -486,16 +532,19 @@ Shows growing problem, benchmark data
 ### Key Messaging
 
 **Free → Pro:**
+
 > "You found 23 duplicate patterns wasting 8,500 tokens.
 > Is this growing or shrinking? Track trends → Upgrade to Pro"
 
 **Pro → Enterprise:**
+
 > "Your team introduces 5 new duplicates/week.
 > Block them at PR time → Book Enterprise Demo"
 
 ### Real-World Value Calculation
 
 **Example Enterprise Customer:**
+
 - 50 developers using Copilot daily
 - 200 repos with avg 15 duplicates each
 - 3,000 total duplicate patterns
@@ -503,6 +552,7 @@ Shows growing problem, benchmark data
 - At $0.06/1K tokens = **$30/month wasted** (ROI: Pays for itself)
 
 **Plus:**
+
 - Reduced maintenance burden (bugs fixed in 1 place, not 12)
 - Faster onboarding (consistent patterns)
 - Better AI assistance (cleaner context)
@@ -511,6 +561,7 @@ Shows growing problem, benchmark data
 ## 🎯 Success Metrics
 
 ### Tool Adoption (Current Status)
+
 - ✅ Published to npm (v0.5.1)
 - 📊 Downloads/installs: TBD (just launched)
 - ⭐ GitHub stars: TBD
@@ -518,6 +569,7 @@ Shows growing problem, benchmark data
 - 🎤 User testimonials: TBD
 
 ### Technical Quality (Achieved)
+
 - ✅ Hub-and-spoke architecture compliance
 - ✅ Dual API surface (CLI + programmatic)
 - ✅ Multiple output formats (console, JSON, HTML)
@@ -526,12 +578,14 @@ Shows growing problem, benchmark data
 - ✅ 461-line README with examples
 
 ### User Value (Target)
+
 - Average duplicate reduction: 40-60%
 - Token savings: 5,000-15,000 per repo
 - Time saved: 2-5 hours/week (no manual duplicate hunting)
 - Maintenance reduction: 30-50% fewer files to update
 
 ### SaaS Conversion (Future Targets)
+
 - Free → Pro conversion rate: 3-5%
 - Pro → Enterprise pipeline: 10+ demos/month
 - MRR growth: $10K MRR within 6 months
@@ -541,12 +595,12 @@ Shows growing problem, benchmark data
 
 ### What Exists (Don't Directly Compete)
 
-| Tool | Focus | Limitations for AI Use Cases |
-|------|-------|------------------------------|
-| **jscpd** | Byte-level duplicate detection | Misses semantic similarity; no token cost; generic output |
-| **Simian** | Text-based copy detection | Commercial license; no pattern categorization |
-| **PMD CPD** | Copy-paste detection (Java focused) | Exact matches only; no AI context cost |
-| **ESLint** | Code linting | Not designed for duplicates |
+| Tool        | Focus                               | Limitations for AI Use Cases                              |
+| ----------- | ----------------------------------- | --------------------------------------------------------- |
+| **jscpd**   | Byte-level duplicate detection      | Misses semantic similarity; no token cost; generic output |
+| **Simian**  | Text-based copy detection           | Commercial license; no pattern categorization             |
+| **PMD CPD** | Copy-paste detection (Java focused) | Exact matches only; no AI context cost                    |
+| **ESLint**  | Code linting                        | Not designed for duplicates                               |
 
 ### Our Unique Value
 
@@ -559,7 +613,7 @@ Shows growing problem, benchmark data
 ### Marketing Message
 
 > **"AI tools generate similar code in different ways. You're paying for it twice."**
-> 
+>
 > jscpd finds copy-paste. We find the duplicates AI creates.
 > See exactly how much context tokens you're wasting.
 > Get specific refactoring plans to consolidate.
@@ -567,6 +621,7 @@ Shows growing problem, benchmark data
 ### Recommended Workflow
 
 **Use Both Tools:**
+
 1. Run **jscpd** in CI to block exact copy-paste (blocking)
 2. Run **@aiready/pattern-detect** weekly to find semantic duplicates (advisory)
 3. Prioritize refactoring by token cost savings
@@ -577,6 +632,7 @@ Shows growing problem, benchmark data
 ## 📋 Implementation Phases (COMPLETED)
 
 ### ✅ Phase 1: MVP (Week 1-2)
+
 - ✅ Core Jaccard similarity algorithm
 - ✅ Code block extraction (regex-based)
 - ✅ Pattern categorization (heuristics)
@@ -584,6 +640,7 @@ Shows growing problem, benchmark data
 - ✅ Unit tests (Vitest)
 
 ### ✅ Phase 2: Advanced Analysis (Week 3-4)
+
 - ✅ Performance optimizations (candidate filtering, batching)
 - ✅ Multiple output formats (console, JSON, HTML)
 - ✅ Pattern type classification
@@ -591,6 +648,7 @@ Shows growing problem, benchmark data
 - ✅ Refactoring recommendations
 
 ### ✅ Phase 3: Polish (Week 5)
+
 - ✅ Comprehensive README (461 lines)
 - ✅ CLI presets and examples
 - ✅ Performance tuning options
@@ -598,13 +656,15 @@ Shows growing problem, benchmark data
 - ✅ Published to npm (v0.5.1)
 
 ### ⏳ Phase 4: SaaS Foundation (Future)
+
 - [ ] API endpoint for analysis upload
 - [ ] Database schema for historical data
 - [ ] Authentication system
 - [ ] Dashboard UI (React + Next.js)
 - [ ] Billing integration (Stripe)
 - [ ] Team management
-```
+
+````
 
 **Why These Choices:**
 - **tsup** - Fast builds, dual format (CJS+ESM), minimal config
@@ -624,9 +684,10 @@ Shows growing problem, benchmark data
   },
   "include": ["src/**/*"]
 }
-```
+````
 
 #### `package.json` Scripts
+
 ```json
 {
   "build": "tsup src/index.ts src/cli.ts --format cjs,esm --dts",
@@ -638,6 +699,7 @@ Shows growing problem, benchmark data
 ```
 
 **Key Decisions:**
+
 - Build both CJS and ESM for maximum compatibility
 - Generate TypeScript definitions (.d.ts)
 - Watch mode for development
@@ -646,6 +708,7 @@ Shows growing problem, benchmark data
 ## 🎯 Architecture Patterns (Replicate These)
 
 ### ✅ Hub-and-Spoke Compliance
+
 ```typescript
 // ✅ GOOD: Import from hub only
 import { scanFiles, estimateTokens } from '@aiready/core';
@@ -657,6 +720,7 @@ import { scanFiles, estimateTokens } from '@aiready/core';
 **Pattern:** Every spoke depends on `@aiready/core`, never on other spokes.
 
 ### ✅ Dual API Surface
+
 ```typescript
 // 1. Programmatic API (index.ts)
 export async function analyzePatterns(options: PatternDetectOptions): Promise<AnalysisResult[]>
@@ -672,6 +736,7 @@ program.action(async (directory, options) => {
 **Pattern:** Separate concerns - core logic in index.ts, UI in cli.ts
 
 ### ✅ Options Pattern
+
 ```typescript
 // Base options from core
 export interface PatternDetectOptions extends ScanOptions {
@@ -685,6 +750,7 @@ export interface PatternDetectOptions extends ScanOptions {
 **Pattern:** Extend core `ScanOptions`, add tool-specific config with defaults.
 
 ### ✅ Type Exports
+
 ```typescript
 // Export types for external consumers
 export type { PatternType, DuplicatePattern } from './detector';
@@ -694,7 +760,8 @@ export type { PatternSummary } from './index';
 **Pattern:** Make types available for TypeScript users.
 
 ### ✅ Progressive Disclosure
-```typescript
+
+````typescript
 // Simple usage (defaults)
 const results = await analyzePatterns({ rootDir: './src' });
 Points
@@ -710,35 +777,40 @@ import {
   type AnalysisResult, // Result type
   type Issue       // Issue type
 } from '@aiready/core';
-```
+````
 
 **Pattern:** All file I/O and shared utilities come from core.
 
 ### With Future Tools
 
 **@aiready/context-analyzer:**
+
 - Cross-reference fragmented modules with duplicate patterns
 - Combined view: "User management is fragmented (12 files) AND has 8 duplicate patterns"
 - Unified recommendations: "Consolidate to 3 files, eliminates duplicates, saves 8,500 tokens"
 
 **@aiready/doc-drift:**
+
 - Find duplicates that have divergent documentation
 - "These 5 similar functions have different JSDoc comments - which is correct?"
 
 **@aiready/consistency:**
+
 - Flag duplicates with inconsistent naming patterns
 - "Same logic, 5 different naming conventions"
 
 **@aiready/cli:**
+
 - Unified interface: `aiready analyze --all` runs all tools
 - Combined reports with cross-tool insights
 
 ### With CI/CD
+
 ```yaml
 # .github/workflows/code-quality.yml
 - name: Check for duplicate patterns
   run: npx @aiready/pattern-detect ./src --output json --output-file report.json
-  
+
 - name: Fail if high similarity duplicates
   run: |
     DUPLICATES=$(jq '.summary.totalPatterns' report.json)
@@ -749,6 +821,7 @@ import {
 ```
 
 ### With SaaS Platform (Future)
+
 ```typescript
 // Upload results to AIReady dashboard
 await uploadAnalysis({
@@ -756,7 +829,7 @@ await uploadAnalysis({
   version: '0.5.1',
   results: analysisResults,
   repo: 'owner/repo',
-  commit: process.env.GITHUB_SHA
+  commit: process.env.GITHUB_SHA,
 });
 ```
 
@@ -792,9 +865,11 @@ await uploadAnalysis({
 ### 🤔 What We'd Improve Next Time
 
 1. **AST Parsing Depth**
+
 ## 📚 References
 
 When building future spokes, refer to:
+
 - `.github/copilot-instructions.md` - Overall architecture guidelines
 - `packages/core/src/` - Shared utilities (scanFiles, estimateTokens, etc.)
 - `packages/pattern-detect/` - **This implementation** as reference
@@ -803,6 +878,7 @@ When building future spokes, refer to:
 ### Architecture Patterns to Replicate
 
 **See "Architecture Patterns" section above for:**
+
 - Hub-and-spoke compliance (import from core only)
 - Dual API surface (programmatic + CLI)
 - Options pattern (extend ScanOptions)
@@ -813,6 +889,7 @@ When building future spokes, refer to:
 ### Complete Checklist
 
 **See "Checklist for Next Tool" section above for:**
+
 - Package setup steps
 - Implementation phases
 - Testing requirements
@@ -825,9 +902,10 @@ When building future spokes, refer to:
 **Status:** ✅ @aiready/pattern-detect is feature complete (v0.5.1) and serves as our reference implementation. Use this plan/retrospective as a blueprint for all future spoke tools.
 
 **Next Toolomain Categorization**
-   - **Issue:** Pattern classification is keyword-based
-   - **Impact:** Sometimes misclassifies patterns
-   - **Fix:** ML-based or more sophisticated heuristics
+
+- **Issue:** Pattern classification is keyword-based
+- **Impact:** Sometimes misclassifies patterns
+- **Fix:** ML-based or more sophisticated heuristics
 
 3. **Cross-File Context**
    - **Issue:** Compares blocks independently
@@ -843,15 +921,16 @@ When building future spokes, refer to:
    - **Issue:** Basic HTML generation, no styling
    - **Impact:** Not as shareable as it could be
    - **Fix:** Use templates (Handlebars), add charts (D3.js)
-export function generateSummary(results: AnalysisResult[]): PatternSummary {
-  // Aggregate results into high-level metrics
-  return {
-    totalPatterns,
-    totalTokenCost,
-    patternsByType,
-    topDuplicates
-  };
-}
+     export function generateSummary(results: AnalysisResult[]): PatternSummary {
+     // Aggregate results into high-level metrics
+     return {
+     totalPatterns,
+     totalTokenCost,
+     patternsByType,
+     topDuplicates
+     };
+     }
+
 ```
 
 **Pattern:** Provide aggregation utilities for dashboards/reports.
@@ -962,31 +1041,36 @@ export function generateSummary(results: AnalysisResult[]): PatternSummary {
 ### ✅ Replicate These Patterns
 
 1. **Package Structure**
-   ```
-   src/
-   ├── index.ts          # Public API
-   ├── analyzer.ts       # Core logic (rename detector.ts pattern)
-   ├── cli.ts           # CLI interface
-   └── __tests__/
-       └── analyzer.test.ts
-   ```
+```
+
+src/
+├── index.ts # Public API
+├── analyzer.ts # Core logic (rename detector.ts pattern)
+├── cli.ts # CLI interface
+└── **tests**/
+└── analyzer.test.ts
+
+````
 
 2. **Dual API Surface**
-   - Programmatic function: `analyzeContext(options)`
-   - CLI tool: `aiready-context <dir>`
+- Programmatic function: `analyzeContext(options)`
+- CLI tool: `aiready-context <dir>`
 
 3. **Options Extension**
-   ```typescript
-   export interface ContextAnalyzerOptions extends ScanOptions {
-     maxDepth?: number;
-     maxContextBudget?: number;
-     focus?: 'fragmentation' | 'cohesion' | 'depth';
-   }
-   ```
+```typescript
+export interface ContextAnalyzerOptions extends ScanOptions {
+  maxDepth?: number;
+  maxContextBudget?: number;
+  focus?: 'fragmentation' | 'cohesion' | 'depth';
+}
+````
 
 4. **Summary Generation**
+
    ```typescript
-   export function generateSummary(results: ContextAnalysisResult[]): ContextSummary
+   export function generateSummary(
+     results: ContextAnalysisResult[]
+   ): ContextSummary;
    ```
 
 5. **Rich Documentation**
@@ -1039,6 +1123,7 @@ export function generateSummary(results: AnalysisResult[]): PatternSummary {
 ## 🔗 Integration with Ecosystem
 
 ### Works Well With
+
 - **TypeScript** - Native support via tsup
 - **JavaScript** - CJS + ESM dual publishing
 - **Node.js** - v18+ required
@@ -1046,6 +1131,7 @@ export function generateSummary(results: AnalysisResult[]): PatternSummary {
 - **Git** - Works with any repo structure
 
 ### Future Integration Points
+
 - **@aiready/context-analyzer** - Cross-reference fragmented duplicates
 - **@aiready/cli** - Unified interface for all tools
 - **@aiready/deps** - Combine with dependency analysis
@@ -1056,6 +1142,7 @@ export function generateSummary(results: AnalysisResult[]): PatternSummary {
 Use this when building `@aiready/context-analyzer`:
 
 ### Package Setup
+
 - [ ] Create package directory structure
 - [ ] Set up `package.json` with proper metadata
 - [ ] Configure `tsconfig.json` (extend core)
@@ -1063,6 +1150,7 @@ Use this when building `@aiready/context-analyzer`:
 - [ ] Set up test framework (vitest)
 
 ### Implementation
+
 - [ ] Define TypeScript types (options, results)
 - [ ] Implement core algorithm (analyzer.ts)
 - [ ] Create public API (index.ts)
@@ -1070,12 +1158,14 @@ Use this when building `@aiready/context-analyzer`:
 - [ ] Add summary generation function
 
 ### Testing
+
 - [ ] Unit tests for core logic
 - [ ] Integration tests with sample repos
 - [ ] Performance benchmarks
 - [ ] Edge case coverage
 
 ### Documentation
+
 - [ ] Comprehensive README (400+ lines)
 - [ ] Problem statement with examples
 - [ ] Competitive comparison table
@@ -1086,6 +1176,7 @@ Use this when building `@aiready/context-analyzer`:
 - [ ] LICENSE (MIT)
 
 ### Publishing
+
 - [ ] Build for CJS + ESM
 - [ ] Generate TypeScript definitions
 - [ ] Test installation (npm link)
@@ -1094,6 +1185,7 @@ Use this when building `@aiready/context-analyzer`:
 - [ ] Update main README
 
 ### Post-Launch
+
 - [ ] Gather user feedback
 - [ ] Monitor npm downloads
 - [ ] Respond to issues

@@ -12,6 +12,7 @@ tags: consistency, naming, conventions, readability
 Inconsistent naming conventions confuse AI models about code intent and relationships. When similar concepts use different naming patterns, AI cannot reliably predict the correct pattern for new code, leading to inconsistent suggestions that mix multiple styles.
 
 AI models are trained on millions of repositories and learn that consistent naming correlates with code quality. Inconsistent naming signals:
+
 - Lack of coordination between team members
 - Technical debt or legacy code
 - Unclear ownership or architecture
@@ -65,6 +66,7 @@ interface UserPreferences { ... }
 AI reliably predicts the correct pattern for new code.
 
 **Establish conventions for:**
+
 - Functions: `camelCase` (JavaScript/TypeScript) or `snake_case` (Python)
 - Classes/Types: `PascalCase`
 - Constants: `UPPER_SNAKE_CASE`

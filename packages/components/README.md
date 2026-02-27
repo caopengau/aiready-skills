@@ -1,6 +1,6 @@
 # @aiready/components
 
-[![npm](https://img.shields.io/npm/v/@aiready/components)](https://www.npmjs.com/package/@aiready/components) 
+[![npm](https://img.shields.io/npm/v/@aiready/components)](https://www.npmjs.com/package/@aiready/components)
 
 Unified shared components library (UI, charts, hooks, utilities) for AIReady.
 

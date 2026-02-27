@@ -30,7 +30,11 @@ describe('file classification', () => {
         linesOfCode: 20, // Sparse code
       });
 
-      const classification = classifyFile(node, 0.5, ['module1', 'module2', 'module3']);
+      const classification = classifyFile(node, 0.5, [
+        'module1',
+        'module2',
+        'module3',
+      ]);
       expect(classification).toBe('barrel-export');
     });
 
@@ -46,7 +50,11 @@ describe('file classification', () => {
         linesOfCode: 100,
       });
 
-      const classification = classifyFile(node, 0.5, ['user', 'order', 'product']);
+      const classification = classifyFile(node, 0.5, [
+        'user',
+        'order',
+        'product',
+      ]);
       expect(classification).toBe('type-definition');
     });
 
@@ -54,7 +62,11 @@ describe('file classification', () => {
       const node = createNode({
         file: 'shared/src/types/audit/parser.ts',
         exports: [
-          { name: 'AuditParserConfig', type: 'interface', inferredDomain: 'audit' },
+          {
+            name: 'AuditParserConfig',
+            type: 'interface',
+            inferredDomain: 'audit',
+          },
           { name: 'ParseResult', type: 'type', inferredDomain: 'parse' },
         ],
         linesOfCode: 50,
@@ -69,7 +81,11 @@ describe('file classification', () => {
         file: 'shared/src/types/audit/status.ts',
         exports: [
           { name: 'AuditStatus', type: 'type', inferredDomain: 'audit' },
-          { name: 'StatusMapping', type: 'interface', inferredDomain: 'status' },
+          {
+            name: 'StatusMapping',
+            type: 'interface',
+            inferredDomain: 'status',
+          },
         ],
         linesOfCode: 30,
       });
@@ -82,8 +98,16 @@ describe('file classification', () => {
       const node = createNode({
         file: 'src/models/user-models.ts', // NOT in /types/ but only type exports
         exports: [
-          { name: 'UserCreateInput', type: 'interface', inferredDomain: 'user' },
-          { name: 'UserUpdateInput', type: 'interface', inferredDomain: 'user' },
+          {
+            name: 'UserCreateInput',
+            type: 'interface',
+            inferredDomain: 'user',
+          },
+          {
+            name: 'UserUpdateInput',
+            type: 'interface',
+            inferredDomain: 'user',
+          },
           { name: 'UserFilter', type: 'type', inferredDomain: 'user' },
         ],
         linesOfCode: 80,
@@ -122,7 +146,12 @@ describe('file classification', () => {
         linesOfCode: 384,
       });
 
-      const classification = classifyFile(node, 0.3, ['audit', 'job', 'order', 'doc']);
+      const classification = classifyFile(node, 0.3, [
+        'audit',
+        'job',
+        'order',
+        'doc',
+      ]);
       expect(classification).toBe('mixed-concerns');
     });
 
@@ -140,7 +169,11 @@ describe('file classification', () => {
 
       // Multiple domains + very low cohesion (< 0.4) = mixed concerns
       // Note: NOT in /utils/ or /helpers/ or /services/ path
-      const classification = classifyFile(node, 0.3, ['date', 'report', 'audit']);
+      const classification = classifyFile(node, 0.3, [
+        'date',
+        'report',
+        'audit',
+      ]);
       expect(classification).toBe('mixed-concerns');
     });
 
@@ -200,17 +233,26 @@ describe('file classification', () => {
     });
 
     it('should return 0 fragmentation for type definitions', () => {
-      const result = adjustFragmentationForClassification(0.9, 'type-definition');
+      const result = adjustFragmentationForClassification(
+        0.9,
+        'type-definition'
+      );
       expect(result).toBe(0);
     });
 
     it('should reduce fragmentation by 70% for cohesive modules', () => {
-      const result = adjustFragmentationForClassification(0.6, 'cohesive-module');
+      const result = adjustFragmentationForClassification(
+        0.6,
+        'cohesive-module'
+      );
       expect(result).toBeCloseTo(0.18, 2); // 0.6 * 0.3
     });
 
     it('should keep full fragmentation for mixed concerns', () => {
-      const result = adjustFragmentationForClassification(0.7, 'mixed-concerns');
+      const result = adjustFragmentationForClassification(
+        0.7,
+        'mixed-concerns'
+      );
       expect(result).toBe(0.7);
     });
 
@@ -227,7 +269,9 @@ describe('file classification', () => {
         'src/index.ts',
         ['High fragmentation']
       );
-      expect(recommendations).toContain('Barrel export file detected - multiple domains are expected here');
+      expect(recommendations).toContain(
+        'Barrel export file detected - multiple domains are expected here'
+      );
     });
 
     it('should provide type definition recommendations', () => {
@@ -236,7 +280,9 @@ describe('file classification', () => {
         'src/types.ts',
         ['High fragmentation']
       );
-      expect(recommendations).toContain('Type definition file - centralized types improve consistency');
+      expect(recommendations).toContain(
+        'Type definition file - centralized types improve consistency'
+      );
     });
 
     it('should provide cohesive module recommendations', () => {
@@ -245,7 +291,9 @@ describe('file classification', () => {
         'src/calculator.ts',
         []
       );
-      expect(recommendations).toContain('Module has good cohesion despite its size');
+      expect(recommendations).toContain(
+        'Module has good cohesion despite its size'
+      );
     });
 
     it('should provide mixed concerns recommendations', () => {
@@ -254,7 +302,9 @@ describe('file classification', () => {
         'src/audit.ts',
         ['Multiple domains detected']
       );
-      expect(recommendations).toContain('Consider splitting this file by domain');
+      expect(recommendations).toContain(
+        'Consider splitting this file by domain'
+      );
     });
   });
 
@@ -262,7 +312,13 @@ describe('file classification', () => {
     it('should detect barrel export even for non-index files with re-export patterns', () => {
       const node = createNode({
         file: 'src/exports.ts',
-        imports: ['../module1', '../module2', '../module3', '../module4', '../module5'],
+        imports: [
+          '../module1',
+          '../module2',
+          '../module3',
+          '../module4',
+          '../module5',
+        ],
         exports: [
           { name: 'a', type: 'function' },
           { name: 'b', type: 'function' },
@@ -281,9 +337,7 @@ describe('file classification', () => {
       const node = createNode({
         file: 'src/components/Calculator.tsx', // NOT an index file
         imports: ['react', '../hooks', '../utils'],
-        exports: [
-          { name: 'Calculator', type: 'function' },
-        ],
+        exports: [{ name: 'Calculator', type: 'function' }],
         linesOfCode: 346, // Substantial code
       });
 
@@ -313,7 +367,11 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/api/process.ts',
           exports: [
-            { name: 'processHandler', type: 'function', inferredDomain: 'process' },
+            {
+              name: 'processHandler',
+              type: 'function',
+              inferredDomain: 'process',
+            },
           ],
           imports: ['../services/queue'],
           linesOfCode: 80,
@@ -363,7 +421,11 @@ describe('file classification', () => {
           linesOfCode: 200,
         });
 
-        const classification = classifyFile(node, 0.07, ['email', 'smtp', 'templates']);
+        const classification = classifyFile(node, 0.07, [
+          'email',
+          'smtp',
+          'templates',
+        ]);
         expect(classification).toBe('service-file');
       });
 
@@ -371,8 +433,16 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/services/notification.ts',
           exports: [
-            { name: 'sendNotification', type: 'function', inferredDomain: 'notification' },
-            { name: 'queueNotification', type: 'function', inferredDomain: 'notification' },
+            {
+              name: 'sendNotification',
+              type: 'function',
+              inferredDomain: 'notification',
+            },
+            {
+              name: 'queueNotification',
+              type: 'function',
+              inferredDomain: 'notification',
+            },
           ],
           imports: ['../db', '../email'],
           linesOfCode: 120,
@@ -402,13 +472,21 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/emails/receipt-writer.ts',
           exports: [
-            { name: 'generateReceipt', type: 'function', inferredDomain: 'receipt' },
+            {
+              name: 'generateReceipt',
+              type: 'function',
+              inferredDomain: 'receipt',
+            },
           ],
           imports: ['../templates/base', '../services/db'],
           linesOfCode: 150,
         });
 
-        const classification = classifyFile(node, 0.08, ['receipt', 'templates', 'db']);
+        const classification = classifyFile(node, 0.08, [
+          'receipt',
+          'templates',
+          'db',
+        ]);
         expect(classification).toBe('email-template');
       });
 
@@ -416,7 +494,11 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/emails/welcome.ts',
           exports: [
-            { name: 'renderWelcomeEmail', type: 'function', inferredDomain: 'email' },
+            {
+              name: 'renderWelcomeEmail',
+              type: 'function',
+              inferredDomain: 'email',
+            },
           ],
           imports: ['../templates/layout'],
           linesOfCode: 80,
@@ -430,13 +512,17 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/templates/invoice-template.ts',
           exports: [
-            { name: 'renderInvoice', type: 'function', inferredDomain: 'invoice' },
+            {
+              name: 'renderInvoice',
+              type: 'function',
+              inferredDomain: 'invoice',
+            },
           ],
           imports: ['../services/pdf'],
           linesOfCode: 100,
         });
 
-        const classification = classifyFile(node, 0.20, ['invoice']);
+        const classification = classifyFile(node, 0.2, ['invoice']);
         expect(classification).toBe('email-template');
       });
     });
@@ -446,8 +532,16 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/parsers/base-parser-deterministic.ts',
           exports: [
-            { name: 'parseDeterministic', type: 'function', inferredDomain: 'parse' },
-            { name: 'parseNonDeterministic', type: 'function', inferredDomain: 'parse' },
+            {
+              name: 'parseDeterministic',
+              type: 'function',
+              inferredDomain: 'parse',
+            },
+            {
+              name: 'parseNonDeterministic',
+              type: 'function',
+              inferredDomain: 'parse',
+            },
           ],
           imports: ['../utils/transform'],
           linesOfCode: 120,
@@ -476,14 +570,22 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/converters/xml-converter.ts',
           exports: [
-            { name: 'convertXmlToJson', type: 'function', inferredDomain: 'xml' },
-            { name: 'convertJsonToXml', type: 'function', inferredDomain: 'xml' },
+            {
+              name: 'convertXmlToJson',
+              type: 'function',
+              inferredDomain: 'xml',
+            },
+            {
+              name: 'convertJsonToXml',
+              type: 'function',
+              inferredDomain: 'xml',
+            },
           ],
           imports: ['xml2js'],
           linesOfCode: 60,
         });
 
-        const classification = classifyFile(node, 0.30, ['xml']);
+        const classification = classifyFile(node, 0.3, ['xml']);
         expect(classification).toBe('parser-file');
       });
     });
@@ -532,7 +634,7 @@ describe('file classification', () => {
           linesOfCode: 50,
         });
 
-        const classification = classifyFile(node, 0.30, ['date']);
+        const classification = classifyFile(node, 0.3, ['date']);
         expect(classification).toBe('utility-module');
       });
     });
@@ -542,9 +644,17 @@ describe('file classification', () => {
         const node = createNode({
           file: 'src/session.ts',
           exports: [
-            { name: 'createSession', type: 'function', inferredDomain: 'session' },
+            {
+              name: 'createSession',
+              type: 'function',
+              inferredDomain: 'session',
+            },
             { name: 'getSession', type: 'function', inferredDomain: 'session' },
-            { name: 'destroySession', type: 'function', inferredDomain: 'session' },
+            {
+              name: 'destroySession',
+              type: 'function',
+              inferredDomain: 'session',
+            },
           ],
           imports: ['../db', '../auth'],
           linesOfCode: 100,
@@ -615,7 +725,11 @@ describe('file classification', () => {
       });
 
       // Related names (all Item operations) should get higher boost
-      const result = adjustCohesionForClassification(0.21, 'utility-module', node);
+      const result = adjustCohesionForClassification(
+        0.21,
+        'utility-module',
+        node
+      );
       expect(result).toBeGreaterThan(0.5); // Significant boost for related names
     });
 
@@ -630,7 +744,11 @@ describe('file classification', () => {
       });
 
       // Single entry point should get higher boost
-      const result = adjustCohesionForClassification(0.22, 'lambda-handler', node);
+      const result = adjustCohesionForClassification(
+        0.22,
+        'lambda-handler',
+        node
+      );
       expect(result).toBeGreaterThan(0.5); // Significant boost for single entry
     });
 
@@ -645,7 +763,11 @@ describe('file classification', () => {
       });
 
       // Class-based service should get higher boost
-      const result = adjustCohesionForClassification(0.15, 'service-file', node);
+      const result = adjustCohesionForClassification(
+        0.15,
+        'service-file',
+        node
+      );
       expect(result).toBeGreaterThan(0.45); // Significant boost for class-based
     });
   });
@@ -657,7 +779,9 @@ describe('file classification', () => {
         'src/utils/helpers.ts',
         ['Low cohesion']
       );
-      expect(recommendations).toContain('Utility module detected - multiple domains are acceptable here');
+      expect(recommendations).toContain(
+        'Utility module detected - multiple domains are acceptable here'
+      );
     });
 
     it('should provide service-file recommendations', () => {
@@ -666,7 +790,9 @@ describe('file classification', () => {
         'src/services/email.ts',
         ['Multiple domains']
       );
-      expect(recommendations).toContain('Service file detected - orchestration of multiple dependencies is expected');
+      expect(recommendations).toContain(
+        'Service file detected - orchestration of multiple dependencies is expected'
+      );
     });
 
     it('should provide lambda-handler recommendations', () => {
@@ -675,7 +801,9 @@ describe('file classification', () => {
         'src/handlers/process.ts',
         ['Low cohesion']
       );
-      expect(recommendations).toContain('Lambda handler detected - coordination of services is expected');
+      expect(recommendations).toContain(
+        'Lambda handler detected - coordination of services is expected'
+      );
     });
 
     it('should provide email-template recommendations', () => {
@@ -684,7 +812,9 @@ describe('file classification', () => {
         'src/emails/receipt.ts',
         ['Multiple domains']
       );
-      expect(recommendations).toContain('Email template detected - references multiple domains for rendering');
+      expect(recommendations).toContain(
+        'Email template detected - references multiple domains for rendering'
+      );
     });
 
     it('should provide parser-file recommendations', () => {
@@ -693,7 +823,9 @@ describe('file classification', () => {
         'src/parsers/data.ts',
         ['Multiple domains']
       );
-      expect(recommendations).toContain('Parser/transformer file detected - handles multiple data sources');
+      expect(recommendations).toContain(
+        'Parser/transformer file detected - handles multiple data sources'
+      );
     });
   });
 
@@ -711,7 +843,12 @@ describe('file classification', () => {
         linesOfCode: 208,
       });
 
-      const classification = classifyFile(node, 0.25, ['seo', 'jsonld', 'page', 'ui']);
+      const classification = classifyFile(node, 0.25, [
+        'seo',
+        'jsonld',
+        'page',
+        'ui',
+      ]);
       expect(classification).toBe('nextjs-page');
     });
 
@@ -727,16 +864,14 @@ describe('file classification', () => {
         linesOfCode: 204,
       });
 
-      const classification = classifyFile(node, 0.30, ['seo', 'jsonld', 'page']);
+      const classification = classifyFile(node, 0.3, ['seo', 'jsonld', 'page']);
       expect(classification).toBe('nextjs-page');
     });
 
     it('should not classify non-page.tsx files in /app/ as nextjs-page', () => {
       const node = createNode({
         file: 'app/components/Header.tsx',
-        exports: [
-          { name: 'Header', type: 'function', inferredDomain: 'ui' },
-        ],
+        exports: [{ name: 'Header', type: 'function', inferredDomain: 'ui' }],
         imports: ['react'],
         linesOfCode: 50,
       });
@@ -748,9 +883,7 @@ describe('file classification', () => {
     it('should not classify page.tsx files outside /app/ as nextjs-page', () => {
       const node = createNode({
         file: 'src/pages/page.tsx', // Pages Router, not App Router
-        exports: [
-          { name: 'default', type: 'default', inferredDomain: 'page' },
-        ],
+        exports: [{ name: 'default', type: 'default', inferredDomain: 'page' }],
         imports: ['react'],
         linesOfCode: 100,
       });
@@ -796,7 +929,9 @@ describe('file classification', () => {
         'app/calculator/page.tsx',
         ['Low cohesion']
       );
-      expect(recommendations).toContain('Next.js App Router page detected - metadata/JSON-LD/component pattern is cohesive');
+      expect(recommendations).toContain(
+        'Next.js App Router page detected - metadata/JSON-LD/component pattern is cohesive'
+      );
     });
   });
 });

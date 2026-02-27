@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { motion } from "framer-motion";
-import Script from "next/script";
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import Script from 'next/script';
 
 interface BreadcrumbItem {
   label: string;
@@ -15,14 +15,14 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
   const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": items.map((item, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": item.label,
-      "item": `https://getaiready.dev${item.href}`
-    }))
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: `https://getaiready.dev${item.href}`,
+    })),
   };
 
   return (
@@ -42,9 +42,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
               transition={{ delay: index * 0.1 }}
               className="flex items-center gap-2"
             >
-              {index > 0 && (
-                <span className="text-slate-400">/</span>
-              )}
+              {index > 0 && <span className="text-slate-400">/</span>}
               {index === items.length - 1 ? (
                 <span className="text-slate-900 font-medium">{item.label}</span>
               ) : (

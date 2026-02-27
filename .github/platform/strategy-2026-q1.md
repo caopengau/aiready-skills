@@ -13,6 +13,7 @@
 **Solution:** Position as a CI/CD gatekeeper that blocks PRs from merging if they break the AI context budget.
 
 **Implementation:**
+
 - ✅ Added `--ci` flag with GitHub Actions annotations
 - ✅ Added `--fail-on` for granular control (critical, major, any)
 - ✅ Added `--threshold` for score-based blocking
@@ -30,6 +31,7 @@
 **Solution:** Launch with Free tier only. Mark Pro, Team, and Enterprise as "Coming Soon". Gather users and feedback before monetizing.
 
 **Implementation:**
+
 - ✅ Added `MVP_FREE_ONLY = true` flag in plans.ts
 - ✅ Updated pricing.md with "Available Now" / "Coming Soon" labels
 - ✅ Updated middleware to show friendly "coming soon" messages
@@ -39,6 +41,7 @@
 **Value Prop:** "Get started immediately — no credit card required"
 
 **When to Enable Paid Tiers:**
+
 1. 500+ active free users
 2. Clear demand signal (users hitting limits)
 3. Stripe products/prices configured
@@ -52,11 +55,11 @@
 
 **Solution:** Grounded projections based on solo founder constraints.
 
-| Phase | Timeline | Target | Focus |
-|-------|----------|--------|-------|
-| **The Grind** | Months 1–4 | $245 MRR | Bug fixes, SEO, PMF |
-| **The Validation** | Months 5–9 | $2,000 MRR | First Team pilots, CI/CD |
-| **The Breakout** | Months 10–18 | $5,500 MRR | Organic growth, automation |
+| Phase              | Timeline     | Target     | Focus                      |
+| ------------------ | ------------ | ---------- | -------------------------- |
+| **The Grind**      | Months 1–4   | $245 MRR   | Bug fixes, SEO, PMF        |
+| **The Validation** | Months 5–9   | $2,000 MRR | First Team pilots, CI/CD   |
+| **The Breakout**   | Months 10–18 | $5,500 MRR | Organic growth, automation |
 
 **Path to Senior Dev Salary ($15k/mo):** 18–24 months (not 12)
 
@@ -69,18 +72,19 @@
 **Solution:** Serverless architecture with $0 cost at 0 users.
 
 **Decisions:**
+
 - ❌ **No DAX** — Adds $40/mo minimum, DynamoDB latency is sufficient
 - ✅ **Lambda reserved concurrency = 50** — Prevent cascade failures
 - ✅ **SQS for repo processing** — Built-in backpressure for Enterprise scale
 
 **Cost Projection:**
 
-| Users | Monthly Cost |
-|-------|--------------|
-| 0 | ~$1 |
-| 100 | ~$22 |
-| 1,000 | ~$105 |
-| 10,000 | ~$600 |
+| Users  | Monthly Cost |
+| ------ | ------------ |
+| 0      | ~$1          |
+| 100    | ~$22         |
+| 1,000  | ~$105        |
+| 10,000 | ~$600        |
 
 ---
 
@@ -91,6 +95,7 @@
 **Solution:** Make CLI output so valuable that SaaS historical trends feel like a "must-have" next step.
 
 **Implementation:**
+
 - ✅ Enhanced CI mode with GitHub Actions annotations
 - ✅ Clear pass/fail messaging with upsell to Team plan
 - 🔜 Improve console output formatting
@@ -105,6 +110,7 @@
 Large players (SonarQube, Snyk, GitHub Advanced Security) will likely add "AI Context Scoring" features.
 
 **Our Advantage:**
+
 1. **Agility** — Solo founder can ship in days, not quarters
 2. **Niche focus** — LLM token optimization, not general code quality
 3. **Serverless cost structure** — Survive where competitors burn cash
@@ -120,6 +126,7 @@ Large players (SonarQube, Snyk, GitHub Advanced Security) will likely add "AI Co
 ## 🚀 Implementation Checklist
 
 ### Completed
+
 - [x] Add Team plan at $99/mo
 - [x] Add CI/CD gatekeeper mode (`--ci`, `--fail-on`, `--threshold`)
 - [x] Update revenue projections to grounded timeline
@@ -133,18 +140,21 @@ Large players (SonarQube, Snyk, GitHub Advanced Security) will likely add "AI Co
 - [x] **MVP Free tier launch** — All paid plans "Coming Soon"
 
 ### Next Priority (Post-MVP)
+
 - [ ] Onboard beta users
 - [ ] Historical trend charts
 - [ ] EventBridge/SQS for async processing
 - [ ] Improve CLI output formatting
 
 ### When Ready for Paid Tiers
+
 - [ ] Set `MVP_FREE_ONLY = false`
 - [ ] Create Stripe products/prices
 - [ ] Test payment flow
 - [ ] Update upgrade prompts
 
 ### Backlog
+
 - [ ] "State of AI-Readiness" annual report
 - [ ] Aggregate benchmarking pipeline
 - [ ] CloudWatch/Sentry monitoring
@@ -154,18 +164,21 @@ Large players (SonarQube, Snyk, GitHub Advanced Security) will likely add "AI Co
 ## 📈 Success Metrics
 
 ### Month 4 Targets
+
 - 500 Free users
 - 5 Pro subscribers ($245 MRR)
 - CLI downloads: 2,000/month
 - Blog traffic: 5,000 uniques/month
 
 ### Month 9 Targets
+
 - 2,000 Free users
 - 30 Pro + 5 Team subscribers ($2,000 MRR)
 - First Enterprise pilot
 - CI/CD adoption: 20% of active users
 
 ### Month 12 Targets
+
 - 5,000 Free users
 - 80 Pro + 15 Team + 1-2 Enterprise ($5,500 MRR)
 - NPS > 40
@@ -183,4 +196,4 @@ Large players (SonarQube, Snyk, GitHub Advanced Security) will likely add "AI Co
 
 ---
 
-*Last updated: 2026-02-22*
+_Last updated: 2026-02-22_

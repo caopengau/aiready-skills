@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMagicLinkToken, markMagicLinkUsed, getUserByEmail, updateUser } from '@/lib/db';
+import {
+  getMagicLinkToken,
+  markMagicLinkUsed,
+  getUserByEmail,
+  updateUser,
+} from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,10 +12,7 @@ export async function POST(request: NextRequest) {
     const { token } = body;
 
     if (!token) {
-      return NextResponse.json(
-        { error: 'Token is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Token is required' }, { status: 400 });
     }
 
     // Get token from database
@@ -33,10 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Check if token is expired
     if (new Date(magicLink.expiresAt) < new Date()) {
-      return NextResponse.json(
-        { error: 'Token expired' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Token expired' }, { status: 400 });
     }
 
     // Mark token as used
@@ -45,10 +44,7 @@ export async function POST(request: NextRequest) {
     // Get user
     const user = await getUserByEmail(magicLink.email);
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 400 });
     }
 
     // Update email verified if not already

@@ -21,6 +21,7 @@ AI Readiness Score = Σ(tool_score × tool_weight) / Σ(active_tool_weights)
 ```
 
 **Key principles:**
+
 1. Each tool is self-contained with its own scoring logic
 2. Weights are relative priorities (can sum to any value)
 3. Only active tools contribute to the score
@@ -30,11 +31,11 @@ AI Readiness Score = Σ(tool_score × tool_weight) / Σ(active_tool_weights)
 
 ```typescript
 const DEFAULT_WEIGHTS = {
-  'pattern-detect': 40,      // Duplication impact
-  'context-analyzer': 35,    // Context efficiency
-  'consistency': 25,         // Naming/patterns
-  'doc-drift': 20,          // Future: Documentation freshness
-  'deps': 15,               // Future: Dependency health
+  'pattern-detect': 40, // Duplication impact
+  'context-analyzer': 35, // Context efficiency
+  consistency: 25, // Naming/patterns
+  'doc-drift': 20, // Future: Documentation freshness
+  deps: 15, // Future: Dependency health
   // New tools can be added here
 };
 ```
@@ -48,13 +49,18 @@ function calculateOverallScore(
 ): number {
   // Only use weights for tools that ran
   const activeWeights = new Map(
-    [...toolScores.keys()].map(tool => [tool, weights.get(tool) || 10])
+    [...toolScores.keys()].map((tool) => [tool, weights.get(tool) || 10])
   );
-  
-  const totalWeight = Array.from(activeWeights.values()).reduce((a, b) => a + b, 0);
-  const weightedSum = Array.from(toolScores.entries())
-    .reduce((sum, [tool, score]) => sum + (score * activeWeights.get(tool)!), 0);
-  
+
+  const totalWeight = Array.from(activeWeights.values()).reduce(
+    (a, b) => a + b,
+    0
+  );
+  const weightedSum = Array.from(toolScores.entries()).reduce(
+    (sum, [tool, score]) => sum + score * activeWeights.get(tool)!,
+    0
+  );
+
   return Math.round(weightedSum / totalWeight);
 }
 ```
@@ -62,6 +68,7 @@ function calculateOverallScore(
 ### Example Scenarios
 
 **Scenario 1: All 3 current tools**
+
 ```
 pattern-detect: 45 (weight: 40)
 context-analyzer: 78 (weight: 35)
@@ -73,6 +80,7 @@ Score = (45×40 + 78×35 + 82×25) / (40+35+25)
 ```
 
 **Scenario 2: Only pattern-detect + consistency**
+
 ```
 pattern-detect: 45 (weight: 40)
 consistency: 82 (weight: 25)
@@ -83,6 +91,7 @@ Score = (45×40 + 82×25) / (40+25)
 ```
 
 **Scenario 3: With future tools (doc-drift added)**
+
 ```
 pattern-detect: 45 (weight: 40)
 context-analyzer: 78 (weight: 35)
@@ -95,6 +104,7 @@ Score = (45×40 + 78×35 + 82×25 + 90×20) / (40+35+25+20)
 ```
 
 ### Rationale for Default Weights
+
 - **pattern-detect (40)**: Highest impact - directly wastes tokens and confuses AI
 - **context-analyzer (35)**: High impact - context limits are primary constraint
 - **consistency (25)**: Moderate impact - affects AI intent understanding
@@ -108,6 +118,7 @@ Score = (45×40 + 78×35 + 82×25 + 90×20) / (40+35+25+20)
 **What it measures:** Impact of semantic duplicates on AI context efficiency
 
 ### Raw Metrics (from pattern-detect)
+
 - `totalDuplicates`: Number of duplicate patterns found
 - `totalTokenCost`: Sum of all duplicate pattern token costs
 - `highImpactDuplicates`: Patterns with >1000 token cost or >70% similarity
@@ -123,37 +134,40 @@ function calculatePatternScore(metrics: {
   totalFilesAnalyzed: number;
 }): number {
   // Normalize to duplicates per 100 files
-  const duplicatesPerFile = (metrics.totalDuplicates / metrics.totalFilesAnalyzed) * 100;
-  
+  const duplicatesPerFile =
+    (metrics.totalDuplicates / metrics.totalFilesAnalyzed) * 100;
+
   // Token waste per file
   const tokenWastePerFile = metrics.totalTokenCost / metrics.totalFilesAnalyzed;
-  
+
   // Penalty scaling:
   // - 0 duplicates = 100 score
   // - 1 duplicate per 10 files = 90 score
   // - 1 duplicate per 5 files = 70 score
   // - 1+ duplicate per file = 40 score
   const duplicatesPenalty = Math.min(60, duplicatesPerFile * 0.6);
-  
+
   // Token waste penalty:
   // - 0 waste = 0 penalty
   // - 1000 tokens/file = 20 penalty
   // - 5000 tokens/file = 40 penalty
   const tokenPenalty = Math.min(40, tokenWastePerFile / 125);
-  
+
   // High impact boost/penalty
   // - No high-impact duplicates = +5 bonus
   // - 5+ high-impact duplicates = -10 penalty
-  const highImpactPenalty = metrics.highImpactDuplicates > 0 
-    ? Math.min(15, metrics.highImpactDuplicates * 2 - 5)
-    : -5; // bonus
-  
+  const highImpactPenalty =
+    metrics.highImpactDuplicates > 0
+      ? Math.min(15, metrics.highImpactDuplicates * 2 - 5)
+      : -5; // bonus
+
   const score = 100 - duplicatesPenalty - tokenPenalty - highImpactPenalty;
   return Math.max(0, Math.min(100, score));
 }
 ```
 
 ### Scoring Bands
+
 - **90-100**: Excellent - Minimal duplication, AI-friendly
 - **70-89**: Good - Some duplication but manageable
 - **50-69**: Needs Improvement - Significant duplication impacting AI
@@ -166,6 +180,7 @@ function calculatePatternScore(metrics: {
 **What it measures:** How efficiently files use AI context windows
 
 ### Raw Metrics (from context-analyzer)
+
 - `avgContextBudget`: Average tokens needed to understand a file (with all deps)
 - `maxContextBudget`: Maximum context budget in any single file
 - `avgImportDepth`: Average depth of import chains
@@ -191,44 +206,51 @@ function calculateContextScore(metrics: {
   // Acceptable: 5000-10000 = 90-70
   // High: 10000-20000 = 70-40
   // Critical: >20000 = <40
-  const budgetScore = metrics.avgContextBudget < 5000 
-    ? 100
-    : Math.max(0, 100 - (metrics.avgContextBudget - 5000) / 150);
-  
+  const budgetScore =
+    metrics.avgContextBudget < 5000
+      ? 100
+      : Math.max(0, 100 - (metrics.avgContextBudget - 5000) / 150);
+
   // Import depth scoring
   // Ideal: <5 avg = 100
   // Acceptable: 5-8 = 80-60
   // Deep: >8 = <60
-  const depthScore = metrics.avgImportDepth < 5
-    ? 100
-    : Math.max(0, 100 - (metrics.avgImportDepth - 5) * 10);
-  
+  const depthScore =
+    metrics.avgImportDepth < 5
+      ? 100
+      : Math.max(0, 100 - (metrics.avgImportDepth - 5) * 10);
+
   // Fragmentation scoring (0-1 scale, lower is better)
   // Well-organized: <0.3 = 100
   // Moderate: 0.3-0.5 = 80-60
   // Fragmented: >0.5 = <60
-  const fragmentationScore = metrics.avgFragmentation < 0.3
-    ? 100
-    : Math.max(0, 100 - (metrics.avgFragmentation - 0.3) * 200);
-  
+  const fragmentationScore =
+    metrics.avgFragmentation < 0.3
+      ? 100
+      : Math.max(0, 100 - (metrics.avgFragmentation - 0.3) * 200);
+
   // Issue penalties
   const criticalPenalty = metrics.criticalIssues * 10;
   const majorPenalty = metrics.majorIssues * 3;
-  
+
   // Max budget penalty (if any file is extreme)
-  const maxBudgetPenalty = metrics.maxContextBudget > 15000 
-    ? Math.min(20, (metrics.maxContextBudget - 15000) / 500)
-    : 0;
-  
+  const maxBudgetPenalty =
+    metrics.maxContextBudget > 15000
+      ? Math.min(20, (metrics.maxContextBudget - 15000) / 500)
+      : 0;
+
   // Weighted average of subscores
-  const rawScore = (budgetScore * 0.4) + (depthScore * 0.3) + (fragmentationScore * 0.3);
-  const finalScore = rawScore - criticalPenalty - majorPenalty - maxBudgetPenalty;
-  
+  const rawScore =
+    budgetScore * 0.4 + depthScore * 0.3 + fragmentationScore * 0.3;
+  const finalScore =
+    rawScore - criticalPenalty - majorPenalty - maxBudgetPenalty;
+
   return Math.max(0, Math.min(100, finalScore));
 }
 ```
 
 ### Scoring Bands
+
 - **90-100**: Excellent - Efficient context usage, well-organized
 - **70-89**: Good - Reasonable context costs
 - **50-69**: Needs Improvement - High context costs or fragmentation
@@ -241,6 +263,7 @@ function calculateContextScore(metrics: {
 **What it measures:** Naming and pattern consistency that helps AI understand intent
 
 ### Raw Metrics (from consistency)
+
 - `totalIssues`: Total consistency issues found
 - `criticalIssues`: Critical naming/pattern issues
 - `majorIssues`: Major naming/pattern issues
@@ -259,33 +282,34 @@ function calculateConsistencyScore(metrics: {
 }): number {
   // Issues per file ratio
   const issuesPerFile = metrics.totalIssues / metrics.filesAnalyzed;
-  
+
   // Weighted issue scoring
   // - Critical: -10 points each
   // - Major: -3 points each
   // - Minor: -0.5 points each
-  const weightedPenalty = 
-    (metrics.criticalIssues * 10) +
-    (metrics.majorIssues * 3) +
-    (metrics.minorIssues * 0.5);
-  
+  const weightedPenalty =
+    metrics.criticalIssues * 10 +
+    metrics.majorIssues * 3 +
+    metrics.minorIssues * 0.5;
+
   // Normalize penalty to 0-100 scale
   // Assume 100 files baseline
   const normalizedPenalty = (weightedPenalty / metrics.filesAnalyzed) * 100;
-  
+
   // Issue density penalty
   // - <0.5 issues/file = excellent
   // - 0.5-1 issues/file = good
   // - 1-2 issues/file = needs work
   // - >2 issues/file = critical
   const densityPenalty = Math.min(40, issuesPerFile * 20);
-  
+
   const score = 100 - Math.min(60, normalizedPenalty) - densityPenalty;
   return Math.max(0, Math.min(100, score));
 }
 ```
 
 ### Scoring Bands
+
 - **90-100**: Excellent - Highly consistent, AI-friendly naming
 - **70-89**: Good - Minor inconsistencies
 - **50-69**: Needs Improvement - Notable inconsistencies
@@ -347,12 +371,12 @@ Component Scores:
 
 Based on analysis of 50+ projects:
 
-| Project Size | Avg Score | Top 25% | Bottom 25% |
-|-------------|-----------|---------|------------|
-| Small (<100 files) | 72 | 85+ | <60 |
-| Medium (100-500) | 68 | 80+ | <55 |
-| Large (500-2000) | 64 | 75+ | <50 |
-| Enterprise (2000+) | 58 | 70+ | <45 |
+| Project Size       | Avg Score | Top 25% | Bottom 25% |
+| ------------------ | --------- | ------- | ---------- |
+| Small (<100 files) | 72        | 85+     | <60        |
+| Medium (100-500)   | 68        | 80+     | <55        |
+| Large (500-2000)   | 64        | 75+     | <50        |
+| Enterprise (2000+) | 58        | 70+     | <45        |
 
 **Key insight:** Larger codebases naturally score lower. A score of 65 for an enterprise project is roughly equivalent to 75 for a small project.
 
@@ -385,17 +409,18 @@ Each tool must implement a standard scoring interface:
 
 ```typescript
 interface ToolScoringOutput {
-  toolName: string;           // e.g., "pattern-detect"
-  score: number;              // 0-100 normalized score
-  rawMetrics: Record<string, any>;  // Tool-specific metrics
-  factors: Array<{            // What influenced the score
+  toolName: string; // e.g., "pattern-detect"
+  score: number; // 0-100 normalized score
+  rawMetrics: Record<string, any>; // Tool-specific metrics
+  factors: Array<{
+    // What influenced the score
     name: string;
-    impact: number;           // +/- points
+    impact: number; // +/- points
     description: string;
   }>;
   recommendations: Array<{
     action: string;
-    estimatedImpact: number;  // +points if fixed
+    estimatedImpact: number; // +points if fixed
     priority: 'high' | 'medium' | 'low';
   }>;
 }
@@ -477,16 +502,18 @@ The scoring system integrates with existing `aiready.json` config. Each tool spe
 **Tool Selection Methods:**
 
 1. **Via scan.tools array** - List which tools to run
-2. **Via tools.*.enabled flag** - Explicitly enable/disable tools
+2. **Via tools.\*.enabled flag** - Explicitly enable/disable tools
 3. **Via CLI --tools flag** - Override at runtime
 
-Priority: CLI flag > scan.tools > tools.*.enabled > all enabled
+Priority: CLI flag > scan.tools > tools.\*.enabled > all enabled
 
 **Benefits:**
+
 - Tool configuration is self-contained
 - No need to remember tool names in separate section
 - Easy to add/remove tools without updating multiple places
-**Tool Selection:**
+  **Tool Selection:**
+
 ```bash
 # Run all configured tools (from scan.tools or all by default)
 aiready scan . --score
@@ -506,6 +533,7 @@ aiready scan . --tools patterns,consistency --score
 ```
 
 **Scoring with Tool Selection:**
+
 ```bash
 # Use config file weights (from tools.*.scoreWeight)
 aiready scan . --score
@@ -532,7 +560,8 @@ aiready scan . --score --threshold 80
 ```
 
 **Config-Based Tool Selection:**
-```json
+
+````json
 {
   "scan": {
     "tools": ["patterns", "context"]  // Only run these two
@@ -553,21 +582,21 @@ function getActiveTools(
   if (cliTools && cliTools.length > 0) {
     return cliTools.map(normalizeToolName);
   }
-  
+
   // 2. Check scan.tools config
   if (config.scan?.tools && config.scan.tools.length > 0) {
     return config.scan.tools.map(normalizeToolName);
   }
-  
+
   // 3. Check individual tool enabled flags
   const enabledTools = Object.entries(config.tools || {})
     .filter(([_, toolConfig]) => toolConfig.enabled !== false)
     .map(([toolName, _]) => toolName);
-  
+
   if (enabledTools.length > 0) {
     return enabledTools;
   }
-  
+
   // 4. Default: all known tools
   return ['pattern-detect', 'context-analyzer', 'consistency'];
 }
@@ -582,7 +611,7 @@ function normalizeToolName(shortName: string): string {
   };
   return TOOL_MAP[shortName] || shortName;
 }
-```
+````
 
 ### Weight Resolution Logic
 
@@ -596,21 +625,21 @@ function getToolWeight(
   if (cliOverrides?.has(toolName)) {
     return cliOverrides.get(toolName)!;
   }
-  
+
   // 2. Check tool's own config
   if (config.tools?.[toolName]?.scoreWeight) {
     return config.tools[toolName].scoreWeight;
   }
-  
+
   // 3. Fall back to defaults
   const DEFAULTS: Record<string, number> = {
     'pattern-detect': 40,
     'context-analyzer': 35,
-    'consistency': 25,
+    consistency: 25,
     'doc-drift': 20,
-    'deps': 15
+    deps: 15,
   };
-  
+
   return DEFAULTS[toolName] || 10; // Unknown tools get weight 10
 }
 ```
@@ -628,25 +657,25 @@ async function calculateScore(
 ): Promise<ScoringResult> {
   // 1. Determine which tools to run
   const activeTools = getActiveTools(config, cliOptions.tools);
-  
+
   // 2. Parse CLI weight overrides
   const weightOverrides = parseWeightString(cliOptions.weights);
-  
+
   // 3. Run each active tool and get scores
   const toolScores = new Map<string, ToolScoringOutput>();
   for (const toolName of activeTools) {
     const score = await runToolWithScoring(toolName, directory, config);
     toolScores.set(toolName, score);
   }
-  
+
   // 4. Calculate weighted overall score
   const weights = new Map<string, number>();
   for (const toolName of activeTools) {
     weights.set(toolName, getToolWeight(toolName, config, weightOverrides));
   }
-  
+
   const overallScore = calculateOverallScore(toolScores, weights);
-  
+
   return {
     score: overallScore,
     toolScores,
@@ -677,21 +706,21 @@ function getToolWeight(
   if (cliOverrides?.has(toolName)) {
     return cliOverrides.get(toolName)!;
   }
-  
+
   // 2. Check tool's own config
   if (config.tools?.[toolName]?.scoreWeight) {
     return config.tools[toolName].scoreWeight;
   }
-  
+
   // 3. Fall back to defaults
   const DEFAULTS: Record<string, number> = {
     'pattern-detect': 40,
     'context-analyzer': 35,
-    'consistency': 25,
+    consistency: 25,
     'doc-drift': 20,
-    'deps': 15
+    deps: 15,
   };
-  
+
   return DEFAULTS[toolName] || 10; // Unknown tools get weight 10
 }
 ```
@@ -699,6 +728,7 @@ function getToolWeight(
 ---
 
 // No changes needInfrastructure (Week 1)
+
 - [ ] Define `ToolScoringOutput` interface in @aiready/core
 - [ ] Implement dynamic scoring compositor
 - [ ] Create tool registry with default weights
@@ -706,7 +736,9 @@ function getToolWeight(
 
 ```typescript
 // packages/core/src/scoring.ts
-export interface ToolScoringOutput { /* ... */ }
+export interface ToolScoringOutput {
+  /* ... */
+}
 export function calculateOverallScore(
   toolOutputs: ToolScoringOutput[],
   customWeights?: Map<string, number>
@@ -714,12 +746,14 @@ export function calculateOverallScore(
 ```
 
 ### Phase 2: Tool Updates (Week 2)
+
 - [ ] Update pattern-detect to output ToolScoringOutput
 - [ ] Update context-analyzer to output ToolScoringOutput
 - [ ] Update consistency to output ToolScoringOutput
 - [ ] Ensure backward compatibility (tools still work standalone)
 
 ### Phase 3: CLI Integration (Week 2-3)
+
 - [ ] Add `--score` flag to unified CLI
 - [ ] Implement score aggregation from multiple tools
 - [Forward Compatibility Guarantees
@@ -732,32 +766,36 @@ export function calculateOverallScore(
 ```json
 {
   "scoringVersion": "1.0",
-  "score": { /* ... */ }
+  "score": {
+    /* ... */
+  }
 }
 ```
 
 ## Open Questions
 
 1. **Threshold defaults**: Should we recommend different thresholds for different project sizes?
-   - *Proposal*: Size-adjusted thresholds (small: 75+, medium: 70+, large: 65+, enterprise: 60+)
+   - _Proposal_: Size-adjusted thresholds (small: 75+, medium: 70+, large: 65+, enterprise: 60+)
 
 2. **Weight customization**: How much flexibility should users have?
-   - *Proposal*: Allow via config file or CLI flag, validate sum makes sense
+   - _Proposal_: Allow via config file or CLI flag, validate sum makes sense
 
 3. **Benchmark dataset**: Need to collect scores from diverse projects to validate scoring bands
-   - *Action*: Run on 20+ public repos, publish anonymized benchmark data
+   - _Action_: Run on 20+ public repos, publish anonymized benchmark data
 
 4. **Score stability**: How to prevent minor code changes from causing large score swings?
-   - *Proposal*: Use smoothing (5-point bins), focus on trends not absolute numbers
+   - _Proposal_: Use smoothing (5-point bins), focus on trends not absolute numbers
 
 5. **Tool discovery**: How does CLI find available tools?
-   - *Proposal*: Package registry pattern - tools export their capabilities
+   - _Proposal_: Package registry pattern - tools export their capabilities
+
 - [ ] Historical tracking (save scores over time)
 - [ ] Score badge generation (for README)
 - [ ] CI/CD threshold checks (`--threshold`)
 - [ ] Delta reporting (show improvements/regressions)
 
 ### Phase 5: Documentation & Polish (Week 4)
+
 - [ ] Document scoring methodology
 - [ ] Create "Understanding Your Score" guide
 - [ ] Add tool developer guide (for future tools)
@@ -765,12 +803,16 @@ export function calculateOverallScore(
 - [ ] Create score improvement playbookerbose
 
 # JSON for CI/CD
+
 aiready scan . --format json --score
 
 # Fail if below threshold
+
 aiready scan . --score --threshold 70
+
 # Exit code 1 if score < 70
-```
+
+````
 
 ### JSON Output
 ```json
@@ -821,29 +863,33 @@ aiready scan . --score --threshold 70
     }
   ]
 }
-```
+````
 
 ---
 
 ## Implementation Plan
 
 ### Phase 1: Core Scoring (Week 1)
+
 - [ ] Add score calculation to @aiready/core
 - [ ] Update each tool to return normalized metrics
 - [ ] Create unified scoring interface
 
 ### Phase 2: CLI Integration (Week 2)
+
 - [ ] Add `--score` flag to unified CLI
 - [ ] Implement score breakdown display
 - [ ] Add JSON output format
 
 ### Phase 3: Advanced Features (Week 3)
+
 - [ ] Baseline comparison (`--compare`)
 - [ ] Historical tracking
 - [ ] Score badge generation
 - [ ] CI/CD threshold checks
 
 ### Phase 4: Visualization (Week 4)
+
 - [ ] Score trend graphs
 - [ ] Component breakdown charts
 - [ ] File-level heatmaps

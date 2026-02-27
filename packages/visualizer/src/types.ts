@@ -36,20 +36,20 @@ export interface FileNode extends BaseGraphNode {
   id: string;
   path: string;
   label: string;
-  
+
   // Metrics
   linesOfCode?: number;
   tokenCost?: number;
   complexity?: number;
-  
+
   // Issue counts
   duplicates?: number;
   inconsistencies?: number;
-  
+
   // Categorization
   domain?: string;
   moduleType?: 'component' | 'util' | 'service' | 'config' | 'test' | 'other';
-  
+
   // Visual properties (from GraphNode)
   color?: string;
   size?: number;
@@ -62,11 +62,11 @@ export interface FileNode extends BaseGraphNode {
 export interface DependencyEdge extends BaseGraphLink {
   source: string | FileNode;
   target: string | FileNode;
-  
+
   // Edge properties
   type?: 'import' | 'require' | 'dynamic';
   weight?: number;
-  
+
   // Visual properties (from GraphLink)
   color?: string;
   width?: number;
@@ -89,7 +89,12 @@ export interface Cluster {
  */
 export interface IssueOverlay {
   id: string;
-  type: 'duplicate' | 'circular-dependency' | 'inconsistency' | 'high-cost' | 'complexity';
+  type:
+    | 'duplicate'
+    | 'circular-dependency'
+    | 'inconsistency'
+    | 'high-cost'
+    | 'complexity';
   severity: IssueSeverity;
   nodeIds: string[];
   edgeIds?: string[];
@@ -117,18 +122,18 @@ export interface GraphMetadata {
   totalFiles: number;
   totalDependencies: number;
   analysisTypes: string[];
-  
+
   // Aggregate metrics
   totalLinesOfCode?: number;
   totalTokenCost?: number;
   averageComplexity?: number;
-  
+
   // Issue counts
   criticalIssues: number;
   majorIssues: number;
   minorIssues: number;
   infoIssues: number;
-  
+
   // Business metrics (v0.10+)
   estimatedMonthlyCost?: number;
   estimatedDeveloperHours?: number;

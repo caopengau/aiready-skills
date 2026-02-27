@@ -19,7 +19,9 @@ export async function handler(event: Event) {
     const payload = JSON.parse(event.body);
     // Accept `directory` relative to repo root, default '.'
     const directory = payload.directory || '.';
-    const toolsArray = payload.tools ? payload.tools.split(',').map((t: string) => t.trim()) : undefined;
+    const toolsArray = payload.tools
+      ? payload.tools.split(',').map((t: string) => t.trim())
+      : undefined;
     const include = payload.include ? payload.include.split(',') : undefined;
     const exclude = payload.exclude ? payload.exclude.split(',') : undefined;
 
@@ -35,7 +37,10 @@ export async function handler(event: Event) {
     const results = await analyzeUnified(options);
 
     // Normalize execution time to seconds (CLI displays seconds)
-    const summary = { ...results.summary, executionTime: Number((results.summary.executionTime / 1000).toFixed(2)) };
+    const summary = {
+      ...results.summary,
+      executionTime: Number((results.summary.executionTime / 1000).toFixed(2)),
+    };
 
     const responseBody: any = {
       ...results,
@@ -47,21 +52,39 @@ export async function handler(event: Event) {
       const toolScores: Map<string, any> = new Map();
 
       if (results.duplicates && options.tools?.includes('patterns')) {
-        const { calculatePatternScore } = await import('@aiready/pattern-detect');
-        const score = calculatePatternScore(results.duplicates, results.patterns?.length || 0);
+        const { calculatePatternScore } =
+          await import('@aiready/pattern-detect');
+        const score = calculatePatternScore(
+          results.duplicates,
+          results.patterns?.length || 0
+        );
         toolScores.set('pattern-detect', score);
       }
 
       if (results.context && options.tools?.includes('context')) {
-        const { calculateContextScore } = await import('@aiready/context-analyzer');
+        const { calculateContextScore } =
+          await import('@aiready/context-analyzer');
         const ctx = results.context;
         const contextSummary = {
-          avgContextBudget: ctx.reduce((sum: number, r: any) => sum + (r.contextBudget || 0), 0) / Math.max(1, ctx.length),
-          maxContextBudget: Math.max(...ctx.map((r: any) => r.contextBudget || 0)),
-          avgImportDepth: ctx.reduce((sum: number, r: any) => sum + (r.importDepth || 0), 0) / Math.max(1, ctx.length),
+          avgContextBudget:
+            ctx.reduce(
+              (sum: number, r: any) => sum + (r.contextBudget || 0),
+              0
+            ) / Math.max(1, ctx.length),
+          maxContextBudget: Math.max(
+            ...ctx.map((r: any) => r.contextBudget || 0)
+          ),
+          avgImportDepth:
+            ctx.reduce((sum: number, r: any) => sum + (r.importDepth || 0), 0) /
+            Math.max(1, ctx.length),
           maxImportDepth: Math.max(...ctx.map((r: any) => r.importDepth || 0)),
-          avgFragmentation: ctx.reduce((sum: number, r: any) => sum + (r.fragmentationScore || 0), 0) / Math.max(1, ctx.length),
-          criticalIssues: ctx.filter((r: any) => r.severity === 'critical').length,
+          avgFragmentation:
+            ctx.reduce(
+              (sum: number, r: any) => sum + (r.fragmentationScore || 0),
+              0
+            ) / Math.max(1, ctx.length),
+          criticalIssues: ctx.filter((r: any) => r.severity === 'critical')
+            .length,
           majorIssues: ctx.filter((r: any) => r.severity === 'major').length,
         };
         const score = calculateContextScore(contextSummary as any);
@@ -69,15 +92,21 @@ export async function handler(event: Event) {
       }
 
       if (results.consistency && options.tools?.includes('consistency')) {
-        const { calculateConsistencyScore } = await import('@aiready/consistency');
-        const issues = results.consistency.results?.flatMap((r: any) => r.issues) || [];
-        const score = calculateConsistencyScore(issues, results.consistency.summary.filesAnalyzed || 0);
+        const { calculateConsistencyScore } =
+          await import('@aiready/consistency');
+        const issues =
+          results.consistency.results?.flatMap((r: any) => r.issues) || [];
+        const score = calculateConsistencyScore(
+          issues,
+          results.consistency.summary.filesAnalyzed || 0
+        );
         toolScores.set('consistency', score);
       }
 
       // Calculate overall score if we have tool outputs
       if (toolScores.size > 0) {
-        const { calculateOverallScore, parseWeightString } = await import('@aiready/core');
+        const { calculateOverallScore, parseWeightString } =
+          await import('@aiready/core');
         const cliWeights = parseWeightString(payload.weights);
         const scoring = calculateOverallScore(toolScores, options, cliWeights);
         responseBody.scoring = scoring;
@@ -95,14 +124,22 @@ function allowedCorsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+    'Access-Control-Allow-Headers': 'Content-Type',
   };
 }
 
-function json(statusCode: number, body: any, extraHeaders: Record<string,string> = {}) {
+function json(
+  statusCode: number,
+  body: any,
+  extraHeaders: Record<string, string> = {}
+) {
   return {
     statusCode,
-    headers: { 'Content-Type': 'application/json', ...allowedCorsHeaders(), ...extraHeaders },
-    body: JSON.stringify(body)
+    headers: {
+      'Content-Type': 'application/json',
+      ...allowedCorsHeaders(),
+      ...extraHeaders,
+    },
+    body: JSON.stringify(body),
   };
 }

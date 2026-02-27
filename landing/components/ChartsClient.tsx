@@ -1,10 +1,14 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import ParallaxSection from "./ParallaxSection";
+import dynamic from 'next/dynamic';
+import ParallaxSection from './ParallaxSection';
 
-const InteractiveChart = dynamic(() => import("./InteractiveChart"), { ssr: false });
-const ComparisonChart = dynamic(() => import("./ComparisonChart"), { ssr: false });
+const InteractiveChart = dynamic(() => import('./InteractiveChart'), {
+  ssr: false,
+});
+const ComparisonChart = dynamic(() => import('./ComparisonChart'), {
+  ssr: false,
+});
 
 export default function ChartsClient() {
   return (

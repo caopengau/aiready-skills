@@ -26,8 +26,14 @@ describe('Testability Analyzer', () => {
   describe('Test Coverage Ratio', () => {
     it('should calculate ratio of test files to source files', async () => {
       createTestFile('src/math.ts', 'export const add = (a, b) => a + b;');
-      createTestFile('src/math.test.ts', 'import { add } from "./math"; test("add", () => {});');
-      createTestFile('src/string.ts', 'export const upper = (s) => s.toUpperCase();');
+      createTestFile(
+        'src/math.test.ts',
+        'import { add } from "./math"; test("add", () => {});'
+      );
+      createTestFile(
+        'src/string.ts',
+        'export const upper = (s) => s.toUpperCase();'
+      );
 
       const report = await analyzeTestability({ rootDir: tmpDir });
 
@@ -38,7 +44,9 @@ describe('Testability Analyzer', () => {
 
   describe('Pure Functions and State Mutations', () => {
     it('should detect state mutations inside functions', async () => {
-      createTestFile('src/mutations.ts', `
+      createTestFile(
+        'src/mutations.ts',
+        `
         const globalState = { value: 0 };
         
         export function impureAdd(a: number) {
@@ -49,7 +57,8 @@ describe('Testability Analyzer', () => {
         export function pureAdd(a: number, b: number) {
           return a + b;
         }
-      `);
+      `
+      );
 
       const report = await analyzeTestability({ rootDir: tmpDir });
 
@@ -60,7 +69,9 @@ describe('Testability Analyzer', () => {
 
   describe('Bloated Interfaces', () => {
     it('should detect interfaces with too many methods', async () => {
-      createTestFile('src/interfaces.ts', `
+      createTestFile(
+        'src/interfaces.ts',
+        `
         export interface BloatedService {
           m1(): void;
           m2(): void;
@@ -74,7 +85,8 @@ describe('Testability Analyzer', () => {
           m10(): void;
           m11(): void;
         }
-      `);
+      `
+      );
 
       const report = await analyzeTestability({ rootDir: tmpDir });
 

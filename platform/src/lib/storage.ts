@@ -1,14 +1,20 @@
 /**
  * S3 Storage utilities for AIReady Platform
- * 
+ *
  * Bucket: aiready-platform-analysis
- * 
+ *
  * Key patterns:
  *   analyses/<userId>/<repoId>/<timestamp>.json  - Raw analysis JSON
  *   uploads/<userId>/<filename>                  - User uploads
  */
 
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  ListObjectsV2Command,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Initialize S3 client
@@ -75,6 +81,26 @@ export interface AnalysisData {
       missingDocs: string[];
       outdatedDocs: string[];
     };
+    dependencyHealth: {
+      score: number;
+      issues: any[];
+    };
+    aiSignalClarity: {
+      score: number;
+      signals: any[];
+    };
+    agentGrounding: {
+      score: number;
+      issues: any[];
+    };
+    testabilityIndex: {
+      score: number;
+      issues: any[];
+    };
+    changeAmplification: {
+      score: number;
+      issues: any[];
+    };
   };
   rawOutput?: unknown;
 }
@@ -84,18 +110,20 @@ export interface AnalysisData {
  */
 export async function storeAnalysis(analysis: AnalysisUpload): Promise<string> {
   const key = `analyses/${analysis.userId}/${analysis.repoId}/${analysis.timestamp}.json`;
-  
-  await s3.send(new PutObjectCommand({
-    Bucket: BUCKET_NAME,
-    Key: key,
-    Body: JSON.stringify(analysis.data, null, 2),
-    ContentType: 'application/json',
-    Metadata: {
-      userId: analysis.userId,
-      repoId: analysis.repoId,
-      timestamp: analysis.timestamp,
-    },
-  }));
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Body: JSON.stringify(analysis.data, null, 2),
+      ContentType: 'application/json',
+      Metadata: {
+        userId: analysis.userId,
+        repoId: analysis.repoId,
+        timestamp: analysis.timestamp,
+      },
+    })
+  );
 
   return key;
 }
@@ -105,10 +133,12 @@ export async function storeAnalysis(analysis: AnalysisUpload): Promise<string> {
  */
 export async function getAnalysis(key: string): Promise<AnalysisData | null> {
   try {
-    const result = await s3.send(new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    }));
+    const result = await s3.send(
+      new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      })
+    );
 
     const body = await result.Body?.transformToString();
     if (!body) return null;
@@ -124,32 +154,42 @@ export async function getAnalysis(key: string): Promise<AnalysisData | null> {
  * Delete analysis from S3
  */
 export async function deleteAnalysis(key: string): Promise<void> {
-  await s3.send(new DeleteObjectCommand({
-    Bucket: BUCKET_NAME,
-    Key: key,
-  }));
+  await s3.send(
+    new DeleteObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    })
+  );
 }
 
 /**
  * List all analyses for a repository
  */
-export async function listRepositoryAnalyses(userId: string, repoId: string): Promise<string[]> {
+export async function listRepositoryAnalyses(
+  userId: string,
+  repoId: string
+): Promise<string[]> {
   const prefix = `analyses/${userId}/${repoId}/`;
-  
-  const result = await s3.send(new ListObjectsV2Command({
-    Bucket: BUCKET_NAME,
-    Prefix: prefix,
-  }));
+
+  const result = await s3.send(
+    new ListObjectsV2Command({
+      Bucket: BUCKET_NAME,
+      Prefix: prefix,
+    })
+  );
 
   return (result.Contents || [])
-    .map(obj => obj.Key)
+    .map((obj) => obj.Key)
     .filter((key): key is string => key !== undefined);
 }
 
 /**
  * Generate a presigned URL for downloading analysis
  */
-export async function getAnalysisDownloadUrl(key: string, expiresIn = 3600): Promise<string> {
+export async function getAnalysisDownloadUrl(
+  key: string,
+  expiresIn = 3600
+): Promise<string> {
   const command = new GetObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -162,21 +202,37 @@ export async function getAnalysisDownloadUrl(key: string, expiresIn = 3600): Pro
  * Calculate AI Readiness Score from analysis data
  */
 export function calculateAiScore(data: AnalysisData): number {
-  // Weighted average of breakdown scores
+  // Weighted average of breakdown scores (weights sum to 100)
   const weights = {
-    semanticDuplicates: 0.35,
-    contextFragmentation: 0.30,
-    namingConsistency: 0.20,
-    documentationHealth: 0.15,
+    semanticDuplicates: 22,
+    contextFragmentation: 19,
+    namingConsistency: 14,
+    documentationHealth: 8,
+    aiSignalClarity: 11,
+    agentGrounding: 10,
+    testabilityIndex: 10,
+    dependencyHealth: 6,
   };
 
-  const score = 
-    data.breakdown.semanticDuplicates.score * weights.semanticDuplicates +
-    data.breakdown.contextFragmentation.score * weights.contextFragmentation +
-    data.breakdown.namingConsistency.score * weights.namingConsistency +
-    data.breakdown.documentationHealth.score * weights.documentationHealth;
+  let totalWeightedScore = 0;
+  let totalWeight = 0;
 
-  return Math.round(score);
+  for (const [key, weight] of Object.entries(weights)) {
+    const score = (data.breakdown as any)[key]?.score;
+    if (typeof score === 'number') {
+      totalWeightedScore += score * weight;
+      totalWeight += weight;
+    }
+  }
+
+  // Handle changeAmplification if present (dynamically add weight)
+  if (data.breakdown.changeAmplification?.score !== undefined) {
+    totalWeightedScore += data.breakdown.changeAmplification.score * 5;
+    totalWeight += 5;
+  }
+
+  if (totalWeight === 0) return 0;
+  return Math.round(totalWeightedScore / totalWeight);
 }
 
 /**
@@ -196,10 +252,15 @@ export function extractSummary(data: AnalysisData) {
  */
 export function extractBreakdown(data: AnalysisData) {
   return {
-    semanticDuplicates: data.breakdown.semanticDuplicates.score,
-    contextFragmentation: data.breakdown.contextFragmentation.score,
-    namingConsistency: data.breakdown.namingConsistency.score,
-    documentationHealth: data.breakdown.documentationHealth.score,
+    semanticDuplicates: data.breakdown.semanticDuplicates.score || 0,
+    contextFragmentation: data.breakdown.contextFragmentation.score || 0,
+    namingConsistency: data.breakdown.namingConsistency.score || 0,
+    documentationHealth: data.breakdown.documentationHealth.score || 0,
+    dependencyHealth: data.breakdown.dependencyHealth?.score || 0,
+    aiSignalClarity: data.breakdown.aiSignalClarity?.score || 0,
+    agentGrounding: data.breakdown.agentGrounding?.score || 0,
+    testabilityIndex: data.breakdown.testabilityIndex?.score || 0,
+    changeAmplification: data.breakdown.changeAmplification?.score || 0,
   };
 }
 

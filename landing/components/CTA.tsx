@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import ParallaxSection from "./ParallaxSection";
-import AgentPrompt from "./AgentPrompt";
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import ParallaxSection from './ParallaxSection';
+import AgentPrompt from './AgentPrompt';
 
 export function CTA() {
   const [showAgent, setShowAgent] = useState(false);
@@ -20,7 +20,7 @@ export function CTA() {
         >
           {/* Animated background */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-3xl blur-2xl opacity-20 animate-pulse" />
-          
+
           <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-3xl p-1 shadow-2xl">
             <div className="bg-slate-900 rounded-[22px] p-12 text-center">
               <motion.h2
@@ -39,9 +39,12 @@ export function CTA() {
                 viewport={{ once: true }}
                 className="text-slate-300 mb-6 text-xl"
               >
-                Find AI confusion points in 5 minutes. Local. Safe. Free forever.
+                Find AI confusion points in 5 minutes. Local. Safe. Free
+                forever.
                 <br />
-                <span className="text-blue-300 text-base">Need help? Request a personalized audit or consulting session.</span>
+                <span className="text-blue-300 text-base">
+                  Need help? Request a personalized audit or consulting session.
+                </span>
               </motion.p>
 
               {/* Toggle buttons */}
@@ -56,8 +59,8 @@ export function CTA() {
                   onClick={() => setShowAgent(false)}
                   className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
                     !showAgent
-                      ? "bg-slate-700 text-white"
-                      : "bg-slate-800 text-slate-400 hover:text-slate-300"
+                      ? 'bg-slate-700 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:text-slate-300'
                   }`}
                 >
                   💻 CLI Command
@@ -66,14 +69,14 @@ export function CTA() {
                   onClick={() => setShowAgent(true)}
                   className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
                     showAgent
-                      ? "bg-slate-700 text-white"
-                      : "bg-slate-800 text-slate-400 hover:text-slate-300"
+                      ? 'bg-slate-700 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:text-slate-300'
                   }`}
                 >
                   🤖 AI Agent Prompt
                 </button>
               </motion.div>
-              
+
               {/* CLI Command */}
               {!showAgent && (
                 <motion.div
@@ -108,7 +111,7 @@ export function CTA() {
                   </div>
                 </motion.div>
               )}
-              
+
               <motion.p
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -116,9 +119,10 @@ export function CTA() {
                 viewport={{ once: true }}
                 className="text-sm text-slate-400"
               >
-                <span className="text-green-400 font-bold">✓</span> Free forever · 
-                <span className="text-green-400 font-bold"> ✓</span> Open source · 
-                <span className="text-green-400 font-bold"> ✓</span> No credit card required
+                <span className="text-green-400 font-bold">✓</span> Free forever
+                ·<span className="text-green-400 font-bold"> ✓</span> Open
+                source ·<span className="text-green-400 font-bold"> ✓</span> No
+                credit card required
               </motion.p>
             </div>
           </div>

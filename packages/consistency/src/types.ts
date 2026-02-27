@@ -12,7 +12,7 @@ export interface ConsistencyOptions extends ScanOptions {
 }
 
 export interface ConsistencyIssue extends Issue {
-  type: 
+  type:
     | 'naming-inconsistency'
     | 'naming-quality'
     | 'pattern-inconsistency'

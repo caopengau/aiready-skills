@@ -3,6 +3,7 @@
 ## 🎯 Quick Stats
 
 ### Current State
+
 ```
 TypeScript + JavaScript: 38% market coverage
 Languages Supported: 2
@@ -10,6 +11,7 @@ Market Gap: 62% UNCOVERED
 ```
 
 ### Target State (Post-Phase 4)
+
 ```
 7 Languages: 95% market coverage
 Estimated Timeline: 18 months
@@ -50,7 +52,7 @@ Q2 2026         Q3 2026         Q4 2026         Q1 2027
 │Python│──────▶│ Java │──────▶│Go+Rus│──────▶│  C#  │
 └──────┘       └──────┘       └──────┘       └──────┘
  +26%           +15%           +8%            +8%
- 
+
  64% total      79% total      87% total      95% total
 ```
 
@@ -75,6 +77,7 @@ Ruby     |   2    |   2    |   3    |     3      |   9/25
 ## 🏗️ Technical Architecture Evolution
 
 ### Current (TS/JS Only)
+
 ```
 ┌─────────────────────────────────────┐
 │         @aiready/core               │
@@ -92,6 +95,7 @@ Ruby     |   2    |   2    |   3    |     3      |   9/25
 ```
 
 ### Future (Multi-Language)
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │               @aiready/core                         │
@@ -120,6 +124,7 @@ Ruby     |   2    |   2    |   3    |     3      |   9/25
 ## 📈 Market Impact Projection
 
 ### Single-Language Repos
+
 ```
 Current:  ████░░░░░░  40% addressable (JS/TS only)
 Phase 1:  ████████░░  80% addressable (+ Python shops)
@@ -127,6 +132,7 @@ Phase 2:  ██████████ 100% addressable (+ Java shops)
 ```
 
 ### Multi-Language Repos (HIGHEST VALUE)
+
 ```
 Example Stack:
 ┌────────────────────────────────────┐
@@ -148,21 +154,25 @@ Value Increase:    5x per customer
 ## 🎓 User Benefits by Persona
 
 ### 🚀 Startup (Full-Stack JS + Python Backend)
+
 **Current:** Only frontend analyzed  
 **Phase 1:** Entire codebase analyzed  
 **Value:** Find duplicate API patterns across TS + Python
 
 ### 🏢 Enterprise (Java Monolith + React Frontend)
+
 **Current:** Only frontend analyzed  
 **Phase 2:** Entire codebase analyzed  
 **Value:** Identify fragmentation across 50K+ LOC Java backend
 
 ### ☁️ Cloud-Native (Go + Rust + TS)
+
 **Current:** Only frontend analyzed  
 **Phase 3:** Entire stack analyzed  
 **Value:** Context analysis across microservices (Go) + systems (Rust)
 
 ### 🎯 AI-First Company (Python ML + TS Web)
+
 **Current:** Only web app analyzed  
 **Phase 1:** ML pipeline + web app analyzed  
 **Value:** Find duplicate transformations in notebooks + services
@@ -189,6 +199,7 @@ C++        | tree-sitter |    High    | 12 weeks  | High
 ## 💰 ROI Analysis
 
 ### Development Investment
+
 ```
 Phase 1 (Python):  6 weeks eng time (~$30K)
 Phase 2 (Java):    8 weeks eng time (~$40K)
@@ -199,6 +210,7 @@ Total Investment:  30 weeks / $150K
 ```
 
 ### Revenue Impact (Conservative)
+
 ```
 Current Market:    100 potential customers (JS/TS only)
 Post-Phase 1:      268 customers (+168%)
@@ -220,13 +232,13 @@ ROI: ~2.2x revenue for every $1 invested
 
 ## ⚠️ Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Parser bugs crash analysis | High | Medium | Graceful error handling + skip files |
-| Performance degrades (large repos) | Med | Low | Streaming parser + parallel processing |
-| Naming rules conflict (multi-lang) | Low | High | Per-language rule configuration |
-| Backward compatibility breaks | High | Low | Feature flags + extensive testing |
-| Team lacks language expertise | Med | Med | Hire language-specific reviewers |
+| Risk                               | Impact | Probability | Mitigation                             |
+| ---------------------------------- | ------ | ----------- | -------------------------------------- |
+| Parser bugs crash analysis         | High   | Medium      | Graceful error handling + skip files   |
+| Performance degrades (large repos) | Med    | Low         | Streaming parser + parallel processing |
+| Naming rules conflict (multi-lang) | Low    | High        | Per-language rule configuration        |
+| Backward compatibility breaks      | High   | Low         | Feature flags + extensive testing      |
+| Team lacks language expertise      | Med    | Med         | Hire language-specific reviewers       |
 
 ---
 
@@ -235,6 +247,7 @@ ROI: ~2.2x revenue for every $1 invested
 ### **Execute Phase 1 (Python) in Q2 2026**
 
 **Why Python First:**
+
 1. **Biggest Impact:** +26% market (from 38% → 64%)
 2. **AI-First Audience:** 85% of AI devs use AI coding tools
 3. **Full-Stack Enabler:** TS frontend + Python backend (common pattern)
@@ -242,6 +255,7 @@ ROI: ~2.2x revenue for every $1 invested
 5. **Enterprise Value:** Unlocks multi-language repo analysis
 
 **Success Criteria:**
+
 - ✅ Parse 95%+ valid Python files without errors
 - ✅ Detect PEP 8 naming violations (80%+ accuracy)
 - ✅ Process 10K LOC mixed repo in <30s

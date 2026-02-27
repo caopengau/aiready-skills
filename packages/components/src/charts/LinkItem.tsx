@@ -9,19 +9,31 @@ export interface LinkItemProps {
   nodes?: GraphNode[]; // Optional nodes array to resolve string IDs to node objects
 }
 
-export const LinkItem: React.FC<LinkItemProps> = ({ link, onClick, defaultWidth, showLabel = true, nodes = [] }) => {
-  const src = (link.source as any)?.id ?? (typeof link.source === 'string' ? link.source : undefined);
-  const tgt = (link.target as any)?.id ?? (typeof link.target === 'string' ? link.target : undefined);
+export const LinkItem: React.FC<LinkItemProps> = ({
+  link,
+  onClick,
+  defaultWidth,
+  showLabel = true,
+  nodes = [],
+}) => {
+  const src =
+    (link.source as any)?.id ??
+    (typeof link.source === 'string' ? link.source : undefined);
+  const tgt =
+    (link.target as any)?.id ??
+    (typeof link.target === 'string' ? link.target : undefined);
 
   // Helper to get node position from source/target (which could be node object or string ID)
-  const getNodePosition = (nodeOrId: string | GraphNode): { x: number; y: number } | null => {
+  const getNodePosition = (
+    nodeOrId: string | GraphNode
+  ): { x: number; y: number } | null => {
     if (typeof nodeOrId === 'object' && nodeOrId !== null) {
       // It's a node object
       const node = nodeOrId as GraphNode;
       return { x: node.x ?? 0, y: node.y ?? 0 };
     } else if (typeof nodeOrId === 'string') {
       // It's a string ID, try to find in nodes array
-      const found = nodes.find(n => n.id === nodeOrId);
+      const found = nodes.find((n) => n.id === nodeOrId);
       if (found) return { x: found.x ?? 0, y: found.y ?? 0 };
     }
     return null;

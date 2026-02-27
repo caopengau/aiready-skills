@@ -11,10 +11,7 @@ export async function POST(request: NextRequest) {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -35,7 +32,9 @@ export async function POST(request: NextRequest) {
 
     // Generate token
     const token = randomUUID();
-    const expiresAt = new Date(Date.now() + MAGIC_LINK_EXPIRY_MINUTES * 60 * 1000).toISOString();
+    const expiresAt = new Date(
+      Date.now() + MAGIC_LINK_EXPIRY_MINUTES * 60 * 1000
+    ).toISOString();
 
     // Store token
     await createMagicLinkToken({
@@ -47,9 +46,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Send magic link email
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://dev.platform.getaiready.dev';
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL || 'https://dev.platform.getaiready.dev';
     const magicLinkUrl = `${baseUrl}/auth/verify?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
-    
+
     try {
       await sendMagicLinkEmail({
         to: normalizedEmail,

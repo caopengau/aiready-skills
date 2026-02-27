@@ -1,22 +1,31 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 
 const data = [
-  { month: "Jan", without: 100, with: 100 },
-  { month: "Feb", without: 105, with: 98 },
-  { month: "Mar", without: 112, with: 85 },
-  { month: "Apr", without: 125, with: 78 },
-  { month: "May", without: 140, with: 72 },
-  { month: "Jun", without: 158, with: 65 },
+  { month: 'Jan', without: 100, with: 100 },
+  { month: 'Feb', without: 105, with: 98 },
+  { month: 'Mar', without: 112, with: 85 },
+  { month: 'Apr', without: 125, with: 78 },
+  { month: 'May', without: 140, with: 72 },
+  { month: 'Jun', without: 158, with: 65 },
 ];
 
 export default function ComparisonChart() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
     <motion.div
@@ -35,38 +44,45 @@ export default function ComparisonChart() {
           AIReady helps you maintain code quality as your project scales
         </p>
         <div className="h-80">
-           {typeof window !== "undefined" && (
+          {typeof window !== 'undefined' && (
             <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="month" stroke="#64748b" />
-              <YAxis stroke="#64748b" label={{ value: 'Issues', angle: -90, position: 'insideLeft' }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "8px",
-                }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="without"
-                stroke="#ef4444"
-                strokeWidth={3}
-                name="Without AIReady"
-                dot={{ fill: "#ef4444", r: 5 }}
-                animationDuration={2000}
-              />
-              <Line
-                type="monotone"
-                dataKey="with"
-                stroke="#10b981"
-                strokeWidth={3}
-                name="With AIReady"
-                dot={{ fill: "#10b981", r: 5 }}
-                animationDuration={2000}
-              />
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="month" stroke="#64748b" />
+                <YAxis
+                  stroke="#64748b"
+                  label={{
+                    value: 'Issues',
+                    angle: -90,
+                    position: 'insideLeft',
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="without"
+                  stroke="#ef4444"
+                  strokeWidth={3}
+                  name="Without AIReady"
+                  dot={{ fill: '#ef4444', r: 5 }}
+                  animationDuration={2000}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="with"
+                  stroke="#10b981"
+                  strokeWidth={3}
+                  name="With AIReady"
+                  dot={{ fill: '#10b981', r: 5 }}
+                  animationDuration={2000}
+                />
               </LineChart>
             </ResponsiveContainer>
           )}

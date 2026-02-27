@@ -5,7 +5,7 @@
 ✅ **Reads your code files locally** - All analysis happens on your machine  
 ✅ **Parses AST in memory** - No temporary files with your code  
 ✅ **Generates reports locally** - All output saved to `.aiready/` directory in your project  
-✅ **Deterministic and reproducible** - Same input always produces same output  
+✅ **Deterministic and reproducible** - Same input always produces same output
 
 ## What AIReady Never Does
 
@@ -13,11 +13,12 @@
 ❌ **No telemetry by default** - We don't track usage or collect analytics  
 ❌ **No SaaS dependencies** - Pure CLI tool, works offline  
 ❌ **No LLM calls** - No AI models involved in analysis (all rule-based and AST parsing)  
-❌ **No authentication required** - No accounts, no sign-ups, no API keys  
+❌ **No authentication required** - No accounts, no sign-ups, no API keys
 
 ## Air-Gap Compatible
 
 AIReady works in completely isolated environments:
+
 - Behind corporate firewalls
 - On machines without internet access
 - In regulated industries (finance, healthcare, government)
@@ -38,6 +39,7 @@ aiready scan . --trace
 ## Open Source Transparency
 
 All code is open source and auditable:
+
 - **Repository:** https://github.com/caopengau/aiready-cli
 - **License:** MIT (permissive, commercial-friendly)
 - **Dependencies:** All open source, npm-auditable
@@ -47,11 +49,13 @@ Run `npm audit` on any package to verify supply chain security.
 ## Data Processing Details
 
 ### What Gets Analyzed
+
 - Source code files (`.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.java`)
 - Configuration files (when explicitly included)
 - Directory structure and file paths
 
 ### What Gets Excluded (by default)
+
 - `node_modules/` and other dependencies
 - Build outputs (`dist/`, `build/`, `.next/`)
 - Test files (`*.test.*`, `*.spec.*`, `__tests__/`)
@@ -59,13 +63,16 @@ Run `npm audit` on any package to verify supply chain security.
 - Environment files (`.env`, `.env.*`)
 
 ### Report Contents
+
 Reports contain:
+
 - File paths (relative to your project root)
 - Line numbers and code snippets
 - Similarity scores and metrics
 - Recommendations
 
 Reports **never** contain:
+
 - Absolute file paths (unless you use `--absolute-paths`)
 - Environment variables
 - Credentials or secrets
@@ -74,12 +81,14 @@ Reports **never** contain:
 ## Enterprise Security Features
 
 ### For Security Teams
+
 - **SBOM Generation:** Run `npm sbom` on any package
 - **Vulnerability Scanning:** All dependencies regularly scanned
 - **No Runtime Eval:** No `eval()`, `Function()`, or dynamic code execution
 - **Sandboxed Analysis:** File parsing happens in isolated processes
 
 ### For Compliance
+
 - **GDPR Compliant:** No personal data collected
 - **SOC 2 Ready:** Local execution, audit logs available
 - **HIPAA/FINRA Compatible:** Can be used in regulated environments
@@ -89,13 +98,15 @@ Reports **never** contain:
 Found a security vulnerability? Please report it responsibly:
 
 📧 **Email:** security@getaiready.dev  
-🔐 **PGP Key:** [Available on request]  
+🔐 **PGP Key:** [Available on request]
 
 **Please do NOT:**
+
 - Open public GitHub issues for security vulnerabilities
 - Share details publicly before we've had a chance to fix
 
 We aim to:
+
 - Acknowledge reports within 24 hours
 - Provide a fix within 7 days for critical issues
 - Credit researchers (with permission) in our changelog
@@ -115,6 +126,7 @@ Before using AIReady in your organization:
 ## Future Security Enhancements
 
 We're working on:
+
 - Code signing for releases
 - Reproducible builds
 - SLSA compliance

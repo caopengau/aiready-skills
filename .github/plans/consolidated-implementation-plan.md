@@ -3,12 +3,13 @@
 This plan consolidates outstanding actions from the repository's implementation notes and archives completed implementation documents.
 
 Summary:
+
 - Archived completed implementation docs to `.github/archived-docs/`.
 - Consolidated remaining work (actionable items) from `V1-READINESS-ASSESSMENT.md` and `ENTERPRISE-READINESS-PLAN.md` into the tasks below.
 
 Unfinished Documents (consolidated tasks)
 
-1) V1-READINESS-ASSESSMENT.md — Status: Needs follow-up
+1. V1-READINESS-ASSESSMENT.md — Status: Needs follow-up
    - Action A: Pattern-detect improvements
      - Add `--exclude-patterns` config for design system components.
      - Make similarity threshold configurable (default >=50%).
@@ -30,7 +31,7 @@ Unfinished Documents (consolidated tasks)
      - Owner: `@consistency` maintainer
      - ETA: 2-4 weeks
 
-2) ENTERPRISE-READINESS-PLAN.md — Status: Roadmap; needs execution
+2. ENTERPRISE-READINESS-PLAN.md — Status: Roadmap; needs execution
    - Phase 1 (Quick Wins) — Completed in docs, move remaining items to issues:
      - Messaging audit (landing copy) — done.
      - Security docs — done.
@@ -46,16 +47,19 @@ Unfinished Documents (consolidated tasks)
    - Phase 3+ — Enterprise features (dashboards, sharing, history) — add RFCs where needed.
 
 Archive and cleanup actions performed
+
 - Moved completed documents into `.github/archived-docs/` (copies preserved).
 - Originals removed from repo root to reduce top-level clutter.
 
 Files archived
+
 - `.github/archived-docs/PHASE-1-IMPLEMENTATION-SUMMARY.md`
 - `.github/archived-docs/NOT-ANOTHER-LINTER.md`
 - `.github/archived-docs/LANDING-RELEASE-IMPLEMENTATION.md`
 - `.github/archived-docs/AEO-UCP-IMPLEMENTATION.md`
 
 Next steps
+
 - Review this consolidated plan and confirm owners for tasks.
 - I can open GH issues for the prioritized tasks (confirm assignees and labels).
 - If you prefer copies left at repo root instead of archived, tell me and I'll revert the deletions.

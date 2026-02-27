@@ -1,17 +1,19 @@
 /**
  * Python Naming Analyzer - PEP 8 Compliant
- * 
+ *
  * Analyzes Python code for PEP 8 naming convention violations
  * https://peps.python.org/pep-0008/#naming-conventions
  */
 
-import { getParser, Language } from '@aiready/core';
+import { getParser } from '@aiready/core';
 import type { NamingIssue } from '../types';
 
 /**
  * Analyze Python files for PEP 8 naming violations
  */
-export async function analyzePythonNaming(files: string[]): Promise<NamingIssue[]> {
+export async function analyzePythonNaming(
+  files: string[]
+): Promise<NamingIssue[]> {
   const issues: NamingIssue[] = [];
   const parser = getParser('dummy.py'); // Get Python parser instance
 
@@ -21,7 +23,7 @@ export async function analyzePythonNaming(files: string[]): Promise<NamingIssue[
   }
 
   // Filter to only Python files
-  const pythonFiles = files.filter(f => f.toLowerCase().endsWith('.py'));
+  const pythonFiles = files.filter((f) => f.toLowerCase().endsWith('.py'));
 
   for (const file of pythonFiles) {
     try {
@@ -31,7 +33,12 @@ export async function analyzePythonNaming(files: string[]): Promise<NamingIssue[
 
       // Analyze each export for naming violations
       for (const exp of result.exports) {
-        const nameIssue = checkPythonNaming(exp.name, exp.type, file, exp.loc?.start.line || 0);
+        const nameIssue = checkPythonNaming(
+          exp.name,
+          exp.type,
+          file,
+          exp.loc?.start.line || 0
+        );
         if (nameIssue) {
           issues.push(nameIssue);
         }
@@ -41,7 +48,12 @@ export async function analyzePythonNaming(files: string[]): Promise<NamingIssue[
       for (const imp of result.imports) {
         for (const spec of imp.specifiers) {
           if (spec !== '*' && spec !== 'default') {
-            const nameIssue = checkPythonNaming(spec, 'variable', file, imp.loc?.start.line || 0);
+            const nameIssue = checkPythonNaming(
+              spec,
+              'variable',
+              file,
+              imp.loc?.start.line || 0
+            );
             if (nameIssue) {
               issues.push(nameIssue);
             }
@@ -127,7 +139,10 @@ function checkPythonNaming(
       // Regular variables should be snake_case
       if (!conventions.variablePattern.test(identifier)) {
         // Check if it's using camelCase (common mistake from JS/TS developers)
-        if (/^[a-z][a-zA-Z0-9]*$/.test(identifier) && /[A-Z]/.test(identifier)) {
+        if (
+          /^[a-z][a-zA-Z0-9]*$/.test(identifier) &&
+          /[A-Z]/.test(identifier)
+        ) {
           return {
             type: 'convention-mix',
             identifier,
@@ -162,15 +177,18 @@ function toSnakeCase(str: string): string {
 function toPascalCase(str: string): string {
   return str
     .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join('');
 }
 
 /**
  * Detect common Python anti-patterns in naming
  */
-export function detectPythonNamingAntiPatterns(files: string[]): NamingIssue[] {
+export function detectPythonNamingAntiPatterns(_files: string[]): NamingIssue[] {
   const issues: NamingIssue[] = [];
+
+  // Parameter currently unused; reference to avoid lint warnings
+  void _files;
 
   // Anti-pattern 1: Using camelCase in Python (common for JS/TS developers)
   // Anti-pattern 2: Using PascalCase for functions

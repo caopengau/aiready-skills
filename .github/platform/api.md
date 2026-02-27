@@ -14,12 +14,12 @@ Unauthenticated requests return `401 Unauthorized`.
 
 ## Auth Endpoints (NextAuth v5)
 
-| Route | Method | Description |
-|-------|--------|-------------|
+| Route                     | Method   | Description                                                    |
+| ------------------------- | -------- | -------------------------------------------------------------- |
 | `/api/auth/[...nextauth]` | GET/POST | NextAuth catch-all (OAuth callbacks, signIn, signOut, session) |
-| `/api/auth/register` | POST | Create new account (email + password) |
-| `/api/auth/magic-link` | POST | Request magic link email via SES |
-| `/api/auth/verify` | POST | Verify magic link token, returns user for signIn() call |
+| `/api/auth/register`      | POST     | Create new account (email + password)                          |
+| `/api/auth/magic-link`    | POST     | Request magic link email via SES                               |
+| `/api/auth/verify`        | POST     | Verify magic link token, returns user for signIn() call        |
 
 ### `POST /api/auth/register`
 
@@ -61,11 +61,11 @@ Unauthenticated requests return `401 Unauthorized`.
 
 ## Repository Endpoints
 
-| Route | Method | Auth | Description |
-|-------|--------|------|-------------|
-| `/api/repos` | GET | ✅ | List user's repos |
-| `/api/repos` | POST | ✅ | Register a new repo |
-| `/api/repos` | DELETE | ✅ | Delete a repo |
+| Route        | Method | Auth | Description         |
+| ------------ | ------ | ---- | ------------------- |
+| `/api/repos` | GET    | ✅   | List user's repos   |
+| `/api/repos` | POST   | ✅   | Register a new repo |
+| `/api/repos` | DELETE | ✅   | Delete a repo       |
 
 ### `GET /api/repos`
 
@@ -108,9 +108,9 @@ Unauthenticated requests return `401 Unauthorized`.
 
 ## Analysis Endpoints
 
-| Route | Method | Auth | Description |
-|-------|--------|------|-------------|
-| `/api/analysis/upload` | POST | ✅ | Upload aiready CLI JSON results |
+| Route                  | Method | Auth | Description                     |
+| ---------------------- | ------ | ---- | ------------------------------- |
+| `/api/analysis/upload` | POST   | ✅   | Upload aiready CLI JSON results |
 
 ### `POST /api/analysis/upload`
 
@@ -153,11 +153,11 @@ Validates repo ownership, stores raw JSON to S3, creates Analysis DDB record, up
 
 ## Remediation Endpoints
 
-| Route | Method | Auth | Description |
-|-------|--------|------|-------------|
-| `/api/remediation` | GET | ✅ | List remediations (filter by repoId or teamId/status) |
-| `/api/remediation` | POST | ✅ | Create a remediation request |
-| `/api/remediation/[id]` | PATCH | ✅ | Update remediation status |
+| Route                   | Method | Auth | Description                                           |
+| ----------------------- | ------ | ---- | ----------------------------------------------------- |
+| `/api/remediation`      | GET    | ✅   | List remediations (filter by repoId or teamId/status) |
+| `/api/remediation`      | POST   | ✅   | Create a remediation request                          |
+| `/api/remediation/[id]` | PATCH  | ✅   | Update remediation status                             |
 
 ### `GET /api/remediation`
 
@@ -208,14 +208,15 @@ Validates repo ownership, stores raw JSON to S3, creates Analysis DDB record, up
 
 ## Billing Endpoints
 
-| Route | Method | Auth | Description |
-|-------|--------|------|-------------|
-| `/api/billing/webhook` | POST | ❌ (Stripe sig) | Stripe webhook handler |
-| `/api/billing/portal` | POST | ✅ | Create Stripe portal session |
+| Route                  | Method | Auth            | Description                  |
+| ---------------------- | ------ | --------------- | ---------------------------- |
+| `/api/billing/webhook` | POST   | ❌ (Stripe sig) | Stripe webhook handler       |
+| `/api/billing/portal`  | POST   | ✅              | Create Stripe portal session |
 
 ### `POST /api/billing/webhook`
 
 Verifies Stripe webhook signature (`STRIPE_WEBHOOK_SECRET`). Handles:
+
 - `checkout.session.completed` — upgrades team plan
 - `customer.subscription.updated` — syncs plan changes
 - `customer.subscription.deleted` — downgrades to free
@@ -242,11 +243,10 @@ Common HTTP status codes: `400` validation error, `401` unauthenticated, `403` o
 
 These endpoints are documented in plans but not yet built:
 
-| Endpoint | Status | Notes |
-|----------|--------|-------|
+| Endpoint                      | Status  | Notes                             |
+| ----------------------------- | ------- | --------------------------------- |
 | `GET /api/repos/:id/analyses` | Planned | List analyses for a specific repo |
-| `GET /api/teams` | Planned | Multi-team management |
-| `POST /api/teams` | Planned | Team creation flow |
-| Metrics trend endpoints | Planned | Time-series charts for dashboard |
-| Benchmarking endpoints | Planned | Cross-repo comparison (Pro+) |
-
+| `GET /api/teams`              | Planned | Multi-team management             |
+| `POST /api/teams`             | Planned | Team creation flow                |
+| Metrics trend endpoints       | Planned | Time-series charts for dashboard  |
+| Benchmarking endpoints        | Planned | Cross-repo comparison (Pro+)      |

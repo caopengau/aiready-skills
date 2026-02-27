@@ -38,7 +38,9 @@ describe('Context Scoring', () => {
       const result = calculateContextScore(summary);
 
       expect(result.score).toBeLessThan(70);
-      expect(result.factors.some(f => f.name === 'Context Budget')).toBe(true);
+      expect(result.factors.some((f) => f.name === 'Context Budget')).toBe(
+        true
+      );
       expect(result.recommendations.length).toBeGreaterThan(0);
     });
 
@@ -58,8 +60,10 @@ describe('Context Scoring', () => {
 
       // With depth=12: depthScore=30, rawScore=(100*0.4)+(30*0.3)+(100*0.3)=79
       expect(result.score).toBe(79);
-      expect(result.factors.some(f => f.name === 'Import Depth')).toBe(true);
-      expect(result.recommendations.some(r => r.action.includes('import chains'))).toBe(true);
+      expect(result.factors.some((f) => f.name === 'Import Depth')).toBe(true);
+      expect(
+        result.recommendations.some((r) => r.action.includes('import chains'))
+      ).toBe(true);
     });
 
     it('should penalize high fragmentation', () => {
@@ -77,7 +81,7 @@ describe('Context Scoring', () => {
       const result = calculateContextScore(summary);
 
       expect(result.score).toBeLessThan(80); // Adjusted threshold
-      expect(result.factors.some(f => f.name === 'Fragmentation')).toBe(true);
+      expect(result.factors.some((f) => f.name === 'Fragmentation')).toBe(true);
     });
 
     it('should apply critical issue penalties', () => {
@@ -96,7 +100,9 @@ describe('Context Scoring', () => {
 
       // Perfect subscores=100, minus 5*10=50 critical penalty = 50
       expect(result.score).toBe(50);
-      expect(result.factors.some(f => f.name === 'Critical Issues')).toBe(true);
+      expect(result.factors.some((f) => f.name === 'Critical Issues')).toBe(
+        true
+      );
     });
 
     it('should handle extreme max budget penalty', () => {
@@ -113,8 +119,14 @@ describe('Context Scoring', () => {
 
       const result = calculateContextScore(summary);
 
-      expect(result.factors.some(f => f.name === 'Extreme File Detected')).toBe(true);
-      expect(result.recommendations.some(r => r.action.includes('Split large file'))).toBe(true);
+      expect(
+        result.factors.some((f) => f.name === 'Extreme File Detected')
+      ).toBe(true);
+      expect(
+        result.recommendations.some((r) =>
+          r.action.includes('Split large file')
+        )
+      ).toBe(true);
     });
 
     it('should combine multiple penalties correctly', () => {

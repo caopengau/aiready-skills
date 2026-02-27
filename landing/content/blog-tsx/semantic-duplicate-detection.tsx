@@ -33,7 +33,7 @@ return email.search('@') >= 0 && email.search('.') >= 0;`}</CodeBlock>
 
     <p>
       Your AI didn't see these patterns. Why? Because they look different
-      syntactically, even though they're semantically identical. This is{" "}
+      syntactically, even though they're semantically identical. This is{' '}
       <strong>semantic duplication</strong>—and it's one of the biggest hidden
       costs in AI-assisted development.
     </p>
@@ -45,22 +45,24 @@ return email.search('@') >= 0 && email.search('.') >= 0;`}</CodeBlock>
         className="rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 w-full"
       />
       <p className="text-center text-sm text-slate-500 mt-4 italic">
-        How AI models miss semantic duplicates: same logic, different syntax, invisible to traditional analysis.
+        How AI models miss semantic duplicates: same logic, different syntax,
+        invisible to traditional analysis.
       </p>
     </div>
 
     <h2>The Problem: Syntax Blinds AI Models</h2>
     <p>
-      Traditional duplicate detection tools look for <em>exact</em> or near-exact
-      text matches. They catch copy-paste duplicates, but miss logic that's been
-      rewritten with different:
+      Traditional duplicate detection tools look for <em>exact</em> or
+      near-exact text matches. They catch copy-paste duplicates, but miss logic
+      that's been rewritten with different:
     </p>
     <ul>
       <li>
-        Variable names (<code>email</code> vs <code>e</code> vs <code>val</code>)
+        Variable names (<code>email</code> vs <code>e</code> vs <code>val</code>
+        )
       </li>
       <li>
-        Methods (<code>includes()</code> vs <code>indexOf()</code> vs{" "}
+        Methods (<code>includes()</code> vs <code>indexOf()</code> vs{' '}
         <code>match()</code> vs <code>search()</code>)
       </li>
       <li>Structure (inline vs function vs arrow function)</li>
@@ -74,10 +76,10 @@ return email.search('@') >= 0 && email.search('.') >= 0;`}</CodeBlock>
 
     <h2>Real-World Impact: The receiptclaimer Story</h2>
     <p>
-      When I ran <code>@aiready/pattern-detect</code> on{" "}
-      <a href="https://receiptclaimer.com">receiptclaimer</a>'s codebase, I found{" "}
-      <strong>23 semantic duplicate patterns</strong> scattered across 47 files.
-      Here's what that looked like:
+      When I ran <code>@aiready/pattern-detect</code> on{' '}
+      <a href="https://receiptclaimer.com">receiptclaimer</a>'s codebase, I
+      found <strong>23 semantic duplicate patterns</strong> scattered across 47
+      files. Here's what that looked like:
     </p>
 
     <p>
@@ -108,8 +110,8 @@ return email.search('@') >= 0 && email.search('.') >= 0;`}</CodeBlock>
 
     <h2>How It Works: Jaccard Similarity on AST Tokens</h2>
     <p>
-      <code>@aiready/pattern-detect</code> uses a technique called{" "}
-      <strong>Jaccard similarity</strong> on{" "}
+      <code>@aiready/pattern-detect</code> uses a technique called{' '}
+      <strong>Jaccard similarity</strong> on{' '}
       <strong>Abstract Syntax Tree (AST) tokens</strong> to detect semantic
       duplicates. Let me break that down.
     </p>
@@ -200,7 +202,7 @@ A ∪ B = ['FunctionDeclaration', 'ReturnStatement', 'LogicalExpression:&&',
 Jaccard(A, B) = 4 / 6 = 0.67 (67%)`}</CodeBlock>
 
     <p>
-      By default, <code>pattern-detect</code> flags patterns with{" "}
+      By default, <code>pattern-detect</code> flags patterns with{' '}
       <strong>≥70% similarity</strong> as duplicates. This catches most semantic
       duplicates while avoiding false positives.
     </p>
@@ -247,7 +249,8 @@ const dedupe = (a) => Array.from(new Set(a));`}</CodeBlock>
         <strong>Frequent reuse:</strong> Used in 3+ places
       </li>
       <li>
-        <strong>Core business logic:</strong> Validation, formatting, calculations
+        <strong>Core business logic:</strong> Validation, formatting,
+        calculations
       </li>
       <li>
         <strong>High maintenance cost:</strong> Logic that changes often
@@ -260,8 +263,8 @@ const dedupe = (a) => Array.from(new Set(a));`}</CodeBlock>
         <strong>Medium similarity (70-85%):</strong> Review case-by-case
       </li>
       <li>
-        <strong>Different domains:</strong> User validation vs product validation
-        might be intentionally separate
+        <strong>Different domains:</strong> User validation vs product
+        validation might be intentionally separate
       </li>
       <li>
         <strong>Performance critical:</strong> Sometimes duplication for
@@ -272,10 +275,12 @@ const dedupe = (a) => Array.from(new Set(a));`}</CodeBlock>
     <h3>❌ Tolerate When:</h3>
     <ul>
       <li>
-        <strong>Low similarity (&lt;70%):</strong> Probably not semantic duplicates
+        <strong>Low similarity (&lt;70%):</strong> Probably not semantic
+        duplicates
       </li>
       <li>
-        <strong>Test code:</strong> Tests often duplicate assertions intentionally
+        <strong>Test code:</strong> Tests often duplicate assertions
+        intentionally
       </li>
       <li>
         <strong>Isolated modules:</strong> If modules should remain independent
@@ -422,16 +427,16 @@ fi`}</CodeBlock>
         one-time audit
       </li>
       <li>
-        <strong>Start with high thresholds:</strong> Begin at 85%, lower gradually
-        as you understand your codebase
+        <strong>Start with high thresholds:</strong> Begin at 85%, lower
+        gradually as you understand your codebase
       </li>
       <li>
-        <strong>Review context:</strong> Don't blindly consolidate—understand why
-        duplicates exist
+        <strong>Review context:</strong> Don't blindly consolidate—understand
+        why duplicates exist
       </li>
       <li>
-        <strong>Educate your team:</strong> Share findings in code reviews, explain
-        semantic vs syntactic
+        <strong>Educate your team:</strong> Share findings in code reviews,
+        explain semantic vs syntactic
       </li>
       <li>
         <strong>Track progress:</strong> Measure token reduction over time
@@ -440,8 +445,8 @@ fi`}</CodeBlock>
 
     <h2>The Bottom Line</h2>
     <p>
-      Semantic duplication is invisible to traditional tools and AI models alike.
-      But it's costing you:
+      Semantic duplication is invisible to traditional tools and AI models
+      alike. But it's costing you:
     </p>
     <ul>
       <li>
@@ -457,7 +462,8 @@ fi`}</CodeBlock>
         to follow
       </li>
       <li>
-        <strong>Higher maintenance:</strong> Changes must be made in multiple places
+        <strong>Higher maintenance:</strong> Changes must be made in multiple
+        places
       </li>
     </ul>
 
@@ -486,7 +492,7 @@ npx @aiready/cli scan --score`}</CodeBlock>
     </p>
     <ul>
       <li>
-        GitHub:{" "}
+        GitHub:{' '}
         <a href="https://github.com/caopengau/aiready-cli">
           github.com/caopengau/aiready-cli
         </a>
@@ -495,7 +501,7 @@ npx @aiready/cli scan --score`}</CodeBlock>
         Docs: <a href="https://aiready.dev">aiready.dev</a>
       </li>
       <li>
-        Report issues:{" "}
+        Report issues:{' '}
         <a href="https://github.com/caopengau/aiready-cli/issues">
           github.com/caopengau/aiready-cli/issues
         </a>
@@ -511,21 +517,48 @@ npx @aiready/cli scan --score`}</CodeBlock>
 
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
-    <p><strong>Read the full series:</strong></p>
+    <p>
+      <strong>Read the full series:</strong>
+    </p>
     <ul className="list-disc pl-6 mb-4 space-y-2">
-      <li><a href="/blog/ai-code-debt-tsunami">Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready)</a></li>
-      <li><a href="/blog/invisible-codebase">Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)</a></li>
-      <li><a href="/blog/metrics-that-actually-matter">Part 3: AI Code Quality Metrics That Actually Matter</a></li>
-      <li><strong>Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis ← You are here</strong></li>
-      <li><a href="/blog/hidden-cost-import-chains">Part 5: The Hidden Cost of Import Chains</a></li>
-      <li><a href="/blog/visualizing-invisible">Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt</a></li>
+      <li>
+        <a href="/blog/ai-code-debt-tsunami">
+          Part 1: The AI Code Debt Tsunami is Here (And We&apos;re Not Ready)
+        </a>
+      </li>
+      <li>
+        <a href="/blog/invisible-codebase">
+          Part 2: Why Your Codebase is Invisible to AI (And What to Do About It)
+        </a>
+      </li>
+      <li>
+        <a href="/blog/metrics-that-actually-matter">
+          Part 3: AI Code Quality Metrics That Actually Matter
+        </a>
+      </li>
+      <li>
+        <strong>
+          Part 4: Deep Dive: Semantic Duplicate Detection with AST Analysis ←
+          You are here
+        </strong>
+      </li>
+      <li>
+        <a href="/blog/hidden-cost-import-chains">
+          Part 5: The Hidden Cost of Import Chains
+        </a>
+      </li>
+      <li>
+        <a href="/blog/visualizing-invisible">
+          Part 6: Visualizing the Invisible: Seeing the Shape of AI Code Debt
+        </a>
+      </li>
     </ul>
 
     <hr className="my-12 border-slate-200 dark:border-zinc-800" />
 
     <p className="text-sm italic text-slate-500">
-      *Peng Cao is the founder of{" "}
-      <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{" "}
+      *Peng Cao is the founder of{' '}
+      <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{' '}
       <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
       open-source suite for measuring and optimizing codebases for AI adoption.*
     </p>

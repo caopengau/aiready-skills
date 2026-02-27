@@ -1,16 +1,18 @@
-import { getAllPosts } from "@/lib/blog-tsx";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { BlogPageClient } from "@/components/BlogPageClient";
-import type { Metadata } from "next";
-import React from "react";
+import { getAllPosts } from '@/lib/blog-tsx';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { BlogPageClient } from '@/components/BlogPageClient';
+import type { Metadata } from 'next';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Blog - AIReady',
-  description: 'Insights on AI-assisted development, code quality, and building AI-ready codebases. Learn about semantic duplication, context window optimization, and developer productivity.',
+  description:
+    'Insights on AI-assisted development, code quality, and building AI-ready codebases. Learn about semantic duplication, context window optimization, and developer productivity.',
   openGraph: {
     title: 'AIReady Blog - Insights on AI-Ready Development',
-    description: 'Insights on AI-assisted development, code quality, and building AI-ready codebases.',
+    description:
+      'Insights on AI-assisted development, code quality, and building AI-ready codebases.',
     url: 'https://getaiready.dev/blog',
     siteName: 'AIReady',
     images: [

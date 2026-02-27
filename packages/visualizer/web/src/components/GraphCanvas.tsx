@@ -2,7 +2,12 @@ import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { FileNode, GraphData, ThemeColors, EffectiveTheme } from '../types';
 import { severityColors, edgeColors, GRAPH_CONFIG } from '../constants';
-import { getEdgeDistance, getEdgeStrength, getEdgeOpacity, getEdgeStrokeWidth } from '../utils';
+import {
+  getEdgeDistance,
+  getEdgeStrength,
+  getEdgeOpacity,
+  getEdgeStrokeWidth,
+} from '../utils';
 
 interface GraphCanvasProps {
   data: GraphData;
@@ -26,7 +31,7 @@ export function GraphCanvas({
     if (!data || !svgRef.current || !data.nodes.length) return;
 
     const svg = d3.select(svgRef.current);
-    
+
     // Get actual SVG dimensions from the DOM element
     const svgRect = svgRef.current.getBoundingClientRect();
     const width = svgRect.width;
@@ -37,7 +42,8 @@ export function GraphCanvas({
     const svgGroup = svg.append('g');
 
     // Setup zoom
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
       .scaleExtent([GRAPH_CONFIG.zoomMin, GRAPH_CONFIG.zoomMax])
       .on('zoom', (event) => {
         svgGroup.attr('transform', event.transform);
@@ -57,22 +63,40 @@ export function GraphCanvas({
         y: height / 2 + Math.sin(angle) * radius,
       };
     });
-    const links = data.edges.map(d => ({ ...d }));
+    const links = data.edges.map((d) => ({ ...d }));
 
     // Create force simulation
-    const simulation = d3.forceSimulation(nodes as d3.SimulationNodeDatum[])
+    const simulation = d3
+      .forceSimulation(nodes as d3.SimulationNodeDatum[])
       .force(
         'link',
-        d3.forceLink(links)
+        d3
+          .forceLink(links)
           .id((d: unknown) => (d as { id: string }).id)
-          .distance((d: unknown) => getEdgeDistance((d as { type: string }).type))
-          .strength((d: unknown) => getEdgeStrength((d as { type: string }).type))
+          .distance((d: unknown) =>
+            getEdgeDistance((d as { type: string }).type)
+          )
+          .strength((d: unknown) =>
+            getEdgeStrength((d as { type: string }).type)
+          )
       )
-      .force('charge', d3.forceManyBody().strength(GRAPH_CONFIG.simulation.chargeStrength))
+      .force(
+        'charge',
+        d3.forceManyBody().strength(GRAPH_CONFIG.simulation.chargeStrength)
+      )
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(GRAPH_CONFIG.collisionRadius))
-      .force('x', d3.forceX(width / 2).strength(GRAPH_CONFIG.simulation.centerStrength))
-      .force('y', d3.forceY(height / 2).strength(GRAPH_CONFIG.simulation.centerStrength));
+      .force(
+        'collision',
+        d3.forceCollide().radius(GRAPH_CONFIG.collisionRadius)
+      )
+      .force(
+        'x',
+        d3.forceX(width / 2).strength(GRAPH_CONFIG.simulation.centerStrength)
+      )
+      .force(
+        'y',
+        d3.forceY(height / 2).strength(GRAPH_CONFIG.simulation.centerStrength)
+      );
 
     // Create link group
     const linkGroup = svgGroup.append('g').attr('class', 'links');
@@ -81,9 +105,17 @@ export function GraphCanvas({
       .data(links)
       .enter()
       .append('line')
-      .attr('stroke', (d: unknown) => edgeColors[(d as { type: string }).type] || edgeColors.default)
-      .attr('stroke-opacity', (d: unknown) => getEdgeOpacity((d as { type: string }).type))
-      .attr('stroke-width', (d: unknown) => getEdgeStrokeWidth((d as { type: string }).type));
+      .attr(
+        'stroke',
+        (d: unknown) =>
+          edgeColors[(d as { type: string }).type] || edgeColors.default
+      )
+      .attr('stroke-opacity', (d: unknown) =>
+        getEdgeOpacity((d as { type: string }).type)
+      )
+      .attr('stroke-width', (d: unknown) =>
+        getEdgeStrokeWidth((d as { type: string }).type)
+      );
 
     // Create node group
     const nodeGroup = svgGroup.append('g').attr('class', 'nodes');
@@ -95,7 +127,8 @@ export function GraphCanvas({
       .append('g')
       .attr('cursor', 'pointer')
       .call(
-        d3.drag<SVGGElement, any>()
+        d3
+          .drag<SVGGElement, any>()
           .on('start', dragstarted)
           .on('drag', dragged)
           .on('end', dragended) as any
@@ -104,17 +137,32 @@ export function GraphCanvas({
     // Add circles to nodes
     node
       .append('circle')
-      .attr('r', (d: unknown) => Math.sqrt((d as { value: number }).value || 10) + GRAPH_CONFIG.nodeBaseRadius)
-      .attr('fill', (d: unknown) => (d as { color: string }).color || severityColors.default)
+      .attr(
+        'r',
+        (d: unknown) =>
+          Math.sqrt((d as { value: number }).value || 10) +
+          GRAPH_CONFIG.nodeBaseRadius
+      )
+      .attr(
+        'fill',
+        (d: unknown) => (d as { color: string }).color || severityColors.default
+      )
       .attr('stroke', effectiveTheme === 'dark' ? '#fff' : '#000')
       .attr('stroke-width', 1.5);
 
     // Add labels to nodes
     node
       .append('text')
-      .text((d: unknown) => ((d as { label: string }).label.split('/').pop() || (d as { label: string }).label))
+      .text(
+        (d: unknown) =>
+          (d as { label: string }).label.split('/').pop() ||
+          (d as { label: string }).label
+      )
       .attr('x', 0)
-      .attr('y', (d: unknown) => Math.sqrt((d as { value: number }).value || 10) + 12)
+      .attr(
+        'y',
+        (d: unknown) => Math.sqrt((d as { value: number }).value || 10) + 12
+      )
       .attr('text-anchor', 'middle')
       .attr('fill', effectiveTheme === 'dark' ? '#e2e8f0' : '#1e293b')
       .attr('font-size', '9px')
@@ -139,12 +187,17 @@ export function GraphCanvas({
         .attr('x2', (d: unknown) => (d as { target: { x: number } }).target.x)
         .attr('y2', (d: unknown) => (d as { target: { y: number } }).target.y);
 
-      node.attr('transform', (d: unknown) => `translate(${(d as { x: number }).x},${(d as { y: number }).y})`);
+      node.attr(
+        'transform',
+        (d: unknown) =>
+          `translate(${(d as { x: number }).x},${(d as { y: number }).y})`
+      );
     });
 
     // Drag functions
     function dragstarted(event: unknown, d: unknown) {
-      if (!(event as { active: boolean }).active) simulation.alphaTarget(0.3).restart();
+      if (!(event as { active: boolean }).active)
+        simulation.alphaTarget(0.3).restart();
       (d as { fx: number | null }).fx = (d as { x: number }).x;
       (d as { fy: number | null }).fy = (d as { y: number }).y;
     }
@@ -178,7 +231,14 @@ export function GraphCanvas({
         ref={svgRef}
         width="100%"
         height="100%"
-        style={{ display: 'block', backgroundColor: 'transparent', zIndex: 10, position: 'absolute', top: 0, left: 0 }}
+        style={{
+          display: 'block',
+          backgroundColor: 'transparent',
+          zIndex: 10,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+        }}
       />
       <div className="absolute bottom-6 left-6 z-20">
         <div
@@ -189,7 +249,13 @@ export function GraphCanvas({
             color: colors.textMuted,
           }}
         >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

@@ -27,7 +27,7 @@ aiready-check:
         exit 1
       fi
   variables:
-    AIREADY_THRESHOLD: "70"
+    AIREADY_THRESHOLD: '70'
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

@@ -10,7 +10,7 @@ import type { AiSignalClarityReport } from './types';
  * We invert it so the spoke score is 0-100 where higher = better.
  */
 export function calculateAiSignalClarityScore(
-  report: AiSignalClarityReport,
+  report: AiSignalClarityReport
 ): ToolScoringOutput {
   const { aggregateSignals } = report;
 
@@ -29,19 +29,20 @@ export function calculateAiSignalClarityScore(
   // Invert: high risk = low score
   const score = Math.max(0, 100 - riskResult.score);
 
-  const factors: ToolScoringOutput['factors'] = riskResult.signals.map(sig => ({
-    name: sig.name,
-    impact: -sig.riskContribution,
-    description: sig.description,
-  }));
+  const factors: ToolScoringOutput['factors'] = riskResult.signals.map(
+    (sig) => ({
+      name: sig.name,
+      impact: -sig.riskContribution,
+      description: sig.description,
+    })
+  );
 
-  const recommendations: ToolScoringOutput['recommendations'] = riskResult.recommendations.map(
-    rec => ({
+  const recommendations: ToolScoringOutput['recommendations'] =
+    riskResult.recommendations.map((rec) => ({
       action: rec,
       estimatedImpact: 8,
       priority: riskResult.score > 50 ? 'high' : 'medium',
-    }),
-  );
+    }));
 
   return {
     toolName: 'ai-signal-clarity',

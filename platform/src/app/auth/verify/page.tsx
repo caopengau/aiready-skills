@@ -8,12 +8,14 @@ import { signIn } from 'next-auth/react';
 function VerifyContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading'
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = searchParams.get('token');
-    
+
     if (!token) {
       setStatus('error');
       setError('No token provided');
@@ -26,8 +28,8 @@ function VerifyContent() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     })
-      .then(res => res.json())
-      .then(async data => {
+      .then((res) => res.json())
+      .then(async (data) => {
         if (data.success && data.user) {
           // Create NextAuth session using magic-link provider
           const result = await signIn('magic-link', {
@@ -35,7 +37,7 @@ function VerifyContent() {
             email: data.user.email,
             redirect: false,
           });
-          
+
           if (result?.ok) {
             setStatus('success');
             setTimeout(() => {
@@ -50,7 +52,7 @@ function VerifyContent() {
           setError(data.error || 'Verification failed');
         }
       })
-      .catch(err => {
+      .catch((err) => {
         setStatus('error');
         setError('Network error. Please try again.');
       });
@@ -66,7 +68,9 @@ function VerifyContent() {
         {status === 'loading' && (
           <>
             <div className="w-16 h-16 mx-auto mb-6 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-            <h1 className="text-xl font-semibold text-white mb-2">Verifying your link...</h1>
+            <h1 className="text-xl font-semibold text-white mb-2">
+              Verifying your link...
+            </h1>
             <p className="text-slate-400">Please wait while we sign you in.</p>
           </>
         )}
@@ -74,8 +78,18 @@ function VerifyContent() {
         {status === 'success' && (
           <>
             <div className="w-16 h-16 mx-auto mb-6 bg-emerald-500/20 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-8 h-8 text-emerald-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <h1 className="text-xl font-semibold text-white mb-2">Success!</h1>
@@ -86,11 +100,23 @@ function VerifyContent() {
         {status === 'error' && (
           <>
             <div className="w-16 h-16 mx-auto mb-6 bg-red-500/20 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-8 h-8 text-red-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </div>
-            <h1 className="text-xl font-semibold text-white mb-2">Verification Failed</h1>
+            <h1 className="text-xl font-semibold text-white mb-2">
+              Verification Failed
+            </h1>
             <p className="text-slate-400 mb-4">{error}</p>
             <button
               onClick={() => router.push('/login')}
@@ -107,11 +133,13 @@ function VerifyContent() {
 
 export default function VerifyPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <VerifyContent />
     </Suspense>
   );

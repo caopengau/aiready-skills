@@ -17,8 +17,14 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "directory": { "type": "string", "description": "Directory to scan (relative to repo root)." },
-                  "tools": { "type": "string", "description": "Comma-separated tool list: patterns,context,consistency" },
+                  "directory": {
+                    "type": "string",
+                    "description": "Directory to scan (relative to repo root)."
+                  },
+                  "tools": {
+                    "type": "string",
+                    "description": "Comma-separated tool list: patterns,context,consistency"
+                  },
                   "include": { "type": "string" },
                   "exclude": { "type": "string" },
                   "score": { "type": "boolean" },
