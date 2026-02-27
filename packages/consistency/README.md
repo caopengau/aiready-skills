@@ -15,26 +15,6 @@ Consistent naming and project structure are the bedrock of high-performing AI te
                     🎯 USER
                       │
                       ▼
-            🎛️  CLI (orchestrator)
-                      │
-    ┌─────────────────┴─────────────────┐
-    │                                   │
-    ▼                                   ▼
-┌────────┐                        ┌────────┐
-│🎨 VIS- │                        │ ANALY- │
-│UALIZER │                        │  SIS   │
-│✅ Ready│                        │ SPOKES │
-└────────┘                        └───┬────┘
-    │                                 │
-    │   ┌───────────────┬─────────────┴─────────────┬───────────────┐
-    ▼   ▼               ▼                           ▼               ▼
-┌────────┐        ┌────────┐                  ┌────────┐        ┌────────┐
-│📊 PAT- │        │📦 CON- │                  │🔧 CON- │        │💥 CHN- │
-│TERN    │        │TEXT    │                  │SISTENCY│        │ AMP    │
-│DETECT  │        │ANALYZER│                  │        │        │        │
-│✅ Ready│        │✅ Ready│                  │✅ Ready│        │✅ Ready│
-└────────┘        └────────┘                  └────────┘        └────────┘
-    │           │                     │   ▲         │          │
     └───────────┴─────────────────────┴───┴── YOU ARE HERE ─────────────┘
                             │
                             ▼
