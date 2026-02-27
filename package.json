@@ -23,6 +23,7 @@
     "@types/react-dom": "^19.2.3",
     "npm-check-updates": "^19.3.2",
     "nx": "^22.5.1",
+    "ovsx": "^0.10.9",
     "semver": "^7.7.4",
     "turbo": "^2.8.9",
     "typescript": "^5.9.3",

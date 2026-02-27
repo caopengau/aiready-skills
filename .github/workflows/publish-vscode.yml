@@ -36,12 +36,19 @@ jobs:
       - name: Build extension
         run: cd packages/vscode-extension && pnpm run compile
 
-      - name: Publish to VS Code Marketplace
+      - name: Publish to VS Code Marketplace and Open VSX
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
           cd packages/vscode-extension
           npx @vscode/vsce publish --no-dependencies --allow-star-activation
+          if [ -n "$OVSX_PAT" ]; then
+            echo "Publishing to Open VSX Registry..."
+            npx ovsx publish --no-dependencies
+          else
+            echo "OVSX_PAT secret is not set. Skipping Open VSX compilation."
+          fi
 
       - name: Create GitHub Release
         if: success()

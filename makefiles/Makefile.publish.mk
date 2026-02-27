@@ -311,7 +311,7 @@ deploy: sync ## Alias for sync (push monorepo + publish all spokes)
 publish-vscode: ## Publish VS Code extension to Marketplace (requires VSCE_PAT env var)
 	@$(call log_step,Publishing VS Code extension...); \
 	if [ -f packages/vscode-extension/.env ]; then \
-		echo "[INFO] Loading VSCE_PAT from packages/vscode-extension/.env"; \
+		echo "[INFO] Loading VSCE_PAT and OVSX_PAT from packages/vscode-extension/.env"; \
 		set -a; . packages/vscode-extension/.env; set +a; \
 	fi; \
 	if [ -z "$$VSCE_PAT" ]; then \
@@ -322,7 +322,14 @@ publish-vscode: ## Publish VS Code extension to Marketplace (requires VSCE_PAT e
 	echo "[INFO] Bumping version..." && \
 	npm version $(if $(TYPE),$(TYPE),patch) --no-git-tag-version --workspaces-update=false && \
 	pnpm run compile && \
-	VSCE_PAT="$$VSCE_PAT" npx @vscode/vsce publish --no-dependencies --allow-star-activation; \
+	echo "[INFO] Publishing to VS Code Marketplace..." && \
+	VSCE_PAT="$$VSCE_PAT" npx @vscode/vsce publish --no-dependencies --allow-star-activation && \
+	if [ -n "$$OVSX_PAT" ]; then \
+		echo "[INFO] Publishing to Open VSX Registry..." && \
+		OVSX_PAT="$$OVSX_PAT" npx ovsx publish --no-dependencies; \
+	else \
+		echo "[WARN] OVSX_PAT not set. Skipping Open VSX compilation."; \
+	fi; \
 	$(call log_success,VS Code extension published)
 
 publish-vscode-via-ci: ## Trigger CI workflow to publish VS Code extension
