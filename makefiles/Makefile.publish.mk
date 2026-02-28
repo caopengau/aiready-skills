@@ -139,18 +139,18 @@ publish-paks: ## Publish agent skills to Playbooks.com (Paks registry)
 		exit 1; \
 	fi; \
 	if [ -n "$$PAKS_TOKEN" ]; then \
-		paks login --token $$PAKS_TOKEN; \
+		paks login --token $$PAKS_TOKEN --non-interactive 2>/dev/null || paks login --token $$PAKS_TOKEN; \
 	fi; \
 	$(MAKE) publish SPOKE=skills OWNER=$(OWNER); \
 	version=$$(node -p "require('./packages/skills/package.json').version"); \
-	tag="v$$version"; \
+	tag="$$version"; \
 	url="https://github.com/$(OWNER)/aiready-skills.git"; \
 	remote="aiready-skills"; \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
 	$(call log_info,Tagging public repo with $$tag...); \
 	git tag -f $$tag; \
 	git push -f "$$remote" $$tag; \
-	cd packages/skills && paks publish aiready-best-practices --tag $$tag || { \
+	cd packages/skills && paks publish aiready-best-practices --tag $$tag --yes || { \
 		$(call log_error,Paks publish failed); \
 		exit 1; \
 	}
