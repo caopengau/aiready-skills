@@ -129,6 +129,33 @@ publish: ## Publish spoke to GitHub. Usage: make publish SPOKE=pattern-detect [O
 publish-core: ## Publish @aiready/core to GitHub (shortcut for: make publish SPOKE=core)
 	@$(MAKE) publish SPOKE=core OWNER=$(OWNER)
 
+publish-paks: ## Publish agent skills to Playbooks.com (Paks registry)
+	@$(call log_step,Publishing agent skills to Playbooks.com...)
+	@if [ -f packages/skills/.env ]; then \
+		export $$(grep -v '^#' packages/skills/.env | xargs); \
+	fi; \
+	if ! command -v paks >/dev/null 2>&1; then \
+		$(call log_error,Paks CLI not found. Install with: npm install -g paks); \
+		exit 1; \
+	fi; \
+	if [ -n "$$PAKS_TOKEN" ]; then \
+		paks login --token $$PAKS_TOKEN; \
+	fi; \
+	$(MAKE) publish SPOKE=skills OWNER=$(OWNER); \
+	version=$$(node -p "require('./packages/skills/package.json').version"); \
+	tag="v$$version"; \
+	url="https://github.com/$(OWNER)/aiready-skills.git"; \
+	remote="aiready-skills"; \
+	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
+	git push "$$remote" :refs/tags/$$tag 2>/dev/null || true; \
+	git tag -f $$tag; \
+	git push "$$remote" $$tag; \
+	cd packages/skills && paks publish aiready-best-practices --tag $$tag --non-interactive || { \
+		$(call log_error,Paks publish failed); \
+		exit 1; \
+	}
+	@$(call log_success,Published skills to Playbooks.com using tag $$tag)
+
 publish-pattern-detect: ## Publish @aiready/pattern-detect to GitHub (shortcut for: make publish SPOKE=pattern-detect)
 	@$(MAKE) publish SPOKE=pattern-detect OWNER=$(OWNER)
 
