@@ -13,7 +13,7 @@ keywords:
   - agent-skills
   - ai-friendly
 homepage: https://getaiready.dev
-repository: https://github.com/caopengau/aiready-skills
+repository: https://github.com/caopengau/aiready
 ---
 
 # AIReady Best Practices
