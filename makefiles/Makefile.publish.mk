@@ -147,10 +147,10 @@ publish-paks: ## Publish agent skills to Playbooks.com (Paks registry)
 	url="https://github.com/$(OWNER)/aiready-skills.git"; \
 	remote="aiready-skills"; \
 	git remote add "$$remote" "$$url" 2>/dev/null || git remote set-url "$$remote" "$$url"; \
-	git push "$$remote" :refs/tags/$$tag 2>/dev/null || true; \
+	$(call log_info,Tagging public repo with $$tag...); \
 	git tag -f $$tag; \
-	git push "$$remote" $$tag; \
-	cd packages/skills && paks publish aiready-best-practices --tag $$tag --non-interactive || { \
+	git push -f "$$remote" $$tag; \
+	cd packages/skills && paks publish aiready-best-practices --tag $$tag || { \
 		$(call log_error,Paks publish failed); \
 		exit 1; \
 	}
