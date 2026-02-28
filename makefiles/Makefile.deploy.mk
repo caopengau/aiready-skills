@@ -8,7 +8,7 @@ include makefiles/Makefile.shared.mk
 
 ##@ Deployment
 
-deploy-landing: ## Deploy landing page to AWS (dev environment)
+deploy-landing: verify-aws-account ## Deploy landing page to AWS (dev environment)
 	@$(call log_step,Deploying landing page to AWS (dev))
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
 	@echo "$(CYAN)Using AWS Region: $(AWS_REGION)$(NC)"
@@ -21,7 +21,7 @@ deploy-landing: ## Deploy landing page to AWS (dev environment)
 		sst deploy
 	@$(call log_success,Landing page deployed to dev)
 
-deploy-landing-prod: ## Deploy landing page to AWS (production)
+deploy-landing-prod: verify-aws-account ## Deploy landing page to AWS (production)
 	@$(call log_step,Deploying landing page to AWS (production))
 	@echo "$(YELLOW)⚠️  Deploying to PRODUCTION$(NC)"
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
@@ -62,7 +62,7 @@ landing-logs: ## Show landing page logs (requires SST dashboard)
 
 ##@ Platform Deployment
 
-deploy-platform: ## Deploy platform to AWS (dev environment)
+deploy-platform: verify-aws-account ## Deploy platform to AWS (dev environment)
 	@$(call log_step,Deploying platform to AWS (dev))
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"
 	@cd platform && \
@@ -72,7 +72,7 @@ deploy-platform: ## Deploy platform to AWS (dev environment)
 	@$(call log_success,Platform deployed to dev)
 	@$(MAKE) platform-verify
 
-deploy-platform-prod: ## Deploy platform to AWS (production)
+deploy-platform-prod: verify-aws-account ## Deploy platform to AWS (production)
 	@$(call log_step,Deploying platform to AWS (production))
 	@echo "$(YELLOW)⚠️  Deploying to PRODUCTION$(NC)"
 	@echo "$(CYAN)Using AWS Profile: $(AWS_PROFILE)$(NC)"

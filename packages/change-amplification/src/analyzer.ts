@@ -15,7 +15,6 @@ import type {
 export async function analyzeChangeAmplification(
   options: ChangeAmplificationOptions
 ): Promise<ChangeAmplificationReport> {
-  const rootDir = path.resolve(options.rootDir || '.');
   // Use core scanFiles which respects .gitignore recursively
   const files = await scanFiles({
     ...options,

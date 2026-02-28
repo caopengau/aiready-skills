@@ -48,6 +48,25 @@ RELEASE_ORDER := core $(MIDDLE_SPOKES) cli
 # Override with: export AWS_PROFILE=your-profile
 AWS_PROFILE ?= aiready
 AWS_REGION ?= ap-southeast-2
+EXPECTED_AWS_ACCOUNT_ID := 316759592139
+
+ifndef VERIFY_AWS_ACCOUNT_DEFINED
+VERIFY_AWS_ACCOUNT_DEFINED := 1
+
+# Verify AWS account and profile matches expectations
+.PHONY: verify-aws-account
+verify-aws-account:
+	@CURRENT_ACCOUNT=$$(aws sts get-caller-identity --query Account --output text --profile $(AWS_PROFILE) 2>/dev/null); \
+	if [ "$$CURRENT_ACCOUNT" != "$(EXPECTED_AWS_ACCOUNT_ID)" ]; then \
+		printf '$(RED)[ERROR] Invalid AWS Account detected!$(RESET_COLOR)\n'; \
+		printf '  Expected: $(EXPECTED_AWS_ACCOUNT_ID) (aiready)\n'; \
+		printf '  Found   : '"$$CURRENT_ACCOUNT"'\n'; \
+		printf '  Profile : $(AWS_PROFILE)\n'; \
+		exit 1; \
+	fi
+	@printf '$(GREEN)✓ AWS Account verified: $(AWS_PROFILE) ($(EXPECTED_AWS_ACCOUNT_ID))$(RESET_COLOR)\n'
+endif
+
 # Notifications (defaults for solo founder)
 SES_TO_EMAIL ?= caopengau@gmail.com
 
