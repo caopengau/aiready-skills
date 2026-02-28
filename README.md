@@ -46,8 +46,16 @@ Guidelines for writing AI-friendly code. Use when:
 
 ## Installation
 
+### For [skills.sh](https://skills.sh/)
+
 ```bash
 npx skills add caopengau/aiready-skills
+```
+
+### For [Playbooks.com (Paks)](https://playbooks.com/)
+
+```bash
+paks install aiready-best-practices
 ```
 
 ## License

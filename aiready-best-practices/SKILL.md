@@ -1,7 +1,7 @@
 ---
 name: aiready-best-practices
 description: Guidelines for writing AI-friendly code. Detects semantic duplicates, context fragmentation, naming inconsistencies, AI signal clarity issues, change amplification hotspots, agent grounding problems, and testability barriers. Use when writing new code, reviewing PRs, refactoring for AI adoption, or debugging AI assistant confusion. Helps minimize context waste and improve AI comprehension.
-version: v0.2.0
+version: 0.1.0
 license: MIT
 authors:
   - AIReady <contact@getaiready.dev>
