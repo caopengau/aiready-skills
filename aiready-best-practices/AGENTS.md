@@ -10,6 +10,10 @@ February 2026
 > Humans may find it useful, but guidance here is optimized for  
 > AI-assisted workflows and automated consistency.
 
+> [!NOTE]
+> This document is automatically generated from individual rules in the `rules/` directory.
+> Contributors should modify the source rules rather than this compiled file.
+
 ---
 
 ## Abstract

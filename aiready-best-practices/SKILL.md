@@ -24,7 +24,7 @@ Guidelines for writing AI-friendly codebases that AI coding assistants can under
 Full instructions are available in [AGENTS.md](./AGENTS.md).
 
 > [!NOTE]
-> This document is automatically generated from individual rules in the [`rules/`](./rules/) directory. Contributors should modify the source rules rather than the compiled file.
+> [AGENTS.md](./AGENTS.md) is automatically generated from individual rules in the [`rules/`](./rules/) directory. Contributors should modify the source rules rather than the compiled file.
 
 ### Quick Commands (via npx)
 

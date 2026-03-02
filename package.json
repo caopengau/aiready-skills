@@ -1,11 +1,10 @@
 {
   "name": "@aiready/skills",
-  "version": "0.1.1",
+  "version": "0.2.2",
   "private": true,
   "description": "AI-friendly coding practices for AI agents - procedural knowledge for writing maintainable code",
   "license": "MIT",
   "author": "AIReady",
-  "homepage": "https://getaiready.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/caopengau/aiready-skills.git"

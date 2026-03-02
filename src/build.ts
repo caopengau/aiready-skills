@@ -36,6 +36,9 @@ function generateMarkdown(sections: Section[], metadata: Metadata): string {
   md += `> maintaining, or refactoring ${SKILL_CONFIG.description}.  \n`;
   md += `> Humans may find it useful, but guidance here is optimized for  \n`;
   md += `> AI-assisted workflows and automated consistency.\n\n`;
+  md += `> [!NOTE]\n`;
+  md += `> This document is automatically generated from individual rules in the \`rules/\` directory.\n`;
+  md += `> Contributors should modify the source rules rather than this compiled file.\n\n`;
   md += `---\n\n`;
   md += `## Abstract\n\n`;
   md += `${metadata.abstract}\n\n`;
